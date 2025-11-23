@@ -789,3 +789,308 @@
     grid-column: 1;
   }
 }
+
+/* =============================================================================
+   Diff Viewer Styles
+   ============================================================================= */
+
+/* Diff Viewer Container */
+.diff-viewer {
+  background: rgba(17, 25, 40, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.diff-viewer-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.diff-empty-message {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Diff Header */
+.diff-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  background: rgba(30, 41, 59, 0.6);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.diff-file-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.diff-change-badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.diff-change-badge.change-type-create {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.diff-change-badge.change-type-modify {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.diff-change-badge.change-type-delete {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.diff-file-path {
+  color: #e2e8f0;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.diff-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.diff-stat-added,
+.diff-stat-removed {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+.diff-stat-added {
+  background: rgba(16, 185, 129, 0.1);
+  color: #34d399;
+}
+
+.diff-stat-removed {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+}
+
+.diff-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.diff-view-toggle {
+  padding: 6px 12px;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 6px;
+  color: #cbd5f5;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.diff-view-toggle:hover {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #93c5fd;
+}
+
+.diff-view-toggle.active {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+/* Diff Content */
+.diff-content {
+  overflow-x: auto;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+/* Override react-diff-view styles for dark theme */
+.diff-content .diff {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 13px;
+  background: transparent;
+}
+
+.diff-content .diff-gutter {
+  background: rgba(30, 41, 59, 0.4);
+  color: #64748b;
+  user-select: none;
+}
+
+.diff-content .diff-line {
+  background: rgba(17, 25, 40, 0.4);
+}
+
+.diff-content .diff-line-normal {
+  background: transparent;
+  color: #cbd5f5;
+}
+
+.diff-content .diff-line-add {
+  background: rgba(16, 185, 129, 0.08);
+  color: #d1fae5;
+}
+
+.diff-content .diff-line-delete {
+  background: rgba(239, 68, 68, 0.08);
+  color: #fecaca;
+}
+
+.diff-content .diff-gutter-insert {
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.diff-content .diff-gutter-delete {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.diff-content .diff-code-insert {
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.diff-content .diff-code-delete {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+/* Diff List */
+.diff-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.diff-list-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: #94a3b8;
+  background: rgba(17, 25, 40, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.08);
+  border-radius: 12px;
+}
+
+.diff-list-empty-message {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.diff-list-item {
+  background: rgba(17, 25, 40, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.diff-list-item:hover {
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.diff-list-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.diff-list-item-header:hover {
+  background: rgba(30, 41, 59, 0.3);
+}
+
+.diff-list-item-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.diff-change-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.diff-change-icon.change-type-create {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.diff-change-icon.change-type-modify {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.diff-change-icon.change-type-delete {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.diff-list-item-path {
+  color: #e2e8f0;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.diff-list-item-time {
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.diff-list-item-toggle {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s ease;
+}
+
+.diff-list-item-toggle:hover {
+  color: #93c5fd;
+}
+
+.diff-list-item-content {
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+}

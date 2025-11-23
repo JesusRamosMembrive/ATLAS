@@ -7,6 +7,7 @@ import type { AuditRun } from "../api/types";
 import { useAuditEventStream } from "../hooks/useAuditEventStream";
 import { TerminalView } from "./TerminalView";
 import { TimelineView } from "./TimelineView";
+import { DiffList } from "./DiffViewer";
 
 const DEFAULT_EVENT_LIMIT = 500;
 
@@ -199,6 +200,15 @@ export function AgentMonitoringDashboard(): JSX.Element {
                 </div>
                 <div className="monitoring-panel-body">
                   <TimelineView events={events} />
+                </div>
+              </div>
+
+              <div className="monitoring-panel">
+                <div className="monitoring-panel-header">
+                  <h3>File Changes</h3>
+                </div>
+                <div className="monitoring-panel-body">
+                  <DiffList events={events} />
                 </div>
               </div>
 
