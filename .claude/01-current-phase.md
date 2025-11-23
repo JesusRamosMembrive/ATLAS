@@ -1,6 +1,6 @@
 # Estado Actual del Proyecto
 
-**Última actualización**: 2025-11-18
+**Última actualización**: 2025-11-23
 **Etapa detectada**: Stage 3 (Production-Ready)
 **Proyecto**: ATLAS - Stage-Aware Development Framework + Code Map Backend
 
@@ -9,17 +9,15 @@
 ## 📍 ESTADO ACTUAL
 
 **En progreso:**
-- Sistema de 3 fases completamente implementado en templates
-- Frontend Code Map funcionando con análisis de código, linters, call tracer
+- 🔥 **Agent Monitoring Dashboard** - Visión completa (4 semanas)
+  - Fase 1 (Semana 1): Foundation - Audit hooks + SSE streaming (50% completado)
+  - Terminal en vivo + Timeline visual + Diffs en tiempo real
 
 **Completado recientemente:**
-- ✅ Sistema de 3 fases (Architect → Implementer → Code-Reviewer) con orchestrator
-- ✅ Call Tracer Stage 2: Cross-file analysis con import resolution
-- ✅ Frontend integrado (Stage 1 single-file + Stage 2 cross-file UI)
-- ✅ Linter pipeline con configuración flexible
-- ✅ Ollama integration para AI insights
-- ✅ Git change tracking en Code Map
-- ✅ SuperClaude framework integration
+- ✅ Audit hooks system (`code_map/audit/hooks.py`)
+- ✅ Linter pipeline integration con audit tracking
+- ✅ Sistema de 3 fases (Architect → Implementer → Code-Reviewer)
+- ✅ Frontend básico de Audit Sessions (manual)
 
 **Bloqueado/Pendiente:**
 - Ninguno actualmente
@@ -28,45 +26,45 @@
 
 ## 🎯 PRÓXIMOS PASOS
 
-1. **Inmediato** (Completado esta sesión):
-   - ✅ Optimizar 01-current-phase.md (reducir de 760 → ~150 líneas)
-   - ✅ Crear 01-session-history.md para historial completo
-   - ✅ Actualizar templates con nueva estructura
+1. **Inmediato** (Continuar Fase 1):
+   - Modificar git_history para auto-log operations
+   - Añadir SSE endpoint para event streaming
+   - Crear tests para audit hooks
+   - Frontend: useAuditEventStream hook
+   - Frontend: Actualizar AuditSessionsView para SSE
 
-2. **Corto plazo** (Si hay necesidad real):
-   - Workflow docs UI integration (solo si usuarios lo solicitan)
-   - Stage transition validation automática
-   - Performance optimizations si proyectos >500 archivos
+2. **Fase 2** (Semana 2):
+   - Agent bridge para Claude Code
+   - Terminal emulator (xterm.js)
+   - Timeline visual (Gantt chart)
 
-3. **Mediano plazo** (Basado en pain points):
-   - GitHub Action para auto-assess PRs
-   - VS Code extension (si se usa fuera de Claude Code)
-   - Web dashboard para equipos (si hay colaboración multi-equipo)
+3. **Fase 3-4** (Semanas 3-4):
+   - Diffs en tiempo real
+   - Export system
+   - Metrics dashboard
 
 ---
 
 ## 📝 DECISIONES RECIENTES
 
-### Sistema de 3 Fases con Documentación Separada (2025-11-18)
-**Qué**: Implementar 3-phase workflow (Planning → Implementation → Validation) con estructura `.claude/doc/{feature}/`
-**Por qué**: Separar concerns entre agentes - architect planea, implementer ejecuta, code-reviewer valida
+### Agent Monitoring Dashboard - Visión Completa (2025-11-23)
+**Qué**: Transformar Audit Trail en dashboard completo de monitoreo de agentes en tiempo real
+**Por qué**: Control total sobre Claude Code - ver comandos, diffs, timeline de fases, evitar dejarse seducir por potencia del agente
+**Alcance**: 4 semanas, 3 features core (terminal vivo, timeline, diffs), enfoque inicial Claude Code
 **Impacto**:
-- 5 archivos nuevos en `templates/basic/.claude/`
-- 6 archivos modificados (agents + CUSTOM_INSTRUCTIONS.md)
-- Estructura `.claude/doc/` + `.claude/sessions/` para tracking
+- Audit hooks system completo (`code_map/audit/hooks.py`)
+- Linter pipeline auto-logging integrado
+- SSE streaming para eventos en tiempo real (pendiente)
+- Frontend dashboard con 3 columnas (terminal | timeline | diffs)
 
-### Optimización de 01-current-phase.md (2025-11-18)
-**Qué**: Reducir archivo de contexto de 760 → ~150 líneas, mover historial a archivo separado
-**Por qué**: Consumo excesivo de tokens y contexto al inicio de cada sesión
-**Impacto**:
-- `01-current-phase.md`: Estado actual compacto (~150 líneas)
-- `01-session-history.md`: Historial completo de sesiones (760+ líneas)
-- Templates actualizados para nuevos proyectos
-
-### Frontend NO necesita cambios para 3-phase workflow (2025-11-18)
-**Qué**: Decidir mantener frontend enfocado en análisis de código
-**Por qué**: Workflow docs son para agentes/IDE, frontend es para análisis. Separación de concerns correcta.
-**Impacto**: Ninguno - frontend mantiene su propósito actual
+### Captura Híbrida de Eventos (2025-11-23)
+**Qué**: Automática para diffs/git/tests + manual para intents/decisiones
+**Por qué**: Balance entre automatización y control humano
+**Implementación**:
+- `audit_run_command()`: Wrapper de subprocess con auto-logging
+- `AuditContext`: Context manager para bloques de trabajo
+- `@audit_tracked`: Decorator para funciones
+- Environment var `ATLAS_AUDIT_RUN_ID` para integración externa
 
 ---
 
@@ -102,27 +100,30 @@
 
 ## 🔄 ÚLTIMA SESIÓN
 
-### Sesión: 2025-11-18
+### Sesión 7: Agent Monitoring Dashboard - Fase 1 Inicio (2025-11-23)
 
 **Implementado:**
-- **templates/basic/.claude/01-current-phase.md**: Nueva versión compacta (~98 líneas)
-- **templates/basic/.claude/01-session-history.md**: Archivo para historial completo (nuevo)
-- **templates/basic/.claude/CUSTOM_INSTRUCTIONS.md**: Actualizado con instrucciones de contexto compacto
-- **.claude/01-current-phase.md**: Versión compactada del proyecto actual
-- **.claude/01-session-history.md**: Backup completo del historial (760 líneas)
+- ✅ **code_map/audit/hooks.py** (330 líneas): Sistema completo de audit hooks
+  - `AuditContext`: Context manager para tracking de bloques
+  - `@audit_tracked`: Decorator para auto-tracking de funciones
+  - `audit_run_command()`: Wrapper de subprocess con eventos automáticos
+  - `audit_phase()`: Context manager para fases (plan/apply/validate)
+
+- ✅ **code_map/linters/pipeline.py** (modificado): Integración con audit
+  - Modificado `_execute_tool()` para usar `audit_run_command()` cuando `audit_run_id` presente
+  - Modificado `run_linters_pipeline()` para aceptar y propagar `audit_run_id`
+  - Auto-detección de `ATLAS_AUDIT_RUN_ID` desde environment variables
+  - Fallback graceful si audit module no disponible
 
 **Decisiones:**
-- Split de contexto: current-phase (compacto) vs session-history (completo)
-- Límite de 150 líneas para current-phase
-- Instrucciones actualizadas para mantener archivo compacto
+- Hooks system como foundation para captura automática
+- Environment-based activation (`ATLAS_AUDIT_RUN_ID`)
+- Graceful degradation si audit no está habilitado
 
 **Próxima sesión debe:**
-- Validar que new projects inicializados con templates compactos funcionen correctamente
-- Mantener disciplina de 150 líneas en 01-current-phase.md
-- Mover detalles a session-history.md al final de cada sesión
-
-**Movido a historial:** ✅
+- Continuar Fase 1: git_history integration, SSE endpoint, tests
+- Mantener momentum hacia dashboard completo
 
 ---
 
-**💡 Recordatorio**: Ver `.claude/01-session-history.md` para contexto completo de Sessions 1-6 (Call Tracer, Stage Detection, Linter Pipeline, Ollama Integration, 3-Phase System).
+**💡 Recordatorio**: Ver `.claude/01-session-history.md` y `docs/audit-trail.md` para contexto completo.
