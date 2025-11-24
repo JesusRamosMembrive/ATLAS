@@ -12,6 +12,7 @@ import struct
 import fcntl
 import termios
 import signal
+import threading
 from typing import Optional, Callable
 import asyncio
 import logging
@@ -126,45 +127,45 @@ class PTYShell:
         if self.master_fd is None:
             return
 
-        loop = asyncio.get_event_loop()
+        def read_thread():
+            """Thread function for reading PTY output"""
+            logger.info("PTY read thread started")
+            while self.running:
+                try:
+                    # Check if data is available with short timeout
+                    readable, _, _ = select.select([self.master_fd], [], [], 0.1)
 
-        def read_from_fd():
-            """Blocking read operation to run in executor"""
-            try:
-                # Check if data is available with short timeout
-                readable, _, _ = select.select([self.master_fd], [], [], 0.1)
-                if readable:
-                    data = os.read(self.master_fd, 1024)
-                    if not data:
-                        return None  # EOF
-                    return data
-                return b""  # No data available
-            except OSError as e:
-                logger.error(f"Error reading from shell: {e}")
-                return None  # Error
+                    if readable:
+                        data = os.read(self.master_fd, 1024)
+                        if not data:
+                            # EOF - shell exited
+                            logger.info("PTY read EOF - shell exited")
+                            self.running = False
+                            break
 
-        while self.running:
-            try:
-                # Run blocking I/O in executor to avoid blocking event loop
-                data = await loop.run_in_executor(None, read_from_fd)
+                        # Decode and call callback (thread-safe)
+                        text = data.decode("utf-8", errors="replace")
+                        callback(text)
 
-                if data is None:
-                    # EOF or error - shell exited
+                except OSError as e:
+                    logger.error(f"Error reading from shell: {e}")
+                    self.running = False
+                    break
+                except Exception as e:
+                    logger.error(f"Unexpected error in read thread: {e}", exc_info=True)
                     self.running = False
                     break
 
-                if data:
-                    # Decode and send to callback
-                    text = data.decode("utf-8", errors="replace")
-                    callback(text)
-                else:
-                    # No data available, yield control briefly
-                    await asyncio.sleep(0.01)
+            logger.info("PTY read thread exited")
 
-            except Exception as e:
-                logger.error(f"Error in read loop: {e}", exc_info=True)
-                self.running = False
-                break
+        # Start read thread
+        thread = threading.Thread(target=read_thread, daemon=True, name="PTYReadThread")
+        thread.start()
+        logger.info(f"Started PTY read thread: {thread.name}")
+
+        # Wait for thread to finish
+        while self.running and thread.is_alive():
+            await asyncio.sleep(0.1)
 
         logger.info("Shell read loop exited")
 
