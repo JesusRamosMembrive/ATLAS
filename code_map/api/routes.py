@@ -17,6 +17,7 @@ from .stage import router as stage_router
 from .timeline import router as timeline_router
 from .tracer import router as tracer_router
 from .audit import router as audit_router
+from .agent import router as agent_router
 
 router = APIRouter()
 router.include_router(analysis_router)
@@ -29,3 +30,4 @@ router.include_router(integrations_router)
 router.include_router(timeline_router)
 router.include_router(tracer_router)
 router.include_router(audit_router)
+router.include_router(agent_router)
