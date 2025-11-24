@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => {
   const apiTarget =
     env.VITE_API_BASE_URL ||
     env.VITE_DEPLOY_BACKEND_URL ||
-    "http://0.0.0.0:8010";
+    "http://127.0.0.1:8010";
 
   return {
     plugins: [react()],
@@ -17,10 +17,12 @@ export default defineConfig(({ mode }) => {
         "/api": {
           target: apiTarget,
           changeOrigin: true,
+          ws: true,
         },
         "/tracer": {
           target: apiTarget,
           changeOrigin: true,
+          ws: true,
         },
       },
     },

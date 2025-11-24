@@ -56,8 +56,28 @@ const withApiSuffix = (url: string): string =>
 
 const STATIC_API_BASE = sanitizeBaseUrl(import.meta.env.VITE_API_BASE_URL);
 const DEFAULT_DEPLOY_BACKEND = sanitizeBaseUrl(
-  import.meta.env.VITE_DEPLOY_BACKEND_URL ?? "http://0.0.0.0:8010"
+  import.meta.env.VITE_DEPLOY_BACKEND_URL ?? "http://127.0.0.1:8010"
 );
+
+export const resolveBackendBaseUrl = (
+  runtimeOverride?: string | null
+): string | null => {
+  const runtimeUrl = sanitizeBaseUrl(
+    runtimeOverride ?? useBackendStore.getState().backendUrl
+  );
+
+  const fromWindow =
+    typeof window !== "undefined" && window.location?.origin
+      ? sanitizeBaseUrl(window.location.origin)
+      : null;
+
+  return (
+    runtimeUrl ??
+    STATIC_API_BASE ??
+    DEFAULT_DEPLOY_BACKEND ??
+    fromWindow
+  );
+};
 
 /**
  * Construye la URL completa para una llamada a la API.
@@ -77,8 +97,7 @@ const DEFAULT_DEPLOY_BACKEND = sanitizeBaseUrl(
  */
 const buildUrl = (path: string): string => {
   // Prioridad: Runtime store > Env var > fallback deployment URL > proxy /api
-  const runtimeUrl = sanitizeBaseUrl(useBackendStore.getState().backendUrl);
-  const baseUrl = runtimeUrl ?? STATIC_API_BASE ?? DEFAULT_DEPLOY_BACKEND;
+  const baseUrl = resolveBackendBaseUrl();
 
   if (baseUrl) {
     return `${withApiSuffix(baseUrl)}${path}`;

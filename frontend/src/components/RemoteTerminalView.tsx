@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { WebLinksAddon } from "@xterm/addon-web-links";
 import { useBackendStore } from "../state/useBackendStore";
+import { resolveBackendBaseUrl } from "../api/client";
 import "@xterm/xterm/css/xterm.css";
 
 /**
@@ -14,11 +15,24 @@ import "@xterm/xterm/css/xterm.css";
 export function RemoteTerminalView() {
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const backendUrl = useBackendStore((state) => state.backendUrl);
 
   const terminalRef = useRef<HTMLDivElement>(null);
   const xtermRef = useRef<Terminal | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
+
+  const wsBaseUrl = useMemo(() => {
+    const stripApi = (value: string) =>
+      value.endsWith("/api") ? value.slice(0, -4) : value;
+
+    const base =
+      resolveBackendBaseUrl(backendUrl) ??
+      (typeof window !== "undefined" ? window.location.origin : "http://127.0.0.1:8010");
+
+    const sanitized = base.replace(/\/+$/, "");
+    return stripApi(sanitized);
+  }, [backendUrl]);
 
   // Initialize terminal
   useEffect(() => {
@@ -101,6 +115,8 @@ export function RemoteTerminalView() {
     // Cleanup on unmount
     return () => {
       terminal.dispose();
+      xtermRef.current = null;
+      fitAddonRef.current = null;
     };
   }, []);
 
@@ -108,54 +124,56 @@ export function RemoteTerminalView() {
   useEffect(() => {
     if (!xtermRef.current) return;
 
+    let socket: WebSocket | null = null;
     const terminal = xtermRef.current;
-    const backendUrl = useBackendStore.getState().backendUrl || "http://localhost:8010";
-    const wsUrl = backendUrl.replace("http://", "ws://").replace("https://", "wss://");
-    const ws = new WebSocket(`${wsUrl}/api/terminal/ws`);
+    const wsUrl = wsBaseUrl.replace("http://", "ws://").replace("https://", "wss://");
 
-    ws.onopen = () => {
-      setConnected(true);
-      setError(null);
+    const start = () => {
+      if (!xtermRef.current) return;
+      socket = new WebSocket(`${wsUrl}/api/terminal/ws`);
+      wsRef.current = socket;
 
-      // Send initial terminal size
-      const { cols, rows } = terminal;
-      ws.send(`__RESIZE__:${cols}:${rows}`);
+      socket.onopen = () => {
+        setConnected(true);
+        setError(null);
+
+        const { cols, rows } = xtermRef.current ?? terminal;
+        socket?.send(`__RESIZE__:${cols}:${rows}`);
+      };
+
+      socket.onmessage = (event) => {
+        xtermRef.current?.write(event.data);
+      };
+
+      socket.onerror = (err) => {
+        console.error("WebSocket error:", err);
+        setConnected(false);
+        setError("Connection error");
+        xtermRef.current?.writeln("");
+        xtermRef.current?.writeln("\x1b[1;31m✗ Connection error\x1b[0m");
+      };
+
+      socket.onclose = () => {
+        setConnected(false);
+        xtermRef.current?.writeln("");
+        xtermRef.current?.writeln("\x1b[2mConnection closed\x1b[0m");
+      };
     };
 
-    ws.onmessage = (event) => {
-      // Direct text output from shell
-      terminal.write(event.data);
-    };
-
-    ws.onerror = (err) => {
-      console.error("WebSocket error:", err);
-      setError("Connection error");
-      terminal.writeln("");
-      terminal.writeln("\x1b[1;31m✗ Connection error\x1b[0m");
-    };
-
-    ws.onclose = () => {
-      setConnected(false);
-      terminal.writeln("");
-      terminal.writeln("\x1b[2mConnection closed\x1b[0m");
-    };
-
-    // Handle keyboard input
-    const disposable = terminal.onData((data) => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(data);
+    const disposable = xtermRef.current.onData((data) => {
+      if (socket?.readyState === WebSocket.OPEN) {
+        socket.send(data);
       }
     });
 
-    // Handle terminal resize
     const sendResize = () => {
-      if (ws.readyState === WebSocket.OPEN) {
-        const { cols, rows } = terminal;
-        ws.send(`__RESIZE__:${cols}:${rows}`);
+      if (socket?.readyState === WebSocket.OPEN && xtermRef.current) {
+        const { cols, rows } = xtermRef.current;
+        socket.send(`__RESIZE__:${cols}:${rows}`);
       }
     };
 
-    const resizeDisposable = terminal.onResize(() => {
+    const resizeDisposable = xtermRef.current.onResize(() => {
       sendResize();
     });
 
@@ -170,47 +188,22 @@ export function RemoteTerminalView() {
       resizeObserver.observe(terminalRef.current);
     }
 
-    wsRef.current = ws;
+    const timer = window.setTimeout(start, 0);
 
-    // Cleanup
     return () => {
+      window.clearTimeout(timer);
       disposable.dispose();
       resizeDisposable.dispose();
       resizeObserver.disconnect();
-      ws.close();
+      if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) {
+        socket.close();
+      }
+      wsRef.current = null;
     };
-  }, []);
+  }, [wsBaseUrl]);
 
   return (
     <div className="terminal-view">
-      {/* Hero Section */}
-      <section className="terminal-hero">
-        <div>
-          <span className="terminal-eyebrow">Remote Shell Access</span>
-          <h1>Web Terminal</h1>
-          <p className="terminal-subtitle">
-            Full shell access from your browser. Execute commands, navigate directories,
-            and manage your system remotely.
-          </p>
-        </div>
-
-        <div className="terminal-hero-meta">
-          {connected ? (
-            <div className="terminal-badge status-success">
-              ✓ Connected
-            </div>
-          ) : error ? (
-            <div className="terminal-badge status-danger">
-              ✗ {error}
-            </div>
-          ) : (
-            <div className="terminal-badge status-neutral">
-              ⏳ Connecting...
-            </div>
-          )}
-        </div>
-      </section>
-
       {/* Terminal Container */}
       <div className="terminal-container">
         <div className="terminal-header">
@@ -220,6 +213,11 @@ export function RemoteTerminalView() {
               <span className="terminal-status">
                 <span className="terminal-status-dot" />
                 Active
+              </span>
+            )}
+            {!connected && error && (
+              <span className="terminal-status terminal-status--error">
+                ✗ {error}
               </span>
             )}
           </div>

@@ -2,7 +2,7 @@
   {
     "path": "assess_stage.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:58:38.445552+00:00",
+    "modified_at": "2025-11-10T11:33:54.677833+00:00",
     "symbols": [
       {
         "name": "assess_stage",
@@ -45,28 +45,28 @@
   {
     "path": "claude_assess.py",
     "relative": true,
-    "modified_at": "2025-11-05T20:52:42.964128+00:00",
+    "modified_at": "2025-11-10T11:33:54.677950+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:44:38.492822+00:00",
+    "modified_at": "2025-11-10T11:33:54.677950+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/__main__.py",
     "relative": true,
-    "modified_at": "2025-11-04T11:07:41.221364+00:00",
+    "modified_at": "2025-11-10T11:33:54.677950+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/analyzer.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:53:35.650786+00:00",
+    "modified_at": "2025-11-10T11:33:54.677950+00:00",
     "symbols": [
       {
         "name": "get_modified_time",
@@ -137,7 +137,7 @@
   {
     "path": "code_map/analyzer_registry.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:58:38.513552+00:00",
+    "modified_at": "2025-11-10T11:33:54.677950+00:00",
     "symbols": [
       {
         "name": "AnalyzerCapability",
@@ -250,7 +250,7 @@
   {
     "path": "code_map/api/analysis.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.073442+00:00",
+    "modified_at": "2025-11-14T12:05:36.029937+00:00",
     "symbols": [
       {
         "name": "_get_git_history",
@@ -368,9 +368,87 @@
     "errors": []
   },
   {
+    "path": "code_map/api/audit.py",
+    "relative": true,
+    "modified_at": "2025-11-23T19:29:44.876460+00:00",
+    "symbols": [
+      {
+        "name": "_serialize_run",
+        "kind": "function",
+        "lineno": 41,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "_serialize_event",
+        "kind": "function",
+        "lineno": 54,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "_validate_run_root",
+        "kind": "function",
+        "lineno": 70,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "list_audit_runs",
+        "kind": "function",
+        "lineno": 83,
+        "parent": null,
+        "docstring": "List recent audit runs for the current workspace."
+      },
+      {
+        "name": "create_audit_run",
+        "kind": "function",
+        "lineno": 93,
+        "parent": null,
+        "docstring": "Create a new auditable session."
+      },
+      {
+        "name": "get_audit_run",
+        "kind": "function",
+        "lineno": 108,
+        "parent": null,
+        "docstring": "Retrieve a single run."
+      },
+      {
+        "name": "close_audit_run",
+        "kind": "function",
+        "lineno": 121,
+        "parent": null,
+        "docstring": "Mark a run as closed."
+      },
+      {
+        "name": "list_audit_events",
+        "kind": "function",
+        "lineno": 138,
+        "parent": null,
+        "docstring": "List events for a run in chronological order."
+      },
+      {
+        "name": "append_audit_event",
+        "kind": "function",
+        "lineno": 161,
+        "parent": null,
+        "docstring": "Append a new event to a run."
+      },
+      {
+        "name": "stream_audit_events",
+        "kind": "function",
+        "lineno": 192,
+        "parent": null,
+        "docstring": "Stream audit events in real-time using Server-Sent Events (SSE).\n\nPolls the database every 1 second for new events and sends them to the client.\nSends a heartbeat ping every 10 seconds to keep the connection alive."
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "code_map/api/deps.py",
     "relative": true,
-    "modified_at": "2025-10-31T12:37:21.627631+00:00",
+    "modified_at": "2025-11-10T11:33:54.677950+00:00",
     "symbols": [
       {
         "name": "get_app_state",
@@ -385,7 +463,7 @@
   {
     "path": "code_map/api/graph.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.073442+00:00",
+    "modified_at": "2025-11-10T16:44:50.327461+00:00",
     "symbols": [
       {
         "name": "get_class_graph",
@@ -421,7 +499,7 @@
   {
     "path": "code_map/api/integrations.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:56:25.837424+00:00",
+    "modified_at": "2025-11-10T11:33:54.677950+00:00",
     "symbols": [
       {
         "name": "get_ollama_status",
@@ -471,7 +549,7 @@
   {
     "path": "code_map/api/linters.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.073442+00:00",
+    "modified_at": "2025-11-10T16:44:50.327461+00:00",
     "symbols": [
       {
         "name": "get_linters_discovery",
@@ -549,7 +627,7 @@
   {
     "path": "code_map/api/preview.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.074440+00:00",
+    "modified_at": "2025-11-14T12:01:30.277316+00:00",
     "symbols": [
       {
         "name": "preview_file",
@@ -585,14 +663,14 @@
   {
     "path": "code_map/api/routes.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.074440+00:00",
+    "modified_at": "2025-11-24T10:54:09.505751+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/api/schemas.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.074440+00:00",
+    "modified_at": "2025-11-23T10:22:06.966870+00:00",
     "symbols": [
       {
         "name": "HealthResponse",
@@ -1043,51 +1121,100 @@
         "docstring": null
       },
       {
+        "name": "AuditRunSchema",
+        "kind": "class",
+        "lineno": 681,
+        "parent": null,
+        "docstring": "Metadata for an auditable agent session."
+      },
+      {
+        "name": "AuditRunCreateRequest",
+        "kind": "class",
+        "lineno": 694,
+        "parent": null,
+        "docstring": "Payload to start a new audit run."
+      },
+      {
+        "name": "AuditRunCloseRequest",
+        "kind": "class",
+        "lineno": 710,
+        "parent": null,
+        "docstring": "Payload to finalize a run."
+      },
+      {
+        "name": "AuditRunListResponse",
+        "kind": "class",
+        "lineno": 723,
+        "parent": null,
+        "docstring": "List wrapper for runs."
+      },
+      {
+        "name": "AuditEventSchema",
+        "kind": "class",
+        "lineno": 729,
+        "parent": null,
+        "docstring": "Single auditable event within a run."
+      },
+      {
+        "name": "AuditEventCreateRequest",
+        "kind": "class",
+        "lineno": 745,
+        "parent": null,
+        "docstring": "Payload to append a new event to a run."
+      },
+      {
+        "name": "AuditEventListResponse",
+        "kind": "class",
+        "lineno": 775,
+        "parent": null,
+        "docstring": "List wrapper for events."
+      },
+      {
         "name": "serialize_symbol",
         "kind": "function",
-        "lineno": 681,
+        "lineno": 781,
         "parent": null,
         "docstring": "Serializa un objeto SymbolInfo a un SymbolSchema."
       },
       {
         "name": "serialize_error",
         "kind": "function",
-        "lineno": 696,
+        "lineno": 796,
         "parent": null,
         "docstring": "Serializa un objeto AnalysisError a un AnalysisErrorSchema."
       },
       {
         "name": "serialize_summary",
         "kind": "function",
-        "lineno": 705,
+        "lineno": 805,
         "parent": null,
         "docstring": "Serializa un objeto FileSummary a un FileSummarySchema."
       },
       {
         "name": "serialize_tree",
         "kind": "function",
-        "lineno": 728,
+        "lineno": 828,
         "parent": null,
         "docstring": "Serializa un objeto ProjectTreeNode a un TreeNodeSchema."
       },
       {
         "name": "serialize_search_results",
         "kind": "function",
-        "lineno": 775,
+        "lineno": 875,
         "parent": null,
         "docstring": "Serializa una lista de SymbolInfo a un SearchResultsSchema."
       },
       {
         "name": "serialize_settings",
         "kind": "function",
-        "lineno": 784,
+        "lineno": 884,
         "parent": null,
         "docstring": "Serializa el estado de la configuraci\u00f3n a un SettingsResponse."
       },
       {
         "name": "serialize_status",
         "kind": "function",
-        "lineno": 790,
+        "lineno": 890,
         "parent": null,
         "docstring": "Serializa el estado de la aplicaci\u00f3n a un StatusResponse."
       }
@@ -1097,7 +1224,7 @@
   {
     "path": "code_map/api/settings.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.074440+00:00",
+    "modified_at": "2025-11-10T16:44:50.327461+00:00",
     "symbols": [
       {
         "name": "get_settings",
@@ -1140,7 +1267,7 @@
   {
     "path": "code_map/api/stage.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.074440+00:00",
+    "modified_at": "2025-11-12T09:08:01.882932+00:00",
     "symbols": [
       {
         "name": "get_stage_status",
@@ -1167,9 +1294,24 @@
     "errors": []
   },
   {
+    "path": "code_map/api/terminal.py",
+    "relative": true,
+    "modified_at": "2025-11-24T15:00:01.876804+00:00",
+    "symbols": [
+      {
+        "name": "terminal_websocket",
+        "kind": "function",
+        "lineno": 19,
+        "parent": null,
+        "docstring": "WebSocket endpoint for remote terminal access\n\nSpawns a shell process and provides bidirectional communication using text protocol.\n\nClient can send:\n- Raw text for shell input\n- \"__RESIZE__:cols:rows\" for terminal resize\n\nServer sends:\n- Raw text from shell output"
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "code_map/api/timeline.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.074440+00:00",
+    "modified_at": "2025-11-10T16:44:50.327461+00:00",
     "symbols": [
       {
         "name": "CommitInfoSchema",
@@ -1254,7 +1396,7 @@
   {
     "path": "code_map/api/tracer.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.074440+00:00",
+    "modified_at": "2025-11-10T16:44:50.327461+00:00",
     "symbols": [
       {
         "name": "AnalyzeFileRequest",
@@ -1374,7 +1516,7 @@
   {
     "path": "code_map/ast_utils.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:44:38.528441+00:00",
+    "modified_at": "2025-11-10T11:33:54.678853+00:00",
     "symbols": [
       {
         "name": "ImportResolver",
@@ -1394,9 +1536,278 @@
     "errors": []
   },
   {
+    "path": "code_map/audit/__init__.py",
+    "relative": true,
+    "modified_at": "2025-11-23T10:21:07.981278+00:00",
+    "symbols": [],
+    "errors": []
+  },
+  {
+    "path": "code_map/audit/file_watcher_hook.py",
+    "relative": true,
+    "modified_at": "2025-11-23T21:19:57.150771+00:00",
+    "symbols": [
+      {
+        "name": "AuditFileWatcher",
+        "kind": "class",
+        "lineno": 52,
+        "parent": null,
+        "docstring": "File watcher that automatically generates audit events for file changes.\n\nMonitors a directory tree and creates diff events whenever files are\ncreated, modified, or deleted.\n\nFeatures:\n- Automatic diff generation using git\n- Filtering by file extension\n- Exclusion of build/cache directories\n- Debouncing to avoid duplicate events\n- Integration with audit trail system"
+      },
+      {
+        "name": "__init__",
+        "kind": "method",
+        "lineno": 67,
+        "parent": "AuditFileWatcher",
+        "docstring": "Initialize the audit file watcher.\n\nArgs:\n    run_id: Audit run ID to attach events to\n    root_path: Root directory to watch\n    actor: Actor performing the changes (agent, human)\n    phase: Current workflow phase (plan, apply, validate)\n    extensions: File extensions to track (default: TRACKED_EXTENSIONS)\n    exclude_dirs: Directories to exclude (default: EXCLUDED_DIRS)"
+      },
+      {
+        "name": "start",
+        "kind": "method",
+        "lineno": 104,
+        "parent": "AuditFileWatcher",
+        "docstring": "Start watching for file changes."
+      },
+      {
+        "name": "stop",
+        "kind": "method",
+        "lineno": 142,
+        "parent": "AuditFileWatcher",
+        "docstring": "Stop watching for file changes."
+      },
+      {
+        "name": "_should_track",
+        "kind": "method",
+        "lineno": 154,
+        "parent": "AuditFileWatcher",
+        "docstring": "Check if file should be tracked based on extension and exclusions."
+      },
+      {
+        "name": "_handle_file_created",
+        "kind": "method",
+        "lineno": 171,
+        "parent": "AuditFileWatcher",
+        "docstring": "Handle file creation event."
+      },
+      {
+        "name": "_handle_file_modified",
+        "kind": "method",
+        "lineno": 213,
+        "parent": "AuditFileWatcher",
+        "docstring": "Handle file modification event."
+      },
+      {
+        "name": "_handle_file_deleted",
+        "kind": "method",
+        "lineno": 271,
+        "parent": "AuditFileWatcher",
+        "docstring": "Handle file deletion event."
+      },
+      {
+        "name": "_generate_diff",
+        "kind": "method",
+        "lineno": 309,
+        "parent": "AuditFileWatcher",
+        "docstring": "Generate unified diff between old and new content."
+      },
+      {
+        "name": "_generate_creation_diff",
+        "kind": "method",
+        "lineno": 330,
+        "parent": "AuditFileWatcher",
+        "docstring": "Generate diff for file creation."
+      },
+      {
+        "name": "_generate_deletion_diff",
+        "kind": "method",
+        "lineno": 334,
+        "parent": "AuditFileWatcher",
+        "docstring": "Generate diff for file deletion."
+      },
+      {
+        "name": "snapshot_current_state",
+        "kind": "method",
+        "lineno": 338,
+        "parent": "AuditFileWatcher",
+        "docstring": "Snapshot current state of all tracked files.\n\nCall this before starting to watch to establish a baseline."
+      }
+    ],
+    "errors": []
+  },
+  {
+    "path": "code_map/audit/hooks.py",
+    "relative": true,
+    "modified_at": "2025-11-23T19:46:52.134694+00:00",
+    "symbols": [
+      {
+        "name": "AuditContext",
+        "kind": "class",
+        "lineno": 35,
+        "parent": null,
+        "docstring": "Context manager for tracking a block of work with automatic\nstart/end events and error capturing.\n\nExample:\n    with AuditContext(run_id=123, title=\"Analyze codebase\", phase=\"plan\"):\n        # work here\n        result = analyze()\n    # Automatically creates start event, end event, and captures errors"
+      },
+      {
+        "name": "__init__",
+        "kind": "method",
+        "lineno": 47,
+        "parent": "AuditContext",
+        "docstring": null
+      },
+      {
+        "name": "__enter__",
+        "kind": "method",
+        "lineno": 69,
+        "parent": "AuditContext",
+        "docstring": "Start tracking - emit 'running' status event"
+      },
+      {
+        "name": "__exit__",
+        "kind": "method",
+        "lineno": 89,
+        "parent": "AuditContext",
+        "docstring": "End tracking - emit 'ok' or 'error' status event"
+      },
+      {
+        "name": "audit_tracked",
+        "kind": "function",
+        "lineno": 130,
+        "parent": null,
+        "docstring": "Decorator to automatically track function execution as audit events.\n\nArgs:\n    event_type: Type of event (command, analysis, etc.)\n    phase: Workflow phase (plan, apply, validate, explore)\n    actor: Who is performing the action (agent, human)\n    title_from_func: Use function name as event title\n    capture_return: Include return value in payload\n\nExample:\n    @audit_tracked(type=\"command\", phase=\"validate\")\n    def run_tests():\n        return subprocess.run([\"pytest\", \"tests/\"])\n\n    # When called, automatically creates audit events\n    run_tests()  # -> emits \"run_tests (started)\" and \"run_tests (completed)\"\n\nNote: Requires `run_id` to be passed as kwarg or set in environment."
+      },
+      {
+        "name": "audit_run_command",
+        "kind": "function",
+        "lineno": 226,
+        "parent": null,
+        "docstring": "Wrapper around subprocess.run() that automatically logs command\nexecution as audit events.\n\nArgs:\n    cmd: Command to execute (string or list)\n    run_id: Audit run ID to attach events to\n    phase: Workflow phase (validate, apply, etc.)\n    actor: Who is running the command\n    capture_output: Capture stdout/stderr for audit log\n    timeout: Command timeout in seconds\n    **subprocess_kwargs: Additional args passed to subprocess.run()\n\nReturns:\n    CompletedProcess with returncode, stdout, stderr\n\nExample:\n    result = audit_run_command(\n        [\"pytest\", \"tests/\"],\n        run_id=123,\n        phase=\"validate\"\n    )\n    # Creates events: \"$ pytest tests/\" (running) -> (ok/error)"
+      },
+      {
+        "name": "audit_phase",
+        "kind": "function",
+        "lineno": 362,
+        "parent": null,
+        "docstring": "Context manager for tracking workflow phases (plan, apply, validate).\n\nEmits phase_start and phase_end events with duration tracking.\n\nExample:\n    with audit_phase(run_id=123, phase_name=\"plan\"):\n        # Planning work here\n        architect_design()\n\n    with audit_phase(run_id=123, phase_name=\"apply\"):\n        # Implementation work here\n        implementer_code()"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "path": "code_map/audit/storage.py",
+    "relative": true,
+    "modified_at": "2025-11-23T19:41:27.175207+00:00",
+    "symbols": [
+      {
+        "name": "AuditRun",
+        "kind": "class",
+        "lineno": 20,
+        "parent": null,
+        "docstring": "Represents a tracked agent session."
+      },
+      {
+        "name": "AuditEvent",
+        "kind": "class",
+        "lineno": 34,
+        "parent": null,
+        "docstring": "Represents a granular auditable event inside a run."
+      },
+      {
+        "name": "_ensure_tables",
+        "kind": "function",
+        "lineno": 50,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "_normalize_root",
+        "kind": "function",
+        "lineno": 99,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "_parse_timestamp",
+        "kind": "function",
+        "lineno": 105,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "_parse_payload",
+        "kind": "function",
+        "lineno": 114,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "_row_to_run",
+        "kind": "function",
+        "lineno": 124,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "_row_to_event",
+        "kind": "function",
+        "lineno": 137,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "create_run",
+        "kind": "function",
+        "lineno": 153,
+        "parent": null,
+        "docstring": "Creates a new audit run entry."
+      },
+      {
+        "name": "close_run",
+        "kind": "function",
+        "lineno": 181,
+        "parent": null,
+        "docstring": "Marks a run as finished."
+      },
+      {
+        "name": "get_run",
+        "kind": "function",
+        "lineno": 203,
+        "parent": null,
+        "docstring": "Fetches a single run including event count."
+      },
+      {
+        "name": "list_runs",
+        "kind": "function",
+        "lineno": 231,
+        "parent": null,
+        "docstring": "Lists recent runs, optionally filtered by root."
+      },
+      {
+        "name": "append_event",
+        "kind": "function",
+        "lineno": 276,
+        "parent": null,
+        "docstring": "Adds a new event to a run."
+      },
+      {
+        "name": "get_event",
+        "kind": "function",
+        "lineno": 330,
+        "parent": null,
+        "docstring": "Fetches a single event by id."
+      },
+      {
+        "name": "list_events",
+        "kind": "function",
+        "lineno": 349,
+        "parent": null,
+        "docstring": "Lists events for a run, ordered chronologically."
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "code_map/cache.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.074440+00:00",
+    "modified_at": "2025-11-10T16:44:50.327461+00:00",
     "symbols": [
       {
         "name": "SnapshotStore",
@@ -1474,7 +1885,7 @@
   {
     "path": "code_map/call_tracer_v2.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.074440+00:00",
+    "modified_at": "2025-11-10T16:44:50.327922+00:00",
     "symbols": [
       {
         "name": "CrossFileCallGraphExtractor",
@@ -1587,7 +1998,7 @@
   {
     "path": "code_map/class_graph.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:44:40.745807+00:00",
+    "modified_at": "2025-11-10T11:33:54.680315+00:00",
     "symbols": [
       {
         "name": "ClassInfo",
@@ -1819,7 +2230,7 @@
   {
     "path": "code_map/cli.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.074440+00:00",
+    "modified_at": "2025-11-14T11:22:00.222632+00:00",
     "symbols": [
       {
         "name": "_validate_root",
@@ -1876,14 +2287,14 @@
   {
     "path": "code_map/constants.py",
     "relative": true,
-    "modified_at": "2025-10-31T12:37:21.630605+00:00",
+    "modified_at": "2025-11-10T11:33:54.680315+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/dependencies.py",
     "relative": true,
-    "modified_at": "2025-10-31T12:37:21.630631+00:00",
+    "modified_at": "2025-11-10T11:33:54.680315+00:00",
     "symbols": [
       {
         "name": "DependencySpec",
@@ -1947,7 +2358,7 @@
   {
     "path": "code_map/events.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:44:38.880390+00:00",
+    "modified_at": "2025-11-10T11:33:54.680733+00:00",
     "symbols": [
       {
         "name": "ChangeEventType",
@@ -2004,173 +2415,173 @@
   {
     "path": "code_map/git_history.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.074440+00:00",
+    "modified_at": "2025-11-23T19:28:30.282186+00:00",
     "symbols": [
       {
         "name": "GitHistoryError",
         "kind": "class",
-        "lineno": 11,
+        "lineno": 12,
         "parent": null,
         "docstring": "Raised when git operations fail."
       },
       {
         "name": "CommitInfo",
         "kind": "class",
-        "lineno": 17,
+        "lineno": 18,
         "parent": null,
         "docstring": "Information about a single git commit."
       },
       {
         "name": "__init__",
         "kind": "method",
-        "lineno": 20,
+        "lineno": 21,
         "parent": "CommitInfo",
         "docstring": null
       },
       {
         "name": "to_dict",
         "kind": "method",
-        "lineno": 34,
+        "lineno": 35,
         "parent": "CommitInfo",
         "docstring": "Convert to dictionary for JSON serialization."
       },
       {
         "name": "WorkingTreeChange",
         "kind": "class",
-        "lineno": 46,
+        "lineno": 47,
         "parent": null,
         "docstring": "Represents a single file change in the working tree vs HEAD."
       },
       {
         "name": "status_label",
         "kind": "method",
-        "lineno": 55,
+        "lineno": 56,
         "parent": "WorkingTreeChange",
         "docstring": "Return a normalized status label (modified, added, etc.)."
       },
       {
         "name": "summary",
         "kind": "method",
-        "lineno": 78,
+        "lineno": 79,
         "parent": "WorkingTreeChange",
         "docstring": "Provide a short human description of the change."
       },
       {
         "name": "payload",
         "kind": "method",
-        "lineno": 98,
+        "lineno": 99,
         "parent": "WorkingTreeChange",
         "docstring": "Serialize change metadata for API responses."
       },
       {
         "name": "_format_scope",
         "kind": "method",
-        "lineno": 106,
+        "lineno": 107,
         "parent": "WorkingTreeChange",
         "docstring": null
       },
       {
         "name": "GitHistory",
         "kind": "class",
-        "lineno": 123,
+        "lineno": 124,
         "parent": null,
         "docstring": "Git history analyzer for timeline visualization.\n\nStage 1 MVP:\n- Parse git log with file changes\n- Filter by date range, author, file path\n- Extract commit metadata"
       },
       {
         "name": "__init__",
         "kind": "method",
-        "lineno": 133,
+        "lineno": 134,
         "parent": "GitHistory",
-        "docstring": "Initialize git history analyzer.\n\nArgs:\n    repo_path: Path to git repository root"
+        "docstring": "Initialize git history analyzer.\n\nArgs:\n    repo_path: Path to git repository root\n    audit_run_id: Optional audit run ID for tracking git operations"
       },
       {
         "name": "_validate_git_repo",
         "kind": "method",
-        "lineno": 143,
+        "lineno": 156,
         "parent": "GitHistory",
         "docstring": "Validate that repo_path is a git repository."
       },
       {
         "name": "_run_git_command",
         "kind": "method",
-        "lineno": 149,
+        "lineno": 162,
         "parent": "GitHistory",
         "docstring": "Run a git command and return output.\n\nArgs:\n    args: Git command arguments (without 'git')\n\nReturns:\n    Command output as string\n\nRaises:\n    GitHistoryError: If command fails"
       },
       {
         "name": "get_commits",
         "kind": "method",
-        "lineno": 174,
+        "lineno": 206,
         "parent": "GitHistory",
         "docstring": "Get commit history with optional filters.\n\nArgs:\n    since: Only commits after this date\n    until: Only commits before this date\n    author: Filter by author name/email\n    file_path: Only commits that modified this file\n    limit: Maximum number of commits to return\n\nReturns:\n    List of CommitInfo objects"
       },
       {
         "name": "_parse_commit_log",
         "kind": "method",
-        "lineno": 219,
+        "lineno": 251,
         "parent": "GitHistory",
         "docstring": "Parse git log output into CommitInfo objects.\n\nFormat:\nhash|author|date|message\nfile1.py\nfile2.py\n\nhash2|author2|date2|message2\nfile3.py"
       },
       {
         "name": "get_file_history",
         "kind": "method",
-        "lineno": 279,
+        "lineno": 311,
         "parent": "GitHistory",
         "docstring": "Get commit history for a specific file.\n\nArgs:\n    file_path: Path to file (relative to repo root)\n    limit: Maximum number of commits\n\nReturns:\n    Dictionary with file_path, commits, and total_changes"
       },
       {
         "name": "get_commit_details",
         "kind": "method",
-        "lineno": 298,
+        "lineno": 330,
         "parent": "GitHistory",
         "docstring": "Get detailed information about a specific commit.\n\nArgs:\n    commit_hash: Git commit hash (full or short)\n\nReturns:\n    CommitInfo object or None if commit not found"
       },
       {
         "name": "get_all_files",
         "kind": "method",
-        "lineno": 318,
+        "lineno": 350,
         "parent": "GitHistory",
         "docstring": "Get list of all files currently tracked by git.\n\nReturns:\n    List of file paths (relative to repo root)"
       },
       {
         "name": "get_timeline_matrix",
         "kind": "method",
-        "lineno": 331,
+        "lineno": 363,
         "parent": "GitHistory",
         "docstring": "Get timeline data structured for DAW-style visualization.\n\nReturns a matrix where:\n- Rows: Files\n- Columns: Commits (chronological)\n- Cells: True if file changed in that commit\n\nArgs:\n    limit: Maximum number of commits\n    file_pattern: Optional regex pattern to filter files\n\nReturns:\n    Dictionary with:\n    - commits: List of commit metadata\n    - files: List of file paths\n    - matrix: 2D array of booleans (file_index, commit_index)"
       },
       {
         "name": "get_working_tree_changes",
         "kind": "method",
-        "lineno": 382,
+        "lineno": 414,
         "parent": "GitHistory",
         "docstring": "Return a list of files changed since the last commit (HEAD)."
       },
       {
         "name": "get_working_tree_change_map",
         "kind": "method",
-        "lineno": 439,
+        "lineno": 471,
         "parent": "GitHistory",
         "docstring": "Return working tree changes keyed by relative path."
       },
       {
         "name": "get_working_tree_change_for_path",
         "kind": "method",
-        "lineno": 444,
+        "lineno": 476,
         "parent": "GitHistory",
         "docstring": "Fetch working tree change info for a specific file."
       },
       {
         "name": "get_working_tree_diff",
         "kind": "method",
-        "lineno": 452,
+        "lineno": 484,
         "parent": "GitHistory",
         "docstring": "Return diff between working tree and HEAD for the given file."
       },
       {
         "name": "get_file_diff",
         "kind": "method",
-        "lineno": 472,
+        "lineno": 524,
         "parent": "GitHistory",
         "docstring": "Get the diff for a specific file in a commit.\n\nArgs:\n    commit_hash: Git commit hash\n    file_path: Path to file (relative to repo root)\n\nReturns:\n    Diff string or None if file not in commit"
       }
@@ -2180,7 +2591,7 @@
   {
     "path": "code_map/html_analyzer.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:44:38.913895+00:00",
+    "modified_at": "2025-11-10T11:33:54.680733+00:00",
     "symbols": [
       {
         "name": "HtmlAnalyzer",
@@ -2209,7 +2620,7 @@
   {
     "path": "code_map/import_resolver.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.075437+00:00",
+    "modified_at": "2025-11-10T16:44:50.327922+00:00",
     "symbols": [
       {
         "name": "ImportResolver",
@@ -2273,7 +2684,7 @@
   {
     "path": "code_map/index.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:44:38.971989+00:00",
+    "modified_at": "2025-11-10T11:33:54.680733+00:00",
     "symbols": [
       {
         "name": "SymbolIndex",
@@ -2365,14 +2776,14 @@
   {
     "path": "code_map/insights/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-05T17:52:28.496490+00:00",
+    "modified_at": "2025-11-10T11:33:54.680733+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/insights/ollama_service.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:44:38.984987+00:00",
+    "modified_at": "2025-11-10T11:33:54.680733+00:00",
     "symbols": [
       {
         "name": "_resolve_focus",
@@ -2408,7 +2819,7 @@
   {
     "path": "code_map/insights/storage.py",
     "relative": true,
-    "modified_at": "2025-11-05T20:52:36.307153+00:00",
+    "modified_at": "2025-11-10T11:33:54.680733+00:00",
     "symbols": [
       {
         "name": "StoredInsight",
@@ -2458,14 +2869,14 @@
   {
     "path": "code_map/integrations/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-02T18:58:20.069413+00:00",
+    "modified_at": "2025-11-10T11:33:54.680733+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/integrations/ollama_service.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.075437+00:00",
+    "modified_at": "2025-11-10T16:44:50.329286+00:00",
     "symbols": [
       {
         "name": "_normalize_endpoint",
@@ -2655,7 +3066,7 @@
   {
     "path": "code_map/js_analyzer.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:44:39.772335+00:00",
+    "modified_at": "2025-11-10T11:33:54.680853+00:00",
     "symbols": [
       {
         "name": "_node_get",
@@ -2740,7 +3151,7 @@
   {
     "path": "code_map/linters/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-05T17:52:04.654519+00:00",
+    "modified_at": "2025-11-10T11:33:54.680853+00:00",
     "symbols": [
       {
         "name": "linters_discovery_payload",
@@ -2755,7 +3166,7 @@
   {
     "path": "code_map/linters/discovery.py",
     "relative": true,
-    "modified_at": "2025-10-31T13:14:28.760294+00:00",
+    "modified_at": "2025-11-10T11:33:54.680853+00:00",
     "symbols": [
       {
         "name": "ToolDefinition",
@@ -2833,145 +3244,145 @@
   {
     "path": "code_map/linters/pipeline.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.075437+00:00",
+    "modified_at": "2025-11-23T17:57:13.145717+00:00",
     "symbols": [
       {
         "name": "LinterConfig",
         "kind": "class",
-        "lineno": 42,
+        "lineno": 43,
         "parent": null,
         "docstring": "Centralized configuration for linter pipeline.\nAll magic numbers and thresholds in one place for easy tuning."
       },
       {
         "name": "_safe_severity",
         "kind": "function",
-        "lineno": 82,
+        "lineno": 83,
         "parent": null,
         "docstring": null
       },
       {
         "name": "ToolSpec",
         "kind": "class",
-        "lineno": 94,
+        "lineno": 95,
         "parent": null,
         "docstring": "Metadatos para ejecutar una herramienta est\u00e1ndar del pipeline."
       },
       {
         "name": "LinterRunOptions",
         "kind": "class",
-        "lineno": 106,
+        "lineno": 107,
         "parent": null,
         "docstring": "Configuraci\u00f3n opcional para ajustar la ejecuci\u00f3n del pipeline."
       },
       {
         "name": "from_names",
         "kind": "method",
-        "lineno": 114,
+        "lineno": 115,
         "parent": "LinterRunOptions",
         "docstring": null
       },
       {
         "name": "_which",
         "kind": "function",
-        "lineno": 121,
+        "lineno": 122,
         "parent": null,
         "docstring": null
       },
       {
         "name": "_truncate_output",
         "kind": "function",
-        "lineno": 126,
+        "lineno": 127,
         "parent": null,
         "docstring": null
       },
       {
         "name": "_ensure_text",
         "kind": "function",
-        "lineno": 132,
+        "lineno": 133,
         "parent": null,
         "docstring": null
       },
       {
         "name": "_parse_ruff",
         "kind": "function",
-        "lineno": 140,
+        "lineno": 141,
         "parent": null,
         "docstring": null
       },
       {
         "name": "_parse_bandit",
         "kind": "function",
-        "lineno": 167,
+        "lineno": 168,
         "parent": null,
         "docstring": null
       },
       {
         "name": "_default_parser",
         "kind": "function",
-        "lineno": 188,
+        "lineno": 189,
         "parent": null,
         "docstring": null
       },
       {
         "name": "_should_skip",
         "kind": "function",
-        "lineno": 273,
+        "lineno": 274,
         "parent": null,
         "docstring": null
       },
       {
         "name": "_check_max_file_length",
         "kind": "function",
-        "lineno": 278,
+        "lineno": 279,
         "parent": null,
         "docstring": null
       },
       {
         "name": "_execute_tool",
         "kind": "function",
-        "lineno": 349,
+        "lineno": 350,
         "parent": null,
         "docstring": null
       },
       {
         "name": "_extract_coverage",
         "kind": "function",
-        "lineno": 443,
+        "lineno": 488,
         "parent": null,
         "docstring": null
       },
       {
         "name": "_aggregate_summary",
         "kind": "function",
-        "lineno": 467,
+        "lineno": 512,
         "parent": null,
         "docstring": null
       },
       {
         "name": "run_linters_pipeline",
         "kind": "function",
-        "lineno": 553,
+        "lineno": 598,
         "parent": null,
         "docstring": "Ejecuta las herramientas est\u00e1ndar y devuelve un reporte completo."
       },
       {
         "name": "_select_tool_specs",
         "kind": "function",
-        "lineno": 657,
+        "lineno": 711,
         "parent": null,
         "docstring": null
       },
       {
         "name": "_collect_project_stats",
         "kind": "function",
-        "lineno": 666,
+        "lineno": 720,
         "parent": null,
         "docstring": null
       },
       {
         "name": "_build_skipped_report",
         "kind": "function",
-        "lineno": 686,
+        "lineno": 740,
         "parent": null,
         "docstring": null
       }
@@ -2981,7 +3392,7 @@
   {
     "path": "code_map/linters/report_schema.py",
     "relative": true,
-    "modified_at": "2025-11-05T21:05:27.483462+00:00",
+    "modified_at": "2025-11-10T11:33:54.682154+00:00",
     "symbols": [
       {
         "name": "CheckStatus",
@@ -3136,7 +3547,7 @@
   {
     "path": "code_map/linters/storage.py",
     "relative": true,
-    "modified_at": "2025-11-05T21:04:59.781403+00:00",
+    "modified_at": "2025-11-10T11:33:54.682258+00:00",
     "symbols": [
       {
         "name": "_normalize_root",
@@ -3263,7 +3674,7 @@
   {
     "path": "code_map/models.py",
     "relative": true,
-    "modified_at": "2025-10-31T12:37:21.632070+00:00",
+    "modified_at": "2025-11-10T11:33:54.682345+00:00",
     "symbols": [
       {
         "name": "SymbolKind",
@@ -3327,7 +3738,7 @@
   {
     "path": "code_map/scanner.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:49:05.257378+00:00",
+    "modified_at": "2025-11-10T11:33:54.682442+00:00",
     "symbols": [
       {
         "name": "ProjectScanner",
@@ -3412,7 +3823,7 @@
   {
     "path": "code_map/scheduler.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:45:33.759860+00:00",
+    "modified_at": "2025-11-10T11:33:54.682532+00:00",
     "symbols": [
       {
         "name": "_QueuedEvent",
@@ -3483,7 +3894,7 @@
   {
     "path": "code_map/server.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.075437+00:00",
+    "modified_at": "2025-11-14T11:44:12.343881+00:00",
     "symbols": [
       {
         "name": "_parse_allowed_origins",
@@ -3505,7 +3916,7 @@
   {
     "path": "code_map/settings.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.075437+00:00",
+    "modified_at": "2025-11-10T16:44:50.329286+00:00",
     "symbols": [
       {
         "name": "_normalize_exclusions",
@@ -3604,7 +4015,7 @@
   {
     "path": "code_map/stage_toolkit.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.075437+00:00",
+    "modified_at": "2025-11-12T09:07:37.912406+00:00",
     "symbols": [
       {
         "name": "FileStatus",
@@ -3675,7 +4086,7 @@
   {
     "path": "code_map/state.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.075437+00:00",
+    "modified_at": "2025-11-14T11:44:33.771110+00:00",
     "symbols": [
       {
         "name": "_parse_enabled_tools_env",
@@ -3879,7 +4290,7 @@
   {
     "path": "code_map/state_reporter.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.075437+00:00",
+    "modified_at": "2025-11-10T16:44:50.329286+00:00",
     "symbols": [
       {
         "name": "_serialize_capability",
@@ -3913,9 +4324,87 @@
     "errors": []
   },
   {
+    "path": "code_map/terminal/__init__.py",
+    "relative": true,
+    "modified_at": "2025-11-24T10:07:22.612372+00:00",
+    "symbols": [],
+    "errors": []
+  },
+  {
+    "path": "code_map/terminal/pty_shell.py",
+    "relative": true,
+    "modified_at": "2025-11-24T13:08:37.395376+00:00",
+    "symbols": [
+      {
+        "name": "PTYShell",
+        "kind": "class",
+        "lineno": 23,
+        "parent": null,
+        "docstring": "Manages a shell process with PTY (pseudo-terminal) support\n\nProvides async I/O handling for bidirectional communication\nwith a shell process running in a PTY."
+      },
+      {
+        "name": "__init__",
+        "kind": "method",
+        "lineno": 31,
+        "parent": "PTYShell",
+        "docstring": "Initialize PTY shell\n\nArgs:\n    cols: Terminal width in columns\n    rows: Terminal height in rows"
+      },
+      {
+        "name": "spawn",
+        "kind": "method",
+        "lineno": 45,
+        "parent": "PTYShell",
+        "docstring": "Spawn shell process with PTY\n\nRaises:\n    OSError: If fork fails"
+      },
+      {
+        "name": "_set_winsize",
+        "kind": "method",
+        "lineno": 86,
+        "parent": "PTYShell",
+        "docstring": "Set terminal window size\n\nArgs:\n    cols: Terminal width\n    rows: Terminal height"
+      },
+      {
+        "name": "resize",
+        "kind": "method",
+        "lineno": 100,
+        "parent": "PTYShell",
+        "docstring": "Resize terminal\n\nArgs:\n    cols: New terminal width\n    rows: New terminal height"
+      },
+      {
+        "name": "write",
+        "kind": "method",
+        "lineno": 113,
+        "parent": "PTYShell",
+        "docstring": "Write data to shell stdin\n\nArgs:\n    data: String to write to shell"
+      },
+      {
+        "name": "read",
+        "kind": "method",
+        "lineno": 129,
+        "parent": "PTYShell",
+        "docstring": "Read shell output asynchronously\n\nContinuously reads from shell output and calls callback\nwith received data. Runs until shell process exits.\n\nArgs:\n    callback: Function to call with output data"
+      },
+      {
+        "name": "close",
+        "kind": "method",
+        "lineno": 196,
+        "parent": "PTYShell",
+        "docstring": "Close shell process and cleanup resources"
+      },
+      {
+        "name": "__del__",
+        "kind": "method",
+        "lineno": 227,
+        "parent": "PTYShell",
+        "docstring": "Cleanup on garbage collection"
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "code_map/ts_analyzer.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:44:39.976822+00:00",
+    "modified_at": "2025-11-10T11:33:54.683010+00:00",
     "symbols": [
       {
         "name": "_TsParser",
@@ -3993,7 +4482,7 @@
   {
     "path": "code_map/uml_graph.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.076435+00:00",
+    "modified_at": "2025-11-10T16:44:50.329286+00:00",
     "symbols": [
       {
         "name": "AttributeInfo",
@@ -4302,7 +4791,7 @@
   {
     "path": "code_map/watcher.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:53:52.953749+00:00",
+    "modified_at": "2025-11-10T11:33:54.683358+00:00",
     "symbols": [
       {
         "name": "_EventHandler",
@@ -4415,7 +4904,7 @@
   {
     "path": "docs/ui_mockup.html",
     "relative": true,
-    "modified_at": "2025-10-31T12:37:21.639631+00:00",
+    "modified_at": "2025-11-10T11:33:54.685321+00:00",
     "symbols": [
       {
         "name": "dashboard",
@@ -4463,6 +4952,13 @@
     "errors": []
   },
   {
+    "path": "frontend/dist/assets/index-BNBGiRbH.js",
+    "relative": true,
+    "modified_at": "2025-11-11T17:12:55.237322+00:00",
+    "symbols": [],
+    "errors": []
+  },
+  {
     "path": "frontend/dist/assets/index-CV1XqL5j.js",
     "relative": true,
     "modified_at": "2025-10-30T20:46:53.217326+00:00",
@@ -4486,7 +4982,7 @@
   {
     "path": "frontend/dist/index.html",
     "relative": true,
-    "modified_at": "2025-11-04T17:33:31.753177+00:00",
+    "modified_at": "2025-11-11T17:12:55.223321+00:00",
     "symbols": [
       {
         "name": "root",
@@ -4501,7 +4997,7 @@
   {
     "path": "frontend/index.html",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.081422+00:00",
+    "modified_at": "2025-11-10T16:42:39.488675+00:00",
     "symbols": [
       {
         "name": "root",
@@ -4516,19 +5012,19 @@
   {
     "path": "frontend/src/App.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.082420+00:00",
+    "modified_at": "2025-11-24T10:54:32.514912+00:00",
     "symbols": [
       {
         "name": "App",
         "kind": "function",
-        "lineno": 21,
+        "lineno": 22,
         "parent": null,
         "docstring": null
       },
       {
         "name": "withLayout",
         "kind": "function",
-        "lineno": 44,
+        "lineno": 45,
         "parent": null,
         "docstring": null
       }
@@ -4538,264 +5034,313 @@
   {
     "path": "frontend/src/api/client.ts",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.082420+00:00",
+    "modified_at": "2025-11-24T16:17:52.395314+00:00",
     "symbols": [
       {
         "name": "sanitizeBaseUrl",
         "kind": "function",
-        "lineno": 34,
+        "lineno": 41,
         "parent": null,
         "docstring": null
       },
       {
         "name": "withApiSuffix",
         "kind": "function",
-        "lineno": 47,
+        "lineno": 54,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "resolveBackendBaseUrl",
+        "kind": "function",
+        "lineno": 62,
         "parent": null,
         "docstring": null
       },
       {
         "name": "buildUrl",
         "kind": "function",
-        "lineno": 71,
+        "lineno": 98,
         "parent": null,
         "docstring": null
       },
       {
         "name": "fetchJson",
         "kind": "function",
-        "lineno": 107,
+        "lineno": 133,
         "parent": null,
         "docstring": null
       },
       {
         "name": "fetchJsonNullable",
         "kind": "function",
-        "lineno": 126,
+        "lineno": 152,
         "parent": null,
         "docstring": null
       },
       {
         "name": "OllamaTestError",
         "kind": "class",
-        "lineno": 156,
+        "lineno": 182,
         "parent": null,
         "docstring": null
       },
       {
         "name": "constructor",
         "kind": "method",
-        "lineno": 160,
+        "lineno": 186,
         "parent": "OllamaTestError",
         "docstring": null
       },
       {
         "name": "getTree",
         "kind": "function",
-        "lineno": 178,
+        "lineno": 204,
         "parent": null,
         "docstring": null
       },
       {
         "name": "getFileSummary",
         "kind": "function",
-        "lineno": 196,
+        "lineno": 222,
         "parent": null,
         "docstring": null
       },
       {
         "name": "getWorkingTreeDiff",
         "kind": "function",
-        "lineno": 201,
+        "lineno": 227,
         "parent": null,
         "docstring": null
       },
       {
         "name": "getWorkingTreeChanges",
         "kind": "function",
-        "lineno": 206,
+        "lineno": 232,
         "parent": null,
         "docstring": null
       },
       {
         "name": "getDocsListing",
         "kind": "function",
-        "lineno": 210,
+        "lineno": 236,
         "parent": null,
         "docstring": null
       },
       {
         "name": "searchSymbols",
         "kind": "function",
-        "lineno": 228,
+        "lineno": 254,
         "parent": null,
         "docstring": null
       },
       {
         "name": "triggerRescan",
         "kind": "function",
-        "lineno": 244,
+        "lineno": 270,
         "parent": null,
         "docstring": null
       },
       {
         "name": "getEventsUrl",
         "kind": "function",
-        "lineno": 261,
+        "lineno": 287,
         "parent": null,
         "docstring": null
       },
       {
         "name": "getSettings",
         "kind": "function",
-        "lineno": 278,
+        "lineno": 304,
         "parent": null,
         "docstring": null
       },
       {
         "name": "updateSettings",
         "kind": "function",
-        "lineno": 297,
+        "lineno": 323,
         "parent": null,
         "docstring": null
       },
       {
         "name": "browseForRoot",
         "kind": "function",
-        "lineno": 310,
+        "lineno": 336,
         "parent": null,
         "docstring": null
       },
       {
         "name": "listDirectories",
         "kind": "function",
-        "lineno": 316,
+        "lineno": 342,
         "parent": null,
         "docstring": null
       },
       {
         "name": "getStageStatus",
         "kind": "function",
-        "lineno": 326,
+        "lineno": 352,
         "parent": null,
         "docstring": null
       },
       {
         "name": "getOllamaStatus",
         "kind": "function",
-        "lineno": 333,
+        "lineno": 359,
         "parent": null,
         "docstring": null
       },
       {
         "name": "startOllama",
         "kind": "function",
-        "lineno": 340,
+        "lineno": 366,
         "parent": null,
         "docstring": null
       },
       {
         "name": "testOllamaChat",
         "kind": "function",
-        "lineno": 372,
+        "lineno": 398,
         "parent": null,
         "docstring": null
       },
       {
         "name": "getOllamaInsights",
         "kind": "function",
-        "lineno": 419,
+        "lineno": 445,
         "parent": null,
         "docstring": null
       },
       {
         "name": "triggerOllamaInsights",
         "kind": "function",
-        "lineno": 424,
+        "lineno": 450,
         "parent": null,
         "docstring": null
       },
       {
         "name": "clearOllamaInsights",
         "kind": "function",
-        "lineno": 447,
+        "lineno": 473,
         "parent": null,
         "docstring": null
       },
       {
         "name": "initializeStageToolkit",
         "kind": "function",
-        "lineno": 456,
+        "lineno": 482,
         "parent": null,
         "docstring": null
       },
       {
         "name": "installSuperClaudeFramework",
         "kind": "function",
-        "lineno": 463,
+        "lineno": 489,
         "parent": null,
         "docstring": null
       },
       {
-        "name": "getClassUml",
+        "name": "listAuditRuns",
         "kind": "function",
-        "lineno": 469,
+        "lineno": 498,
         "parent": null,
         "docstring": null
       },
       {
-        "name": "getClassUmlSvg",
+        "name": "createAuditRun",
         "kind": "function",
-        "lineno": 496,
+        "lineno": 503,
         "parent": null,
         "docstring": null
       },
       {
-        "name": "getStatus",
+        "name": "closeAuditRun",
+        "kind": "function",
+        "lineno": 510,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "getAuditRun",
+        "kind": "function",
+        "lineno": 520,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "getAuditEvents",
+        "kind": "function",
+        "lineno": 524,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "appendAuditEvent",
         "kind": "function",
         "lineno": 540,
         "parent": null,
         "docstring": null
       },
       {
+        "name": "getClassUml",
+        "kind": "function",
+        "lineno": 550,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "getClassUmlSvg",
+        "kind": "function",
+        "lineno": 577,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "getStatus",
+        "kind": "function",
+        "lineno": 621,
+        "parent": null,
+        "docstring": null
+      },
+      {
         "name": "getPreview",
         "kind": "function",
-        "lineno": 544,
+        "lineno": 625,
         "parent": null,
         "docstring": null
       },
       {
         "name": "appendGraphvizParams",
         "kind": "function",
-        "lineno": 595,
+        "lineno": 676,
         "parent": null,
         "docstring": null
       },
       {
         "name": "getLintersLatestReport",
         "kind": "function",
-        "lineno": 611,
+        "lineno": 692,
         "parent": null,
         "docstring": null
       },
       {
         "name": "getLintersReports",
         "kind": "function",
-        "lineno": 615,
+        "lineno": 696,
         "parent": null,
         "docstring": null
       },
       {
         "name": "getLintersNotifications",
         "kind": "function",
-        "lineno": 626,
+        "lineno": 707,
         "parent": null,
         "docstring": null
       },
       {
         "name": "markNotificationAsRead",
         "kind": "function",
-        "lineno": 639,
+        "lineno": 720,
         "parent": null,
         "docstring": null
       }
@@ -4805,21 +5350,21 @@
   {
     "path": "frontend/src/api/queryKeys.ts",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.082420+00:00",
+    "modified_at": "2025-11-23T20:01:58.196718+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "frontend/src/api/types.ts",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.082420+00:00",
+    "modified_at": "2025-11-23T10:24:24.598225+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "frontend/src/components/ActivityFeed.tsx",
     "relative": true,
-    "modified_at": "2025-11-05T16:16:29.520462+00:00",
+    "modified_at": "2025-11-10T11:33:54.688792+00:00",
     "symbols": [
       {
         "name": "formatTimeAgo",
@@ -4841,7 +5386,7 @@
   {
     "path": "frontend/src/components/AppLayout.tsx",
     "relative": true,
-    "modified_at": "2025-11-01T21:13:42.574162+00:00",
+    "modified_at": "2025-11-10T11:33:54.689026+00:00",
     "symbols": [
       {
         "name": "AppLayout",
@@ -4854,9 +5399,80 @@
     "errors": []
   },
   {
+    "path": "frontend/src/components/AuditSessionsView.tsx",
+    "relative": true,
+    "modified_at": "2025-11-23T20:03:04.492429+00:00",
+    "symbols": [
+      {
+        "name": "formatRelative",
+        "kind": "function",
+        "lineno": 27,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "formatDate",
+        "kind": "function",
+        "lineno": 40,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "statusBadge",
+        "kind": "function",
+        "lineno": 45,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "summarizePayload",
+        "kind": "function",
+        "lineno": 54,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "RunCard",
+        "kind": "function",
+        "lineno": 63,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "EventCard",
+        "kind": "function",
+        "lineno": 94,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "AuditSessionsView",
+        "kind": "function",
+        "lineno": 118,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "handleCreateRun",
+        "kind": "function",
+        "lineno": 214,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "handleAppendEvent",
+        "kind": "function",
+        "lineno": 222,
+        "parent": null,
+        "docstring": null
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "frontend/src/components/ChangeListPanel.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.082420+00:00",
+    "modified_at": "2025-11-11T15:29:16.142863+00:00",
     "symbols": [
       {
         "name": "ChangeListPanel",
@@ -4921,7 +5537,7 @@
   {
     "path": "frontend/src/components/ClassUMLView.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.083417+00:00",
+    "modified_at": "2025-11-10T16:44:50.329922+00:00",
     "symbols": [
       {
         "name": "ClassUMLView",
@@ -4992,7 +5608,7 @@
   {
     "path": "frontend/src/components/CodeMapDashboard.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.083417+00:00",
+    "modified_at": "2025-11-11T14:14:05.418559+00:00",
     "symbols": [
       {
         "name": "CodeMapDashboard",
@@ -5021,7 +5637,7 @@
   {
     "path": "frontend/src/components/CodeTimelineView.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.083417+00:00",
+    "modified_at": "2025-11-10T16:44:50.329922+00:00",
     "symbols": [
       {
         "name": "DiffModal",
@@ -5106,7 +5722,7 @@
   {
     "path": "frontend/src/components/DetailPanel.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.083417+00:00",
+    "modified_at": "2025-11-14T12:10:27.989463+00:00",
     "symbols": [
       {
         "name": "DetailPanel",
@@ -5140,9 +5756,38 @@
     "errors": []
   },
   {
+    "path": "frontend/src/components/DiffViewer.tsx",
+    "relative": true,
+    "modified_at": "2025-11-23T21:25:21.090579+00:00",
+    "symbols": [
+      {
+        "name": "DiffViewer",
+        "kind": "function",
+        "lineno": 26,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "DiffList",
+        "kind": "function",
+        "lineno": 125,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "toggleExpanded",
+        "kind": "function",
+        "lineno": 130,
+        "parent": null,
+        "docstring": null
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "frontend/src/components/DocsLibraryView.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.083417+00:00",
+    "modified_at": "2025-11-11T17:13:38.276686+00:00",
     "symbols": [
       {
         "name": "DocsLibraryView",
@@ -5171,7 +5816,7 @@
   {
     "path": "frontend/src/components/FileDiffModal.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.083417+00:00",
+    "modified_at": "2025-11-11T10:34:10.523791+00:00",
     "symbols": [
       {
         "name": "FileDiffModal",
@@ -5200,7 +5845,7 @@
   {
     "path": "frontend/src/components/HeaderBar.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.083417+00:00",
+    "modified_at": "2025-11-24T10:54:51.651046+00:00",
     "symbols": [
       {
         "name": "HeaderBar",
@@ -5215,7 +5860,7 @@
   {
     "path": "frontend/src/components/HomeView.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.083417+00:00",
+    "modified_at": "2025-11-24T10:55:03.807132+00:00",
     "symbols": [
       {
         "name": "detectionBadgeLabel",
@@ -5237,7 +5882,7 @@
   {
     "path": "frontend/src/components/LintersView.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.083417+00:00",
+    "modified_at": "2025-11-10T16:44:50.329922+00:00",
     "symbols": [
       {
         "name": "formatDate",
@@ -5301,7 +5946,7 @@
   {
     "path": "frontend/src/components/OllamaInsightsView.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.083417+00:00",
+    "modified_at": "2025-11-14T12:35:24.586040+00:00",
     "symbols": [
       {
         "name": "normalizeFocus",
@@ -5372,7 +6017,7 @@
   {
     "path": "frontend/src/components/OverviewDashboard.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.084414+00:00",
+    "modified_at": "2025-11-11T15:37:48.957101+00:00",
     "symbols": [
       {
         "name": "formatDateTime",
@@ -5422,7 +6067,7 @@
   {
     "path": "frontend/src/components/PreviewPane.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.084414+00:00",
+    "modified_at": "2025-11-14T12:01:35.357127+00:00",
     "symbols": [
       {
         "name": "getFileExtension",
@@ -5465,7 +6110,7 @@
   {
     "path": "frontend/src/components/PromptLibraryView.tsx",
     "relative": true,
-    "modified_at": "2025-11-05T16:17:27.779301+00:00",
+    "modified_at": "2025-11-10T11:33:54.691058+00:00",
     "symbols": [
       {
         "name": "parseTagsInput",
@@ -5520,9 +6165,45 @@
     "errors": []
   },
   {
+    "path": "frontend/src/components/RemoteTerminalView.tsx",
+    "relative": true,
+    "modified_at": "2025-11-24T16:22:57.060204+00:00",
+    "symbols": [
+      {
+        "name": "RemoteTerminalView",
+        "kind": "function",
+        "lineno": 15,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "stripApi",
+        "kind": "function",
+        "lineno": 26,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "start",
+        "kind": "function",
+        "lineno": 131,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "sendResize",
+        "kind": "function",
+        "lineno": 169,
+        "parent": null,
+        "docstring": null
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "frontend/src/components/RescanButton.tsx",
     "relative": true,
-    "modified_at": "2025-11-06T09:25:32.255509+00:00",
+    "modified_at": "2025-11-10T11:33:54.691058+00:00",
     "symbols": [
       {
         "name": "RescanButton",
@@ -5537,7 +6218,7 @@
   {
     "path": "frontend/src/components/SearchPanel.tsx",
     "relative": true,
-    "modified_at": "2025-11-05T16:09:32.248560+00:00",
+    "modified_at": "2025-11-10T11:33:54.691058+00:00",
     "symbols": [
       {
         "name": "SearchPanel",
@@ -5552,7 +6233,7 @@
   {
     "path": "frontend/src/components/SettingsView.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.084414+00:00",
+    "modified_at": "2025-11-10T16:44:50.329922+00:00",
     "symbols": [
       {
         "name": "extractCustomExcludes",
@@ -5609,7 +6290,7 @@
   {
     "path": "frontend/src/components/Sidebar.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.084414+00:00",
+    "modified_at": "2025-11-11T14:14:24.159669+00:00",
     "symbols": [
       {
         "name": "Sidebar",
@@ -5666,7 +6347,7 @@
   {
     "path": "frontend/src/components/StageToolkitView.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.084414+00:00",
+    "modified_at": "2025-11-12T09:09:54.213229+00:00",
     "symbols": [
       {
         "name": "formatList",
@@ -5723,7 +6404,7 @@
   {
     "path": "frontend/src/components/StatusPanel.tsx",
     "relative": true,
-    "modified_at": "2025-11-05T16:10:55.906349+00:00",
+    "modified_at": "2025-11-10T11:33:54.691058+00:00",
     "symbols": [
       {
         "name": "formatRelative",
@@ -5750,9 +6431,151 @@
     "errors": []
   },
   {
+    "path": "frontend/src/components/TerminalView.tsx",
+    "relative": true,
+    "modified_at": "2025-11-24T10:08:32.224789+00:00",
+    "symbols": [
+      {
+        "name": "TerminalView",
+        "kind": "function",
+        "lineno": 31,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "handleResize",
+        "kind": "function",
+        "lineno": 89,
+        "parent": null,
+        "docstring": "Resize on window resize"
+      },
+      {
+        "name": "writeEventToTerminal",
+        "kind": "function",
+        "lineno": 140,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "writeCommand",
+        "kind": "function",
+        "lineno": 181,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "writeCommandResult",
+        "kind": "function",
+        "lineno": 190,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "writePhase",
+        "kind": "function",
+        "lineno": 214,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "writeFileChange",
+        "kind": "function",
+        "lineno": 242,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "writeGitOperation",
+        "kind": "function",
+        "lineno": 260,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "writeThought",
+        "kind": "function",
+        "lineno": 269,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "writeError",
+        "kind": "function",
+        "lineno": 278,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "writeSession",
+        "kind": "function",
+        "lineno": 290,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "writeGeneric",
+        "kind": "function",
+        "lineno": 303,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "formatTimestamp",
+        "kind": "function",
+        "lineno": 315,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "getPhaseColor",
+        "kind": "function",
+        "lineno": 325,
+        "parent": null,
+        "docstring": null
+      }
+    ],
+    "errors": []
+  },
+  {
+    "path": "frontend/src/components/TimelineView.tsx",
+    "relative": true,
+    "modified_at": "2025-11-23T21:15:51.200802+00:00",
+    "symbols": [
+      {
+        "name": "TimelineView",
+        "kind": "function",
+        "lineno": 29,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "PhaseBar",
+        "kind": "function",
+        "lineno": 92,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "buildPhaseBlocks",
+        "kind": "function",
+        "lineno": 137,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "formatDuration",
+        "kind": "function",
+        "lineno": 240,
+        "parent": null,
+        "docstring": null
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "frontend/src/components/TraceModal.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.084414+00:00",
+    "modified_at": "2025-11-10T16:44:50.329922+00:00",
     "symbols": [
       {
         "name": "TraceModal",
@@ -5767,7 +6590,7 @@
   {
     "path": "frontend/src/components/__tests__/PreviewPane.test.tsx",
     "relative": true,
-    "modified_at": "2025-11-05T16:17:13.889340+00:00",
+    "modified_at": "2025-11-10T11:33:54.692277+00:00",
     "symbols": [
       {
         "name": "createWrapper",
@@ -5782,7 +6605,7 @@
   {
     "path": "frontend/src/components/settings/BackendUrlSection.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.084414+00:00",
+    "modified_at": "2025-11-14T11:23:03.603312+00:00",
     "symbols": [
       {
         "name": "BackendUrlSection",
@@ -5804,7 +6627,7 @@
   {
     "path": "frontend/src/components/settings/DirectoryBrowserModal.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.084414+00:00",
+    "modified_at": "2025-11-10T16:44:50.330923+00:00",
     "symbols": [
       {
         "name": "DirectoryBrowserModal",
@@ -5833,7 +6656,7 @@
   {
     "path": "frontend/src/components/settings/DocstringsSection.tsx",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.084414+00:00",
+    "modified_at": "2025-11-10T11:33:54.692434+00:00",
     "symbols": [
       {
         "name": "DocstringsSection",
@@ -5848,7 +6671,7 @@
   {
     "path": "frontend/src/components/settings/ExcludeDirsSection.tsx",
     "relative": true,
-    "modified_at": "2025-11-05T16:08:39.597689+00:00",
+    "modified_at": "2025-11-10T11:33:54.692539+00:00",
     "symbols": [
       {
         "name": "ExcludeDirsSection",
@@ -5870,7 +6693,7 @@
   {
     "path": "frontend/src/components/settings/RootPathSection.tsx",
     "relative": true,
-    "modified_at": "2025-11-05T16:09:15.647601+00:00",
+    "modified_at": "2025-11-10T11:33:54.692613+00:00",
     "symbols": [
       {
         "name": "RootPathSection",
@@ -5885,8 +6708,44 @@
   {
     "path": "frontend/src/config/defaultExcludes.ts",
     "relative": true,
-    "modified_at": "2025-10-31T12:37:21.646112+00:00",
+    "modified_at": "2025-11-10T11:33:54.692695+00:00",
     "symbols": [],
+    "errors": []
+  },
+  {
+    "path": "frontend/src/hooks/useAuditEventStream.ts",
+    "relative": true,
+    "modified_at": "2025-11-23T21:10:40.934939+00:00",
+    "symbols": [
+      {
+        "name": "useAuditEventStream",
+        "kind": "function",
+        "lineno": 32,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "handleOpen",
+        "kind": "function",
+        "lineno": 58,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "handleAuditEvent",
+        "kind": "function",
+        "lineno": 64,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "handleError",
+        "kind": "function",
+        "lineno": 85,
+        "parent": null,
+        "docstring": null
+      }
+    ],
     "errors": []
   },
   {
@@ -5907,7 +6766,7 @@
   {
     "path": "frontend/src/hooks/useClassUmlQuery.ts",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.084414+00:00",
+    "modified_at": "2025-11-10T11:33:54.692759+00:00",
     "symbols": [
       {
         "name": "useClassUmlQuery",
@@ -5929,7 +6788,7 @@
   {
     "path": "frontend/src/hooks/useEventStream.ts",
     "relative": true,
-    "modified_at": "2025-10-31T12:37:21.646112+00:00",
+    "modified_at": "2025-11-10T11:33:54.692808+00:00",
     "symbols": [
       {
         "name": "useEventStream",
@@ -5951,7 +6810,7 @@
   {
     "path": "frontend/src/hooks/useLintersLatestReport.ts",
     "relative": true,
-    "modified_at": "2025-10-31T16:43:46.380928+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useLintersLatestReport",
@@ -5966,7 +6825,7 @@
   {
     "path": "frontend/src/hooks/useLintersNotifications.ts",
     "relative": true,
-    "modified_at": "2025-10-31T16:43:57.878807+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useLintersNotifications",
@@ -5981,7 +6840,7 @@
   {
     "path": "frontend/src/hooks/useLintersReports.ts",
     "relative": true,
-    "modified_at": "2025-10-31T16:43:52.184782+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useLintersReports",
@@ -5996,7 +6855,7 @@
   {
     "path": "frontend/src/hooks/useMarkNotificationRead.ts",
     "relative": true,
-    "modified_at": "2025-10-31T16:44:04.798838+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useMarkNotificationRead",
@@ -6011,7 +6870,7 @@
   {
     "path": "frontend/src/hooks/useOllamaInsightsQuery.ts",
     "relative": true,
-    "modified_at": "2025-11-04T09:36:42.948126+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useOllamaInsightsQuery",
@@ -6026,7 +6885,7 @@
   {
     "path": "frontend/src/hooks/useOllamaStartMutation.ts",
     "relative": true,
-    "modified_at": "2025-11-02T19:00:23.721866+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useOllamaStartMutation",
@@ -6041,7 +6900,7 @@
   {
     "path": "frontend/src/hooks/useOllamaStatusQuery.ts",
     "relative": true,
-    "modified_at": "2025-11-02T19:00:18.947848+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useOllamaStatusQuery",
@@ -6056,7 +6915,7 @@
   {
     "path": "frontend/src/hooks/useOllamaTestMutation.ts",
     "relative": true,
-    "modified_at": "2025-11-04T09:36:42.948126+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useOllamaTestMutation",
@@ -6071,7 +6930,7 @@
   {
     "path": "frontend/src/hooks/useSettingsQuery.ts",
     "relative": true,
-    "modified_at": "2025-10-31T12:37:21.646112+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useSettingsQuery",
@@ -6086,7 +6945,7 @@
   {
     "path": "frontend/src/hooks/useStageInitMutation.ts",
     "relative": true,
-    "modified_at": "2025-10-31T12:37:21.646631+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useStageInitMutation",
@@ -6101,7 +6960,7 @@
   {
     "path": "frontend/src/hooks/useStageStatusQuery.ts",
     "relative": true,
-    "modified_at": "2025-10-31T12:37:21.646631+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useStageStatusQuery",
@@ -6116,7 +6975,7 @@
   {
     "path": "frontend/src/hooks/useStatusQuery.ts",
     "relative": true,
-    "modified_at": "2025-10-31T12:37:21.646631+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useStatusQuery",
@@ -6131,7 +6990,7 @@
   {
     "path": "frontend/src/hooks/useSuperClaudeInstallMutation.ts",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.084414+00:00",
+    "modified_at": "2025-11-12T09:08:20.898095+00:00",
     "symbols": [
       {
         "name": "useSuperClaudeInstallMutation",
@@ -6146,7 +7005,7 @@
   {
     "path": "frontend/src/hooks/useTimelineSummary.ts",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.084414+00:00",
+    "modified_at": "2025-11-10T16:44:50.330923+00:00",
     "symbols": [
       {
         "name": "useTimelineSummary",
@@ -6161,21 +7020,21 @@
   {
     "path": "frontend/src/main.tsx",
     "relative": true,
-    "modified_at": "2025-10-29T11:39:17.509197+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "frontend/src/setupTests.ts",
     "relative": true,
-    "modified_at": "2025-10-31T12:37:21.646631+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "frontend/src/state/useActivityStore.ts",
     "relative": true,
-    "modified_at": "2025-10-31T12:37:21.646631+00:00",
+    "modified_at": "2025-11-10T11:33:54.694396+00:00",
     "symbols": [
       {
         "name": "push",
@@ -6197,7 +7056,7 @@
   {
     "path": "frontend/src/state/useBackendStore.ts",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.084414+00:00",
+    "modified_at": "2025-11-14T11:23:06.569344+00:00",
     "symbols": [
       {
         "name": "setBackendUrl",
@@ -6212,7 +7071,7 @@
   {
     "path": "frontend/src/state/usePromptLibrary.ts",
     "relative": true,
-    "modified_at": "2025-11-01T07:07:31.737072+00:00",
+    "modified_at": "2025-11-10T11:33:54.694531+00:00",
     "symbols": [
       {
         "name": "normalizeTags",
@@ -6276,14 +7135,14 @@
   {
     "path": "frontend/src/state/useSelectionStore.ts",
     "relative": true,
-    "modified_at": "2025-10-31T12:37:21.646631+00:00",
+    "modified_at": "2025-11-10T11:33:54.694531+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "frontend/src/utils/changeStatus.ts",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.086409+00:00",
+    "modified_at": "2025-11-11T15:29:09.181844+00:00",
     "symbols": [
       {
         "name": "getChangeLabel",
@@ -6312,28 +7171,28 @@
   {
     "path": "frontend/src/vite-env.d.ts",
     "relative": true,
-    "modified_at": "2025-10-29T11:39:17.509524+00:00",
+    "modified_at": "2025-11-10T11:33:54.696021+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "frontend/vite.config.ts",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.086409+00:00",
+    "modified_at": "2025-11-24T16:17:58.650401+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "init_project.py",
     "relative": true,
-    "modified_at": "2025-11-01T08:13:59.728611+00:00",
+    "modified_at": "2025-11-10T11:33:54.706854+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "stage_config.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.086409+00:00",
+    "modified_at": "2025-11-10T21:23:34.671933+00:00",
     "symbols": [
       {
         "name": "StageThresholds",
@@ -6460,14 +7319,14 @@
   {
     "path": "stage_init/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-01T08:11:38.625754+00:00",
+    "modified_at": "2025-11-10T11:33:54.708105+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "stage_init/cli.py",
     "relative": true,
-    "modified_at": "2025-11-06T16:17:40.506579+00:00",
+    "modified_at": "2025-11-10T11:33:54.708105+00:00",
     "symbols": [
       {
         "name": "build_parser",
@@ -6503,7 +7362,7 @@
   {
     "path": "stage_init/initializer.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.086409+00:00",
+    "modified_at": "2025-11-18T15:21:25.171654+00:00",
     "symbols": [
       {
         "name": "InitializationConfig",
@@ -6602,7 +7461,7 @@
   {
     "path": "stage_init/stage_update.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.086409+00:00",
+    "modified_at": "2025-11-18T15:21:25.189745+00:00",
     "symbols": [
       {
         "name": "StageUpdateResult",
@@ -6645,7 +7504,7 @@
   {
     "path": "stage_init/templates.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:43:46.027115+00:00",
+    "modified_at": "2025-11-10T11:33:54.708105+00:00",
     "symbols": [
       {
         "name": "TemplateSummary",
@@ -6723,7 +7582,7 @@
   {
     "path": "testZone/example.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:44:40.167986+00:00",
+    "modified_at": "2025-11-10T11:33:54.710127+00:00",
     "symbols": [
       {
         "name": "sum",
@@ -6745,21 +7604,317 @@
   {
     "path": "testZone/index.html",
     "relative": true,
-    "modified_at": "2025-10-31T12:37:21.651740+00:00",
+    "modified_at": "2025-11-10T11:33:54.710177+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "tests/conftest.py",
     "relative": true,
-    "modified_at": "2025-10-31T12:37:21.651740+00:00",
+    "modified_at": "2025-11-10T11:33:54.710177+00:00",
     "symbols": [],
+    "errors": []
+  },
+  {
+    "path": "tests/test_agent_bridge.py",
+    "relative": true,
+    "modified_at": "2025-11-23T20:12:47.353319+00:00",
+    "symbols": [
+      {
+        "name": "temp_root",
+        "kind": "function",
+        "lineno": 26,
+        "parent": null,
+        "docstring": "Create a temporary directory for tests."
+      },
+      {
+        "name": "test_db",
+        "kind": "function",
+        "lineno": 32,
+        "parent": null,
+        "docstring": "Setup test database path."
+      },
+      {
+        "name": "TestSessionManagement",
+        "kind": "class",
+        "lineno": 41,
+        "parent": null,
+        "docstring": "Tests for session start/end functions."
+      },
+      {
+        "name": "test_start_audit_session",
+        "kind": "method",
+        "lineno": 44,
+        "parent": "TestSessionManagement",
+        "docstring": "Test starting an audit session."
+      },
+      {
+        "name": "test_end_audit_session",
+        "kind": "method",
+        "lineno": 66,
+        "parent": "TestSessionManagement",
+        "docstring": "Test ending an audit session."
+      },
+      {
+        "name": "test_end_session_with_failure",
+        "kind": "method",
+        "lineno": 86,
+        "parent": "TestSessionManagement",
+        "docstring": "Test ending session with failure status."
+      },
+      {
+        "name": "TestEventLogging",
+        "kind": "class",
+        "lineno": 101,
+        "parent": null,
+        "docstring": "Tests for event logging functions."
+      },
+      {
+        "name": "test_log_thought",
+        "kind": "method",
+        "lineno": 104,
+        "parent": "TestEventLogging",
+        "docstring": "Test logging thoughts/analysis."
+      },
+      {
+        "name": "test_log_command",
+        "kind": "method",
+        "lineno": 120,
+        "parent": "TestEventLogging",
+        "docstring": "Test logging command execution."
+      },
+      {
+        "name": "test_log_file_change",
+        "kind": "method",
+        "lineno": 138,
+        "parent": "TestEventLogging",
+        "docstring": "Test logging file changes."
+      },
+      {
+        "name": "test_log_git_operation",
+        "kind": "method",
+        "lineno": 156,
+        "parent": "TestEventLogging",
+        "docstring": "Test logging git operations."
+      },
+      {
+        "name": "test_log_error",
+        "kind": "method",
+        "lineno": 173,
+        "parent": "TestEventLogging",
+        "docstring": "Test logging errors."
+      },
+      {
+        "name": "TestPhaseLogging",
+        "kind": "class",
+        "lineno": 191,
+        "parent": null,
+        "docstring": "Tests for phase start/end logging."
+      },
+      {
+        "name": "test_log_phase_start_end",
+        "kind": "method",
+        "lineno": 194,
+        "parent": "TestPhaseLogging",
+        "docstring": "Test phase boundary logging."
+      },
+      {
+        "name": "TestContextManager",
+        "kind": "class",
+        "lineno": 214,
+        "parent": null,
+        "docstring": "Tests for audit_context context manager."
+      },
+      {
+        "name": "test_audit_context_success",
+        "kind": "method",
+        "lineno": 217,
+        "parent": "TestContextManager",
+        "docstring": "Test successful context manager usage."
+      },
+      {
+        "name": "test_audit_context_with_exception",
+        "kind": "method",
+        "lineno": 229,
+        "parent": "TestContextManager",
+        "docstring": "Test context manager with exception."
+      },
+      {
+        "name": "TestHelpers",
+        "kind": "class",
+        "lineno": 247,
+        "parent": null,
+        "docstring": "Tests for helper functions."
+      },
+      {
+        "name": "test_get_current_run_id_from_env",
+        "kind": "method",
+        "lineno": 250,
+        "parent": "TestHelpers",
+        "docstring": "Test getting run ID from environment."
+      },
+      {
+        "name": "test_get_current_run_id_not_set",
+        "kind": "method",
+        "lineno": 261,
+        "parent": "TestHelpers",
+        "docstring": "Test getting run ID when not set."
+      },
+      {
+        "name": "TestGracefulDegradation",
+        "kind": "class",
+        "lineno": 270,
+        "parent": null,
+        "docstring": "Tests for graceful degradation when audit unavailable."
+      },
+      {
+        "name": "test_none_run_id_handling",
+        "kind": "method",
+        "lineno": 273,
+        "parent": "TestGracefulDegradation",
+        "docstring": "Test that None run_id is handled gracefully."
+      },
+      {
+        "name": "TestCompleteWorkflow",
+        "kind": "class",
+        "lineno": 286,
+        "parent": null,
+        "docstring": "Integration test for complete workflow."
+      },
+      {
+        "name": "test_full_agent_workflow",
+        "kind": "method",
+        "lineno": 289,
+        "parent": "TestCompleteWorkflow",
+        "docstring": "Test a complete agent workflow with all features."
+      }
+    ],
+    "errors": []
+  },
+  {
+    "path": "tests/test_agent_controller.py",
+    "relative": true,
+    "modified_at": "2025-11-24T09:47:18.855193+00:00",
+    "symbols": [
+      {
+        "name": "TestAgentTask",
+        "kind": "class",
+        "lineno": 15,
+        "parent": null,
+        "docstring": "Tests para AgentTask"
+      },
+      {
+        "name": "test_create_task",
+        "kind": "method",
+        "lineno": 18,
+        "parent": "TestAgentTask",
+        "docstring": "Test creaci\u00f3n de tarea"
+      },
+      {
+        "name": "test_task_to_dict",
+        "kind": "method",
+        "lineno": 35,
+        "parent": "TestAgentTask",
+        "docstring": "Test serializaci\u00f3n de tarea"
+      },
+      {
+        "name": "TestAgentController",
+        "kind": "class",
+        "lineno": 52,
+        "parent": null,
+        "docstring": "Tests para AgentController"
+      },
+      {
+        "name": "test_controller_initialization_without_key",
+        "kind": "method",
+        "lineno": 55,
+        "parent": "TestAgentController",
+        "docstring": "Test inicializaci\u00f3n sin API key"
+      },
+      {
+        "name": "test_get_status_unconfigured",
+        "kind": "method",
+        "lineno": 74,
+        "parent": "TestAgentController",
+        "docstring": "Test get_status sin configuraci\u00f3n"
+      },
+      {
+        "name": "test_pause_task_nonexistent",
+        "kind": "method",
+        "lineno": 85,
+        "parent": "TestAgentController",
+        "docstring": "Test pausar tarea inexistente"
+      },
+      {
+        "name": "test_resume_task_nonexistent",
+        "kind": "method",
+        "lineno": 92,
+        "parent": "TestAgentController",
+        "docstring": "Test reanudar tarea inexistente"
+      },
+      {
+        "name": "test_cancel_task_nonexistent",
+        "kind": "method",
+        "lineno": 99,
+        "parent": "TestAgentController",
+        "docstring": "Test cancelar tarea inexistente"
+      },
+      {
+        "name": "test_get_task_nonexistent",
+        "kind": "method",
+        "lineno": 106,
+        "parent": "TestAgentController",
+        "docstring": "Test obtener tarea inexistente"
+      },
+      {
+        "name": "test_list_tasks_empty",
+        "kind": "method",
+        "lineno": 113,
+        "parent": "TestAgentController",
+        "docstring": "Test listar tareas cuando no hay ninguna"
+      },
+      {
+        "name": "test_clear_completed_tasks_empty",
+        "kind": "method",
+        "lineno": 120,
+        "parent": "TestAgentController",
+        "docstring": "Test limpiar tareas cuando no hay ninguna"
+      },
+      {
+        "name": "test_pause_resume_cycle",
+        "kind": "method",
+        "lineno": 127,
+        "parent": "TestAgentController",
+        "docstring": "Test ciclo de pausar y reanudar tarea"
+      },
+      {
+        "name": "test_cancel_running_task",
+        "kind": "method",
+        "lineno": 144,
+        "parent": "TestAgentController",
+        "docstring": "Test cancelar tarea en ejecuci\u00f3n"
+      },
+      {
+        "name": "test_clear_completed_tasks",
+        "kind": "method",
+        "lineno": 156,
+        "parent": "TestAgentController",
+        "docstring": "Test limpiar tareas completadas"
+      },
+      {
+        "name": "test_execute_task_unconfigured",
+        "kind": "function",
+        "lineno": 183,
+        "parent": null,
+        "docstring": "Test ejecutar tarea sin configuraci\u00f3n"
+      }
+    ],
     "errors": []
   },
   {
     "path": "tests/test_analysis_engine.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:57:44.889257+00:00",
+    "modified_at": "2025-11-10T11:33:54.710177+00:00",
     "symbols": [
       {
         "name": "write_module",
@@ -6900,7 +8055,7 @@
   {
     "path": "tests/test_api.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:57:18.400313+00:00",
+    "modified_at": "2025-11-23T10:28:38.143645+00:00",
     "symbols": [
       {
         "name": "write_file",
@@ -7134,23 +8289,30 @@
         "docstring": null
       },
       {
-        "name": "test_linters_discovery_endpoint",
+        "name": "test_audit_run_flow",
         "kind": "function",
         "lineno": 663,
         "parent": null,
         "docstring": null
       },
       {
+        "name": "test_linters_discovery_endpoint",
+        "kind": "function",
+        "lineno": 699,
+        "parent": null,
+        "docstring": null
+      },
+      {
         "name": "test_linters_reports_endpoints",
         "kind": "function",
-        "lineno": 676,
+        "lineno": 712,
         "parent": null,
         "docstring": null
       },
       {
         "name": "test_linters_notifications_flow",
         "kind": "function",
-        "lineno": 701,
+        "lineno": 737,
         "parent": null,
         "docstring": null
       }
@@ -7158,9 +8320,340 @@
     "errors": []
   },
   {
+    "path": "tests/test_audit_hooks.py",
+    "relative": true,
+    "modified_at": "2025-11-23T19:51:23.447189+00:00",
+    "symbols": [
+      {
+        "name": "temp_root",
+        "kind": "function",
+        "lineno": 25,
+        "parent": null,
+        "docstring": "Create a temporary directory for tests."
+      },
+      {
+        "name": "test_run",
+        "kind": "function",
+        "lineno": 31,
+        "parent": null,
+        "docstring": "Create a test audit run."
+      },
+      {
+        "name": "TestAuditContext",
+        "kind": "class",
+        "lineno": 48,
+        "parent": null,
+        "docstring": "Tests for AuditContext context manager."
+      },
+      {
+        "name": "test_successful_context",
+        "kind": "method",
+        "lineno": 51,
+        "parent": "TestAuditContext",
+        "docstring": "Test successful operation with AuditContext."
+      },
+      {
+        "name": "test_context_with_exception",
+        "kind": "method",
+        "lineno": 85,
+        "parent": "TestAuditContext",
+        "docstring": "Test AuditContext when an exception occurs."
+      },
+      {
+        "name": "test_context_with_detail",
+        "kind": "method",
+        "lineno": 105,
+        "parent": "TestAuditContext",
+        "docstring": "Test AuditContext with custom detail."
+      },
+      {
+        "name": "test_context_with_payload",
+        "kind": "method",
+        "lineno": 119,
+        "parent": "TestAuditContext",
+        "docstring": "Test AuditContext with custom payload."
+      },
+      {
+        "name": "TestAuditTracked",
+        "kind": "class",
+        "lineno": 140,
+        "parent": null,
+        "docstring": "Tests for @audit_tracked decorator."
+      },
+      {
+        "name": "test_tracked_function_success",
+        "kind": "method",
+        "lineno": 143,
+        "parent": "TestAuditTracked",
+        "docstring": "Test decorated function that succeeds."
+      },
+      {
+        "name": "test_tracked_function_with_exception",
+        "kind": "method",
+        "lineno": 166,
+        "parent": "TestAuditTracked",
+        "docstring": "Test decorated function that raises exception."
+      },
+      {
+        "name": "test_tracked_function_with_custom_title",
+        "kind": "method",
+        "lineno": 183,
+        "parent": "TestAuditTracked",
+        "docstring": "Test decorated function with custom title."
+      },
+      {
+        "name": "test_tracked_function_without_run_id",
+        "kind": "method",
+        "lineno": 188,
+        "parent": "TestAuditTracked",
+        "docstring": "Test decorated function without run_id parameter (should not crash)."
+      },
+      {
+        "name": "TestAuditRunCommand",
+        "kind": "class",
+        "lineno": 200,
+        "parent": null,
+        "docstring": "Tests for audit_run_command wrapper."
+      },
+      {
+        "name": "test_successful_command",
+        "kind": "method",
+        "lineno": 203,
+        "parent": "TestAuditRunCommand",
+        "docstring": "Test successful command execution."
+      },
+      {
+        "name": "test_failing_command",
+        "kind": "method",
+        "lineno": 239,
+        "parent": "TestAuditRunCommand",
+        "docstring": "Test failing command execution."
+      },
+      {
+        "name": "test_command_with_timeout",
+        "kind": "method",
+        "lineno": 256,
+        "parent": "TestAuditRunCommand",
+        "docstring": "Test command with timeout."
+      },
+      {
+        "name": "test_command_with_cwd",
+        "kind": "method",
+        "lineno": 273,
+        "parent": "TestAuditRunCommand",
+        "docstring": "Test command with custom working directory."
+      },
+      {
+        "name": "test_command_output_truncation",
+        "kind": "method",
+        "lineno": 287,
+        "parent": "TestAuditRunCommand",
+        "docstring": "Test that large command output is truncated."
+      },
+      {
+        "name": "TestAuditPhase",
+        "kind": "class",
+        "lineno": 305,
+        "parent": null,
+        "docstring": "Tests for audit_phase context manager."
+      },
+      {
+        "name": "test_successful_phase",
+        "kind": "method",
+        "lineno": 308,
+        "parent": "TestAuditPhase",
+        "docstring": "Test successful phase execution."
+      },
+      {
+        "name": "test_phase_with_exception",
+        "kind": "method",
+        "lineno": 334,
+        "parent": "TestAuditPhase",
+        "docstring": "Test phase with exception."
+      },
+      {
+        "name": "test_nested_phases",
+        "kind": "method",
+        "lineno": 347,
+        "parent": "TestAuditPhase",
+        "docstring": "Test nested phase contexts."
+      },
+      {
+        "name": "TestEnvironmentIntegration",
+        "kind": "class",
+        "lineno": 375,
+        "parent": null,
+        "docstring": "Tests for environment variable integration."
+      },
+      {
+        "name": "test_environment_variable_detection",
+        "kind": "method",
+        "lineno": 378,
+        "parent": "TestEnvironmentIntegration",
+        "docstring": "Test that audit_run_id is detected from environment."
+      },
+      {
+        "name": "TestIntegrationScenarios",
+        "kind": "class",
+        "lineno": 385,
+        "parent": null,
+        "docstring": "Integration tests for common audit scenarios."
+      },
+      {
+        "name": "test_full_workflow",
+        "kind": "method",
+        "lineno": 388,
+        "parent": "TestIntegrationScenarios",
+        "docstring": "Test a complete workflow with multiple audit hooks."
+      },
+      {
+        "name": "test_error_recovery",
+        "kind": "method",
+        "lineno": 425,
+        "parent": "TestIntegrationScenarios",
+        "docstring": "Test audit tracking continues after errors."
+      }
+    ],
+    "errors": []
+  },
+  {
+    "path": "tests/test_file_watcher_hook.py",
+    "relative": true,
+    "modified_at": "2025-11-23T21:21:56.914385+00:00",
+    "symbols": [
+      {
+        "name": "temp_root",
+        "kind": "function",
+        "lineno": 19,
+        "parent": null,
+        "docstring": "Create a temporary directory for tests."
+      },
+      {
+        "name": "test_run",
+        "kind": "function",
+        "lineno": 25,
+        "parent": null,
+        "docstring": "Create a test audit run."
+      },
+      {
+        "name": "TestFileWatcherBasics",
+        "kind": "class",
+        "lineno": 42,
+        "parent": null,
+        "docstring": "Tests for basic file watcher functionality."
+      },
+      {
+        "name": "test_file_watcher_start_stop",
+        "kind": "method",
+        "lineno": 45,
+        "parent": "TestFileWatcherBasics",
+        "docstring": "Test starting and stopping the file watcher."
+      },
+      {
+        "name": "test_snapshot_current_state",
+        "kind": "method",
+        "lineno": 64,
+        "parent": "TestFileWatcherBasics",
+        "docstring": "Test snapshotting current file state."
+      },
+      {
+        "name": "TestFileCreation",
+        "kind": "class",
+        "lineno": 88,
+        "parent": null,
+        "docstring": "Tests for file creation events."
+      },
+      {
+        "name": "test_create_tracked_file",
+        "kind": "method",
+        "lineno": 91,
+        "parent": "TestFileCreation",
+        "docstring": "Test creating a tracked file generates an event."
+      },
+      {
+        "name": "test_create_ignored_file",
+        "kind": "method",
+        "lineno": 131,
+        "parent": "TestFileCreation",
+        "docstring": "Test creating an ignored file does not generate an event."
+      },
+      {
+        "name": "TestFileModification",
+        "kind": "class",
+        "lineno": 155,
+        "parent": null,
+        "docstring": "Tests for file modification events."
+      },
+      {
+        "name": "test_modify_tracked_file",
+        "kind": "method",
+        "lineno": 158,
+        "parent": "TestFileModification",
+        "docstring": "Test modifying a file generates a diff event."
+      },
+      {
+        "name": "test_no_event_if_content_unchanged",
+        "kind": "method",
+        "lineno": 199,
+        "parent": "TestFileModification",
+        "docstring": "Test that no event is generated if content doesn't actually change."
+      },
+      {
+        "name": "TestFileDeletion",
+        "kind": "class",
+        "lineno": 230,
+        "parent": null,
+        "docstring": "Tests for file deletion events."
+      },
+      {
+        "name": "test_delete_tracked_file",
+        "kind": "method",
+        "lineno": 233,
+        "parent": "TestFileDeletion",
+        "docstring": "Test deleting a file generates an event."
+      },
+      {
+        "name": "TestExclusionFiltering",
+        "kind": "class",
+        "lineno": 274,
+        "parent": null,
+        "docstring": "Tests for directory and file exclusion."
+      },
+      {
+        "name": "test_exclude_node_modules",
+        "kind": "method",
+        "lineno": 277,
+        "parent": "TestExclusionFiltering",
+        "docstring": "Test that node_modules is excluded."
+      },
+      {
+        "name": "test_custom_exclusions",
+        "kind": "method",
+        "lineno": 306,
+        "parent": "TestExclusionFiltering",
+        "docstring": "Test custom directory exclusions."
+      },
+      {
+        "name": "TestDiffGeneration",
+        "kind": "class",
+        "lineno": 333,
+        "parent": null,
+        "docstring": "Tests for diff generation."
+      },
+      {
+        "name": "test_diff_truncation",
+        "kind": "method",
+        "lineno": 336,
+        "parent": "TestDiffGeneration",
+        "docstring": "Test that very large diffs are truncated."
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "tests/test_insights_scheduler.py",
     "relative": true,
-    "modified_at": "2025-11-05T19:02:46.982627+00:00",
+    "modified_at": "2025-11-10T11:33:54.710177+00:00",
     "symbols": [
       {
         "name": "_DummyWatcher",
@@ -7231,7 +8724,7 @@
   {
     "path": "tests/test_linters_pipeline.py",
     "relative": true,
-    "modified_at": "2025-10-31T15:51:28.829543+00:00",
+    "modified_at": "2025-11-10T11:33:54.710177+00:00",
     "symbols": [
       {
         "name": "test_run_linters_pipeline_generates_report",
@@ -7246,7 +8739,7 @@
   {
     "path": "tests/test_linters_pipeline_options.py",
     "relative": true,
-    "modified_at": "2025-11-01T08:29:59.703521+00:00",
+    "modified_at": "2025-11-10T11:33:54.710177+00:00",
     "symbols": [
       {
         "name": "write_file",
@@ -7275,7 +8768,7 @@
   {
     "path": "tests/test_stage_config.py",
     "relative": true,
-    "modified_at": "2025-11-05T18:44:40.399017+00:00",
+    "modified_at": "2025-11-10T11:33:54.710177+00:00",
     "symbols": [
       {
         "name": "write_module",
@@ -7318,7 +8811,7 @@
   {
     "path": "tests/test_stage_initializer.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.088003+00:00",
+    "modified_at": "2025-11-10T16:44:50.332673+00:00",
     "symbols": [
       {
         "name": "_silence_logs",
@@ -7347,7 +8840,7 @@
   {
     "path": "tools/debug_ollama.py",
     "relative": true,
-    "modified_at": "2025-11-05T21:09:09.326592+00:00",
+    "modified_at": "2025-11-10T11:33:54.710177+00:00",
     "symbols": [
       {
         "name": "HttpResponse",
@@ -7390,7 +8883,7 @@
   {
     "path": "tools/test_backend_ollama.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.088003+00:00",
+    "modified_at": "2025-11-14T11:22:24.504893+00:00",
     "symbols": [
       {
         "name": "parse_args",
@@ -7412,7 +8905,7 @@
   {
     "path": "tracerTesting/driverExample.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.088646+00:00",
+    "modified_at": "2025-11-10T16:44:50.332673+00:00",
     "symbols": [
       {
         "name": "driverExampleClass",
@@ -7441,7 +8934,7 @@
   {
     "path": "tracerTesting/endpointExample.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.088682+00:00",
+    "modified_at": "2025-11-10T16:44:50.332673+00:00",
     "symbols": [
       {
         "name": "endpointExampleClass",
@@ -7470,7 +8963,7 @@
   {
     "path": "tracerTesting/middlewareExample.py",
     "relative": true,
-    "modified_at": "2025-11-18T18:49:22.088682+00:00",
+    "modified_at": "2025-11-10T16:44:50.332673+00:00",
     "symbols": [
       {
         "name": "middlewareAPI",
