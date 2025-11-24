@@ -132,10 +132,19 @@ class PTYShell:
             logger.info("PTY read thread started")
             while self.running:
                 try:
+                    # Check if master_fd is still valid
+                    if self.master_fd is None:
+                        logger.info("PTY master_fd closed, exiting thread")
+                        break
+
                     # Check if data is available with short timeout
                     readable, _, _ = select.select([self.master_fd], [], [], 0.1)
 
                     if readable:
+                        # Double-check master_fd is still valid
+                        if self.master_fd is None:
+                            logger.info("PTY master_fd closed during read, exiting thread")
+                            break
                         data = os.read(self.master_fd, 1024)
                         if not data:
                             # EOF - shell exited
@@ -176,24 +185,27 @@ class PTYShell:
         if not self.running:
             return
 
+        logger.info("Closing shell process...")
         self.running = False
 
-        # Close master FD
-        if self.master_fd is not None:
-            try:
-                os.close(self.master_fd)
-            except OSError:
-                pass
-            self.master_fd = None
-
-        # Terminate child process
+        # Terminate child process first
         if self.pid is not None:
             try:
                 os.kill(self.pid, signal.SIGTERM)
                 os.waitpid(self.pid, 0)
-            except (OSError, ChildProcessError):
-                pass
+                logger.info(f"Terminated shell process PID={self.pid}")
+            except (OSError, ChildProcessError) as e:
+                logger.debug(f"Error terminating process: {e}")
             self.pid = None
+
+        # Close master FD after process is terminated
+        if self.master_fd is not None:
+            try:
+                os.close(self.master_fd)
+                logger.info("Closed master FD")
+            except OSError as e:
+                logger.debug(f"Error closing master FD: {e}")
+            self.master_fd = None
 
         logger.info("Shell process closed")
 
