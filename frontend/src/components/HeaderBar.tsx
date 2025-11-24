@@ -32,6 +32,7 @@ export function HeaderBar({
     { to: "/class-uml", label: "UML" },
     { to: "/linters", label: "Linters" },
     { to: "/agent-control", label: "Agent Control" },
+    { to: "/terminal", label: "Terminal" },
     { to: "/monitoring", label: "Monitor" },
     { to: "/timeline", label: "Timeline" },
     { to: "/ollama", label: "AI Insights" },

@@ -12,6 +12,7 @@ import { AppLayout } from "./components/AppLayout";
 import { OllamaInsightsView } from "./components/OllamaInsightsView";
 import { AgentMonitoringDashboard } from "./components/AgentMonitoringDashboard";
 import { AgentControlView } from "./components/AgentControlView";
+import { RemoteTerminalView } from "./components/RemoteTerminalView";
 import CodeTimelineView from "./components/CodeTimelineView";
 import { DocsLibraryView } from "./components/DocsLibraryView";
 import { useEventStream } from "./hooks/useEventStream";
@@ -98,6 +99,10 @@ export function App(): JSX.Element {
           <Route
             path="/timeline"
             element={withLayout("Code Timeline", <CodeTimelineView />)}
+          />
+          <Route
+            path="/terminal"
+            element={withLayout("Remote Terminal", <RemoteTerminalView />)}
           />
           <Route
             path="/settings"

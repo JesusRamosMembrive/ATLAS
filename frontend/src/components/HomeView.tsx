@@ -200,6 +200,16 @@ export function HomeView({
           <span className="home-card-cta">Open Control →</span>
         </Link>
 
+        <Link to="/terminal" className="home-card">
+          <div className="home-card-body">
+            <h3>Remote Terminal</h3>
+            <p>
+              Full shell access from your browser. Execute commands, navigate directories, and manage your system remotely with a real bash/zsh terminal.
+            </p>
+          </div>
+          <span className="home-card-cta">Open Terminal →</span>
+        </Link>
+
         <Link to="/monitoring" className="home-card">
           <div className="home-card-body">
             <h3>Agent Monitoring</h3>
