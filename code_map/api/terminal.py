@@ -47,6 +47,9 @@ async def terminal_websocket(websocket: WebSocket):
     # Create queue for shell output
     output_queue: asyncio.Queue[str | None] = asyncio.Queue()
 
+    # Get the event loop for thread-safe queue operations
+    loop = asyncio.get_running_loop()
+
     # Create task for reading shell output
     async def read_output():
         """Read shell output and send to WebSocket"""
@@ -54,7 +57,6 @@ async def terminal_websocket(websocket: WebSocket):
             """Callback for shell output - runs in sync context"""
             try:
                 # Put data in queue (thread-safe)
-                loop = asyncio.get_running_loop()
                 loop.call_soon_threadsafe(output_queue.put_nowait, data)
             except Exception as e:
                 logger.error(f"Error queueing output: {e}")
@@ -64,7 +66,6 @@ async def terminal_websocket(websocket: WebSocket):
         # Shell exited - signal end with None
         logger.info("Shell process exited")
         try:
-            loop = asyncio.get_running_loop()
             loop.call_soon_threadsafe(output_queue.put_nowait, None)
         except Exception:
             pass
