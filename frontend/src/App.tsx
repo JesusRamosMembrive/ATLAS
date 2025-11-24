@@ -10,8 +10,6 @@ import { OverviewDashboard } from "./components/OverviewDashboard";
 import { PromptLibraryView } from "./components/PromptLibraryView";
 import { AppLayout } from "./components/AppLayout";
 import { OllamaInsightsView } from "./components/OllamaInsightsView";
-import { AgentMonitoringDashboard } from "./components/AgentMonitoringDashboard";
-import { AgentControlView } from "./components/AgentControlView";
 import { RemoteTerminalView } from "./components/RemoteTerminalView";
 import CodeTimelineView from "./components/CodeTimelineView";
 import { DocsLibraryView } from "./components/DocsLibraryView";
@@ -75,14 +73,6 @@ export function App(): JSX.Element {
           <Route
             path="/ollama"
             element={withLayout("Ollama Insights", <OllamaInsightsView />)}
-          />
-          <Route
-            path="/monitoring"
-            element={withLayout("Agent Monitoring", <AgentMonitoringDashboard />)}
-          />
-          <Route
-            path="/agent-control"
-            element={withLayout("Agent Control", <AgentControlView />)}
           />
           <Route
             path="/class-uml"

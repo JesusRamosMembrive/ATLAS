@@ -190,16 +190,6 @@ export function HomeView({
           <span className="home-card-cta">Open Timeline →</span>
         </Link>
 
-        <Link to="/agent-control" className="home-card">
-          <div className="home-card-body">
-            <h3>Agent Control</h3>
-            <p>
-              Interactive terminal to control Claude. Send tasks, see responses in real-time, pause/resume execution. Perfect for pair programming.
-            </p>
-          </div>
-          <span className="home-card-cta">Open Control →</span>
-        </Link>
-
         <Link to="/terminal" className="home-card">
           <div className="home-card-body">
             <h3>Remote Terminal</h3>
@@ -208,16 +198,6 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open Terminal →</span>
-        </Link>
-
-        <Link to="/monitoring" className="home-card">
-          <div className="home-card-body">
-            <h3>Agent Monitoring</h3>
-            <p>
-              Real-time dashboard with terminal output, phase timelines, and file diffs. Watch your agents work live.
-            </p>
-          </div>
-          <span className="home-card-cta">Open Dashboard →</span>
         </Link>
 
         <Link to="/linters" className="home-card">
