@@ -51,19 +51,19 @@ async def terminal_websocket(websocket: WebSocket):
         await websocket.close()
         return
 
+    # Create queue for shell output
+    output_queue: asyncio.Queue = asyncio.Queue()
+
     # Create task for reading shell output
     async def read_output():
         """Read shell output and send to WebSocket"""
         def send_output(data: str):
-            """Callback for shell output"""
+            """Callback for shell output - runs in sync context"""
             try:
-                # Send output to client
-                asyncio.create_task(websocket.send_json({
-                    "type": "output",
-                    "data": data
-                }))
+                # Put data in queue (thread-safe)
+                output_queue.put_nowait(data)
             except Exception as e:
-                logger.error(f"Error sending output: {e}")
+                logger.error(f"Error queueing output: {e}")
 
         await shell.read(send_output)
 
@@ -79,6 +79,22 @@ async def terminal_websocket(websocket: WebSocket):
 
     # Start reading shell output
     read_task = asyncio.create_task(read_output())
+
+    # Task to forward output from queue to WebSocket
+    async def forward_output():
+        """Forward shell output from queue to WebSocket"""
+        while True:
+            try:
+                data = await output_queue.get()
+                await websocket.send_json({
+                    "type": "output",
+                    "data": data
+                })
+            except Exception as e:
+                logger.error(f"Error forwarding output: {e}")
+                break
+
+    forward_task = asyncio.create_task(forward_output())
 
     try:
         # Handle incoming WebSocket messages
@@ -115,9 +131,15 @@ async def terminal_websocket(websocket: WebSocket):
         logger.info("Cleaning up terminal session")
         shell.close()
         read_task.cancel()
+        forward_task.cancel()
 
         try:
             await read_task
+        except asyncio.CancelledError:
+            pass
+
+        try:
+            await forward_task
         except asyncio.CancelledError:
             pass
 
