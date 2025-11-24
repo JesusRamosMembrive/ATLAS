@@ -62,7 +62,6 @@ class PTYShell:
 
         if self.pid == 0:
             # Child process - execute shell in interactive mode
-            print(f"[PTY] Child process executing shell: {shell}")  # DEBUG
             # Force interactive shell with -i flag
             os.execvp(shell, [shell, "-i"])
         else:
