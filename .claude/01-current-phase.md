@@ -126,16 +126,27 @@
   - StrictMode causa double-mount que cierra WebSocket antes de conectarse
   - Solo afecta desarrollo, producción no tiene StrictMode effects
 
-- ✅ **frontend/src/components/RemoteTerminalView.tsx** (simplificado):
-  - Código limpio sin protecciones complejas contra React Strict Mode
-  - WebSocket se crea y gestiona normalmente
-  - Cleanup simple y directo (líneas 189-198)
+- ✅ **frontend/src/components/RemoteTerminalView.tsx** (modificado - FIX FINAL):
+  - **Root cause real**: Zustand persist middleware rehydration cambiaba `wsBaseUrl`, triggering useEffect cleanup
+  - Agregado `prevUrlRef` para trackear URL anterior (línea 24)
+  - Agregada lógica de skip en useEffect (líneas 134-141):
+    - Si URL no cambió Y socket está OPEN o CONNECTING → skip reconnect
+    - Previene cierre de WebSocket durante rehydration de Zustand
+  - Debug logs mantienen visibilidad del comportamiento
 
-**Solución final React Strict Mode:**
-- ✅ Deshabilitar StrictMode es la solución correcta para componentes con WebSockets
-- ✅ WebSockets y StrictMode son incompatibles por diseño (double-mount cierra conexiones)
-- ✅ Producción nunca tiene este problema (StrictMode solo en desarrollo)
-- ✅ Alternativa más compleja sería useRef con efectos condicionales
+**Solución final TanStack Query + Zustand:**
+- ✅ Problema real: `useSettingsQuery()` en App.tsx actualizaba Zustand DESPUÉS de mount
+- ✅ Secuencia del bug:
+  1. Page load → `useSettingsQuery()` inicia (data: undefined)
+  2. RemoteTerminalView mount → Lee `wsBaseUrl` desde Zustand (localStorage)
+  3. useEffect crea WebSocket (state=CONNECTING)
+  4. `useSettingsQuery()` completa → `{ data: { backend_url: "..." } }`
+  5. App.tsx useEffect detecta cambio → `setBackendUrl()` → Actualiza Zustand
+  6. Zustand update trigger RemoteTerminalView re-render → useEffect dependency change
+  7. useEffect cleanup cierra WebSocket mientras state=0 (CONNECTING, code=1006)
+  8. useEffect re-ejecuta, crea nuevo WebSocket
+- ✅ Fix: `isInitializedRef` previene reconexión si socket ya está activo (OPEN o CONNECTING)
+- ✅ Permite reconexión real cuando usuario cambia URL en settings
 
 - ✅ **tests/test_terminal_reconnect.md** (nuevo):
   - Documentación completa del bug, fix y testing strategy

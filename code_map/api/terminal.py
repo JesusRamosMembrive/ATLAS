@@ -155,19 +155,25 @@ async def terminal_websocket(websocket: WebSocket):
         # Cleanup - proper order to prevent race conditions
         logger.info("Cleaning up terminal session")
 
-        # 1. Stop the shell first (sets running = False)
-        shell.close()
+        # 1. Stop the shell (sets running = False, but don't wait for thread yet)
+        shell.running = False
 
-        # 2. Wait briefly for read thread to exit cleanly
-        await asyncio.sleep(0.1)
-
-        # 3. Cancel the read task
+        # 2. Cancel the read task immediately
         read_task.cancel()
 
         try:
             await read_task
         except asyncio.CancelledError:
             pass
+
+        # 3. Now clean up shell resources (including thread join in executor to avoid blocking)
+        import concurrent.futures
+        loop = asyncio.get_running_loop()
+        try:
+            # Run blocking shell.close() in thread pool to avoid blocking event loop
+            await loop.run_in_executor(None, shell.close)
+        except Exception as e:
+            logger.error(f"Error during shell cleanup: {e}")
 
         # 4. Close WebSocket last
         try:

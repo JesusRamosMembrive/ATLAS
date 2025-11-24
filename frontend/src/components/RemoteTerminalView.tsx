@@ -13,7 +13,10 @@ import "@xterm/xterm/css/xterm.css";
  * Connects to backend via WebSocket for bidirectional communication
  */
 export function RemoteTerminalView() {
+  console.log("[COMPONENT] RemoteTerminalView rendering");
+
   const [connected, setConnected] = useState(false);
+  const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const backendUrl = useBackendStore((state) => state.backendUrl);
 
@@ -21,8 +24,10 @@ export function RemoteTerminalView() {
   const xtermRef = useRef<Terminal | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
+  const disposablesRef = useRef<{ data?: any; resize?: any; observer?: ResizeObserver }>({});
 
   const wsBaseUrl = useMemo(() => {
+    console.log(`[WS] useMemo recomputing wsBaseUrl, backendUrl=${backendUrl}`);
     const stripApi = (value: string) =>
       value.endsWith("/api") ? value.slice(0, -4) : value;
 
@@ -31,7 +36,9 @@ export function RemoteTerminalView() {
       (typeof window !== "undefined" ? window.location.origin : "http://127.0.0.1:8010");
 
     const sanitized = base.replace(/\/+$/, "");
-    return stripApi(sanitized);
+    const result = stripApi(sanitized);
+    console.log(`[WS] useMemo result: ${result}`);
+    return result;
   }, [backendUrl]);
 
   // Initialize terminal
@@ -109,7 +116,7 @@ export function RemoteTerminalView() {
     terminal.writeln("\x1b[1;36m║\x1b[0m    \x1b[1;33mATLAS Remote Terminal\x1b[0m                           \x1b[1;36m║\x1b[0m");
     terminal.writeln("\x1b[1;36m╚═══════════════════════════════════════════════════════╝\x1b[0m");
     terminal.writeln("");
-    terminal.writeln("\x1b[2mConnecting to shell...\x1b[0m");
+    terminal.writeln("\x1b[2mClick 'Connect' button to start shell session...\x1b[0m");
     terminal.writeln("");
 
     // Cleanup on unmount
@@ -120,24 +127,88 @@ export function RemoteTerminalView() {
     };
   }, []);
 
-  // Connect to WebSocket
+  // Cleanup WebSocket on component unmount (e.g., page reload)
   useEffect(() => {
-    if (!xtermRef.current) return;
+    console.log("[WS] Component mounted, setting up unmount cleanup");
+
+    return () => {
+      console.log("[WS] Component unmounting - cleaning up WebSocket connection");
+
+      // Clean up disposables
+      if (disposablesRef.current.data) {
+        console.log("[WS] Disposing data listener");
+        disposablesRef.current.data.dispose();
+        disposablesRef.current.data = undefined;
+      }
+      if (disposablesRef.current.resize) {
+        console.log("[WS] Disposing resize listener");
+        disposablesRef.current.resize.dispose();
+        disposablesRef.current.resize = undefined;
+      }
+      if (disposablesRef.current.observer) {
+        console.log("[WS] Disconnecting resize observer");
+        disposablesRef.current.observer.disconnect();
+        disposablesRef.current.observer = undefined;
+      }
+
+      // Close WebSocket
+      if (wsRef.current) {
+        const socket = wsRef.current;
+        const state = socket.readyState;
+        console.log(`[WS] Closing WebSocket on unmount (state=${state}: ${state === 0 ? 'CONNECTING' : state === 1 ? 'OPEN' : state === 2 ? 'CLOSING' : 'CLOSED'})`);
+
+        if (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) {
+          socket.close(1000, "Component unmounting");
+        }
+        wsRef.current = null;
+      } else {
+        console.log("[WS] No WebSocket to close on unmount");
+      }
+    };
+  }, []);
+
+  // Manual connection function - called by user clicking "Connect" button
+  const connectToShell = () => {
+    console.log(`[WS] Manual connect triggered - wsBaseUrl=${wsBaseUrl}`);
+
+    if (!xtermRef.current) {
+      console.error("[WS] Cannot connect: terminal not ready");
+      setError("Terminal not initialized");
+      return;
+    }
+
+    // Check if already connected
+    if (wsRef.current && (wsRef.current.readyState === WebSocket.OPEN || wsRef.current.readyState === WebSocket.CONNECTING)) {
+      console.log(`[WS] Already connected or connecting (state=${wsRef.current.readyState})`);
+      return;
+    }
 
     const terminal = xtermRef.current;
     const wsUrl = wsBaseUrl.replace("http://", "ws://").replace("https://", "wss://");
+    console.log(`[WS] Creating WebSocket to ${wsUrl}/api/terminal/ws`);
+
+    setConnecting(true);
+    setError(null);
 
     // Create WebSocket connection
     const socket = new WebSocket(`${wsUrl}/api/terminal/ws`);
-    wsRef.current = socket;
+    console.log(`[WS] WebSocket created, initial state: ${socket.readyState} (0=CONNECTING, 1=OPEN, 2=CLOSING, 3=CLOSED)`);
 
+    // IMPORTANT: Set all event handlers BEFORE assigning to ref
+    // This prevents race conditions where events fire before handlers are set
     socket.onopen = () => {
-      console.log("WebSocket connected successfully");
+      console.log("[WS] ✅ WebSocket ONOPEN fired - connected successfully");
       setConnected(true);
+      setConnecting(false);
       setError(null);
 
       const { cols, rows } = xtermRef.current ?? terminal;
       socket.send(`__RESIZE__:${cols}:${rows}`);
+
+      // Clear terminal and show connected message
+      terminal.clear();
+      terminal.writeln("\x1b[1;32m✓ Connected to shell\x1b[0m");
+      terminal.writeln("");
     };
 
     socket.onmessage = (event) => {
@@ -145,20 +216,29 @@ export function RemoteTerminalView() {
     };
 
     socket.onerror = (err) => {
-      console.error("WebSocket error:", err);
+      console.error("[WS] ❌ WebSocket ONERROR fired:", err);
       setConnected(false);
+      setConnecting(false);
       setError("Connection error");
       xtermRef.current?.writeln("");
       xtermRef.current?.writeln("\x1b[1;31m✗ Connection error\x1b[0m");
     };
 
-    socket.onclose = () => {
+    socket.onclose = (event) => {
+      console.log(`[WS] 🔴 WebSocket ONCLOSE fired: code=${event.code}, reason=${event.reason || "none"}, wasClean=${event.wasClean}`);
       setConnected(false);
-      xtermRef.current?.writeln("");
-      xtermRef.current?.writeln("\x1b[2mConnection closed\x1b[0m");
+      setConnecting(false);
+      if (!error) {
+        xtermRef.current?.writeln("");
+        xtermRef.current?.writeln("\x1b[2mConnection closed\x1b[0m");
+      }
     };
 
-    const disposable = xtermRef.current.onData((data) => {
+    // Now save to ref after all handlers are configured
+    wsRef.current = socket;
+
+    // Store disposables for cleanup
+    disposablesRef.current.data = xtermRef.current.onData((data) => {
       if (socket?.readyState === WebSocket.OPEN) {
         socket.send(data);
       }
@@ -171,11 +251,11 @@ export function RemoteTerminalView() {
       }
     };
 
-    const resizeDisposable = xtermRef.current.onResize(() => {
+    disposablesRef.current.resize = xtermRef.current.onResize(() => {
       sendResize();
     });
 
-    const resizeObserver = new ResizeObserver(() => {
+    disposablesRef.current.observer = new ResizeObserver(() => {
       if (fitAddonRef.current) {
         fitAddonRef.current.fit();
         sendResize();
@@ -183,20 +263,41 @@ export function RemoteTerminalView() {
     });
 
     if (terminalRef.current) {
-      resizeObserver.observe(terminalRef.current);
+      disposablesRef.current.observer.observe(terminalRef.current);
+    }
+  };
+
+  // Disconnect function
+  const disconnectFromShell = () => {
+    console.log("[WS] Manual disconnect triggered");
+
+    // Clean up disposables
+    if (disposablesRef.current.data) {
+      disposablesRef.current.data.dispose();
+      disposablesRef.current.data = undefined;
+    }
+    if (disposablesRef.current.resize) {
+      disposablesRef.current.resize.dispose();
+      disposablesRef.current.resize = undefined;
+    }
+    if (disposablesRef.current.observer) {
+      disposablesRef.current.observer.disconnect();
+      disposablesRef.current.observer = undefined;
     }
 
-    return () => {
-      disposable.dispose();
-      resizeDisposable.dispose();
-      resizeObserver.disconnect();
-
+    // Close WebSocket
+    if (wsRef.current) {
+      const socket = wsRef.current;
       if (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) {
+        console.log("[WS] Closing socket");
         socket.close();
       }
       wsRef.current = null;
-    };
-  }, [wsBaseUrl]);
+    }
+
+    setConnected(false);
+    setConnecting(false);
+  };
 
   return (
     <div className="terminal-view">
@@ -205,13 +306,37 @@ export function RemoteTerminalView() {
         <div className="terminal-header">
           <span className="terminal-title">Shell</span>
           <div className="terminal-controls">
-            {connected && (
+            {!connected && !connecting && (
+              <button
+                onClick={connectToShell}
+                className="secondary-btn"
+                style={{ marginRight: "0.5rem" }}
+              >
+                Connect
+              </button>
+            )}
+            {connecting && (
               <span className="terminal-status">
-                <span className="terminal-status-dot" />
-                Active
+                <span className="terminal-status-dot" style={{ animation: "pulse 1.5s ease-in-out infinite" }} />
+                Connecting...
               </span>
             )}
-            {!connected && error && (
+            {connected && (
+              <>
+                <span className="terminal-status">
+                  <span className="terminal-status-dot" />
+                  Active
+                </span>
+                <button
+                  onClick={disconnectFromShell}
+                  className="secondary-btn"
+                  style={{ marginLeft: "0.5rem" }}
+                >
+                  Disconnect
+                </button>
+              </>
+            )}
+            {!connected && !connecting && error && (
               <span className="terminal-status terminal-status--error">
                 ✗ {error}
               </span>

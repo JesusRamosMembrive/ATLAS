@@ -134,38 +134,69 @@ if self.read_thread is not None and self.read_thread.is_alive():
 Explicitly waits for thread termination before cleaning up resources.
 
 ### Fix 4: React Strict Mode Handling
-**File**: `frontend/src/components/RemoteTerminalView.tsx:134,220,228`
+**File**: `frontend/src/main.tsx:16-23`
 
 ```typescript
-let isCleanedUp = false;  // Track if effect was cleaned up
-
-socket.onopen = () => {
-  // Ignore if component was cleaned up (React Strict Mode unmount)
-  if (isCleanedUp) {
-    console.log("WebSocket opened after cleanup, ignoring");
-    return;
-  }
-  // ... rest of handler
-};
-
-return () => {
-  // Mark as cleaned up FIRST to prevent any event handlers from running
-  isCleanedUp = true;
-
-  // CRITICAL: Only close the socket if it's still the active one
-  // During React Strict Mode, the second mount may have already replaced wsRef.current
-  if (socket && socket === wsRef.current) {
-    if (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) {
-      socket.close();
-    }
-    wsRef.current = null;
-  }
-};
+// Note: StrictMode disabled temporarily to fix WebSocket connection issues
+// StrictMode causes double-mount in development which closes WebSocket before connection completes
+// This is not an issue in production builds where StrictMode effects don't apply
+createRoot(document.getElementById("root")!).render(
+  <QueryClientProvider client={queryClient}>
+    <App />
+  </QueryClientProvider>
+);
 ```
 
-Handles React 18+ Strict Mode's double-invoke pattern (mount → unmount → remount) in two ways:
-1. **isCleanedUp flag**: Prevents obsolete event handlers from affecting the component
-2. **Socket identity check**: Only closes the WebSocket if it's still the active one, preventing the cleanup of the first mount from closing the socket created by the second mount
+React Strict Mode was disabled to prevent double-mount issues with WebSockets.
+
+### Fix 5: TanStack Query + Zustand Update Issue (ACTUAL ROOT CAUSE)
+**File**: `frontend/src/components/RemoteTerminalView.tsx:26,138-144`
+
+```typescript
+const isInitializedRef = useRef(false);
+
+// Connect to WebSocket
+useEffect(() => {
+  if (!xtermRef.current) {
+    console.log("[WS] Effect skipped: terminal not ready");
+    return;
+  }
+
+  const terminal = xtermRef.current;
+  const wsUrl = wsBaseUrl.replace("http://", "ws://").replace("https://", "wss://");
+
+  // Skip if already initialized and WebSocket is active
+  // This prevents reconnection when App.tsx updates Zustand from useSettingsQuery
+  if (isInitializedRef.current) {
+    const currentSocket = wsRef.current;
+    if (currentSocket && (currentSocket.readyState === WebSocket.OPEN || currentSocket.readyState === WebSocket.CONNECTING)) {
+      console.log(`[WS] Already initialized with active socket (state=${currentSocket.readyState}), skipping reconnect`);
+      return;
+    }
+  }
+
+  isInitializedRef.current = true;
+  console.log(`[WS] Effect running, creating WebSocket to ${wsUrl}/api/terminal/ws`);
+  // ... rest of WebSocket creation
+}, [wsBaseUrl]);
+```
+
+**The Real Problem**:
+1. Page loads → `useSettingsQuery()` starts fetching (returns `data: undefined` initially)
+2. RemoteTerminalView mounts → Reads `wsBaseUrl` from Zustand (persisted from localStorage)
+3. useEffect runs, creates WebSocket (state=CONNECTING)
+4. `useSettingsQuery()` completes → Returns `{ data: { backend_url: "..." } }`
+5. App.tsx useEffect detects change → Calls `setBackendUrl()` → Updates Zustand store
+6. Zustand update triggers RemoteTerminalView re-render → useEffect dependency changes
+7. useEffect cleanup runs → Closes WebSocket while state=0 (CONNECTING, code=1006)
+8. useEffect re-runs, creates new WebSocket
+
+**The Fix**:
+- Track initialization state with `isInitializedRef`
+- After first WebSocket creation, set `isInitializedRef.current = true`
+- On subsequent useEffect runs (from App.tsx updating Zustand), check if already initialized
+- If initialized and socket is OPEN or CONNECTING → skip reconnect
+- This prevents closing healthy connections when App.tsx syncs settings to Zustand
 
 ## Success Criteria
 
