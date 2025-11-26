@@ -446,6 +446,98 @@
     "errors": []
   },
   {
+    "path": "code_map/api/claude_permissions.py",
+    "relative": true,
+    "modified_at": "2025-11-26T18:15:03.029594+00:00",
+    "symbols": [
+      {
+        "name": "ClaudePermissions",
+        "kind": "class",
+        "lineno": 30,
+        "parent": null,
+        "docstring": "Claude Code permissions structure"
+      },
+      {
+        "name": "ClaudeSettings",
+        "kind": "class",
+        "lineno": 37,
+        "parent": null,
+        "docstring": "Claude Code settings.local.json structure"
+      },
+      {
+        "name": "PermissionsResponse",
+        "kind": "class",
+        "lineno": 42,
+        "parent": null,
+        "docstring": "Response for permissions endpoint"
+      },
+      {
+        "name": "AddPermissionsRequest",
+        "kind": "class",
+        "lineno": 50,
+        "parent": null,
+        "docstring": "Request to add permissions"
+      },
+      {
+        "name": "AddPermissionsResponse",
+        "kind": "class",
+        "lineno": 55,
+        "parent": null,
+        "docstring": "Response after adding permissions"
+      },
+      {
+        "name": "get_settings_path",
+        "kind": "function",
+        "lineno": 86,
+        "parent": null,
+        "docstring": "Get path to .claude/settings.local.json"
+      },
+      {
+        "name": "read_settings",
+        "kind": "function",
+        "lineno": 91,
+        "parent": null,
+        "docstring": "Read Claude settings from file"
+      },
+      {
+        "name": "write_settings",
+        "kind": "function",
+        "lineno": 105,
+        "parent": null,
+        "docstring": "Write Claude settings to file"
+      },
+      {
+        "name": "get_permissions",
+        "kind": "function",
+        "lineno": 120,
+        "parent": null,
+        "docstring": "Get current Claude Code permissions for the project.\n\nReturns the current permissions from .claude/settings.local.json\nalong with recommended permissions for the Agent UI."
+      },
+      {
+        "name": "add_permissions",
+        "kind": "function",
+        "lineno": 149,
+        "parent": null,
+        "docstring": "Add permissions to Claude Code settings.\n\nAdds the specified permissions to the allow list in\n.claude/settings.local.json. Creates the file if it doesn't exist."
+      },
+      {
+        "name": "add_recommended_permissions",
+        "kind": "function",
+        "lineno": 190,
+        "parent": null,
+        "docstring": "Add all recommended permissions for Agent UI.\n\nConvenience endpoint that adds all permissions needed for\nthe Claude Agent UI to work properly."
+      },
+      {
+        "name": "remove_permission",
+        "kind": "function",
+        "lineno": 201,
+        "parent": null,
+        "docstring": "Remove a specific permission."
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "code_map/api/deps.py",
     "relative": true,
     "modified_at": "2025-11-10T11:33:54.677950+00:00",
@@ -663,7 +755,7 @@
   {
     "path": "code_map/api/routes.py",
     "relative": true,
-    "modified_at": "2025-11-24T10:54:09.505751+00:00",
+    "modified_at": "2025-11-26T18:15:30.991861+00:00",
     "symbols": [],
     "errors": []
   },
@@ -6172,54 +6264,54 @@
   {
     "path": "frontend/src/components/ClaudeAgentView.tsx",
     "relative": true,
-    "modified_at": "2025-11-26T17:55:43.857764+00:00",
+    "modified_at": "2025-11-26T18:44:33.682765+00:00",
     "symbols": [
       {
         "name": "ClaudeAgentView",
         "kind": "function",
-        "lineno": 26,
+        "lineno": 28,
         "parent": null,
         "docstring": "============================================================================"
       },
       {
         "name": "stripApi",
         "kind": "function",
-        "lineno": 67,
+        "lineno": 71,
         "parent": null,
         "docstring": null
       },
       {
         "name": "handleGlobalKeyDown",
         "kind": "function",
-        "lineno": 147,
+        "lineno": 151,
         "parent": null,
         "docstring": null
       },
       {
         "name": "AgentHeader",
         "kind": "function",
-        "lineno": 370,
+        "lineno": 388,
         "parent": null,
         "docstring": null
       },
       {
         "name": "EmptyState",
         "kind": "function",
-        "lineno": 470,
+        "lineno": 497,
         "parent": null,
         "docstring": null
       },
       {
         "name": "MessageItem",
         "kind": "function",
-        "lineno": 487,
+        "lineno": 514,
         "parent": null,
         "docstring": null
       },
       {
         "name": "truncatePath",
         "kind": "function",
-        "lineno": 594,
+        "lineno": 621,
         "parent": null,
         "docstring": "============================================================================"
       }
@@ -6457,6 +6549,28 @@
         "name": "formatStatus",
         "kind": "function",
         "lineno": 97,
+        "parent": null,
+        "docstring": null
+      }
+    ],
+    "errors": []
+  },
+  {
+    "path": "frontend/src/components/FileStatusSidebar.tsx",
+    "relative": true,
+    "modified_at": "2025-11-26T18:42:14.936510+00:00",
+    "symbols": [
+      {
+        "name": "FileStatusSidebar",
+        "kind": "function",
+        "lineno": 15,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "FileListItem",
+        "kind": "function",
+        "lineno": 75,
         "parent": null,
         "docstring": null
       }
@@ -6717,6 +6831,21 @@
         "lineno": 111,
         "parent": null,
         "docstring": null
+      }
+    ],
+    "errors": []
+  },
+  {
+    "path": "frontend/src/components/PermissionsModal.tsx",
+    "relative": true,
+    "modified_at": "2025-11-26T18:16:32.488369+00:00",
+    "symbols": [
+      {
+        "name": "PermissionsModal",
+        "kind": "function",
+        "lineno": 45,
+        "parent": null,
+        "docstring": "============================================================================="
       }
     ],
     "errors": []
@@ -51030,6 +51159,42 @@
     "relative": true,
     "modified_at": "2025-11-10T11:33:54.706854+00:00",
     "symbols": [],
+    "errors": []
+  },
+  {
+    "path": "playground_zone/operaciones_basicas.py",
+    "relative": true,
+    "modified_at": "2025-11-26T18:13:57.753072+00:00",
+    "symbols": [
+      {
+        "name": "suma",
+        "kind": "function",
+        "lineno": 6,
+        "parent": null,
+        "docstring": "Suma dos numeros."
+      },
+      {
+        "name": "resta",
+        "kind": "function",
+        "lineno": 11,
+        "parent": null,
+        "docstring": "Resta el segundo numero del primero."
+      },
+      {
+        "name": "multiplicacion",
+        "kind": "function",
+        "lineno": 16,
+        "parent": null,
+        "docstring": "Multiplica dos numeros."
+      },
+      {
+        "name": "division",
+        "kind": "function",
+        "lineno": 21,
+        "parent": null,
+        "docstring": "Divide el primer numero entre el segundo.\n\nRaises:\n    ValueError: Si el divisor es cero."
+      }
+    ],
     "errors": []
   },
   {

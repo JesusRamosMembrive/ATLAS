@@ -8,7 +8,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useClaudeSessionStore } from "../stores/claudeSessionStore";
 import { useSessionHistoryStore } from "../stores/sessionHistoryStore";
-import { useThemeStore } from "../stores/themeStore";
 import { useBackendStore } from "../state/useBackendStore";
 import { resolveBackendBaseUrl } from "../api/client";
 import {
@@ -60,9 +59,6 @@ export function ClaudeAgentView() {
 
   // Session history
   const { saveSession, sidebarOpen } = useSessionHistoryStore();
-
-  // Theme
-  const { resolvedTheme, toggleTheme } = useThemeStore();
 
   const backendUrl = useBackendStore((state) => state.backendUrl);
 
@@ -219,8 +215,6 @@ export function ClaudeAgentView() {
         onReconnect={handleReconnect}
         onNewSession={newSession}
         onClearMessages={clearMessages}
-        resolvedTheme={resolvedTheme}
-        onToggleTheme={toggleTheme}
         fileSidebarOpen={fileSidebarOpen}
         onToggleFileSidebar={() => setFileSidebarOpen(!fileSidebarOpen)}
       />
@@ -379,8 +373,6 @@ interface AgentHeaderProps {
   onReconnect: () => void;
   onNewSession: () => void;
   onClearMessages: () => void;
-  resolvedTheme: "dark" | "light";
-  onToggleTheme: () => void;
   fileSidebarOpen: boolean;
   onToggleFileSidebar: () => void;
 }
@@ -399,8 +391,6 @@ function AgentHeader({
   onReconnect,
   onNewSession,
   onClearMessages,
-  resolvedTheme,
-  onToggleTheme,
   fileSidebarOpen,
   onToggleFileSidebar,
 }: AgentHeaderProps) {
@@ -468,14 +458,6 @@ function AgentHeader({
             title="Toggle File Sidebar"
           >
             Files
-          </button>
-          <button
-            onClick={onToggleTheme}
-            className="header-btn theme-toggle"
-            title={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
-            aria-label={`Current theme: ${resolvedTheme}. Click to switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
-          >
-            {resolvedTheme === "dark" ? "☀️" : "🌙"}
           </button>
           <button onClick={onClearMessages} className="header-btn" title="Clear messages (Ctrl+L)">
             Clear
@@ -663,31 +645,6 @@ const styles = `
   --agent-shadow: rgba(0, 0, 0, 0.3);
 }
 
-.theme-light {
-  --agent-bg-primary: #f8fafc;
-  --agent-bg-secondary: #ffffff;
-  --agent-bg-tertiary: #f1f5f9;
-  --agent-bg-accent: #e2e8f0;
-  --agent-text-primary: #1e293b;
-  --agent-text-secondary: #475569;
-  --agent-text-muted: #64748b;
-  --agent-text-disabled: #94a3b8;
-  --agent-border-primary: #e2e8f0;
-  --agent-border-secondary: #cbd5e1;
-  --agent-accent-blue: #2563eb;
-  --agent-accent-blue-hover: #1d4ed8;
-  --agent-accent-green: #059669;
-  --agent-accent-red: #dc2626;
-  --agent-accent-red-hover: #b91c1c;
-  --agent-accent-yellow: #d97706;
-  --agent-accent-purple: #7c3aed;
-  --agent-error-bg: #fef2f2;
-  --agent-error-border: #fca5a5;
-  --agent-error-text: #991b1b;
-  --agent-success-bg: rgba(5, 150, 105, 0.1);
-  --agent-info-bg: #eff6ff;
-  --agent-shadow: rgba(0, 0, 0, 0.1);
-}
 
 /* Visually hidden but accessible to screen readers */
 .visually-hidden {
@@ -964,13 +921,10 @@ const styles = `
   background: var(--agent-accent-blue-hover);
 }
 
-.header-btn.theme-toggle {
-  font-size: 14px;
-  padding: 4px 8px;
-}
-
-.header-btn.theme-toggle:hover {
-  background: var(--agent-border-secondary);
+.header-btn.active {
+  background: var(--agent-accent-blue);
+  border-color: var(--agent-accent-blue);
+  color: white;
 }
 
 /* Messages Container */
@@ -1019,10 +973,11 @@ const styles = `
 
 /* Messages */
 .message {
-  padding: 12px;
+  padding: 10px 12px;
   border-radius: 8px;
   background: var(--agent-bg-secondary);
   border: 1px solid var(--agent-border-primary);
+  font-size: 13px;
 }
 
 .message-meta {
@@ -1037,7 +992,7 @@ const styles = `
   white-space: pre-wrap;
   word-break: break-word;
   font-family: inherit;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.5;
 }
 
@@ -1256,7 +1211,7 @@ const styles = `
 }
 
 .thinking-text {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .active-tools {
