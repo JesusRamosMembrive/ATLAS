@@ -16,8 +16,7 @@ import {
   formatToolInput,
 } from "../types/claude-events";
 import { MarkdownRenderer } from "./MarkdownRenderer";
-import { SessionHistorySidebar } from "./SessionHistorySidebar";
-import { FileStatusSidebar } from "./FileStatusSidebar";
+import { AgentSidebar } from "./AgentSidebar";
 import { FileDiffModal } from "./FileDiffModal";
 
 // ============================================================================
@@ -26,7 +25,7 @@ import { FileDiffModal } from "./FileDiffModal";
 
 export function ClaudeAgentView() {
   const [promptValue, setPromptValue] = useState("");
-  const [fileSidebarOpen, setFileSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [diffTarget, setDiffTarget] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -58,7 +57,7 @@ export function ClaudeAgentView() {
   } = useClaudeSessionStore();
 
   // Session history
-  const { saveSession, sidebarOpen } = useSessionHistoryStore();
+  const { saveSession } = useSessionHistoryStore();
 
   const backendUrl = useBackendStore((state) => state.backendUrl);
 
@@ -182,21 +181,19 @@ export function ClaudeAgentView() {
 
   return (
     <div
-      className={`claude-agent-view ${sidebarOpen || fileSidebarOpen ? "sidebar-open" : ""}`}
+      className={`claude-agent-view ${sidebarOpen ? "sidebar-open" : ""}`}
       role="main"
       aria-label="Claude Agent Interface"
     >
-      {/* Session History Sidebar */}
-      <SessionHistorySidebar
+      {/* Unified Sidebar with tabs */}
+      <AgentSidebar
+        isOpen={sidebarOpen}
+        onToggle={() => setSidebarOpen(!sidebarOpen)}
         onLoadSession={handleLoadSession}
         onNewSession={handleNewSessionFromSidebar}
-      />
-
-      {/* File Status Sidebar */}
-      <FileStatusSidebar
-        isOpen={fileSidebarOpen}
         onShowDiff={setDiffTarget}
-        onClose={() => setFileSidebarOpen(false)}
+        totalInputTokens={totalInputTokens}
+        totalOutputTokens={totalOutputTokens}
       />
 
       {/* Header */}
@@ -215,8 +212,6 @@ export function ClaudeAgentView() {
         onReconnect={handleReconnect}
         onNewSession={newSession}
         onClearMessages={clearMessages}
-        fileSidebarOpen={fileSidebarOpen}
-        onToggleFileSidebar={() => setFileSidebarOpen(!fileSidebarOpen)}
       />
 
       {/* Connection Error Banner */}
@@ -373,8 +368,6 @@ interface AgentHeaderProps {
   onReconnect: () => void;
   onNewSession: () => void;
   onClearMessages: () => void;
-  fileSidebarOpen: boolean;
-  onToggleFileSidebar: () => void;
 }
 
 function AgentHeader({
@@ -391,8 +384,6 @@ function AgentHeader({
   onReconnect,
   onNewSession,
   onClearMessages,
-  fileSidebarOpen,
-  onToggleFileSidebar,
 }: AgentHeaderProps) {
   const toggleContinueSession = useCallback(() => {
     useClaudeSessionStore.setState((state) => ({
@@ -452,13 +443,6 @@ function AgentHeader({
       <div className="claude-header-right">
         {cwd && <span className="claude-cwd" title={cwd}>{truncatePath(cwd, 40)}</span>}
         <div className="claude-header-actions">
-          <button
-            onClick={onToggleFileSidebar}
-            className={`header-btn ${fileSidebarOpen ? "active" : ""}`}
-            title="Toggle File Sidebar"
-          >
-            Files
-          </button>
           <button onClick={onClearMessages} className="header-btn" title="Clear messages (Ctrl+L)">
             Clear
           </button>
