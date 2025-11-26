@@ -2,7 +2,7 @@
   {
     "path": "assess_stage.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.677833+00:00",
     "symbols": [
       {
         "name": "assess_stage",
@@ -45,28 +45,28 @@
   {
     "path": "claude_assess.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.677950+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.677950+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/__main__.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.677950+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/analyzer.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.677950+00:00",
     "symbols": [
       {
         "name": "get_modified_time",
@@ -137,7 +137,7 @@
   {
     "path": "code_map/analyzer_registry.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.677950+00:00",
     "symbols": [
       {
         "name": "AnalyzerCapability",
@@ -250,7 +250,7 @@
   {
     "path": "code_map/api/analysis.py",
     "relative": true,
-    "modified_at": "2025-11-14T12:05:36+00:00",
+    "modified_at": "2025-11-14T12:05:36.029937+00:00",
     "symbols": [
       {
         "name": "_get_git_history",
@@ -370,7 +370,7 @@
   {
     "path": "code_map/api/audit.py",
     "relative": true,
-    "modified_at": "2025-11-23T19:29:44+00:00",
+    "modified_at": "2025-11-23T19:29:44.876460+00:00",
     "symbols": [
       {
         "name": "_serialize_run",
@@ -448,7 +448,7 @@
   {
     "path": "code_map/api/deps.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.677950+00:00",
     "symbols": [
       {
         "name": "get_app_state",
@@ -463,7 +463,7 @@
   {
     "path": "code_map/api/graph.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.327461+00:00",
     "symbols": [
       {
         "name": "get_class_graph",
@@ -499,7 +499,7 @@
   {
     "path": "code_map/api/integrations.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.677950+00:00",
     "symbols": [
       {
         "name": "get_ollama_status",
@@ -549,7 +549,7 @@
   {
     "path": "code_map/api/linters.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.327461+00:00",
     "symbols": [
       {
         "name": "get_linters_discovery",
@@ -627,7 +627,7 @@
   {
     "path": "code_map/api/preview.py",
     "relative": true,
-    "modified_at": "2025-11-14T12:01:30+00:00",
+    "modified_at": "2025-11-14T12:01:30.277316+00:00",
     "symbols": [
       {
         "name": "preview_file",
@@ -663,14 +663,14 @@
   {
     "path": "code_map/api/routes.py",
     "relative": true,
-    "modified_at": "2025-11-24T10:54:09+00:00",
+    "modified_at": "2025-11-24T10:54:09.505751+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/api/schemas.py",
     "relative": true,
-    "modified_at": "2025-11-23T10:22:06+00:00",
+    "modified_at": "2025-11-23T10:22:06.966870+00:00",
     "symbols": [
       {
         "name": "HealthResponse",
@@ -1224,7 +1224,7 @@
   {
     "path": "code_map/api/settings.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.327461+00:00",
     "symbols": [
       {
         "name": "get_settings",
@@ -1267,7 +1267,7 @@
   {
     "path": "code_map/api/stage.py",
     "relative": true,
-    "modified_at": "2025-11-12T09:08:01+00:00",
+    "modified_at": "2025-11-12T09:08:01.882932+00:00",
     "symbols": [
       {
         "name": "get_stage_status",
@@ -1296,7 +1296,7 @@
   {
     "path": "code_map/api/terminal.py",
     "relative": true,
-    "modified_at": "2025-11-26T16:07:44+00:00",
+    "modified_at": "2025-11-26T16:07:44.863144+00:00",
     "symbols": [
       {
         "name": "terminal_websocket",
@@ -1318,7 +1318,7 @@
   {
     "path": "code_map/api/timeline.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.327461+00:00",
     "symbols": [
       {
         "name": "CommitInfoSchema",
@@ -1403,7 +1403,7 @@
   {
     "path": "code_map/api/tracer.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.327461+00:00",
     "symbols": [
       {
         "name": "AnalyzeFileRequest",
@@ -1523,7 +1523,7 @@
   {
     "path": "code_map/ast_utils.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.678853+00:00",
     "symbols": [
       {
         "name": "ImportResolver",
@@ -1545,14 +1545,14 @@
   {
     "path": "code_map/audit/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-23T10:21:07+00:00",
+    "modified_at": "2025-11-23T10:21:07.981278+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/audit/file_watcher_hook.py",
     "relative": true,
-    "modified_at": "2025-11-23T21:19:57+00:00",
+    "modified_at": "2025-11-23T21:19:57.150771+00:00",
     "symbols": [
       {
         "name": "AuditFileWatcher",
@@ -1644,7 +1644,7 @@
   {
     "path": "code_map/audit/hooks.py",
     "relative": true,
-    "modified_at": "2025-11-23T19:46:52+00:00",
+    "modified_at": "2025-11-23T19:46:52.134694+00:00",
     "symbols": [
       {
         "name": "AuditContext",
@@ -1701,7 +1701,7 @@
   {
     "path": "code_map/audit/storage.py",
     "relative": true,
-    "modified_at": "2025-11-23T19:41:27+00:00",
+    "modified_at": "2025-11-23T19:41:27.175207+00:00",
     "symbols": [
       {
         "name": "AuditRun",
@@ -1814,7 +1814,7 @@
   {
     "path": "code_map/cache.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.327461+00:00",
     "symbols": [
       {
         "name": "SnapshotStore",
@@ -1892,7 +1892,7 @@
   {
     "path": "code_map/call_tracer_v2.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.327922+00:00",
     "symbols": [
       {
         "name": "CrossFileCallGraphExtractor",
@@ -2005,7 +2005,7 @@
   {
     "path": "code_map/class_graph.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.680315+00:00",
     "symbols": [
       {
         "name": "ClassInfo",
@@ -2237,7 +2237,7 @@
   {
     "path": "code_map/cli.py",
     "relative": true,
-    "modified_at": "2025-11-14T11:22:00+00:00",
+    "modified_at": "2025-11-14T11:22:00.222632+00:00",
     "symbols": [
       {
         "name": "_validate_root",
@@ -2294,14 +2294,14 @@
   {
     "path": "code_map/constants.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.680315+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/dependencies.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.680315+00:00",
     "symbols": [
       {
         "name": "DependencySpec",
@@ -2365,7 +2365,7 @@
   {
     "path": "code_map/events.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.680733+00:00",
     "symbols": [
       {
         "name": "ChangeEventType",
@@ -2422,7 +2422,7 @@
   {
     "path": "code_map/git_history.py",
     "relative": true,
-    "modified_at": "2025-11-23T19:28:30+00:00",
+    "modified_at": "2025-11-23T19:28:30.282186+00:00",
     "symbols": [
       {
         "name": "GitHistoryError",
@@ -2598,7 +2598,7 @@
   {
     "path": "code_map/html_analyzer.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.680733+00:00",
     "symbols": [
       {
         "name": "HtmlAnalyzer",
@@ -2627,7 +2627,7 @@
   {
     "path": "code_map/import_resolver.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.327922+00:00",
     "symbols": [
       {
         "name": "ImportResolver",
@@ -2691,7 +2691,7 @@
   {
     "path": "code_map/index.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.680733+00:00",
     "symbols": [
       {
         "name": "SymbolIndex",
@@ -2783,14 +2783,14 @@
   {
     "path": "code_map/insights/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.680733+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/insights/ollama_service.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.680733+00:00",
     "symbols": [
       {
         "name": "_resolve_focus",
@@ -2826,7 +2826,7 @@
   {
     "path": "code_map/insights/storage.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.680733+00:00",
     "symbols": [
       {
         "name": "StoredInsight",
@@ -2876,14 +2876,14 @@
   {
     "path": "code_map/integrations/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.680733+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/integrations/ollama_service.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.329286+00:00",
     "symbols": [
       {
         "name": "_normalize_endpoint",
@@ -3073,7 +3073,7 @@
   {
     "path": "code_map/js_analyzer.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.680853+00:00",
     "symbols": [
       {
         "name": "_node_get",
@@ -3158,7 +3158,7 @@
   {
     "path": "code_map/linters/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.680853+00:00",
     "symbols": [
       {
         "name": "linters_discovery_payload",
@@ -3173,7 +3173,7 @@
   {
     "path": "code_map/linters/discovery.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.680853+00:00",
     "symbols": [
       {
         "name": "ToolDefinition",
@@ -3251,7 +3251,7 @@
   {
     "path": "code_map/linters/pipeline.py",
     "relative": true,
-    "modified_at": "2025-11-23T17:57:13+00:00",
+    "modified_at": "2025-11-23T17:57:13.145717+00:00",
     "symbols": [
       {
         "name": "LinterConfig",
@@ -3399,7 +3399,7 @@
   {
     "path": "code_map/linters/report_schema.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.682154+00:00",
     "symbols": [
       {
         "name": "CheckStatus",
@@ -3554,7 +3554,7 @@
   {
     "path": "code_map/linters/storage.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.682258+00:00",
     "symbols": [
       {
         "name": "_normalize_root",
@@ -3681,7 +3681,7 @@
   {
     "path": "code_map/models.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.682345+00:00",
     "symbols": [
       {
         "name": "SymbolKind",
@@ -3745,7 +3745,7 @@
   {
     "path": "code_map/scanner.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.682442+00:00",
     "symbols": [
       {
         "name": "ProjectScanner",
@@ -3830,7 +3830,7 @@
   {
     "path": "code_map/scheduler.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.682532+00:00",
     "symbols": [
       {
         "name": "_QueuedEvent",
@@ -3901,7 +3901,7 @@
   {
     "path": "code_map/server.py",
     "relative": true,
-    "modified_at": "2025-11-14T11:44:12+00:00",
+    "modified_at": "2025-11-14T11:44:12.343881+00:00",
     "symbols": [
       {
         "name": "_parse_allowed_origins",
@@ -3923,7 +3923,7 @@
   {
     "path": "code_map/settings.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.329286+00:00",
     "symbols": [
       {
         "name": "_normalize_exclusions",
@@ -4022,7 +4022,7 @@
   {
     "path": "code_map/stage_toolkit.py",
     "relative": true,
-    "modified_at": "2025-11-12T09:07:37+00:00",
+    "modified_at": "2025-11-12T09:07:37.912406+00:00",
     "symbols": [
       {
         "name": "FileStatus",
@@ -4093,7 +4093,7 @@
   {
     "path": "code_map/state.py",
     "relative": true,
-    "modified_at": "2025-11-14T11:44:33+00:00",
+    "modified_at": "2025-11-14T11:44:33.771110+00:00",
     "symbols": [
       {
         "name": "_parse_enabled_tools_env",
@@ -4297,7 +4297,7 @@
   {
     "path": "code_map/state_reporter.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.329286+00:00",
     "symbols": [
       {
         "name": "_serialize_capability",
@@ -4333,14 +4333,14 @@
   {
     "path": "code_map/terminal/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-26T16:07:55+00:00",
+    "modified_at": "2025-11-26T16:07:55.759191+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/terminal/agent_events.py",
     "relative": true,
-    "modified_at": "2025-11-25T06:27:02+00:00",
+    "modified_at": "2025-11-25T06:27:02.862636+00:00",
     "symbols": [
       {
         "name": "CommandExecution",
@@ -4495,7 +4495,7 @@
   {
     "path": "code_map/terminal/agent_parser.py",
     "relative": true,
-    "modified_at": "2025-11-26T09:43:45+00:00",
+    "modified_at": "2025-11-26T09:43:45.022774+00:00",
     "symbols": [
       {
         "name": "AgentEventType",
@@ -4685,47 +4685,54 @@
   {
     "path": "code_map/terminal/claude_runner.py",
     "relative": true,
-    "modified_at": "2025-11-26T16:06:22+00:00",
+    "modified_at": "2025-11-26T18:08:32.049739+00:00",
     "symbols": [
+      {
+        "name": "find_claude_cli",
+        "kind": "function",
+        "lineno": 19,
+        "parent": null,
+        "docstring": "Find the Claude CLI executable.\n\nChecks multiple locations since running with sudo may have different PATH.\n\nReturns:\n    Full path to claude CLI, or \"claude\" if not found (will fail at runtime)"
+      },
       {
         "name": "ClaudeRunnerConfig",
         "kind": "class",
-        "lineno": 18,
+        "lineno": 59,
         "parent": null,
         "docstring": "Configuration for Claude Code runner"
       },
       {
         "name": "ClaudeAgentRunner",
         "kind": "class",
-        "lineno": 26,
+        "lineno": 67,
         "parent": null,
         "docstring": "Executes Claude Code in JSON streaming mode\n\nRuns `claude -p --output-format stream-json --verbose` and streams\nparsed JSON events line by line."
       },
       {
         "name": "__init__",
         "kind": "method",
-        "lineno": 34,
+        "lineno": 75,
         "parent": "ClaudeAgentRunner",
         "docstring": null
       },
       {
         "name": "run_prompt",
         "kind": "method",
-        "lineno": 40,
+        "lineno": 81,
         "parent": "ClaudeAgentRunner",
         "docstring": "Execute a prompt and stream JSON events\n\nArgs:\n    prompt: The prompt to send to Claude Code\n    on_event: Callback for each parsed JSON event\n    on_error: Optional callback for stderr output\n    on_done: Optional callback when process completes\n\nReturns:\n    Exit code from the process"
       },
       {
         "name": "cancel",
         "kind": "method",
-        "lineno": 191,
+        "lineno": 233,
         "parent": "ClaudeAgentRunner",
         "docstring": "Cancel the running process"
       },
       {
         "name": "is_running",
         "kind": "method",
-        "lineno": 221,
+        "lineno": 263,
         "parent": "ClaudeAgentRunner",
         "docstring": "Check if process is currently running"
       }
@@ -4735,7 +4742,7 @@
   {
     "path": "code_map/terminal/json_parser.py",
     "relative": true,
-    "modified_at": "2025-11-26T16:06:57+00:00",
+    "modified_at": "2025-11-26T16:06:57.026949+00:00",
     "symbols": [
       {
         "name": "EventType",
@@ -4848,7 +4855,7 @@
   {
     "path": "code_map/terminal/pty_shell.py",
     "relative": true,
-    "modified_at": "2025-11-26T13:50:49+00:00",
+    "modified_at": "2025-11-26T13:50:49.850791+00:00",
     "symbols": [
       {
         "name": "PTYShell",
@@ -4940,7 +4947,7 @@
   {
     "path": "code_map/ts_analyzer.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.683010+00:00",
     "symbols": [
       {
         "name": "_TsParser",
@@ -5018,7 +5025,7 @@
   {
     "path": "code_map/uml_graph.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.329286+00:00",
     "symbols": [
       {
         "name": "AttributeInfo",
@@ -5327,7 +5334,7 @@
   {
     "path": "code_map/watcher.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.683358+00:00",
     "symbols": [
       {
         "name": "_EventHandler",
@@ -5440,7 +5447,7 @@
   {
     "path": "docs/ui_mockup.html",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.685321+00:00",
     "symbols": [
       {
         "name": "dashboard",
@@ -5504,7 +5511,7 @@
   {
     "path": "frontend/dist/assets/index-C2ZommFS.js",
     "relative": true,
-    "modified_at": "2025-11-26T16:16:41+00:00",
+    "modified_at": "2025-11-26T16:16:41.572080+00:00",
     "symbols": [],
     "errors": []
   },
@@ -5539,7 +5546,7 @@
   {
     "path": "frontend/dist/index.html",
     "relative": true,
-    "modified_at": "2025-11-26T16:16:41+00:00",
+    "modified_at": "2025-11-26T16:16:41.571079+00:00",
     "symbols": [
       {
         "name": "root",
@@ -5554,7 +5561,7 @@
   {
     "path": "frontend/index.html",
     "relative": true,
-    "modified_at": "2025-11-10T16:42:39+00:00",
+    "modified_at": "2025-11-10T16:42:39.488675+00:00",
     "symbols": [
       {
         "name": "root",
@@ -5569,7 +5576,7 @@
   {
     "path": "frontend/src/App.tsx",
     "relative": true,
-    "modified_at": "2025-11-26T16:15:11+00:00",
+    "modified_at": "2025-11-26T16:15:11.886520+00:00",
     "symbols": [
       {
         "name": "App",
@@ -5591,7 +5598,7 @@
   {
     "path": "frontend/src/api/client.ts",
     "relative": true,
-    "modified_at": "2025-11-24T16:17:52+00:00",
+    "modified_at": "2025-11-24T16:17:52.395314+00:00",
     "symbols": [
       {
         "name": "sanitizeBaseUrl",
@@ -5907,21 +5914,21 @@
   {
     "path": "frontend/src/api/queryKeys.ts",
     "relative": true,
-    "modified_at": "2025-11-23T20:01:58+00:00",
+    "modified_at": "2025-11-23T20:01:58.196718+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "frontend/src/api/types.ts",
     "relative": true,
-    "modified_at": "2025-11-23T10:24:24+00:00",
+    "modified_at": "2025-11-23T10:24:24.598225+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "frontend/src/components/ActivityFeed.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.688792+00:00",
     "symbols": [
       {
         "name": "formatTimeAgo",
@@ -5943,7 +5950,7 @@
   {
     "path": "frontend/src/components/AppLayout.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.689026+00:00",
     "symbols": [
       {
         "name": "AppLayout",
@@ -5958,7 +5965,7 @@
   {
     "path": "frontend/src/components/AuditSessionsView.tsx",
     "relative": true,
-    "modified_at": "2025-11-23T20:03:04+00:00",
+    "modified_at": "2025-11-23T20:03:04.492429+00:00",
     "symbols": [
       {
         "name": "formatRelative",
@@ -6029,7 +6036,7 @@
   {
     "path": "frontend/src/components/ChangeListPanel.tsx",
     "relative": true,
-    "modified_at": "2025-11-11T15:29:16+00:00",
+    "modified_at": "2025-11-11T15:29:16.142863+00:00",
     "symbols": [
       {
         "name": "ChangeListPanel",
@@ -6094,7 +6101,7 @@
   {
     "path": "frontend/src/components/ClassUMLView.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.329922+00:00",
     "symbols": [
       {
         "name": "ClassUMLView",
@@ -6165,47 +6172,54 @@
   {
     "path": "frontend/src/components/ClaudeAgentView.tsx",
     "relative": true,
-    "modified_at": "2025-11-26T17:16:38.109034+00:00",
+    "modified_at": "2025-11-26T17:55:43.857764+00:00",
     "symbols": [
       {
         "name": "ClaudeAgentView",
         "kind": "function",
-        "lineno": 25,
+        "lineno": 26,
         "parent": null,
         "docstring": "============================================================================"
       },
       {
         "name": "stripApi",
         "kind": "function",
-        "lineno": 56,
+        "lineno": 67,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "handleGlobalKeyDown",
+        "kind": "function",
+        "lineno": 147,
         "parent": null,
         "docstring": null
       },
       {
         "name": "AgentHeader",
         "kind": "function",
-        "lineno": 265,
+        "lineno": 370,
         "parent": null,
         "docstring": null
       },
       {
         "name": "EmptyState",
         "kind": "function",
-        "lineno": 331,
+        "lineno": 470,
         "parent": null,
         "docstring": null
       },
       {
         "name": "MessageItem",
         "kind": "function",
-        "lineno": 348,
+        "lineno": 487,
         "parent": null,
         "docstring": null
       },
       {
         "name": "truncatePath",
         "kind": "function",
-        "lineno": 444,
+        "lineno": 594,
         "parent": null,
         "docstring": "============================================================================"
       }
@@ -6215,7 +6229,7 @@
   {
     "path": "frontend/src/components/CodeMapDashboard.tsx",
     "relative": true,
-    "modified_at": "2025-11-11T14:14:05+00:00",
+    "modified_at": "2025-11-11T14:14:05.418559+00:00",
     "symbols": [
       {
         "name": "CodeMapDashboard",
@@ -6244,7 +6258,7 @@
   {
     "path": "frontend/src/components/CodeTimelineView.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.329922+00:00",
     "symbols": [
       {
         "name": "DiffModal",
@@ -6329,7 +6343,7 @@
   {
     "path": "frontend/src/components/DetailPanel.tsx",
     "relative": true,
-    "modified_at": "2025-11-14T12:10:27+00:00",
+    "modified_at": "2025-11-14T12:10:27.989463+00:00",
     "symbols": [
       {
         "name": "DetailPanel",
@@ -6365,7 +6379,7 @@
   {
     "path": "frontend/src/components/DiffViewer.tsx",
     "relative": true,
-    "modified_at": "2025-11-23T21:25:21+00:00",
+    "modified_at": "2025-11-23T21:25:21.090579+00:00",
     "symbols": [
       {
         "name": "DiffViewer",
@@ -6394,7 +6408,7 @@
   {
     "path": "frontend/src/components/DocsLibraryView.tsx",
     "relative": true,
-    "modified_at": "2025-11-11T17:13:38+00:00",
+    "modified_at": "2025-11-11T17:13:38.276686+00:00",
     "symbols": [
       {
         "name": "DocsLibraryView",
@@ -6423,7 +6437,7 @@
   {
     "path": "frontend/src/components/FileDiffModal.tsx",
     "relative": true,
-    "modified_at": "2025-11-11T10:34:10+00:00",
+    "modified_at": "2025-11-11T10:34:10.523791+00:00",
     "symbols": [
       {
         "name": "FileDiffModal",
@@ -6452,7 +6466,7 @@
   {
     "path": "frontend/src/components/HeaderBar.tsx",
     "relative": true,
-    "modified_at": "2025-11-26T16:59:45.835824+00:00",
+    "modified_at": "2025-11-26T17:40:36.220414+00:00",
     "symbols": [
       {
         "name": "HeaderBar",
@@ -6467,7 +6481,7 @@
   {
     "path": "frontend/src/components/HomeView.tsx",
     "relative": true,
-    "modified_at": "2025-11-26T16:15:30+00:00",
+    "modified_at": "2025-11-26T16:15:30.784636+00:00",
     "symbols": [
       {
         "name": "detectionBadgeLabel",
@@ -6489,7 +6503,7 @@
   {
     "path": "frontend/src/components/LintersView.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.329922+00:00",
     "symbols": [
       {
         "name": "formatDate",
@@ -6553,7 +6567,7 @@
   {
     "path": "frontend/src/components/MarkdownRenderer.tsx",
     "relative": true,
-    "modified_at": "2025-11-26T17:05:51.237384+00:00",
+    "modified_at": "2025-11-26T17:40:36.220414+00:00",
     "symbols": [
       {
         "name": "MarkdownRenderer",
@@ -6589,7 +6603,7 @@
   {
     "path": "frontend/src/components/OllamaInsightsView.tsx",
     "relative": true,
-    "modified_at": "2025-11-14T12:35:24+00:00",
+    "modified_at": "2025-11-14T12:35:24.586040+00:00",
     "symbols": [
       {
         "name": "normalizeFocus",
@@ -6660,7 +6674,7 @@
   {
     "path": "frontend/src/components/OverviewDashboard.tsx",
     "relative": true,
-    "modified_at": "2025-11-11T15:37:48+00:00",
+    "modified_at": "2025-11-11T15:37:48.957101+00:00",
     "symbols": [
       {
         "name": "formatDateTime",
@@ -6710,7 +6724,7 @@
   {
     "path": "frontend/src/components/PreviewPane.tsx",
     "relative": true,
-    "modified_at": "2025-11-14T12:01:35+00:00",
+    "modified_at": "2025-11-14T12:01:35.357127+00:00",
     "symbols": [
       {
         "name": "getFileExtension",
@@ -6753,7 +6767,7 @@
   {
     "path": "frontend/src/components/PromptLibraryView.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.691058+00:00",
     "symbols": [
       {
         "name": "parseTagsInput",
@@ -6810,7 +6824,7 @@
   {
     "path": "frontend/src/components/RemoteTerminalView.tsx",
     "relative": true,
-    "modified_at": "2025-11-26T13:49:56+00:00",
+    "modified_at": "2025-11-26T13:49:56.826374+00:00",
     "symbols": [
       {
         "name": "RemoteTerminalView",
@@ -6874,7 +6888,7 @@
   {
     "path": "frontend/src/components/RescanButton.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.691058+00:00",
     "symbols": [
       {
         "name": "RescanButton",
@@ -6889,7 +6903,7 @@
   {
     "path": "frontend/src/components/SearchPanel.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.691058+00:00",
     "symbols": [
       {
         "name": "SearchPanel",
@@ -6904,7 +6918,7 @@
   {
     "path": "frontend/src/components/SessionHistorySidebar.tsx",
     "relative": true,
-    "modified_at": "2025-11-26T17:15:08.801553+00:00",
+    "modified_at": "2025-11-26T17:56:30.347055+00:00",
     "symbols": [
       {
         "name": "SessionHistorySidebar",
@@ -6926,7 +6940,7 @@
   {
     "path": "frontend/src/components/SettingsView.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.329922+00:00",
     "symbols": [
       {
         "name": "extractCustomExcludes",
@@ -6983,7 +6997,7 @@
   {
     "path": "frontend/src/components/Sidebar.tsx",
     "relative": true,
-    "modified_at": "2025-11-11T14:14:24+00:00",
+    "modified_at": "2025-11-11T14:14:24.159669+00:00",
     "symbols": [
       {
         "name": "Sidebar",
@@ -7040,7 +7054,7 @@
   {
     "path": "frontend/src/components/StageToolkitView.tsx",
     "relative": true,
-    "modified_at": "2025-11-12T09:09:54+00:00",
+    "modified_at": "2025-11-12T09:09:54.213229+00:00",
     "symbols": [
       {
         "name": "formatList",
@@ -7097,7 +7111,7 @@
   {
     "path": "frontend/src/components/StatusPanel.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.691058+00:00",
     "symbols": [
       {
         "name": "formatRelative",
@@ -7126,7 +7140,7 @@
   {
     "path": "frontend/src/components/TerminalView.tsx",
     "relative": true,
-    "modified_at": "2025-11-24T10:08:32+00:00",
+    "modified_at": "2025-11-24T10:08:32.224789+00:00",
     "symbols": [
       {
         "name": "TerminalView",
@@ -7232,7 +7246,7 @@
   {
     "path": "frontend/src/components/TimelineView.tsx",
     "relative": true,
-    "modified_at": "2025-11-23T21:15:51+00:00",
+    "modified_at": "2025-11-23T21:15:51.200802+00:00",
     "symbols": [
       {
         "name": "TimelineView",
@@ -7268,7 +7282,7 @@
   {
     "path": "frontend/src/components/TraceModal.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.329922+00:00",
     "symbols": [
       {
         "name": "TraceModal",
@@ -7283,7 +7297,7 @@
   {
     "path": "frontend/src/components/__tests__/PreviewPane.test.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692277+00:00",
     "symbols": [
       {
         "name": "createWrapper",
@@ -7298,7 +7312,7 @@
   {
     "path": "frontend/src/components/settings/BackendUrlSection.tsx",
     "relative": true,
-    "modified_at": "2025-11-14T11:23:03+00:00",
+    "modified_at": "2025-11-14T11:23:03.603312+00:00",
     "symbols": [
       {
         "name": "BackendUrlSection",
@@ -7320,7 +7334,7 @@
   {
     "path": "frontend/src/components/settings/DirectoryBrowserModal.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.330923+00:00",
     "symbols": [
       {
         "name": "DirectoryBrowserModal",
@@ -7349,7 +7363,7 @@
   {
     "path": "frontend/src/components/settings/DocstringsSection.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692434+00:00",
     "symbols": [
       {
         "name": "DocstringsSection",
@@ -7364,7 +7378,7 @@
   {
     "path": "frontend/src/components/settings/ExcludeDirsSection.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692539+00:00",
     "symbols": [
       {
         "name": "ExcludeDirsSection",
@@ -7386,7 +7400,7 @@
   {
     "path": "frontend/src/components/settings/RootPathSection.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692613+00:00",
     "symbols": [
       {
         "name": "RootPathSection",
@@ -7401,7 +7415,7 @@
   {
     "path": "frontend/src/components/terminal/AgentOverlay.tsx",
     "relative": true,
-    "modified_at": "2025-11-25T08:23:26+00:00",
+    "modified_at": "2025-11-25T08:23:26.717052+00:00",
     "symbols": [
       {
         "name": "AgentOverlay",
@@ -7416,7 +7430,7 @@
   {
     "path": "frontend/src/components/terminal/AgentStatusBar.tsx",
     "relative": true,
-    "modified_at": "2025-11-25T08:22:15+00:00",
+    "modified_at": "2025-11-25T08:22:15.528567+00:00",
     "symbols": [
       {
         "name": "AgentStatusBar",
@@ -7445,7 +7459,7 @@
   {
     "path": "frontend/src/components/terminal/AgentTimeline.tsx",
     "relative": true,
-    "modified_at": "2025-11-25T08:22:24+00:00",
+    "modified_at": "2025-11-25T08:22:24.028622+00:00",
     "symbols": [
       {
         "name": "AgentTimeline",
@@ -7488,7 +7502,7 @@
   {
     "path": "frontend/src/components/terminal/CommandWidget.tsx",
     "relative": true,
-    "modified_at": "2025-11-25T08:23:33+00:00",
+    "modified_at": "2025-11-25T08:23:33.670102+00:00",
     "symbols": [
       {
         "name": "CommandWidget",
@@ -7559,14 +7573,14 @@
   {
     "path": "frontend/src/config/defaultExcludes.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692695+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "frontend/src/hooks/useAuditEventStream.ts",
     "relative": true,
-    "modified_at": "2025-11-23T21:10:40+00:00",
+    "modified_at": "2025-11-23T21:10:40.934939+00:00",
     "symbols": [
       {
         "name": "useAuditEventStream",
@@ -7617,7 +7631,7 @@
   {
     "path": "frontend/src/hooks/useClassUmlQuery.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692759+00:00",
     "symbols": [
       {
         "name": "useClassUmlQuery",
@@ -7639,7 +7653,7 @@
   {
     "path": "frontend/src/hooks/useEventStream.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692808+00:00",
     "symbols": [
       {
         "name": "useEventStream",
@@ -7661,7 +7675,7 @@
   {
     "path": "frontend/src/hooks/useLintersLatestReport.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useLintersLatestReport",
@@ -7676,7 +7690,7 @@
   {
     "path": "frontend/src/hooks/useLintersNotifications.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useLintersNotifications",
@@ -7691,7 +7705,7 @@
   {
     "path": "frontend/src/hooks/useLintersReports.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useLintersReports",
@@ -7706,7 +7720,7 @@
   {
     "path": "frontend/src/hooks/useMarkNotificationRead.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useMarkNotificationRead",
@@ -7721,7 +7735,7 @@
   {
     "path": "frontend/src/hooks/useOllamaInsightsQuery.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useOllamaInsightsQuery",
@@ -7736,7 +7750,7 @@
   {
     "path": "frontend/src/hooks/useOllamaStartMutation.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useOllamaStartMutation",
@@ -7751,7 +7765,7 @@
   {
     "path": "frontend/src/hooks/useOllamaStatusQuery.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useOllamaStatusQuery",
@@ -7766,7 +7780,7 @@
   {
     "path": "frontend/src/hooks/useOllamaTestMutation.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useOllamaTestMutation",
@@ -7781,7 +7795,7 @@
   {
     "path": "frontend/src/hooks/useSettingsQuery.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useSettingsQuery",
@@ -7796,7 +7810,7 @@
   {
     "path": "frontend/src/hooks/useStageInitMutation.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useStageInitMutation",
@@ -7811,7 +7825,7 @@
   {
     "path": "frontend/src/hooks/useStageStatusQuery.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useStageStatusQuery",
@@ -7826,7 +7840,7 @@
   {
     "path": "frontend/src/hooks/useStatusQuery.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [
       {
         "name": "useStatusQuery",
@@ -7841,7 +7855,7 @@
   {
     "path": "frontend/src/hooks/useSuperClaudeInstallMutation.ts",
     "relative": true,
-    "modified_at": "2025-11-12T09:08:20+00:00",
+    "modified_at": "2025-11-12T09:08:20.898095+00:00",
     "symbols": [
       {
         "name": "useSuperClaudeInstallMutation",
@@ -7856,7 +7870,7 @@
   {
     "path": "frontend/src/hooks/useTimelineSummary.ts",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.330923+00:00",
     "symbols": [
       {
         "name": "useTimelineSummary",
@@ -7871,21 +7885,21 @@
   {
     "path": "frontend/src/main.tsx",
     "relative": true,
-    "modified_at": "2025-11-24T18:15:17+00:00",
+    "modified_at": "2025-11-24T18:15:17.114174+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "frontend/src/setupTests.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.692853+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "frontend/src/state/useActivityStore.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.694396+00:00",
     "symbols": [
       {
         "name": "push",
@@ -7907,7 +7921,7 @@
   {
     "path": "frontend/src/state/useBackendStore.ts",
     "relative": true,
-    "modified_at": "2025-11-14T11:23:06+00:00",
+    "modified_at": "2025-11-14T11:23:06.569344+00:00",
     "symbols": [
       {
         "name": "setBackendUrl",
@@ -7922,7 +7936,7 @@
   {
     "path": "frontend/src/state/usePromptLibrary.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.694531+00:00",
     "symbols": [
       {
         "name": "normalizeTags",
@@ -7986,14 +8000,14 @@
   {
     "path": "frontend/src/state/useSelectionStore.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.694531+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "frontend/src/stores/agentStore.ts",
     "relative": true,
-    "modified_at": "2025-11-25T08:23:53+00:00",
+    "modified_at": "2025-11-25T08:23:53.565245+00:00",
     "symbols": [
       {
         "name": "getEventDescription",
@@ -8008,47 +8022,47 @@
   {
     "path": "frontend/src/stores/claudeSessionStore.ts",
     "relative": true,
-    "modified_at": "2025-11-26T16:13:15+00:00",
+    "modified_at": "2025-11-26T17:45:58.030641+00:00",
     "symbols": [
       {
         "name": "selectConnected",
         "kind": "function",
-        "lineno": 444,
+        "lineno": 544,
         "parent": null,
         "docstring": "============================================================================"
       },
       {
         "name": "selectRunning",
         "kind": "function",
-        "lineno": 445,
+        "lineno": 545,
         "parent": null,
         "docstring": null
       },
       {
         "name": "selectMessages",
         "kind": "function",
-        "lineno": 446,
+        "lineno": 546,
         "parent": null,
         "docstring": null
       },
       {
         "name": "selectSessionInfo",
         "kind": "function",
-        "lineno": 447,
+        "lineno": 547,
         "parent": null,
         "docstring": null
       },
       {
         "name": "selectLastError",
         "kind": "function",
-        "lineno": 449,
+        "lineno": 549,
         "parent": null,
         "docstring": null
       },
       {
         "name": "selectActiveToolCalls",
         "kind": "function",
-        "lineno": 450,
+        "lineno": 550,
         "parent": null,
         "docstring": null
       }
@@ -8058,7 +8072,7 @@
   {
     "path": "frontend/src/stores/sessionHistoryStore.ts",
     "relative": true,
-    "modified_at": "2025-11-26T17:17:58.565104+00:00",
+    "modified_at": "2025-11-26T17:40:36.220414+00:00",
     "symbols": [
       {
         "name": "generateSessionId",
@@ -8099,9 +8113,38 @@
     "errors": []
   },
   {
+    "path": "frontend/src/stores/themeStore.ts",
+    "relative": true,
+    "modified_at": "2025-11-26T17:50:34.279387+00:00",
+    "symbols": [
+      {
+        "name": "getSystemTheme",
+        "kind": "function",
+        "lineno": 20,
+        "parent": null,
+        "docstring": "Get system preference"
+      },
+      {
+        "name": "resolveTheme",
+        "kind": "function",
+        "lineno": 28,
+        "parent": null,
+        "docstring": "Resolve theme based on mode"
+      },
+      {
+        "name": "applyTheme",
+        "kind": "function",
+        "lineno": 36,
+        "parent": null,
+        "docstring": "Apply theme to document"
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "frontend/src/types/agent.ts",
     "relative": true,
-    "modified_at": "2025-11-25T08:24:59+00:00",
+    "modified_at": "2025-11-25T08:24:59.601716+00:00",
     "symbols": [
       {
         "name": "parseAgentMessage",
@@ -8151,7 +8194,7 @@
   {
     "path": "frontend/src/types/claude-events.ts",
     "relative": true,
-    "modified_at": "2025-11-26T16:12:07+00:00",
+    "modified_at": "2025-11-26T16:12:07.707465+00:00",
     "symbols": [
       {
         "name": "isSystemInitEvent",
@@ -8222,7 +8265,7 @@
   {
     "path": "frontend/src/utils/changeStatus.ts",
     "relative": true,
-    "modified_at": "2025-11-11T15:29:09+00:00",
+    "modified_at": "2025-11-11T15:29:09.181844+00:00",
     "symbols": [
       {
         "name": "getChangeLabel",
@@ -8251,14 +8294,14 @@
   {
     "path": "frontend/src/vite-env.d.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.696021+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "frontend/vite.config.ts",
     "relative": true,
-    "modified_at": "2025-11-24T16:17:58+00:00",
+    "modified_at": "2025-11-24T16:17:58.650401+00:00",
     "symbols": [],
     "errors": []
   },
@@ -50985,14 +51028,14 @@
   {
     "path": "init_project.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.706854+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "stage_config.py",
     "relative": true,
-    "modified_at": "2025-11-10T21:23:34+00:00",
+    "modified_at": "2025-11-10T21:23:34.671933+00:00",
     "symbols": [
       {
         "name": "StageThresholds",
@@ -51119,14 +51162,14 @@
   {
     "path": "stage_init/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.708105+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "stage_init/cli.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.708105+00:00",
     "symbols": [
       {
         "name": "build_parser",
@@ -51162,7 +51205,7 @@
   {
     "path": "stage_init/initializer.py",
     "relative": true,
-    "modified_at": "2025-11-18T15:21:25+00:00",
+    "modified_at": "2025-11-18T15:21:25.171654+00:00",
     "symbols": [
       {
         "name": "InitializationConfig",
@@ -51261,7 +51304,7 @@
   {
     "path": "stage_init/stage_update.py",
     "relative": true,
-    "modified_at": "2025-11-18T15:21:25+00:00",
+    "modified_at": "2025-11-18T15:21:25.189745+00:00",
     "symbols": [
       {
         "name": "StageUpdateResult",
@@ -51304,7 +51347,7 @@
   {
     "path": "stage_init/templates.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.708105+00:00",
     "symbols": [
       {
         "name": "TemplateSummary",
@@ -51382,7 +51425,7 @@
   {
     "path": "testZone/example.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.710127+00:00",
     "symbols": [
       {
         "name": "sum",
@@ -51404,14 +51447,14 @@
   {
     "path": "testZone/index.html",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.710177+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "test_dedup.py",
     "relative": true,
-    "modified_at": "2025-11-26T09:23:37+00:00",
+    "modified_at": "2025-11-26T09:23:37.728783+00:00",
     "symbols": [
       {
         "name": "TestPTYShellDeduplication",
@@ -51454,7 +51497,7 @@
   {
     "path": "test_structured.py",
     "relative": true,
-    "modified_at": "2025-11-26T09:44:37+00:00",
+    "modified_at": "2025-11-26T09:44:37.567727+00:00",
     "symbols": [
       {
         "name": "TestStructuredOutput",
@@ -51497,14 +51540,14 @@
   {
     "path": "tests/conftest.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.710177+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "tests/test_agent_bridge.py",
     "relative": true,
-    "modified_at": "2025-11-23T20:12:47+00:00",
+    "modified_at": "2025-11-23T20:12:47.353319+00:00",
     "symbols": [
       {
         "name": "temp_root",
@@ -51680,7 +51723,7 @@
   {
     "path": "tests/test_agent_controller.py",
     "relative": true,
-    "modified_at": "2025-11-24T09:47:18+00:00",
+    "modified_at": "2025-11-24T09:47:18.855193+00:00",
     "symbols": [
       {
         "name": "TestAgentTask",
@@ -51800,7 +51843,7 @@
   {
     "path": "tests/test_agent_parser.py",
     "relative": true,
-    "modified_at": "2025-11-25T06:35:37+00:00",
+    "modified_at": "2025-11-25T06:35:37.033262+00:00",
     "symbols": [
       {
         "name": "TestAgentOutputParser",
@@ -51913,7 +51956,7 @@
   {
     "path": "tests/test_analysis_engine.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.710177+00:00",
     "symbols": [
       {
         "name": "write_module",
@@ -52054,7 +52097,7 @@
   {
     "path": "tests/test_api.py",
     "relative": true,
-    "modified_at": "2025-11-23T10:28:38+00:00",
+    "modified_at": "2025-11-23T10:28:38.143645+00:00",
     "symbols": [
       {
         "name": "write_file",
@@ -52321,7 +52364,7 @@
   {
     "path": "tests/test_audit_hooks.py",
     "relative": true,
-    "modified_at": "2025-11-23T19:51:23+00:00",
+    "modified_at": "2025-11-23T19:51:23.447189+00:00",
     "symbols": [
       {
         "name": "temp_root",
@@ -52518,7 +52561,7 @@
   {
     "path": "tests/test_file_watcher_hook.py",
     "relative": true,
-    "modified_at": "2025-11-23T21:21:56+00:00",
+    "modified_at": "2025-11-23T21:21:56.914385+00:00",
     "symbols": [
       {
         "name": "temp_root",
@@ -52652,7 +52695,7 @@
   {
     "path": "tests/test_insights_scheduler.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.710177+00:00",
     "symbols": [
       {
         "name": "_DummyWatcher",
@@ -52723,7 +52766,7 @@
   {
     "path": "tests/test_linters_pipeline.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.710177+00:00",
     "symbols": [
       {
         "name": "test_run_linters_pipeline_generates_report",
@@ -52738,7 +52781,7 @@
   {
     "path": "tests/test_linters_pipeline_options.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.710177+00:00",
     "symbols": [
       {
         "name": "write_file",
@@ -52767,7 +52810,7 @@
   {
     "path": "tests/test_stage_config.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.710177+00:00",
     "symbols": [
       {
         "name": "write_module",
@@ -52810,7 +52853,7 @@
   {
     "path": "tests/test_stage_initializer.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.332673+00:00",
     "symbols": [
       {
         "name": "_silence_logs",
@@ -52839,7 +52882,7 @@
   {
     "path": "tools/debug_ollama.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54+00:00",
+    "modified_at": "2025-11-10T11:33:54.710177+00:00",
     "symbols": [
       {
         "name": "HttpResponse",
@@ -52882,7 +52925,7 @@
   {
     "path": "tools/test_backend_ollama.py",
     "relative": true,
-    "modified_at": "2025-11-14T11:22:24+00:00",
+    "modified_at": "2025-11-14T11:22:24.504893+00:00",
     "symbols": [
       {
         "name": "parse_args",
@@ -52904,7 +52947,7 @@
   {
     "path": "tracerTesting/driverExample.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.332673+00:00",
     "symbols": [
       {
         "name": "driverExampleClass",
@@ -52933,7 +52976,7 @@
   {
     "path": "tracerTesting/endpointExample.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.332673+00:00",
     "symbols": [
       {
         "name": "endpointExampleClass",
@@ -52962,7 +53005,7 @@
   {
     "path": "tracerTesting/middlewareExample.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50+00:00",
+    "modified_at": "2025-11-10T16:44:50.332673+00:00",
     "symbols": [
       {
         "name": "middlewareAPI",

@@ -33,6 +33,12 @@ interface ClaudeSessionStore {
   wsUrl: string | null;
   cwd: string | null;
 
+  // Reconnection state
+  reconnectAttempts: number;
+  maxReconnectAttempts: number;
+  reconnectDelay: number;
+  isReconnecting: boolean;
+
   // Session state
   running: boolean;
   sessionInfo: ClaudeSessionInfo;
@@ -50,9 +56,11 @@ interface ClaudeSessionStore {
 
   // Error handling
   lastError: string | null;
+  connectionError: string | null;
 
   // WebSocket instance (internal)
   _ws: WebSocket | null;
+  _reconnectTimeout: ReturnType<typeof setTimeout> | null;
 
   // Actions
   connect: (wsUrl: string) => void;
@@ -63,6 +71,7 @@ interface ClaudeSessionStore {
   requestStatus: () => void;
   clearMessages: () => void;
   setError: (error: string | null) => void;
+  clearConnectionError: () => void;
 
   // Event processing
   processEvent: (event: ClaudeEvent) => void;
@@ -88,6 +97,14 @@ const initialSessionInfo: ClaudeSessionInfo = {
 // Store Implementation
 // ============================================================================
 
+// Reconnection configuration
+const RECONNECT_CONFIG = {
+  maxAttempts: 5,
+  baseDelay: 1000,
+  maxDelay: 30000,
+  backoffMultiplier: 2,
+};
+
 export const useClaudeSessionStore = create<ClaudeSessionStore>()(
   devtools(
     subscribeWithSelector((set, get) => ({
@@ -96,6 +113,10 @@ export const useClaudeSessionStore = create<ClaudeSessionStore>()(
       connecting: false,
       wsUrl: null,
       cwd: null,
+      reconnectAttempts: 0,
+      maxReconnectAttempts: RECONNECT_CONFIG.maxAttempts,
+      reconnectDelay: RECONNECT_CONFIG.baseDelay,
+      isReconnecting: false,
       running: false,
       sessionInfo: { ...initialSessionInfo },
       continueSession: true,
@@ -106,42 +127,103 @@ export const useClaudeSessionStore = create<ClaudeSessionStore>()(
       totalOutputTokens: 0,
       lastRequestDuration: null,
       lastError: null,
+      connectionError: null,
       _ws: null,
+      _reconnectTimeout: null,
 
       // Connect to WebSocket
       connect: (wsUrl: string) => {
         const state = get();
+
+        // Clear any pending reconnect timeout
+        if (state._reconnectTimeout) {
+          clearTimeout(state._reconnectTimeout);
+        }
+
         if (state._ws) {
           state._ws.close();
         }
 
-        set({ connecting: true, wsUrl, lastError: null });
+        set({
+          connecting: true,
+          wsUrl,
+          lastError: null,
+          connectionError: null,
+          _reconnectTimeout: null,
+        });
 
         const ws = new WebSocket(wsUrl);
 
         ws.onopen = () => {
           console.log("[ClaudeSession] WebSocket connected");
-          set({ connected: true, connecting: false, _ws: ws });
+          set({
+            connected: true,
+            connecting: false,
+            isReconnecting: false,
+            reconnectAttempts: 0,
+            reconnectDelay: RECONNECT_CONFIG.baseDelay,
+            connectionError: null,
+            _ws: ws,
+          });
         };
 
         ws.onclose = (event) => {
-          console.log("[ClaudeSession] WebSocket closed:", event.code);
+          console.log("[ClaudeSession] WebSocket closed:", event.code, event.reason);
+          const currentState = get();
+
           set({
             connected: false,
             connecting: false,
             running: false,
             _ws: null,
           });
+
+          // Auto-reconnect if not intentionally disconnected (code 1000)
+          // and we haven't exceeded max attempts
+          if (event.code !== 1000 && currentState.wsUrl) {
+            const attempts = currentState.reconnectAttempts;
+            if (attempts < RECONNECT_CONFIG.maxAttempts) {
+              const delay = Math.min(
+                currentState.reconnectDelay * Math.pow(RECONNECT_CONFIG.backoffMultiplier, attempts),
+                RECONNECT_CONFIG.maxDelay
+              );
+
+              console.log(`[ClaudeSession] Reconnecting in ${delay}ms (attempt ${attempts + 1}/${RECONNECT_CONFIG.maxAttempts})`);
+
+              set({
+                isReconnecting: true,
+                reconnectAttempts: attempts + 1,
+                reconnectDelay: delay,
+                connectionError: `Connection lost. Reconnecting in ${Math.round(delay / 1000)}s...`,
+              });
+
+              const timeout = setTimeout(() => {
+                const s = get();
+                if (s.wsUrl && !s.connected) {
+                  s.connect(s.wsUrl);
+                }
+              }, delay);
+
+              set({ _reconnectTimeout: timeout });
+            } else {
+              set({
+                isReconnecting: false,
+                connectionError: "Connection failed. Please check the backend and click Reconnect.",
+              });
+            }
+          }
         };
 
         ws.onerror = (error) => {
           console.error("[ClaudeSession] WebSocket error:", error);
-          set({
-            connected: false,
-            connecting: false,
-            lastError: "Connection error",
-            _ws: null,
-          });
+          // Don't set error here - let onclose handle reconnection
+          // Only set if we're not already in a reconnection cycle
+          const currentState = get();
+          if (!currentState.isReconnecting) {
+            set({
+              connectionError: "Connection error",
+            });
+          }
         };
 
         ws.onmessage = (event) => {
@@ -248,6 +330,11 @@ export const useClaudeSessionStore = create<ClaudeSessionStore>()(
       // Set error
       setError: (error: string | null) => {
         set({ lastError: error });
+      },
+
+      // Clear connection error
+      clearConnectionError: () => {
+        set({ connectionError: null });
       },
 
       // Process incoming event

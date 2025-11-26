@@ -1,6 +1,13 @@
 {
   "permissions": {
     "allow": [
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "TodoWrite",
+      "NotebookEdit",
       "mcp__sequential-thinking__sequentialthinking",
       "Bash(bash:*)",
       "Bash(python3.12 -m venv:*)",
@@ -57,7 +64,8 @@
       "Bash(ps:*)",
       "Bash(tee:*)",
       "Bash(claude -p --output-format stream-json)",
-      "Bash(claude -p --output-format stream-json --verbose)"
+      "Bash(claude -p --output-format stream-json --verbose)",
+      "Bash(command -v:*)"
     ],
     "deny": [],
     "ask": []

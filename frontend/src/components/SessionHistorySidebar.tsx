@@ -88,14 +88,22 @@ export function SessionHistorySidebar({
         className="sidebar-toggle"
         onClick={toggleSidebar}
         title={sidebarOpen ? "Close history" : "Open history"}
+        aria-expanded={sidebarOpen}
+        aria-controls="session-history-sidebar"
+        aria-label={sidebarOpen ? "Close session history" : "Open session history"}
       >
-        {sidebarOpen ? "«" : "»"}
+        <span aria-hidden="true">{sidebarOpen ? "«" : "»"}</span>
       </button>
 
       {/* Sidebar */}
-      <div className={`session-sidebar ${sidebarOpen ? "open" : ""}`}>
+      <aside
+        id="session-history-sidebar"
+        className={`session-sidebar ${sidebarOpen ? "open" : ""}`}
+        aria-label="Session history"
+        aria-hidden={!sidebarOpen}
+      >
         <div className="sidebar-header">
-          <h3>History</h3>
+          <h3 id="sidebar-title">History</h3>
           <div className="sidebar-actions">
             <button
               className="sidebar-btn new"
@@ -116,50 +124,56 @@ export function SessionHistorySidebar({
           </div>
         </div>
 
-        <div className="session-list">
+        <nav className="session-list" aria-labelledby="sidebar-title" role="navigation">
           {sessions.length === 0 ? (
-            <div className="empty-history">
+            <div className="empty-history" role="status">
               <p>No saved sessions</p>
               <p className="hint">Conversations are auto-saved</p>
             </div>
           ) : (
-            sessions.map((session) => (
-              <div
-                key={session.id}
-                className={`session-item ${
-                  session.id === currentSessionId ? "active" : ""
-                }`}
-                onClick={() => handleLoadSession(session.id)}
-              >
-                <div className="session-item-header">
-                  <span className="session-title">{session.title}</span>
+            <ul role="list" aria-label="Saved sessions">
+              {sessions.map((session) => (
+                <li key={session.id}>
                   <button
-                    className="delete-btn"
-                    onClick={(e) => handleDeleteSession(e, session.id)}
-                    title="Delete session"
+                    className={`session-item ${
+                      session.id === currentSessionId ? "active" : ""
+                    }`}
+                    onClick={() => handleLoadSession(session.id)}
+                    aria-current={session.id === currentSessionId ? "true" : undefined}
+                    aria-label={`Load session: ${session.title}`}
                   >
-                    ×
+                    <div className="session-item-header">
+                      <span className="session-title">{session.title}</span>
+                      <button
+                        className="delete-btn"
+                        onClick={(e) => handleDeleteSession(e, session.id)}
+                        title="Delete session"
+                        aria-label={`Delete session: ${session.title}`}
+                      >
+                        <span aria-hidden="true">×</span>
+                      </button>
+                    </div>
+                    <div className="session-preview">{session.preview}</div>
+                    <div className="session-meta">
+                      <span className="session-date">
+                        {formatDate(session.updatedAt)}
+                      </span>
+                      <span className="session-count">
+                        {session.messageCount} msg{session.messageCount !== 1 ? "s" : ""}
+                      </span>
+                      {session.model && (
+                        <span className="session-model">
+                          {session.model.replace("claude-", "").split("-")[0]}
+                        </span>
+                      )}
+                    </div>
                   </button>
-                </div>
-                <div className="session-preview">{session.preview}</div>
-                <div className="session-meta">
-                  <span className="session-date">
-                    {formatDate(session.updatedAt)}
-                  </span>
-                  <span className="session-count">
-                    {session.messageCount} msg{session.messageCount !== 1 ? "s" : ""}
-                  </span>
-                  {session.model && (
-                    <span className="session-model">
-                      {session.model.replace("claude-", "").split("-")[0]}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))
+                </li>
+              ))}
+            </ul>
           )}
-        </div>
-      </div>
+        </nav>
+      </aside>
 
       <style>{sidebarStyles}</style>
     </>
@@ -175,11 +189,11 @@ const sidebarStyles = `
   transform: translateY(-50%);
   width: 24px;
   height: 48px;
-  background: #1e293b;
-  border: 1px solid #334155;
+  background: var(--agent-bg-tertiary);
+  border: 1px solid var(--agent-border-secondary);
   border-left: none;
   border-radius: 0 6px 6px 0;
-  color: #94a3b8;
+  color: var(--agent-text-secondary);
   font-size: 14px;
   cursor: pointer;
   z-index: 100;
@@ -187,8 +201,17 @@ const sidebarStyles = `
 }
 
 .sidebar-toggle:hover {
-  background: #334155;
-  color: #e2e8f0;
+  background: var(--agent-border-secondary);
+  color: var(--agent-text-primary);
+}
+
+.sidebar-toggle:focus {
+  outline: 2px solid var(--agent-accent-blue);
+  outline-offset: 2px;
+}
+
+.sidebar-toggle:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* Sidebar */
@@ -198,8 +221,8 @@ const sidebarStyles = `
   top: 0;
   bottom: 0;
   width: 280px;
-  background: #111827;
-  border-right: 1px solid #1e293b;
+  background: var(--agent-bg-secondary);
+  border-right: 1px solid var(--agent-border-primary);
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   z-index: 90;
@@ -213,7 +236,7 @@ const sidebarStyles = `
 
 .sidebar-header {
   padding: 12px 16px;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid var(--agent-border-primary);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -223,7 +246,7 @@ const sidebarStyles = `
   margin: 0;
   font-size: 14px;
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--agent-text-primary);
 }
 
 .sidebar-actions {
@@ -235,31 +258,31 @@ const sidebarStyles = `
   padding: 4px 10px;
   font-size: 11px;
   background: transparent;
-  border: 1px solid #334155;
+  border: 1px solid var(--agent-border-secondary);
   border-radius: 4px;
-  color: #94a3b8;
+  color: var(--agent-text-secondary);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .sidebar-btn:hover {
-  background: #1e293b;
-  color: #e2e8f0;
+  background: var(--agent-bg-tertiary);
+  color: var(--agent-text-primary);
 }
 
 .sidebar-btn.new {
-  background: #3b82f6;
-  border-color: #3b82f6;
+  background: var(--agent-accent-blue);
+  border-color: var(--agent-accent-blue);
   color: white;
 }
 
 .sidebar-btn.new:hover {
-  background: #2563eb;
+  background: var(--agent-accent-blue-hover);
 }
 
 .sidebar-btn.clear {
-  color: #ef4444;
-  border-color: #ef4444;
+  color: var(--agent-accent-red);
+  border-color: var(--agent-accent-red);
 }
 
 .sidebar-btn.clear:hover {
@@ -276,7 +299,7 @@ const sidebarStyles = `
 .empty-history {
   padding: 24px 16px;
   text-align: center;
-  color: #64748b;
+  color: var(--agent-text-muted);
 }
 
 .empty-history p {
@@ -286,25 +309,51 @@ const sidebarStyles = `
 
 .empty-history .hint {
   font-size: 11px;
-  color: #475569;
+  color: var(--agent-text-disabled);
+}
+
+/* Session list container */
+.session-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.session-list li {
+  margin-bottom: 4px;
 }
 
 /* Session item */
 .session-item {
+  display: block;
+  width: 100%;
   padding: 10px 12px;
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s;
-  margin-bottom: 4px;
+  background: transparent;
+  border: 1px solid transparent;
+  text-align: left;
+  color: inherit;
+  font: inherit;
 }
 
 .session-item:hover {
-  background: #1e293b;
+  background: var(--agent-bg-tertiary);
+}
+
+.session-item:focus {
+  outline: 2px solid var(--agent-accent-blue);
+  outline-offset: 2px;
+}
+
+.session-item:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .session-item.active {
-  background: #1e3a5f;
-  border: 1px solid #3b82f6;
+  background: var(--agent-info-bg);
+  border: 1px solid var(--agent-accent-blue);
 }
 
 .session-item-header {
@@ -317,7 +366,7 @@ const sidebarStyles = `
 .session-title {
   font-size: 13px;
   font-weight: 500;
-  color: #e2e8f0;
+  color: var(--agent-text-primary);
   line-height: 1.3;
   flex: 1;
   overflow: hidden;
@@ -330,7 +379,7 @@ const sidebarStyles = `
   height: 18px;
   background: transparent;
   border: none;
-  color: #64748b;
+  color: var(--agent-text-muted);
   font-size: 16px;
   cursor: pointer;
   border-radius: 4px;
@@ -348,12 +397,12 @@ const sidebarStyles = `
 
 .delete-btn:hover {
   background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  color: var(--agent-accent-red);
 }
 
 .session-preview {
   font-size: 11px;
-  color: #64748b;
+  color: var(--agent-text-muted);
   margin-top: 4px;
   line-height: 1.4;
   overflow: hidden;
@@ -368,12 +417,12 @@ const sidebarStyles = `
   gap: 8px;
   margin-top: 6px;
   font-size: 10px;
-  color: #475569;
+  color: var(--agent-text-disabled);
 }
 
 .session-model {
   padding: 1px 4px;
-  background: #1e293b;
+  background: var(--agent-bg-tertiary);
   border-radius: 3px;
 }
 
@@ -387,11 +436,52 @@ const sidebarStyles = `
 }
 
 .session-list::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: var(--agent-border-secondary);
   border-radius: 3px;
 }
 
 .session-list::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: var(--agent-text-disabled);
+}
+
+/* Responsive - Tablet and below */
+@media (max-width: 768px) {
+  .session-sidebar {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .sidebar-toggle {
+    width: 32px;
+    height: 56px;
+    font-size: 16px;
+  }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 480px) {
+  .session-sidebar {
+    max-width: 100%;
+  }
+
+  .session-sidebar.open {
+    box-shadow: 0 0 20px var(--agent-shadow);
+  }
+
+  .sidebar-header {
+    padding: 10px 12px;
+  }
+
+  .session-list {
+    padding: 6px;
+  }
+
+  .session-item {
+    padding: 8px 10px;
+  }
+
+  .delete-btn {
+    opacity: 1;
+  }
 }
 `;

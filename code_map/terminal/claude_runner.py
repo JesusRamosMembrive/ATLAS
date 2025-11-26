@@ -7,11 +7,52 @@ Executes Claude Code with --output-format stream-json for structured output
 import asyncio
 import json
 import logging
-import signal
+import os
+import shutil
+from pathlib import Path
 from typing import Optional, Callable, Any
 from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
+
+
+def find_claude_cli() -> str:
+    """
+    Find the Claude CLI executable.
+
+    Checks multiple locations since running with sudo may have different PATH.
+
+    Returns:
+        Full path to claude CLI, or "claude" if not found (will fail at runtime)
+    """
+    # Check if claude is in PATH
+    claude_path = shutil.which("claude")
+    if claude_path:
+        return claude_path
+
+    # Common installation locations
+    home = os.environ.get("HOME") or os.path.expanduser("~")
+    common_paths = [
+        Path(home) / ".local" / "bin" / "claude",
+        Path(home) / ".npm-global" / "bin" / "claude",
+        Path("/usr/local/bin/claude"),
+        Path("/usr/bin/claude"),
+    ]
+
+    # Also check SUDO_USER's home if running as sudo
+    sudo_user = os.environ.get("SUDO_USER")
+    if sudo_user:
+        sudo_home = Path("/home") / sudo_user
+        common_paths.insert(0, sudo_home / ".local" / "bin" / "claude")
+
+    for path in common_paths:
+        if path.exists() and os.access(path, os.X_OK):
+            logger.info(f"Found Claude CLI at: {path}")
+            return str(path)
+
+    # Fallback - will likely fail but let it try
+    logger.warning("Claude CLI not found in common locations, using 'claude' (may fail)")
+    return "claude"
 
 
 @dataclass
@@ -56,8 +97,9 @@ class ClaudeAgentRunner:
         Returns:
             Exit code from the process
         """
-        # Build command
-        cmd = ["claude", "-p", "--output-format", "stream-json"]
+        # Build command - find claude CLI (handles sudo PATH issues)
+        claude_bin = find_claude_cli()
+        cmd = [claude_bin, "-p", "--output-format", "stream-json"]
 
         if self.config.verbose:
             cmd.append("--verbose")

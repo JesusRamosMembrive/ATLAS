@@ -9,14 +9,14 @@
 ## ESTADO ACTUAL
 
 **Completado (esta sesión):**
-- ✅ **Claude Agent JSON Streaming - Fases 2-4** - UI mejorada completa
+- ✅ **Claude Agent JSON Streaming - Fases 2-5** - UI completa
   - Fase 2: Markdown rendering, syntax highlighting, copy buttons
   - Fase 3: Session history sidebar con localStorage persistence
   - Fase 4: Token tracking, keyboard shortcuts, progress indicators
+  - Fase 5: Polish (reconexión, responsive, accesibilidad, theming)
 
 **En progreso:**
-- 🔥 **Fase 5: Polish** - Pendiente
-  - Responsive design, accesibilidad, error handling mejorado
+- Ninguno actualmente
 
 **Bloqueado/Pendiente:**
 - Ninguno actualmente
@@ -100,16 +100,14 @@ Se implementaron las fases 2-4 del Claude Agent JSON Streaming:
 
 ## PRÓXIMOS PASOS
 
-1. **Fase 5: Polish** (pendiente):
-   - UI de manejo de errores mejorada
-   - Lógica de reconexión automática
-   - Diseño responsive para móvil
-   - Accesibilidad (ARIA labels, keyboard nav)
-   - Theming (dark/light mode)
-
-2. **Agent Monitoring Dashboard** (después de Fase 5):
+1. **Agent Monitoring Dashboard** (próximo):
    - Continuar con SSE endpoint
    - Frontend: useAuditEventStream hook
+
+2. **Posibles mejoras futuras:**
+   - System mode para theming (seguir preferencia del sistema)
+   - Persistencia de preferencia de tema en localStorage (ya implementado)
+   - Más tests E2E
 
 ---
 
