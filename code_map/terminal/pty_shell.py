@@ -13,9 +13,13 @@ import fcntl
 import termios
 import signal
 import threading
-from typing import Optional, Callable
+import re
+from typing import Optional, Callable, Tuple
 import asyncio
 import logging
+
+# Import agent parser for event detection
+from .agent_parser import AgentOutputParser, AgentEvent
 
 logger = logging.getLogger(__name__)
 
@@ -28,13 +32,14 @@ class PTYShell:
     with a shell process running in a PTY.
     """
 
-    def __init__(self, cols: int = 80, rows: int = 24):
+    def __init__(self, cols: int = 80, rows: int = 24, enable_agent_parsing: bool = False):
         """
         Initialize PTY shell
 
         Args:
             cols: Terminal width in columns
             rows: Terminal height in rows
+            enable_agent_parsing: Enable agent output parsing for event detection
         """
         self.cols = cols
         self.rows = rows
@@ -42,6 +47,18 @@ class PTYShell:
         self.pid: Optional[int] = None
         self.running = False
         self.read_thread: Optional[threading.Thread] = None
+
+        # Agent parsing
+        self.enable_agent_parsing = enable_agent_parsing
+        self.agent_parser: Optional[AgentOutputParser] = None
+        self.agent_event_callback: Optional[Callable[[AgentEvent], None]] = None
+
+        # Claude Code specific filtering
+        self._is_claude_code_session = False
+        self._claude_buffer = ""
+
+        if enable_agent_parsing:
+            self.agent_parser = AgentOutputParser()
 
     def spawn(self) -> None:
         """
@@ -52,12 +69,8 @@ class PTYShell:
         """
         # Determine shell to use
         shell = os.environ.get("SHELL", "/bin/bash")
-        print(f"[PTY] Shell from env: {shell}")  # DEBUG
         if not os.path.exists(shell):
             shell = "/bin/sh"  # Fallback to sh
-            print(f"[PTY] Shell not found, using fallback: {shell}")  # DEBUG
-
-        print(f"[PTY] About to fork with shell: {shell}")  # DEBUG
         # Fork process with PTY
         self.pid, self.master_fd = pty.fork()
 
@@ -73,7 +86,6 @@ class PTYShell:
             os.execvp(shell, [shell, "-li"])
         else:
             # Parent process - set terminal size
-            print(f"[PTY] Parent process: PID={self.pid}, FD={self.master_fd}")  # DEBUG
             self.running = True
             self._set_winsize(self.cols, self.rows)
 
@@ -81,8 +93,23 @@ class PTYShell:
             flags = fcntl.fcntl(self.master_fd, fcntl.F_GETFL)
             fcntl.fcntl(self.master_fd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
 
-            print(f"[PTY] Shell configured: running={self.running}")  # DEBUG
             logger.info(f"Spawned shell process: pid={self.pid}, shell={shell}")
+
+    def _filter_claude_code_output(self, text: str) -> str:
+        """
+        NO-OP filter - pass through all content unchanged.
+
+        With two-layer architecture (read-only terminal display + separate input),
+        we don't need to filter anything. The terminal shows raw output from Claude Code,
+        and user input comes from a separate HTML input element.
+
+        Args:
+            text: Raw text from PTY
+
+        Returns:
+            Unmodified text
+        """
+        return text
 
     def _set_winsize(self, cols: int, rows: int) -> None:
         """
@@ -97,6 +124,15 @@ class PTYShell:
 
         winsize = struct.pack("HHHH", rows, cols, 0, 0)
         fcntl.ioctl(self.master_fd, termios.TIOCSWINSZ, winsize)
+
+    def set_agent_event_callback(self, callback: Callable[[AgentEvent], None]) -> None:
+        """
+        Set callback for agent events
+
+        Args:
+            callback: Function to call with detected agent events
+        """
+        self.agent_event_callback = callback
 
     def resize(self, cols: int, rows: int) -> None:
         """
@@ -143,7 +179,6 @@ class PTYShell:
         def read_thread():
             """Thread function for reading PTY output"""
             logger.info("PTY read thread started")
-            print(f"[PTY] Read thread started, master_fd={self.master_fd}, running={self.running}")  # DEBUG
             while self.running:
                 try:
                     # Check if master_fd is still valid
@@ -163,13 +198,26 @@ class PTYShell:
                         if not data:
                             # EOF - shell exited
                             logger.info("PTY read EOF - shell exited")
-                            print(f"[PTY] EOF detected, shell exited")  # DEBUG
                             self.running = False
                             break
 
                         # Decode and call callback (thread-safe)
                         text = data.decode("utf-8", errors="replace")
-                        print(f"[PTY] Read {len(data)} bytes: {repr(text[:50])}")  # DEBUG
+
+                        # Two-layer architecture: No filtering needed
+                        # Terminal is read-only display, input comes from separate HTML element
+
+                        # Parse agent events if enabled
+                        if self.enable_agent_parsing and self.agent_parser:
+                            try:
+                                events = self.agent_parser.parse_chunk(text)
+                                if events and self.agent_event_callback:
+                                    for event in events:
+                                        self.agent_event_callback(event)
+                            except Exception as e:
+                                logger.error(f"Error parsing agent output: {e}")
+
+                        # Always call raw text callback
                         callback(text)
 
                 except OSError as e:
@@ -203,6 +251,10 @@ class PTYShell:
 
         logger.info("Closing shell process...")
         self.running = False
+
+        # Reset Claude Code detection
+        self._is_claude_code_session = False
+        self._claude_buffer = ""
 
         # Wait for read thread to exit cleanly (if it exists)
         if self.read_thread is not None and self.read_thread.is_alive():

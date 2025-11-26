@@ -100,6 +100,61 @@
 
 ## 🔄 ÚLTIMA SESIÓN
 
+### Sesión 9: Agent Terminal Overlay - Fase 1 Completada (2025-11-25)
+
+**Implementación completada:**
+- ✅ **Parser de patrones de agente** (`code_map/terminal/agent_parser.py`)
+  - Detecta 15+ tipos de eventos (comandos, tests, archivos, git, errores)
+  - Extrae datos estructurados del output del terminal
+  - Priorización de patrones para evitar duplicados
+
+- ✅ **Sistema de eventos y estado de sesión** (`code_map/terminal/agent_events.py`)
+  - AgentEventManager para gestión de sesión
+  - Tracking de comandos, archivos, tests, métricas
+  - Timeline y exportación de sesión
+
+- ✅ **Integración en PTY Shell** (`code_map/terminal/pty_shell.py`)
+  - Modo de parsing opcional con `enable_agent_parsing`
+  - Callback para eventos detectados
+  - Compatible con terminal existente
+
+- ✅ **Protocolo WebSocket extendido** (`code_map/api/terminal.py`)
+  - Comandos: `__AGENT__:enable/disable/summary`
+  - Mensajes: `__AGENT__:event:{json}`, `__AGENT__:status:{enabled|disabled}`
+  - Envío asíncrono de eventos al frontend
+
+- ✅ **Tipos TypeScript** (`frontend/src/types/agent.ts`)
+  - Definiciones completas de eventos, estado, métricas
+  - Helpers para parsing de mensajes
+  - Iconos y colores para UI
+
+- ✅ **Store Zustand** (`frontend/src/stores/agentStore.ts`)
+  - Gestión de estado de sesión del agente
+  - Procesamiento de eventos en tiempo real
+  - Timeline, métricas, getters útiles
+
+- ✅ **UI en RemoteTerminalView** (`frontend/src/components/RemoteTerminalView.tsx`)
+  - Botones para activar/desactivar modo agente
+  - Parsing de mensajes del protocolo
+  - Integración con agentStore
+
+- ✅ **Tests completos** (`tests/test_agent_parser.py`)
+  - 13 tests pasando, cobertura de todos los patterns
+  - Validación de serialización y line tracking
+
+**Arquitectura implementada:**
+```
+Terminal Output → PTY Shell → Parser → Events → WebSocket → Frontend → Store → UI
+                                ↓                      ↓
+                           Agent Events          Protocol Messages
+```
+
+**Próximos pasos (Fase 2 - Timeline UI):**
+- [ ] Crear componente AgentOverlay para visualización
+- [ ] Timeline vertical con estados y timestamps
+- [ ] Status bar con fase actual
+- [ ] Command widgets básicos (progress bars, test dashboard)
+
 ### Sesión 8: Fix Terminal Reconnection Bug (2025-11-24)
 
 **Problema inicial identificado:**

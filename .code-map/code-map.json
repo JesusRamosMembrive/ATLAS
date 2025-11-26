@@ -1296,14 +1296,14 @@
   {
     "path": "code_map/api/terminal.py",
     "relative": true,
-    "modified_at": "2025-11-24T16:54:04.954969+00:00",
+    "modified_at": "2025-11-25T06:29:11.969314+00:00",
     "symbols": [
       {
         "name": "terminal_websocket",
         "kind": "function",
-        "lineno": 19,
+        "lineno": 22,
         "parent": null,
-        "docstring": "WebSocket endpoint for remote terminal access\n\nSpawns a shell process and provides bidirectional communication using text protocol.\n\nClient can send:\n- Raw text for shell input\n- \"__RESIZE__:cols:rows\" for terminal resize\n\nServer sends:\n- Raw text from shell output"
+        "docstring": "WebSocket endpoint for remote terminal access\n\nSpawns a shell process and provides bidirectional communication using text protocol.\n\nClient can send:\n- Raw text for shell input\n- \"__RESIZE__:cols:rows\" for terminal resize\n- \"__AGENT__:enable\" to enable agent parsing\n- \"__AGENT__:disable\" to disable agent parsing\n\nServer sends:\n- Raw text from shell output\n- \"__AGENT__:event:{json}\" for agent events (when enabled)"
       }
     ],
     "errors": []
@@ -4331,70 +4331,429 @@
     "errors": []
   },
   {
+    "path": "code_map/terminal/agent_events.py",
+    "relative": true,
+    "modified_at": "2025-11-25T06:27:02.862636+00:00",
+    "symbols": [
+      {
+        "name": "CommandExecution",
+        "kind": "class",
+        "lineno": 21,
+        "parent": null,
+        "docstring": "Track a command execution from start to end"
+      },
+      {
+        "name": "duration",
+        "kind": "method",
+        "lineno": 33,
+        "parent": "CommandExecution",
+        "docstring": "Get command execution duration"
+      },
+      {
+        "name": "duration_seconds",
+        "kind": "method",
+        "lineno": 40,
+        "parent": "CommandExecution",
+        "docstring": "Get duration in seconds"
+      },
+      {
+        "name": "FileChange",
+        "kind": "class",
+        "lineno": 48,
+        "parent": null,
+        "docstring": "Track a file change during session"
+      },
+      {
+        "name": "TestRun",
+        "kind": "class",
+        "lineno": 59,
+        "parent": null,
+        "docstring": "Track a test execution"
+      },
+      {
+        "name": "success_rate",
+        "kind": "method",
+        "lineno": 72,
+        "parent": "TestRun",
+        "docstring": "Calculate test success rate"
+      },
+      {
+        "name": "AgentSessionState",
+        "kind": "class",
+        "lineno": 80,
+        "parent": null,
+        "docstring": "Maintain state of an agent session"
+      },
+      {
+        "name": "update_metrics",
+        "kind": "method",
+        "lineno": 96,
+        "parent": "AgentSessionState",
+        "docstring": "Update session metrics"
+      },
+      {
+        "name": "AgentEventManager",
+        "kind": "class",
+        "lineno": 118,
+        "parent": null,
+        "docstring": "Manages agent events and session state"
+      },
+      {
+        "name": "__init__",
+        "kind": "method",
+        "lineno": 121,
+        "parent": "AgentEventManager",
+        "docstring": "Initialize event manager for a session"
+      },
+      {
+        "name": "register_handler",
+        "kind": "method",
+        "lineno": 131,
+        "parent": "AgentEventManager",
+        "docstring": "Register a handler for specific event type"
+      },
+      {
+        "name": "subscribe",
+        "kind": "method",
+        "lineno": 135,
+        "parent": "AgentEventManager",
+        "docstring": "Subscribe to all events"
+      },
+      {
+        "name": "process_event",
+        "kind": "method",
+        "lineno": 139,
+        "parent": "AgentEventManager",
+        "docstring": "Process an agent event and update state\n\nArgs:\n    event: The agent event to process"
+      },
+      {
+        "name": "_call_handler",
+        "kind": "method",
+        "lineno": 169,
+        "parent": "AgentEventManager",
+        "docstring": "Call a handler, supporting both sync and async functions"
+      },
+      {
+        "name": "_update_state",
+        "kind": "method",
+        "lineno": 176,
+        "parent": "AgentEventManager",
+        "docstring": "Update session state based on event"
+      },
+      {
+        "name": "get_timeline",
+        "kind": "method",
+        "lineno": 258,
+        "parent": "AgentEventManager",
+        "docstring": "Get timeline of session events\n\nReturns:\n    List of timeline entries with timestamps and descriptions"
+      },
+      {
+        "name": "_get_event_description",
+        "kind": "method",
+        "lineno": 279,
+        "parent": "AgentEventManager",
+        "docstring": "Generate human-readable description for event"
+      },
+      {
+        "name": "_get_event_phase",
+        "kind": "method",
+        "lineno": 300,
+        "parent": "AgentEventManager",
+        "docstring": "Get phase indicator for event"
+      },
+      {
+        "name": "get_state_summary",
+        "kind": "method",
+        "lineno": 314,
+        "parent": "AgentEventManager",
+        "docstring": "Get summary of current session state"
+      },
+      {
+        "name": "_get_test_summary",
+        "kind": "method",
+        "lineno": 328,
+        "parent": "AgentEventManager",
+        "docstring": "Get summary of all test runs"
+      },
+      {
+        "name": "export_session",
+        "kind": "method",
+        "lineno": 344,
+        "parent": "AgentEventManager",
+        "docstring": "Export complete session data for persistence or analysis"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "path": "code_map/terminal/agent_parser.py",
+    "relative": true,
+    "modified_at": "2025-11-25T06:35:00.781082+00:00",
+    "symbols": [
+      {
+        "name": "AgentEventType",
+        "kind": "class",
+        "lineno": 16,
+        "parent": null,
+        "docstring": "Types of events that can be detected in agent output"
+      },
+      {
+        "name": "AgentEvent",
+        "kind": "class",
+        "lineno": 61,
+        "parent": null,
+        "docstring": "Structured agent event extracted from terminal output"
+      },
+      {
+        "name": "to_dict",
+        "kind": "method",
+        "lineno": 71,
+        "parent": "AgentEvent",
+        "docstring": "Convert to dictionary for JSON serialization"
+      },
+      {
+        "name": "to_json",
+        "kind": "method",
+        "lineno": 77,
+        "parent": "AgentEvent",
+        "docstring": "Convert to JSON string"
+      },
+      {
+        "name": "AgentOutputParser",
+        "kind": "class",
+        "lineno": 82,
+        "parent": null,
+        "docstring": "Parser for detecting patterns in agent terminal output"
+      },
+      {
+        "name": "__init__",
+        "kind": "method",
+        "lineno": 85,
+        "parent": "AgentOutputParser",
+        "docstring": "Initialize parser with pattern definitions"
+      },
+      {
+        "name": "parse_line",
+        "kind": "method",
+        "lineno": 193,
+        "parent": "AgentOutputParser",
+        "docstring": "Parse a single line of terminal output\n\nArgs:\n    line: Raw line from terminal\n\nReturns:\n    List of detected events, or None if no events detected"
+      },
+      {
+        "name": "parse_chunk",
+        "kind": "method",
+        "lineno": 279,
+        "parent": "AgentOutputParser",
+        "docstring": "Parse a chunk of terminal output\n\nArgs:\n    text: Multi-line terminal output\n\nReturns:\n    List of all detected events"
+      },
+      {
+        "name": "_create_event",
+        "kind": "method",
+        "lineno": 299,
+        "parent": "AgentOutputParser",
+        "docstring": "Create an event from parsed data"
+      },
+      {
+        "name": "_strip_ansi",
+        "kind": "method",
+        "lineno": 323,
+        "parent": "AgentOutputParser",
+        "docstring": "Remove ANSI escape codes from text"
+      },
+      {
+        "name": "_extract_npm_command",
+        "kind": "method",
+        "lineno": 330,
+        "parent": "AgentOutputParser",
+        "docstring": "Extract details from npm commands"
+      },
+      {
+        "name": "_extract_pip_command",
+        "kind": "method",
+        "lineno": 339,
+        "parent": "AgentOutputParser",
+        "docstring": "Extract details from pip commands"
+      },
+      {
+        "name": "_extract_pytest_command",
+        "kind": "method",
+        "lineno": 348,
+        "parent": "AgentOutputParser",
+        "docstring": "Extract pytest command details"
+      },
+      {
+        "name": "_extract_npm_test",
+        "kind": "method",
+        "lineno": 355,
+        "parent": "AgentOutputParser",
+        "docstring": "Extract npm test command details"
+      },
+      {
+        "name": "_extract_git_status",
+        "kind": "method",
+        "lineno": 363,
+        "parent": "AgentOutputParser",
+        "docstring": "Extract git status command"
+      },
+      {
+        "name": "_extract_git_diff",
+        "kind": "method",
+        "lineno": 367,
+        "parent": "AgentOutputParser",
+        "docstring": "Extract git diff command"
+      },
+      {
+        "name": "_extract_git_command",
+        "kind": "method",
+        "lineno": 371,
+        "parent": "AgentOutputParser",
+        "docstring": "Extract git command details"
+      },
+      {
+        "name": "_extract_file_read",
+        "kind": "method",
+        "lineno": 380,
+        "parent": "AgentOutputParser",
+        "docstring": "Extract file read operation"
+      },
+      {
+        "name": "_extract_file_write",
+        "kind": "method",
+        "lineno": 388,
+        "parent": "AgentOutputParser",
+        "docstring": "Extract file write operation"
+      },
+      {
+        "name": "_extract_file_delete",
+        "kind": "method",
+        "lineno": 396,
+        "parent": "AgentOutputParser",
+        "docstring": "Extract file delete operation"
+      },
+      {
+        "name": "_extract_build_command",
+        "kind": "method",
+        "lineno": 405,
+        "parent": "AgentOutputParser",
+        "docstring": "Extract build command details"
+      },
+      {
+        "name": "_parse_pytest_summary",
+        "kind": "method",
+        "lineno": 415,
+        "parent": "AgentOutputParser",
+        "docstring": "Parse pytest summary line"
+      },
+      {
+        "name": "_parse_pytest_failure",
+        "kind": "method",
+        "lineno": 429,
+        "parent": "AgentOutputParser",
+        "docstring": "Parse pytest failure"
+      },
+      {
+        "name": "_parse_jest_pass",
+        "kind": "method",
+        "lineno": 444,
+        "parent": "AgentOutputParser",
+        "docstring": "Parse Jest passing test"
+      },
+      {
+        "name": "_parse_jest_fail",
+        "kind": "method",
+        "lineno": 459,
+        "parent": "AgentOutputParser",
+        "docstring": "Parse Jest failing test"
+      },
+      {
+        "name": "_parse_jest_summary",
+        "kind": "method",
+        "lineno": 474,
+        "parent": "AgentOutputParser",
+        "docstring": "Parse Jest test summary"
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "code_map/terminal/pty_shell.py",
     "relative": true,
-    "modified_at": "2025-11-24T16:33:15.280820+00:00",
+    "modified_at": "2025-11-25T14:12:18.901014+00:00",
     "symbols": [
       {
         "name": "PTYShell",
         "kind": "class",
-        "lineno": 23,
+        "lineno": 27,
         "parent": null,
         "docstring": "Manages a shell process with PTY (pseudo-terminal) support\n\nProvides async I/O handling for bidirectional communication\nwith a shell process running in a PTY."
       },
       {
         "name": "__init__",
         "kind": "method",
-        "lineno": 31,
+        "lineno": 35,
         "parent": "PTYShell",
-        "docstring": "Initialize PTY shell\n\nArgs:\n    cols: Terminal width in columns\n    rows: Terminal height in rows"
+        "docstring": "Initialize PTY shell\n\nArgs:\n    cols: Terminal width in columns\n    rows: Terminal height in rows\n    enable_agent_parsing: Enable agent output parsing for event detection"
       },
       {
         "name": "spawn",
         "kind": "method",
-        "lineno": 46,
+        "lineno": 63,
         "parent": "PTYShell",
         "docstring": "Spawn shell process with PTY\n\nRaises:\n    OSError: If fork fails"
       },
       {
+        "name": "_filter_claude_code_output",
+        "kind": "method",
+        "lineno": 98,
+        "parent": "PTYShell",
+        "docstring": "NO-OP filter - pass through all content unchanged.\n\nWith two-layer architecture (read-only terminal display + separate input),\nwe don't need to filter anything. The terminal shows raw output from Claude Code,\nand user input comes from a separate HTML input element.\n\nArgs:\n    text: Raw text from PTY\n\nReturns:\n    Unmodified text"
+      },
+      {
         "name": "_set_winsize",
         "kind": "method",
-        "lineno": 87,
+        "lineno": 114,
         "parent": "PTYShell",
         "docstring": "Set terminal window size\n\nArgs:\n    cols: Terminal width\n    rows: Terminal height"
       },
       {
+        "name": "set_agent_event_callback",
+        "kind": "method",
+        "lineno": 128,
+        "parent": "PTYShell",
+        "docstring": "Set callback for agent events\n\nArgs:\n    callback: Function to call with detected agent events"
+      },
+      {
         "name": "resize",
         "kind": "method",
-        "lineno": 101,
+        "lineno": 137,
         "parent": "PTYShell",
         "docstring": "Resize terminal\n\nArgs:\n    cols: New terminal width\n    rows: New terminal height"
       },
       {
         "name": "write",
         "kind": "method",
-        "lineno": 114,
+        "lineno": 150,
         "parent": "PTYShell",
         "docstring": "Write data to shell stdin\n\nArgs:\n    data: String to write to shell"
       },
       {
         "name": "read",
         "kind": "method",
-        "lineno": 130,
+        "lineno": 166,
         "parent": "PTYShell",
         "docstring": "Read shell output asynchronously\n\nContinuously reads from shell output and calls callback\nwith received data. Runs until shell process exits.\n\nArgs:\n    callback: Function to call with output data"
       },
       {
         "name": "close",
         "kind": "method",
-        "lineno": 197,
+        "lineno": 245,
         "parent": "PTYShell",
         "docstring": "Close shell process and cleanup resources"
       },
       {
         "name": "__del__",
         "kind": "method",
-        "lineno": 237,
+        "lineno": 289,
         "parent": "PTYShell",
         "docstring": "Cleanup on garbage collection"
       }
@@ -4952,6 +5311,13 @@
     "errors": []
   },
   {
+    "path": "frontend/dist/assets/index-BBIFfjU4.js",
+    "relative": true,
+    "modified_at": "2025-11-25T08:25:21.846113+00:00",
+    "symbols": [],
+    "errors": []
+  },
+  {
     "path": "frontend/dist/assets/index-BNBGiRbH.js",
     "relative": true,
     "modified_at": "2025-11-11T17:12:55.237322+00:00",
@@ -4989,7 +5355,7 @@
   {
     "path": "frontend/dist/index.html",
     "relative": true,
-    "modified_at": "2025-11-24T17:20:34.266613+00:00",
+    "modified_at": "2025-11-25T08:25:21.844874+00:00",
     "symbols": [
       {
         "name": "root",
@@ -6174,28 +6540,63 @@
   {
     "path": "frontend/src/components/RemoteTerminalView.tsx",
     "relative": true,
-    "modified_at": "2025-11-24T18:15:35.026316+00:00",
+    "modified_at": "2025-11-25T14:10:51.073925+00:00",
     "symbols": [
       {
         "name": "RemoteTerminalView",
         "kind": "function",
-        "lineno": 15,
+        "lineno": 18,
         "parent": null,
         "docstring": null
       },
       {
         "name": "stripApi",
         "kind": "function",
-        "lineno": 26,
+        "lineno": 45,
         "parent": null,
         "docstring": null
       },
       {
+        "name": "connectToShell",
+        "kind": "function",
+        "lineno": 186,
+        "parent": null,
+        "docstring": "Manual connection function - called by user clicking \"Connect\" button"
+      },
+      {
         "name": "sendResize",
         "kind": "function",
-        "lineno": 167,
+        "lineno": 289,
         "parent": null,
-        "docstring": null
+        "docstring": "User input is handled via separate HTML input element"
+      },
+      {
+        "name": "handleInputSubmit",
+        "kind": "function",
+        "lineno": 313,
+        "parent": null,
+        "docstring": "Handle input submission"
+      },
+      {
+        "name": "toggleAgentParsing",
+        "kind": "function",
+        "lineno": 325,
+        "parent": null,
+        "docstring": "Toggle agent parsing"
+      },
+      {
+        "name": "requestAgentSummary",
+        "kind": "function",
+        "lineno": 346,
+        "parent": null,
+        "docstring": "Request agent summary"
+      },
+      {
+        "name": "disconnectFromShell",
+        "kind": "function",
+        "lineno": 354,
+        "parent": null,
+        "docstring": "Disconnect function"
       }
     ],
     "errors": []
@@ -6706,6 +7107,164 @@
     "errors": []
   },
   {
+    "path": "frontend/src/components/terminal/AgentOverlay.tsx",
+    "relative": true,
+    "modified_at": "2025-11-25T08:23:26.717052+00:00",
+    "symbols": [
+      {
+        "name": "AgentOverlay",
+        "kind": "function",
+        "lineno": 22,
+        "parent": null,
+        "docstring": null
+      }
+    ],
+    "errors": []
+  },
+  {
+    "path": "frontend/src/components/terminal/AgentStatusBar.tsx",
+    "relative": true,
+    "modified_at": "2025-11-25T08:22:15.528567+00:00",
+    "symbols": [
+      {
+        "name": "AgentStatusBar",
+        "kind": "function",
+        "lineno": 17,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "getPhaseIcon",
+        "kind": "function",
+        "lineno": 99,
+        "parent": null,
+        "docstring": "Helper functions"
+      },
+      {
+        "name": "getPhaseName",
+        "kind": "function",
+        "lineno": 113,
+        "parent": null,
+        "docstring": null
+      }
+    ],
+    "errors": []
+  },
+  {
+    "path": "frontend/src/components/terminal/AgentTimeline.tsx",
+    "relative": true,
+    "modified_at": "2025-11-25T08:22:24.028622+00:00",
+    "symbols": [
+      {
+        "name": "AgentTimeline",
+        "kind": "function",
+        "lineno": 18,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "groupEventsByPhase",
+        "kind": "function",
+        "lineno": 104,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "getPhaseName",
+        "kind": "function",
+        "lineno": 129,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "formatTime",
+        "kind": "function",
+        "lineno": 143,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "formatPhaseDuration",
+        "kind": "function",
+        "lineno": 153,
+        "parent": null,
+        "docstring": null
+      }
+    ],
+    "errors": []
+  },
+  {
+    "path": "frontend/src/components/terminal/CommandWidget.tsx",
+    "relative": true,
+    "modified_at": "2025-11-25T08:23:33.670102+00:00",
+    "symbols": [
+      {
+        "name": "CommandWidget",
+        "kind": "function",
+        "lineno": 18,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "InstallWidget",
+        "kind": "function",
+        "lineno": 69,
+        "parent": null,
+        "docstring": "Install Widget (npm, pip, yarn)"
+      },
+      {
+        "name": "TestWidget",
+        "kind": "function",
+        "lineno": 122,
+        "parent": null,
+        "docstring": "Test Widget"
+      },
+      {
+        "name": "BuildWidget",
+        "kind": "function",
+        "lineno": 196,
+        "parent": null,
+        "docstring": "Build Widget"
+      },
+      {
+        "name": "GitWidget",
+        "kind": "function",
+        "lineno": 244,
+        "parent": null,
+        "docstring": "Git Widget"
+      },
+      {
+        "name": "GenericCommandWidget",
+        "kind": "function",
+        "lineno": 280,
+        "parent": null,
+        "docstring": "Generic Command Widget"
+      },
+      {
+        "name": "detectCommandType",
+        "kind": "function",
+        "lineno": 328,
+        "parent": null,
+        "docstring": "Helper functions"
+      },
+      {
+        "name": "extractPackages",
+        "kind": "function",
+        "lineno": 344,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "getGitIcon",
+        "kind": "function",
+        "lineno": 353,
+        "parent": null,
+        "docstring": null
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "frontend/src/config/defaultExcludes.ts",
     "relative": true,
     "modified_at": "2025-11-10T11:33:54.692695+00:00",
@@ -7137,6 +7696,71 @@
     "relative": true,
     "modified_at": "2025-11-10T11:33:54.694531+00:00",
     "symbols": [],
+    "errors": []
+  },
+  {
+    "path": "frontend/src/stores/agentStore.ts",
+    "relative": true,
+    "modified_at": "2025-11-25T08:23:53.565245+00:00",
+    "symbols": [
+      {
+        "name": "getEventDescription",
+        "kind": "function",
+        "lineno": 382,
+        "parent": null,
+        "docstring": "Helper function (duplicated from types for convenience)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "path": "frontend/src/types/agent.ts",
+    "relative": true,
+    "modified_at": "2025-11-25T08:24:59.601716+00:00",
+    "symbols": [
+      {
+        "name": "parseAgentMessage",
+        "kind": "function",
+        "lineno": 258,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "parseAgentStatus",
+        "kind": "function",
+        "lineno": 275,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "parseAgentSummary",
+        "kind": "function",
+        "lineno": 288,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "formatDuration",
+        "kind": "function",
+        "lineno": 305,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "getPhaseName",
+        "kind": "function",
+        "lineno": 324,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "getEventDescription",
+        "kind": "function",
+        "lineno": 338,
+        "parent": null,
+        "docstring": null
+      }
+    ],
     "errors": []
   },
   {
@@ -7907,6 +8531,119 @@
         "lineno": 183,
         "parent": null,
         "docstring": "Test ejecutar tarea sin configuraci\u00f3n"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "path": "tests/test_agent_parser.py",
+    "relative": true,
+    "modified_at": "2025-11-25T06:35:37.033262+00:00",
+    "symbols": [
+      {
+        "name": "TestAgentOutputParser",
+        "kind": "class",
+        "lineno": 12,
+        "parent": null,
+        "docstring": "Test agent output parser functionality"
+      },
+      {
+        "name": "setup_method",
+        "kind": "method",
+        "lineno": 15,
+        "parent": "TestAgentOutputParser",
+        "docstring": "Set up test parser"
+      },
+      {
+        "name": "test_command_detection",
+        "kind": "method",
+        "lineno": 19,
+        "parent": "TestAgentOutputParser",
+        "docstring": "Test detection of command execution"
+      },
+      {
+        "name": "test_test_result_detection",
+        "kind": "method",
+        "lineno": 44,
+        "parent": "TestAgentOutputParser",
+        "docstring": "Test detection of test results"
+      },
+      {
+        "name": "test_agent_reasoning_detection",
+        "kind": "method",
+        "lineno": 81,
+        "parent": "TestAgentOutputParser",
+        "docstring": "Test detection of agent thinking patterns"
+      },
+      {
+        "name": "test_error_detection",
+        "kind": "method",
+        "lineno": 101,
+        "parent": "TestAgentOutputParser",
+        "docstring": "Test detection of errors and warnings"
+      },
+      {
+        "name": "test_file_operations",
+        "kind": "method",
+        "lineno": 128,
+        "parent": "TestAgentOutputParser",
+        "docstring": "Test detection of file operations"
+      },
+      {
+        "name": "test_prompt_detection",
+        "kind": "method",
+        "lineno": 151,
+        "parent": "TestAgentOutputParser",
+        "docstring": "Test detection of interactive prompts"
+      },
+      {
+        "name": "test_ansi_stripping",
+        "kind": "method",
+        "lineno": 167,
+        "parent": "TestAgentOutputParser",
+        "docstring": "Test that ANSI codes are stripped for pattern matching"
+      },
+      {
+        "name": "test_parse_chunk",
+        "kind": "method",
+        "lineno": 176,
+        "parent": "TestAgentOutputParser",
+        "docstring": "Test parsing multiple lines at once"
+      },
+      {
+        "name": "test_event_serialization",
+        "kind": "method",
+        "lineno": 196,
+        "parent": "TestAgentOutputParser",
+        "docstring": "Test event JSON serialization"
+      },
+      {
+        "name": "test_build_command_detection",
+        "kind": "method",
+        "lineno": 214,
+        "parent": "TestAgentOutputParser",
+        "docstring": "Test detection of build commands"
+      },
+      {
+        "name": "test_line_number_tracking",
+        "kind": "method",
+        "lineno": 229,
+        "parent": "TestAgentOutputParser",
+        "docstring": "Test that line numbers are tracked"
+      },
+      {
+        "name": "test_no_match_returns_none",
+        "kind": "method",
+        "lineno": 238,
+        "parent": "TestAgentOutputParser",
+        "docstring": "Test that non-matching lines return None"
+      },
+      {
+        "name": "test_multiple_events_per_line",
+        "kind": "method",
+        "lineno": 246,
+        "parent": "TestAgentOutputParser",
+        "docstring": "Test lines that can trigger multiple event types"
       }
     ],
     "errors": []

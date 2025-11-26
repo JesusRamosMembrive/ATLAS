@@ -4,6 +4,9 @@ import { FitAddon } from "@xterm/addon-fit";
 import { WebLinksAddon } from "@xterm/addon-web-links";
 import { useBackendStore } from "../state/useBackendStore";
 import { resolveBackendBaseUrl } from "../api/client";
+import { useAgentStore } from "../stores/agentStore";
+import { parseAgentMessage, parseAgentStatus, parseAgentSummary } from "../types/agent";
+import { AgentOverlay } from "./terminal/AgentOverlay";
 import "@xterm/xterm/css/xterm.css";
 
 /**
@@ -18,7 +21,18 @@ export function RemoteTerminalView() {
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [agentParsingEnabled, setAgentParsingEnabled] = useState(false);
+  const [showAgentOverlay, setShowAgentOverlay] = useState(false);
+  const [inputValue, setInputValue] = useState("");
   const backendUrl = useBackendStore((state) => state.backendUrl);
+
+  // Agent store
+  const {
+    enableAgentParsing,
+    disableAgentParsing,
+    processAgentEvent,
+    updateSessionSummary,
+  } = useAgentStore();
 
   const terminalRef = useRef<HTMLDivElement>(null);
   const xtermRef = useRef<Terminal | null>(null);
@@ -62,7 +76,7 @@ export function RemoteTerminalView() {
     console.log(`Initializing terminal with container dimensions: ${rect.width}x${rect.height}`);
 
     const terminal = new Terminal({
-      cursorBlink: true,
+      cursorBlink: false, // Disable cursor since terminal is read-only
       fontSize: 14,
       fontFamily: '"JetBrains Mono", "Fira Code", "Cascadia Code", monospace',
       theme: {
@@ -88,6 +102,7 @@ export function RemoteTerminalView() {
       },
       rows: 30,
       scrollback: 10000,
+      disableStdin: true, // Make terminal read-only
     });
 
     const fitAddon = new FitAddon();
@@ -212,7 +227,38 @@ export function RemoteTerminalView() {
     };
 
     socket.onmessage = (event) => {
-      xtermRef.current?.write(event.data);
+      const message = event.data;
+
+      // Check for agent protocol messages
+      if (message.startsWith("__AGENT__:")) {
+        // Parse agent event
+        const agentEvent = parseAgentMessage(message);
+        if (agentEvent) {
+          processAgentEvent(agentEvent);
+          return; // Don't write to terminal
+        }
+
+        // Parse agent status
+        const status = parseAgentStatus(message);
+        if (status) {
+          if (status === "enabled") {
+            xtermRef.current?.writeln("\x1b[1;36m✓ Agent parsing enabled\x1b[0m");
+          } else if (status === "disabled") {
+            xtermRef.current?.writeln("\x1b[1;36m✓ Agent parsing disabled\x1b[0m");
+          }
+          return; // Don't write raw status to terminal
+        }
+
+        // Parse agent summary
+        const summary = parseAgentSummary(message);
+        if (summary) {
+          updateSessionSummary(summary);
+          return; // Don't write to terminal
+        }
+      }
+
+      // Regular terminal output
+      xtermRef.current?.write(message);
     };
 
     socket.onerror = (err) => {
@@ -237,12 +283,8 @@ export function RemoteTerminalView() {
     // Now save to ref after all handlers are configured
     wsRef.current = socket;
 
-    // Store disposables for cleanup
-    disposablesRef.current.data = xtermRef.current.onData((data) => {
-      if (socket?.readyState === WebSocket.OPEN) {
-        socket.send(data);
-      }
-    });
+    // NOTE: Terminal is read-only, no onData binding needed
+    // User input is handled via separate HTML input element
 
     const sendResize = () => {
       if (socket?.readyState === WebSocket.OPEN && xtermRef.current) {
@@ -267,9 +309,56 @@ export function RemoteTerminalView() {
     }
   };
 
+  // Handle input submission
+  const handleInputSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN || !inputValue.trim()) {
+      return;
+    }
+
+    // Send the input followed by Enter
+    wsRef.current.send(inputValue + "\r");
+    setInputValue("");
+  };
+
+  // Toggle agent parsing
+  const toggleAgentParsing = () => {
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
+    if (agentParsingEnabled) {
+      // Disable agent parsing
+      wsRef.current.send("__AGENT__:disable");
+      disableAgentParsing();
+      setAgentParsingEnabled(false);
+      setShowAgentOverlay(false);
+    } else {
+      // Enable agent parsing
+      wsRef.current.send("__AGENT__:enable");
+      enableAgentParsing();
+      setAgentParsingEnabled(true);
+      setShowAgentOverlay(true);
+    }
+  };
+
+  // Request agent summary
+  const requestAgentSummary = () => {
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+      return;
+    }
+    wsRef.current.send("__AGENT__:summary");
+  };
+
   // Disconnect function
   const disconnectFromShell = () => {
     console.log("[WS] Manual disconnect triggered");
+
+    // Disable agent parsing if enabled
+    if (agentParsingEnabled) {
+      disableAgentParsing();
+      setAgentParsingEnabled(false);
+    }
 
     // Clean up disposables
     if (disposablesRef.current.data) {
@@ -301,6 +390,15 @@ export function RemoteTerminalView() {
 
   return (
     <div className="terminal-view">
+      {/* Agent Overlay */}
+      {showAgentOverlay && (
+        <AgentOverlay
+          visible={showAgentOverlay}
+          position="right"
+          onClose={() => setShowAgentOverlay(false)}
+        />
+      )}
+
       {/* Terminal Container */}
       <div className="terminal-container">
         <div className="terminal-header">
@@ -325,8 +423,39 @@ export function RemoteTerminalView() {
               <>
                 <span className="terminal-status">
                   <span className="terminal-status-dot" />
-                  Active
+                  Active {agentParsingEnabled && "(Agent Mode)"}
                 </span>
+                <button
+                  onClick={toggleAgentParsing}
+                  className="secondary-btn"
+                  style={{
+                    marginLeft: "0.5rem",
+                    backgroundColor: agentParsingEnabled ? "#3b82f6" : undefined
+                  }}
+                  title={agentParsingEnabled ? "Disable agent parsing" : "Enable agent parsing"}
+                >
+                  {agentParsingEnabled ? "🤖 Agent ON" : "🤖 Agent OFF"}
+                </button>
+                {agentParsingEnabled && (
+                  <>
+                    <button
+                      onClick={() => setShowAgentOverlay(!showAgentOverlay)}
+                      className="secondary-btn"
+                      style={{ marginLeft: "0.5rem" }}
+                      title={showAgentOverlay ? "Hide agent overlay" : "Show agent overlay"}
+                    >
+                      {showAgentOverlay ? "👁️ Hide" : "👁️ Show"}
+                    </button>
+                    <button
+                      onClick={requestAgentSummary}
+                      className="secondary-btn"
+                      style={{ marginLeft: "0.5rem" }}
+                      title="Get agent session summary"
+                    >
+                      📊 Summary
+                    </button>
+                  </>
+                )}
                 <button
                   onClick={disconnectFromShell}
                   className="secondary-btn"
@@ -344,6 +473,23 @@ export function RemoteTerminalView() {
           </div>
         </div>
         <div ref={terminalRef} className="terminal-content" />
+
+        {/* Separate input for sending commands */}
+        {connected && (
+          <form onSubmit={handleInputSubmit} className="terminal-input-form">
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Type command and press Enter..."
+              className="terminal-input"
+              autoFocus
+            />
+            <button type="submit" className="terminal-input-btn">
+              Send
+            </button>
+          </form>
+        )}
       </div>
 
       {/* Help Section */}

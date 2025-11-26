@@ -18,4 +18,5 @@
 @import "./utilities.css";
 @import "./linters.css";
 @import "./audit.css";
+@import "../components/terminal/AgentOverlay.css";
 @import "./responsive.css";

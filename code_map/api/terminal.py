@@ -6,9 +6,12 @@ Provides WebSocket endpoint for remote terminal access
 
 import asyncio
 import logging
+import json
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from starlette.websockets import WebSocketState
 from code_map.terminal import PTYShell
+from code_map.terminal.agent_parser import AgentEvent
+from code_map.terminal.agent_events import AgentEventManager
 
 logger = logging.getLogger(__name__)
 
@@ -25,17 +28,24 @@ async def terminal_websocket(websocket: WebSocket):
     Client can send:
     - Raw text for shell input
     - "__RESIZE__:cols:rows" for terminal resize
+    - "__AGENT__:enable" to enable agent parsing
+    - "__AGENT__:disable" to disable agent parsing
 
     Server sends:
     - Raw text from shell output
+    - "__AGENT__:event:{json}" for agent events (when enabled)
     """
     try:
         await websocket.accept()
         print("[TERMINAL] WebSocket connection accepted")  # DEBUG
         logger.info("Terminal WebSocket connection accepted")
 
-        # Spawn shell process
-        shell = PTYShell(cols=80, rows=24)
+        # Track agent parsing state
+        agent_parsing_enabled = False
+        agent_event_manager = None
+
+        # Spawn shell process (agent parsing disabled by default)
+        shell = PTYShell(cols=80, rows=24, enable_agent_parsing=False)
 
         try:
             shell.spawn()
@@ -127,7 +137,7 @@ async def terminal_websocket(websocket: WebSocket):
                 try:
                     raw = recv_task.result()
 
-                    # Check for resize protocol
+                    # Check for special protocols
                     if raw.startswith("__RESIZE__"):
                         try:
                             _, cols, rows = raw.split(":")
@@ -135,6 +145,76 @@ async def terminal_websocket(websocket: WebSocket):
                             logger.debug(f"Terminal resized to {cols}x{rows}")
                         except Exception as e:
                             logger.error(f"Error parsing resize command: {e}")
+
+                    elif raw.startswith("__AGENT__"):
+                        try:
+                            parts = raw.split(":", 1)
+                            if len(parts) > 1:
+                                cmd = parts[1]
+                                if cmd == "enable":
+                                    # Enable agent parsing
+                                    if not agent_parsing_enabled:
+                                        agent_parsing_enabled = True
+                                        shell.enable_agent_parsing = True
+
+                                        # Create new parser and event manager
+                                        from code_map.terminal.agent_parser import AgentOutputParser
+                                        import uuid
+                                        shell.agent_parser = AgentOutputParser()
+                                        agent_event_manager = AgentEventManager(str(uuid.uuid4()))
+
+                                        # Set callback to send events to WebSocket
+                                        async def send_agent_event(event: AgentEvent):
+                                            """Send agent event to WebSocket"""
+                                            try:
+                                                # Process event in manager
+                                                await agent_event_manager.process_event(event)
+
+                                                # Send event to client
+                                                event_msg = f"__AGENT__:event:{event.to_json()}"
+                                                if websocket.application_state == WebSocketState.CONNECTED:
+                                                    await websocket.send_text(event_msg)
+                                            except Exception as e:
+                                                logger.error(f"Error sending agent event: {e}")
+
+                                        # Wrap async callback for sync context
+                                        def agent_event_callback(event: AgentEvent):
+                                            """Sync wrapper for agent event callback"""
+                                            if loop.is_running():
+                                                loop.call_soon_threadsafe(
+                                                    lambda: asyncio.create_task(send_agent_event(event))
+                                                )
+
+                                        shell.set_agent_event_callback(agent_event_callback)
+                                        logger.info("Agent parsing enabled")
+
+                                        # Send confirmation
+                                        if websocket.application_state == WebSocketState.CONNECTED:
+                                            await websocket.send_text("__AGENT__:status:enabled\r\n")
+
+                                elif cmd == "disable":
+                                    # Disable agent parsing
+                                    agent_parsing_enabled = False
+                                    shell.enable_agent_parsing = False
+                                    shell.agent_parser = None
+                                    shell.agent_event_callback = None
+                                    agent_event_manager = None
+                                    logger.info("Agent parsing disabled")
+
+                                    # Send confirmation
+                                    if websocket.application_state == WebSocketState.CONNECTED:
+                                        await websocket.send_text("__AGENT__:status:disabled\r\n")
+
+                                elif cmd == "summary" and agent_event_manager:
+                                    # Send current session summary
+                                    summary = agent_event_manager.get_state_summary()
+                                    summary_msg = f"__AGENT__:summary:{json.dumps(summary)}"
+                                    if websocket.application_state == WebSocketState.CONNECTED:
+                                        await websocket.send_text(summary_msg)
+
+                        except Exception as e:
+                            logger.error(f"Error handling agent command: {e}")
+
                     else:
                         # Regular input - send to shell
                         shell.write(raw)
