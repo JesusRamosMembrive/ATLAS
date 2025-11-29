@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Iterable, Optional, Set, TYPE_CHECKING
 
 from .events import ChangeEventType
+from .constants import DEFAULT_EXCLUDED_DIRS
 from .scheduler import ChangeScheduler
 
 if TYPE_CHECKING:  # pragma: no cover - solo para tipado
@@ -40,20 +41,7 @@ else:  # pragma: no cover - en tiempo de ejecución permitimos fallback
 
 logger = logging.getLogger(__name__)
 
-EXCLUDED_DEFAULT: Set[str] = {
-    "__pycache__",
-    ".git",
-    ".hg",
-    ".mypy_cache",
-    ".pytest_cache",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    "env",
-    "node_modules",
-    "venv",
-}
+EXCLUDED_DEFAULT: Set[str] = set(DEFAULT_EXCLUDED_DIRS)
 
 
 class _EventHandler(FileSystemEventHandler):

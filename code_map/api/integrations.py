@@ -19,13 +19,7 @@ from ..integrations import (
     discover_ollama,
     start_ollama_server,
 )
-from ..insights import (
-    run_ollama_insights,
-    list_insights,
-    clear_insights,
-    OLLAMA_DEFAULT_TIMEOUT,
-)
-from ..insights.storage import record_insight
+from ..insights import list_insights, clear_insights, OLLAMA_DEFAULT_TIMEOUT
 from ..state import AppState
 from .deps import get_app_state
 from .schemas import (
@@ -146,8 +140,6 @@ async def generate_ollama_insights(
         else OLLAMA_DEFAULT_TIMEOUT
     )
 
-    context = await state._build_insights_context()
-
     focus_value = (
         payload.focus.strip().lower()
         if isinstance(payload.focus, str)
@@ -155,14 +147,10 @@ async def generate_ollama_insights(
     )
 
     try:
-        result = await asyncio.to_thread(
-            run_ollama_insights,
+        result = await state.run_insights_now(
             model=model,
-            root_path=state.settings.root_path,
-            endpoint=None,
-            context=context,
-            timeout=timeout,
             focus=focus_value,
+            timeout=timeout,
         )
     except OllamaChatError as exc:
         detail = {
@@ -172,15 +160,8 @@ async def generate_ollama_insights(
             "status_code": exc.status_code,
         }
         raise HTTPException(status_code=502, detail=detail) from exc
-
-    record_insight(
-        model=result.model,
-        message=result.message,
-        raw=result.raw.raw,
-        root_path=state.settings.root_path,
-    )
-    state._insights_last_run = result.generated_at
-    state._schedule_insights_pipeline()
+    except RuntimeError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
     return OllamaInsightsResponse(
         model=result.model,
@@ -218,5 +199,4 @@ async def clear_ollama_insights_endpoint(
         clear_insights,
         root_path=state.settings.root_path,
     )
-    state._recent_changes = []
     return OllamaInsightsClearResponse(deleted=deleted)

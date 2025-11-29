@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from .analyzer import get_modified_time
+from .models import AnalysisError
 from .dependencies import optional_dependencies
 from .models import FileSummary, SymbolInfo, SymbolKind
 
@@ -62,20 +63,30 @@ class JsAnalyzer:
         """
         abs_path = path.resolve()
         if not self._module:
+            error = AnalysisError(
+                message="esprima no disponible; análisis de JS degradado.",
+                lineno=None,
+                col_offset=None,
+            )
             return FileSummary(
                 path=abs_path,
                 symbols=[],
-                errors=[],
+                errors=[error],
                 modified_at=get_modified_time(abs_path),
             )
 
         try:
             source = abs_path.read_text(encoding="utf-8")
-        except OSError:
+        except OSError as exc:
+            error = AnalysisError(
+                message=f"No se pudo leer el archivo: {exc}",
+                lineno=None,
+                col_offset=None,
+            )
             return FileSummary(
                 path=abs_path,
                 symbols=[],
-                errors=[],
+                errors=[error],
                 modified_at=None,
             )
 
@@ -87,10 +98,15 @@ class JsAnalyzer:
             # Intentional broad exception: graceful degradation for any parser error
             # (malformed JS, unsupported syntax, encoding issues, etc.)
             logger.debug("Error parseando %s: %s", abs_path, exc)
+            error = AnalysisError(
+                message=f"No se pudo parsear el archivo: {exc}",
+                lineno=None,
+                col_offset=None,
+            )
             return FileSummary(
                 path=abs_path,
                 symbols=[],
-                errors=[],
+                errors=[error],
                 modified_at=get_modified_time(abs_path),
             )
 

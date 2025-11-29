@@ -21,6 +21,7 @@ from typing import (
 
 from .analyzer import FileAnalyzer
 from .analyzer_registry import AnalyzerProtocol, AnalyzerRegistry
+from .constants import DEFAULT_EXCLUDED_DIRS
 from .events import ChangeBatch
 from .models import FileSummary
 
@@ -28,22 +29,6 @@ if TYPE_CHECKING:
     from .cache import SnapshotStore
     from .index import SymbolIndex
 
-
-DEFAULT_EXCLUDED_DIRS: Set[str] = {
-    "__pycache__",
-    ".git",
-    ".hg",
-    ".mypy_cache",
-    ".pytest_cache",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    ".code-map",
-    "env",
-    "node_modules",
-    "venv",
-}
 
 DEFAULT_EXTENSIONS: Set[str] = {
     ".py",

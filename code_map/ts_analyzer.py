@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional
 
 from .analyzer import get_modified_time
 from .dependencies import optional_dependencies
-from .models import FileSummary, SymbolInfo, SymbolKind
+from .models import AnalysisError, FileSummary, SymbolInfo, SymbolKind
 
 
 @dataclass
@@ -66,14 +66,20 @@ class TsAnalyzer:
         abs_path = path.resolve()
         try:
             source = abs_path.read_text(encoding="utf-8")
-        except OSError:
-            return FileSummary(path=abs_path, symbols=[], errors=[], modified_at=None)
+        except OSError as exc:
+            error = AnalysisError(message=f"No se pudo leer el archivo: {exc}")
+            return FileSummary(
+                path=abs_path, symbols=[], errors=[error], modified_at=None
+            )
 
         if not self.parser_wrapper:
+            error = AnalysisError(
+                message="tree_sitter_languages no disponible; análisis TS/TSX degradado."
+            )
             return FileSummary(
                 path=abs_path,
                 symbols=[],
-                errors=[],
+                errors=[error],
                 modified_at=get_modified_time(abs_path),
             )
 

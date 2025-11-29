@@ -32,7 +32,11 @@ from .linters import (
 )
 from .stage_toolkit import stage_status as compute_stage_status
 from .state_reporter import StateReporter
-from .insights import run_ollama_insights, VALID_INSIGHTS_FOCUS
+from .insights import (
+    run_ollama_insights,
+    VALID_INSIGHTS_FOCUS,
+    OLLAMA_DEFAULT_TIMEOUT,
+)
 from .insights.storage import record_insight
 from .integrations import OllamaChatError
 
@@ -647,6 +651,7 @@ class AppState:
         if not updated_fields:
             return []
 
+        await self._cancel_background_tasks()
         await self._apply_settings(new_settings)
         save_settings(self.settings)
         return updated_fields
@@ -725,3 +730,79 @@ class AppState:
                 )
         self._schedule_linters_pipeline()
         self._schedule_insights_pipeline()
+
+    async def run_linters_now(self) -> int:
+        """Ejecuta el pipeline de linters inmediatamente y devuelve el ID del reporte."""
+        await self._cancel_linters_tasks()
+        self._linters_task = asyncio.create_task(self._run_linters_pipeline())
+        await self._linters_task
+        if self.last_linters_report_id is None:
+            raise RuntimeError("No se pudo generar el reporte de linters.")
+        return self.last_linters_report_id
+
+    async def run_insights_now(
+        self,
+        *,
+        model: str,
+        focus: Optional[str] = None,
+        timeout: Optional[float] = None,
+    ):
+        """Genera insights inmediatamente usando la configuración actual."""
+        context = await self._build_insights_context()
+        result = await asyncio.to_thread(
+            run_ollama_insights,
+            model=model,
+            root_path=self.settings.root_path,
+            endpoint=None,
+            context=context,
+            focus=focus,
+            timeout=timeout or OLLAMA_DEFAULT_TIMEOUT,
+        )
+        record_insight(
+            model=result.model,
+            message=result.message,
+            raw=result.raw.raw,
+            root_path=self.settings.root_path,
+        )
+        self._insights_last_run = result.generated_at
+        self._schedule_insights_pipeline()
+        return result
+
+    async def build_insights_context(self) -> str:
+        """Expone el contexto usado por el generador de insights."""
+        return await self._build_insights_context()
+
+    async def _cancel_background_tasks(self) -> None:
+        """Cancela y limpia timers/tareas de linters e insights."""
+        await self._cancel_linters_tasks()
+        await self._cancel_insights_tasks()
+        self._recent_changes = []
+
+    async def _cancel_linters_tasks(self) -> None:
+        if self._linters_timer:
+            self._linters_timer.cancel()
+            with suppress(asyncio.CancelledError):
+                await self._linters_timer
+            self._linters_timer = None
+        if self._linters_task:
+            self._linters_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await self._linters_task
+            self._linters_task = None
+        self._linters_pending = False
+        self._linters_last_run = None
+
+    async def _cancel_insights_tasks(self) -> None:
+        if self._insights_timer:
+            self._insights_timer.cancel()
+            with suppress(asyncio.CancelledError):
+                await self._insights_timer
+            self._insights_timer = None
+        if self._insights_task:
+            self._insights_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await self._insights_task
+            self._insights_task = None
+        self._insights_pending = False
+        self._insights_last_attempt = None
+        self._insights_last_run = None

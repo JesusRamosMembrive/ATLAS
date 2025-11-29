@@ -19,7 +19,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Tuple, ca
 
 from defusedxml import ElementTree as _ElementTree  # type: ignore[import-not-found, import-untyped]
 
-from ..scanner import DEFAULT_EXCLUDED_DIRS
+from ..constants import DEFAULT_EXCLUDED_DIRS
 from .report_schema import (
     ChartData,
     CheckStatus,
