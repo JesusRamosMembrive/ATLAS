@@ -4277,7 +4277,7 @@
   {
     "path": "code_map/mcp/constants.py",
     "relative": true,
-    "modified_at": "2025-11-28T18:25:36.524430+00:00",
+    "modified_at": "2025-11-29T09:31:12.951783+00:00",
     "symbols": [],
     "errors": []
   },
@@ -7482,19 +7482,6 @@
     "errors": []
   },
   {
-    "path": "frontend/dist/assets/index-BfEU9Ocm.js",
-    "relative": true,
-    "modified_at": "2025-11-29T09:17:13.170996+00:00",
-    "symbols": [],
-    "errors": [
-      {
-        "message": "No se pudo parsear el archivo: Line 5: Unexpected token {",
-        "lineno": null,
-        "col_offset": null
-      }
-    ]
-  },
-  {
     "path": "frontend/dist/assets/index-BtluEvpg.js",
     "relative": true,
     "modified_at": "2025-11-28T18:49:55.698616+00:00",
@@ -7516,6 +7503,19 @@
     "errors": []
   },
   {
+    "path": "frontend/dist/assets/index-Crj82Cdd.js",
+    "relative": true,
+    "modified_at": "2025-11-29T15:22:14.740600+00:00",
+    "symbols": [],
+    "errors": [
+      {
+        "message": "No se pudo parsear el archivo: Line 5: Unexpected token {",
+        "lineno": null,
+        "col_offset": null
+      }
+    ]
+  },
+  {
     "path": "frontend/dist/assets/index-D8fI9KxZ.js",
     "relative": true,
     "modified_at": "2025-11-04T17:33:31.756170+00:00",
@@ -7532,7 +7532,7 @@
   {
     "path": "frontend/dist/index.html",
     "relative": true,
-    "modified_at": "2025-11-29T09:17:13.169996+00:00",
+    "modified_at": "2025-11-29T15:22:14.738923+00:00",
     "symbols": [
       {
         "name": "root",
@@ -8208,7 +8208,7 @@
   {
     "path": "frontend/src/components/ClaudeAgentView.tsx",
     "relative": true,
-    "modified_at": "2025-11-29T09:28:05.778446+00:00",
+    "modified_at": "2025-11-29T21:04:13.409659+00:00",
     "symbols": [
       {
         "name": "extractResultContent",
@@ -8262,21 +8262,21 @@
       {
         "name": "PermissionDenialsBanner",
         "kind": "function",
-        "lineno": 798,
+        "lineno": 803,
         "parent": null,
         "docstring": null
       },
       {
         "name": "truncateInput",
         "kind": "function",
-        "lineno": 859,
+        "lineno": 864,
         "parent": null,
         "docstring": null
       },
       {
         "name": "truncatePath",
         "kind": "function",
-        "lineno": 869,
+        "lineno": 874,
         "parent": null,
         "docstring": "============================================================================"
       }
