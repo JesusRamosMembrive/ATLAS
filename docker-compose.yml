@@ -7,8 +7,8 @@ services:
     image: code-map:latest
 
     ports:
-      # Map container port 8000 to host port 8080
-      - "8080:8000"
+      # Map container port 8010 to host port 8080
+      - "8080:8010"
 
     volumes:
       # Mount project to analyze (user specifies via PROJECT_PATH env var)
@@ -46,7 +46,7 @@ services:
 
     healthcheck:
       # Check if API is responding
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/settings"]
+      test: ["CMD", "curl", "-f", "http://localhost:8010/api/settings"]
       interval: 5s
       timeout: 3s
       retries: 10

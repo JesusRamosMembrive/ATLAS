@@ -1,0 +1,575 @@
+/**
+ * Agent Overlay Styles
+ *
+ * Styling for the agent terminal overlay components
+ */
+
+/* Main Overlay Container */
+.agent-overlay {
+  position: fixed;
+  background: var(--bg-secondary, #1a1d28);
+  border: 1px solid var(--border-color, #2a2e3e);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.agent-overlay--right {
+  top: 60px;
+  right: 20px;
+  bottom: 20px;
+  width: 420px;
+}
+
+.agent-overlay--left {
+  top: 60px;
+  left: 20px;
+  bottom: 20px;
+  width: 420px;
+}
+
+.agent-overlay--bottom {
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  height: 300px;
+}
+
+.agent-overlay--collapsed {
+  width: 60px !important;
+  height: auto !important;
+  min-height: 120px;
+}
+
+.agent-overlay--collapsed .agent-overlay__header {
+  writing-mode: vertical-rl;
+}
+
+/* Overlay Header */
+.agent-overlay__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--bg-primary, #0a0e18);
+  border-bottom: 1px solid var(--border-color, #2a2e3e);
+}
+
+.agent-overlay__title {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  color: var(--text-primary, #e2e8f0);
+}
+
+.agent-overlay__icon {
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+.agent-overlay__controls {
+  display: flex;
+  gap: 8px;
+}
+
+.agent-overlay__btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary, #94a3b8);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.agent-overlay__btn:hover {
+  background: var(--bg-hover, #2a2e3e);
+  color: var(--text-primary, #e2e8f0);
+}
+
+.agent-overlay__btn--close:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+/* Sections */
+.agent-overlay__section {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color, #2a2e3e);
+}
+
+.agent-overlay__section-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary, #94a3b8);
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+/* Quick Stats */
+.agent-overlay__stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg-primary, #0a0e18);
+}
+
+.agent-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  background: var(--bg-secondary, #1a1d28);
+  border-radius: 6px;
+  border: 1px solid var(--border-color, #2a2e3e);
+}
+
+.agent-stat__label {
+  font-size: 10px;
+  color: var(--text-secondary, #94a3b8);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.agent-stat__value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary, #e2e8f0);
+}
+
+.agent-stat__value--error {
+  color: #ef4444;
+}
+
+/* Timeline Container */
+.agent-overlay__timeline {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+/* Files Section */
+.agent-overlay__files {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.agent-file {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--bg-primary, #0a0e18);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.agent-file__icon {
+  font-size: 16px;
+}
+
+.agent-file__path {
+  color: var(--text-primary, #e2e8f0);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===== Timeline Styles ===== */
+.agent-timeline {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.agent-timeline__group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.agent-timeline__phase {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-left: 3px solid;
+  padding-left: 12px;
+  margin-left: 8px;
+  position: relative;
+}
+
+.agent-timeline__phase-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  position: absolute;
+  left: -7.5px;
+}
+
+.agent-timeline__phase-name {
+  font-weight: 600;
+  color: var(--text-primary, #e2e8f0);
+}
+
+.agent-timeline__phase-duration {
+  font-size: 12px;
+  color: var(--text-secondary, #94a3b8);
+  margin-left: auto;
+}
+
+.agent-timeline__event {
+  display: flex;
+  gap: 8px;
+  padding: 6px 8px;
+  margin-left: 28px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.agent-timeline__event:hover {
+  background: var(--bg-hover, #2a2e3e);
+}
+
+.agent-timeline__event--selected {
+  background: var(--bg-selected, #2563eb20);
+  border: 1px solid var(--border-selected, #3b82f6);
+}
+
+.agent-timeline__event-time {
+  font-size: 11px;
+  color: var(--text-secondary, #94a3b8);
+  min-width: 60px;
+  font-family: monospace;
+}
+
+.agent-timeline__event-icon {
+  font-size: 16px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.agent-timeline__event-content {
+  flex: 1;
+}
+
+.agent-timeline__event-description {
+  font-size: 13px;
+  color: var(--text-primary, #e2e8f0);
+}
+
+.agent-timeline__event-details {
+  margin-top: 8px;
+  padding: 8px;
+  background: var(--bg-primary, #0a0e18);
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: monospace;
+}
+
+.agent-timeline__event-details pre {
+  margin: 0;
+  color: var(--text-secondary, #94a3b8);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* ===== Status Bar Styles ===== */
+.agent-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background: var(--bg-primary, #0a0e18);
+  border-bottom: 1px solid var(--border-color, #2a2e3e);
+}
+
+.agent-status-bar__phase {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.agent-status-bar__phase-indicator {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.agent-status-bar__phase-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.agent-status-bar__phase-name {
+  font-weight: 600;
+  color: var(--text-primary, #e2e8f0);
+  font-size: 14px;
+}
+
+.agent-status-bar__phase-duration {
+  font-size: 12px;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.agent-status-bar__metrics {
+  display: flex;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.agent-status-bar__metric {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.agent-status-bar__metric-icon {
+  font-size: 14px;
+}
+
+.agent-status-bar__metric-value {
+  font-weight: 600;
+  color: var(--text-primary, #e2e8f0);
+}
+
+.agent-status-bar__metric-label {
+  color: var(--text-secondary, #94a3b8);
+}
+
+.agent-status-bar__metric--error .agent-status-bar__metric-value {
+  color: #ef4444;
+}
+
+.agent-status-bar__progress {
+  margin-left: 8px;
+}
+
+.agent-status-bar__progress-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-color, #2a2e3e);
+  border-top-color: var(--primary-color, #3b82f6);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* ===== Command Widget Styles ===== */
+.command-widget {
+  background: var(--bg-primary, #0a0e18);
+  border: 1px solid var(--border-color, #2a2e3e);
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.command-widget__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color, #2a2e3e);
+}
+
+.command-widget__icon {
+  font-size: 18px;
+}
+
+.command-widget__title {
+  font-weight: 500;
+  color: var(--text-primary, #e2e8f0);
+}
+
+.command-widget__time {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-secondary, #94a3b8);
+  font-family: monospace;
+}
+
+.command-widget__content {
+  padding: 12px;
+}
+
+.command-widget__command {
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--text-secondary, #94a3b8);
+  background: var(--bg-secondary, #1a1d28);
+  padding: 6px 8px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.command-widget__packages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.command-widget__package {
+  padding: 4px 8px;
+  background: var(--bg-secondary, #1a1d28);
+  border: 1px solid var(--border-color, #2a2e3e);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--text-primary, #e2e8f0);
+}
+
+/* Progress Bar */
+.command-widget__progress {
+  margin-bottom: 8px;
+}
+
+.command-widget__progress-bar {
+  height: 6px;
+  background: var(--bg-secondary, #1a1d28);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.command-widget__progress-fill {
+  height: 100%;
+  background: var(--primary-color, #3b82f6);
+  transition: width 0.3s ease;
+}
+
+.command-widget__progress-fill--indeterminate {
+  width: 30%;
+  animation: progress-indeterminate 1.5s ease-in-out infinite;
+}
+
+.command-widget__progress-fill--success {
+  background: #10b981;
+}
+
+.command-widget__progress-text {
+  font-size: 12px;
+  color: var(--text-secondary, #94a3b8);
+}
+
+/* Status Messages */
+.command-widget__status {
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.command-widget__status--running {
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+}
+
+.command-widget__status--success {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.command-widget__status--error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* Test Stats */
+.command-widget__test-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.command-widget__test-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.command-widget__test-stat-value {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.command-widget__test-stat-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.command-widget__test-stat--passed .command-widget__test-stat-value {
+  color: #10b981;
+}
+
+.command-widget__test-stat--failed .command-widget__test-stat-value {
+  color: #ef4444;
+}
+
+.command-widget__test-stat--skipped .command-widget__test-stat-value {
+  color: #f59e0b;
+}
+
+/* Failures */
+.command-widget__failures {
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.command-widget__failures summary {
+  cursor: pointer;
+  color: var(--text-secondary, #94a3b8);
+  margin-bottom: 8px;
+}
+
+.command-widget__failure {
+  padding: 4px 8px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  font-family: monospace;
+  font-size: 11px;
+}
+
+/* Animations */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes progress-indeterminate {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(200%); }
+  100% { transform: translateX(-100%); }
+}
+
+/* Scrollbar Styles */
+.agent-timeline::-webkit-scrollbar,
+.agent-overlay::-webkit-scrollbar {
+  width: 6px;
+}
+
+.agent-timeline::-webkit-scrollbar-track,
+.agent-overlay::-webkit-scrollbar-track {
+  background: var(--bg-primary, #0a0e18);
+}
+
+.agent-timeline::-webkit-scrollbar-thumb,
+.agent-overlay::-webkit-scrollbar-thumb {
+  background: var(--border-color, #2a2e3e);
+  border-radius: 3px;
+}
+
+.agent-timeline::-webkit-scrollbar-thumb:hover,
+.agent-overlay::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary, #94a3b8);
+}

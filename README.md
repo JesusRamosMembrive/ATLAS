@@ -25,8 +25,29 @@ Automatically detects your project's maturity and provides deep insights into yo
 Enforces evolutionary development through:
 1. **Automatic Stage Detection** - Analyzes codebase and recommends Stage 1/2/3
 2. **Stage-Specific Rules** - Prevents complexity until justified
-3. **Specialized Subagents** - Architect, implementer, reviewer that understand stage context
-4. **Session Continuity** - Tracking files preserve decisions and progress
+3. **3-Phase Development Workflow** - Separates planning, implementation, and validation
+4. **Specialized Subagents** - Architect, implementer, reviewer that understand stage context
+5. **Session Continuity** - Tracking files preserve decisions and progress
+
+#### 3-Phase Development Workflow
+
+Projects initialized with ATLAS follow a structured workflow:
+
+**Phase 1: Planning** (@architect, @stage-keeper)
+- Design stage-appropriate architecture
+- Select technology stack with rationale
+- Create implementation roadmap
+- **Output**: `.claude/doc/{feature}/architecture.md`
+
+**Phase 2: Implementation** (@implementer)
+- Execute architectural plan
+- Track progress and document blockers
+- **Output**: Code + `.claude/doc/{feature}/implementation.md`
+
+**Phase 3: Validation** (@code-reviewer, @stage-keeper)
+- Validate against plan
+- Check security, correctness, stage compliance
+- **Output**: `.claude/doc/{feature}/qa-report.md`
 
 ### ATLAS Backend
 Provides deep code analysis via REST API:
@@ -81,7 +102,7 @@ python -m code_map.cli run --root /path/to/your/project
 # Or using short form
 python -m code_map --root /path/to/your/project
 
-# Access API docs at: http://localhost:8000/docs
+# Access API docs at: http://localhost:8010/docs
 ```
 
 **Frontend (React UI):**
@@ -96,7 +117,7 @@ npm run dev
 ```bash
 # API server
 export CODE_MAP_HOST=0.0.0.0      # Default: 127.0.0.1
-export CODE_MAP_PORT=8080          # Default: 8000
+export CODE_MAP_PORT=8080          # Default: 8010
 
 # Ollama integration (optional)
 export OLLAMA_HOST=http://localhost:11434
@@ -306,7 +327,7 @@ python -m code_map.cli run --root . --reload
 - `POST /api/linters/run` - Execute linter pipeline
 - `POST /api/stage/assess` - Assess project stage
 - `GET /api/analysis/summary` - Code analysis summary
-- Interactive docs: `http://localhost:8000/docs`
+- Interactive docs: `http://localhost:8010/docs`
 
 **→ Full documentation:** [USAGE.md](./USAGE.md) | [CLAUDE.md](./CLAUDE.md)
 
@@ -331,7 +352,7 @@ python -m code_map.cli run --root . --reload
 **API Server:**
 ```bash
 CODE_MAP_HOST=0.0.0.0              # Default: 127.0.0.1
-CODE_MAP_PORT=8080                 # Default: 8000
+CODE_MAP_PORT=8080                 # Default: 8010
 ```
 
 **Linter Pipeline:**

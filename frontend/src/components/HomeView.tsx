@@ -3,6 +3,7 @@ import type { UseQueryResult } from "@tanstack/react-query";
 
 import type { StageDetectionStatus, StatusPayload } from "../api/types";
 import { useStageStatusQuery } from "../hooks/useStageStatusQuery";
+import { TiltCard } from "./TiltCard";
 
 function detectionBadgeLabel(detection?: StageDetectionStatus): string {
   if (!detection) {
@@ -55,13 +56,29 @@ export function HomeView({
       <section className="home-hero">
         <div className="home-hero__glow" aria-hidden />
         <div className="home-hero__content">
-          <span className={`home-stage-pill ${detectionTone}`}>
-            {stageStatusQuery.isLoading ? "Calculating…" : detectionLabel}
-          </span>
-          <h2>ATLAS: Navigate Your Codebase with Precision</h2>
-          <p>
-            Automated Tracing, Linting And Source-mapping. Define shared standards, monitor code quality with integrated linters, trace function calls across files, and rely on local AI for contextual insights.
+          <div className="home-hero__badges">
+            <span className="home-version-pill">v1.0.0</span>
+            <span className={`home-stage-pill ${detectionTone}`}>
+              {stageStatusQuery.isLoading ? "Calculating…" : detectionLabel}
+            </span>
+          </div>
+          <h2>ATLAS: Control Your Code, Guide Your Agents</h2>
+          <p className="home-hero__acronym">
+            Agent Tooling, Linting And Source-mapping
           </p>
+          <p>
+            Unified control center for code analysis, linting, and AI agent orchestration. Trace dependencies, monitor quality, execute commands remotely, and leverage local AI for contextual insights—all in one place.
+          </p>
+          <div className="home-hero__credits">
+            <span>Programmed by Jesús Ramos Membrive</span>
+            <a
+              href="https://github.com/JesusRamosMembrive/ATLAS"
+              target="_blank"
+              rel="noreferrer"
+            >
+              github.com/JesusRamosMembrive/ATLAS
+            </a>
+          </div>
         </div>
         <div className="home-hero__logo">
           <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -115,17 +132,32 @@ export function HomeView({
               <circle cx="150" cy="50" r="4" fill="#5eead4" />
             </g>
 
-            {/* Partículas decorativas */}
-            <circle cx="40" cy="100" r="2" fill="#60a5fa" opacity="0.6" />
-            <circle cx="160" cy="100" r="2" fill="#2dd4bf" opacity="0.6" />
-            <circle cx="100" cy="40" r="2" fill="#34d399" opacity="0.5" />
-            <circle cx="100" cy="160" r="2" fill="#5eead4" opacity="0.5" />
+            {/* Partículas orbitando - círculo exterior (r=70) */}
+            <g className="orbit orbit--slow">
+              <circle cx="170" cy="100" r="2.5" fill="#60a5fa" opacity="0.8" />
+            </g>
+            <g className="orbit orbit--slow-reverse">
+              <circle cx="30" cy="100" r="2" fill="#2dd4bf" opacity="0.7" />
+            </g>
+
+            {/* Partículas orbitando - círculo medio (r=55) */}
+            <g className="orbit orbit--medium">
+              <circle cx="155" cy="100" r="2" fill="#34d399" opacity="0.7" />
+            </g>
+            <g className="orbit orbit--medium-reverse">
+              <circle cx="45" cy="100" r="1.5" fill="#5eead4" opacity="0.6" />
+            </g>
+
+            {/* Partículas extra para más dinamismo */}
+            <g className="orbit orbit--fast">
+              <circle cx="140" cy="100" r="1.5" fill="#a5b4fc" opacity="0.5" />
+            </g>
           </svg>
         </div>
       </section>
 
       <section className="home-card-grid">
-        <Link to="/stage-toolkit" className="home-card">
+        <TiltCard to="/stage-toolkit">
           <div className="home-card-body">
             <h3>Project Stage Toolkit</h3>
             <p>
@@ -134,9 +166,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open toolkit →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/overview" className="home-card">
+        <TiltCard to="/overview">
           <div className="home-card-body">
             <h3>Overview</h3>
             <p>
@@ -145,9 +177,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open overview →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/code-map" className="home-card">
+        <TiltCard to="/code-map">
           <div className="home-card-body">
             <h3>Code Analysis</h3>
             <p>
@@ -156,9 +188,20 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open Analysis →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/class-uml" className="home-card">
+        <TiltCard to="/docs">
+          <div className="home-card-body">
+            <h3>Docs</h3>
+            <p>
+              Inspect every markdown file under <code>docs/</code>, keep architecture notes handy,
+              and preview content without leaving ATLAS.
+            </p>
+          </div>
+          <span className="home-card-cta">Open Docs →</span>
+        </TiltCard>
+
+        <TiltCard to="/class-uml">
           <div className="home-card-body">
             <h3>Class UML</h3>
             <p>
@@ -167,9 +210,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">View UML →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/timeline" className="home-card">
+        <TiltCard to="/timeline">
           <div className="home-card-body">
             <h3>Code Timeline</h3>
             <p>
@@ -177,9 +220,29 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open Timeline →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/linters" className="home-card">
+        <TiltCard to="/terminal">
+          <div className="home-card-body">
+            <h3>Remote Terminal</h3>
+            <p>
+              Full shell access from your browser. Execute commands, navigate directories, and manage your system remotely with a real bash/zsh terminal.
+            </p>
+          </div>
+          <span className="home-card-cta">Open Terminal →</span>
+        </TiltCard>
+
+        <TiltCard to="/agent">
+          <div className="home-card-body">
+            <h3>Claude Agent</h3>
+            <p>
+              Interact with Claude Code through a structured UI. Send prompts, see tool calls and results in real-time without TUI rendering issues.
+            </p>
+          </div>
+          <span className="home-card-cta">Open Agent →</span>
+        </TiltCard>
+
+        <TiltCard to="/linters">
           <div className="home-card-body">
             <h3>Linters</h3>
             <p>
@@ -187,9 +250,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">View linters →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/ollama" className="home-card">
+        <TiltCard to="/ollama">
           <div className="home-card-body">
             <h3>Ollama Insights</h3>
             <p>
@@ -197,9 +260,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open Ollama →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/prompts" className="home-card">
+        <TiltCard to="/prompts">
           <div className="home-card-body">
             <h3>Prompts</h3>
             <p>
@@ -207,9 +270,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open Prompts →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/settings" className="home-card">
+        <TiltCard to="/settings">
           <div className="home-card-body">
             <h3>Settings</h3>
             <p>
@@ -217,7 +280,7 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open Settings →</span>
-        </Link>
+        </TiltCard>
       </section>
     </div>
   );

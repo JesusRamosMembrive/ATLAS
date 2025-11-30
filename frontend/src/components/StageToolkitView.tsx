@@ -9,12 +9,29 @@ import type {
 } from "../api/types";
 import { useStageInitMutation } from "../hooks/useStageInitMutation";
 import { useStageStatusQuery } from "../hooks/useStageStatusQuery";
+import { useSuperClaudeInstallMutation } from "../hooks/useSuperClaudeInstallMutation";
 
 const AGENT_OPTIONS: { value: StageAgentSelection; label: string }[] = [
   { value: "both", label: "Claude + Codex" },
   { value: "claude", label: "Claude only" },
   { value: "codex", label: "Codex only" },
 ];
+
+const SUPERCLAUDE_REFERENCE_COUNTS = {
+  plugin_commands: 3,
+  specialist_agents: 16,
+  behavior_modes: 7,
+  mcp_servers: 8,
+} as const;
+
+type SuperClaudeStatKey = keyof typeof SUPERCLAUDE_REFERENCE_COUNTS;
+
+const SUPERCLAUDE_LABELS: Record<SuperClaudeStatKey, string> = {
+  plugin_commands: "Comandos del plugin",
+  specialist_agents: "Agentes especializados",
+  behavior_modes: "Modos conductuales",
+  mcp_servers: "Servidores MCP",
+};
 
 function formatList(values: string[]): JSX.Element {
   if (values.length === 0) {
@@ -169,24 +186,42 @@ function StageDetectionCard({ detection }: { detection: StageDetectionStatus | u
 export function StageToolkitView(): JSX.Element {
   const statusQuery = useStageStatusQuery();
   const initMutation = useStageInitMutation();
+  const superClaudeMutation = useSuperClaudeInstallMutation();
 
   const [selection, setSelection] = useState<StageAgentSelection>("both");
 
   const stageStatus = statusQuery.data;
   const initResult = initMutation.data;
+  const superClaudeResult = superClaudeMutation.data;
 
   const stdout = initResult?.stdout?.trim();
   const stderr = initResult?.stderr?.trim();
 
   const mutationError = initMutation.error ? String(initMutation.error) : null;
+  const superClaudeError = superClaudeMutation.error
+    ? String(superClaudeMutation.error.message || superClaudeMutation.error)
+    : null;
 
   const currentAgentLabel = useMemo(
     () => AGENT_OPTIONS.find((option) => option.value === selection)?.label ?? "Claude + Codex",
     [selection],
   );
 
+  const superClaudeCounts = useMemo(() => {
+    const keys = Object.keys(SUPERCLAUDE_REFERENCE_COUNTS) as SuperClaudeStatKey[];
+    return keys.reduce<Record<SuperClaudeStatKey, number>>((acc, key) => {
+      const currentValue = superClaudeResult?.component_counts?.[key];
+      acc[key] = typeof currentValue === "number" ? currentValue : SUPERCLAUDE_REFERENCE_COUNTS[key];
+      return acc;
+    }, {} as Record<SuperClaudeStatKey, number>);
+  }, [superClaudeResult?.component_counts]);
+
   const handleStageInit = () => {
     initMutation.mutate({ agents: selection });
+  };
+
+  const handleSuperClaudeInstall = () => {
+    superClaudeMutation.mutate();
   };
 
   return (
@@ -288,6 +323,118 @@ export function StageToolkitView(): JSX.Element {
         </div>
 
         {mutationError ? <p className="stage-error">{mutationError}</p> : null}
+      </section>
+
+      <section className="stage-section">
+        <header className="stage-section-header">
+          <div>
+            <h2>SuperClaude Framework</h2>
+            <p>
+              Sincroniza los comandos <code>/sc</code>, 16 agentes especializados, 7 modos y 8 servidores
+              MCP recomendados directamente desde la{" "}
+              <a
+                href="https://github.com/SuperClaude-Org/SuperClaude_Framework"
+                target="_blank"
+                rel="noreferrer"
+              >
+                distribución oficial
+              </a>
+              .
+            </p>
+          </div>
+        </header>
+
+        <article className="stage-card">
+          <dl className="stage-metrics">
+            {(Object.keys(SUPERCLAUDE_REFERENCE_COUNTS) as SuperClaudeStatKey[]).map((key) => (
+              <div key={key}>
+                <dt>{SUPERCLAUDE_LABELS[key]}</dt>
+                <dd>{superClaudeCounts[key]}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <div className="stage-actions">
+            <button
+              className="primary-btn"
+              type="button"
+              onClick={handleSuperClaudeInstall}
+              disabled={superClaudeMutation.isPending}
+            >
+              {superClaudeMutation.isPending ? "Instalando…" : "Instalar SuperClaude"}
+            </button>
+            <a
+              className="secondary-btn"
+              href="https://github.com/SuperClaude-Org/SuperClaude_Framework"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Abrir repositorio
+            </a>
+          </div>
+
+          {superClaudeError ? <p className="stage-error">{superClaudeError}</p> : null}
+
+          {superClaudeResult ? (
+            <div>
+              {superClaudeResult.installed_at ? (
+                <p className="stage-meta">
+                  Última ejecución: {new Date(superClaudeResult.installed_at).toLocaleString()}
+                </p>
+              ) : null}
+              {superClaudeResult.source_commit ? (
+                <p className="stage-meta">
+                  Commit: <code>{superClaudeResult.source_commit.slice(0, 12)}</code>
+                </p>
+              ) : null}
+
+              {superClaudeResult.copied_paths.length > 0 ? (
+                <>
+                  <h4>Rutas sincronizadas</h4>
+                  <ul className="stage-list">
+                    {superClaudeResult.copied_paths.map((path) => (
+                      <li key={path}>
+                        <code>{path}</code>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <p className="stage-hint">
+                  Los activos ya están disponibles en <code>.claude/</code> y <code>docs/superclaude</code>.
+                </p>
+              )}
+
+              {superClaudeResult.logs.length > 0 ? (
+                <details className="stage-log-details">
+                  <summary>Ver registro ({superClaudeResult.logs.length})</summary>
+                  <div className="stage-log-entries">
+                    {superClaudeResult.logs.map((log, index) => {
+                      const stdout = log.stdout.trim();
+                      const stderr = log.stderr.trim();
+                      return (
+                        <div key={`${log.command.join(" ")}-${index}`} className="stage-log-entry">
+                          <p>
+                            <code>{log.command.join(" ")}</code>{" "}
+                            <span className={`stage-badge ${log.exit_code === 0 ? "success" : "warn"}`}>
+                              {log.exit_code === 0 ? "OK" : `Exit ${log.exit_code}`}
+                            </span>
+                          </p>
+                          {stdout ? <pre className="stage-output">{stdout}</pre> : null}
+                          {stderr ? <pre className="stage-output error">{stderr}</pre> : null}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </details>
+              ) : null}
+            </div>
+          ) : (
+            <p className="stage-hint">
+              Ejecuta el instalador para copiar los agentes, modos y servidores MCP recomendados.
+            </p>
+          )}
+        </article>
       </section>
 
       <section className="stage-section">

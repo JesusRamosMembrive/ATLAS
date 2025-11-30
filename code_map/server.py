@@ -5,6 +5,7 @@ Aplicación FastAPI principal.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -12,11 +13,21 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 from .scheduler import ChangeScheduler
 from .state import AppState
 from .settings import load_settings, save_settings
 from .api.routes import router as api_router
+
+
+def _parse_allowed_origins() -> list[str]:
+    raw = os.getenv("CODE_MAP_CORS_ALLOWED_ORIGINS")
+    if not raw:
+        return ["*"]
+    origins = [origin.strip() for origin in raw.split(",")]
+    cleaned = [origin for origin in origins if origin]
+    return cleaned or ["*"]
 
 
 def create_app(root: Optional[str | Path] = None) -> FastAPI:
@@ -49,6 +60,13 @@ def create_app(root: Optional[str | Path] = None) -> FastAPI:
     save_settings(state.settings)
 
     app = FastAPI(title="Code Map API", lifespan=lifespan)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_parse_allowed_origins(),
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     app.include_router(api_router, prefix="/api")
     app.state.app_state = state  # type: ignore[attr-defined]
 

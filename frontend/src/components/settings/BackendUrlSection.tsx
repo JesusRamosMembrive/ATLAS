@@ -80,7 +80,7 @@ export function BackendUrlSection({
             value={backendUrl}
             onChange={(event) => onBackendUrlChange(event.target.value)}
             disabled={disabled}
-            placeholder="http://192.168.1.100:8000"
+            placeholder="http://192.168.1.100:8010"
           />
           <button
             type="button"
@@ -116,9 +116,9 @@ export function BackendUrlSection({
       >
         <strong>Examples:</strong>
         <ul style={{ marginTop: "0.25rem", paddingLeft: "1.25rem" }}>
-          <li>Local: http://localhost:8000</li>
-          <li>LAN: http://192.168.1.100:8000</li>
-          <li>Remote: http://your-server.com:8000</li>
+          <li>Local: http://localhost:8010</li>
+          <li>LAN: http://192.168.1.100:8010</li>
+          <li>Remote: http://your-server.com:8010</li>
         </ul>
         <p style={{ marginTop: "0.5rem" }}>
           <strong>Note:</strong> Make sure the backend server is accessible from this device

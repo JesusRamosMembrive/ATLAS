@@ -20,6 +20,40 @@ export interface FileSummary {
   modified_at?: string | null;
   symbols: SymbolInfo[];
   errors: AnalysisError[];
+  change_status?: string | null;
+  change_summary?: string | null;
+}
+
+export interface FileDiffResponse {
+  path: string;
+  diff: string;
+  has_changes: boolean;
+  change_status?: string | null;
+  change_summary?: string | null;
+}
+
+export interface WorkingTreeChange {
+  path: string;
+  status: string;
+  summary?: string | null;
+}
+
+export interface ChangesResponse {
+  changes: WorkingTreeChange[];
+}
+
+export interface DocFileInfo {
+  name: string;
+  path: string;
+  size_bytes: number;
+  modified_at?: string | null;
+}
+
+export interface DocsListResponse {
+  docs_path: string;
+  exists: boolean;
+  file_count: number;
+  files: DocFileInfo[];
 }
 
 export interface ProjectTreeNode {
@@ -30,6 +64,8 @@ export interface ProjectTreeNode {
   symbols: SymbolInfo[] | null;
   errors: AnalysisError[] | null;
   modified_at?: string | null;
+  change_status?: string | null;
+  change_summary?: string | null;
 }
 
 export interface ChangeNotification {
@@ -80,6 +116,9 @@ export interface StatusPayload {
   ollama_insights_model: string | null;
   ollama_insights_frequency_minutes: number | null;
   ollama_insights_focus: string | null;
+  ollama_insights_last_model: string | null;
+  ollama_insights_last_message: string | null;
+  ollama_insights_last_error: string | null;
   ollama_insights_last_run: string | null;
   ollama_insights_next_run: string | null;
   last_full_scan: string | null;
@@ -87,6 +126,8 @@ export interface StatusPayload {
   files_indexed: number;
   symbols_indexed: number;
   pending_events: number;
+  analyzers_degraded: boolean;
+  degraded_capabilities: string[];
   capabilities: AnalyzerCapability[];
 }
 
@@ -225,6 +266,24 @@ export interface StageInitResponse {
   stdout: string;
   stderr: string;
   status: StageStatusPayload;
+}
+
+export interface SuperClaudeLogEntry {
+  command: string[];
+  stdout: string;
+  stderr: string;
+  exit_code: number;
+}
+
+export interface SuperClaudeInstallResponse {
+  success: boolean;
+  error?: string | null;
+  installed_at?: string | null;
+  source_repo: string;
+  source_commit?: string | null;
+  component_counts: Record<string, number>;
+  copied_paths: string[];
+  logs: SuperClaudeLogEntry[];
 }
 
 export interface BrowseDirectoryResponse {
@@ -406,4 +465,59 @@ export interface LintersNotificationEntry {
   payload?: Record<string, unknown> | null;
   root_path?: string | null;
   read: boolean;
+}
+
+export interface AuditRun {
+  id: number;
+  name?: string | null;
+  status: string;
+  root_path?: string | null;
+  notes?: string | null;
+  created_at: string;
+  closed_at?: string | null;
+  event_count: number;
+}
+
+export interface AuditRunListResponse {
+  runs: AuditRun[];
+}
+
+export interface AuditRunCreatePayload {
+  name?: string | null;
+  notes?: string | null;
+  root_path?: string | null;
+}
+
+export interface AuditRunClosePayload {
+  status?: string | null;
+  notes?: string | null;
+}
+
+export interface AuditEvent {
+  id: number;
+  run_id: number;
+  type: string;
+  title: string;
+  detail?: string | null;
+  actor?: string | null;
+  phase?: string | null;
+  status?: string | null;
+  ref?: string | null;
+  payload?: Record<string, unknown> | null;
+  created_at: string;
+}
+
+export interface AuditEventListResponse {
+  events: AuditEvent[];
+}
+
+export interface AuditEventCreatePayload {
+  type: string;
+  title: string;
+  detail?: string | null;
+  actor?: string | null;
+  phase?: string | null;
+  status?: string | null;
+  ref?: string | null;
+  payload?: Record<string, unknown> | null;
 }

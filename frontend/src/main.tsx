@@ -1,4 +1,3 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -14,10 +13,11 @@ const queryClient = new QueryClient({
   },
 });
 
+// Note: StrictMode disabled temporarily to fix WebSocket connection issues
+// StrictMode causes double-mount in development which closes WebSocket before connection completes
+// This is not an issue in production builds where StrictMode effects don't apply
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <App />
-    </QueryClientProvider>
-  </StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <App />
+  </QueryClientProvider>
 );

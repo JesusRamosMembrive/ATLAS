@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 from typing import Dict, List, Set
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
 from ..call_tracer_v2 import CrossFileCallGraphExtractor, TREE_SITTER_AVAILABLE
@@ -17,6 +17,16 @@ from .deps import get_app_state
 
 router = APIRouter(prefix="/tracer", tags=["tracer"])
 logger = logging.getLogger(__name__)
+
+
+def _require_tree_sitter() -> None:
+    """Valida disponibilidad de tree-sitter y responde con 503 si falta."""
+    if TREE_SITTER_AVAILABLE:
+        return
+    raise HTTPException(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        detail="tree-sitter no disponible. Instalar con: pip install tree-sitter tree-sitter-python",
+    )
 
 
 # ==================== Request/Response Models ====================
@@ -109,11 +119,7 @@ async def analyze_file(
     - No resuelve imports cross-file
     - No maneja decorators complejos, lambdas o closures
     """
-    if not TREE_SITTER_AVAILABLE:
-        raise HTTPException(
-            status_code=500,
-            detail="tree-sitter no disponible. Instalar con: pip install tree-sitter tree-sitter-python",
-        )
+    _require_tree_sitter()
 
     # Resolver ruta completa
     try:
@@ -161,7 +167,9 @@ async def analyze_file(
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except (ValueError, OSError, PermissionError) as exc:
         # Known errors: invalid file, access denied, etc.
-        raise HTTPException(status_code=400, detail=f"Error al analizar archivo: {exc}") from exc
+        raise HTTPException(
+            status_code=400, detail=f"Error al analizar archivo: {exc}"
+        ) from exc
     except Exception as exc:
         # Unexpected errors: log with traceback for debugging
         logger.exception("Unexpected error in analyze_file endpoint")
@@ -191,11 +199,7 @@ async def trace_chain(
     Si tienes `api_move_motors() -> internal_move() -> kinesis_move()`,
     el trace desde `api_move_motors` retornará toda la cadena.
     """
-    if not TREE_SITTER_AVAILABLE:
-        raise HTTPException(
-            status_code=500,
-            detail="tree-sitter no disponible",
-        )
+    _require_tree_sitter()
 
     # Resolver ruta
     try:
@@ -256,7 +260,9 @@ async def trace_chain(
     except HTTPException:
         raise
     except (ValueError, KeyError) as exc:
-        raise HTTPException(status_code=400, detail=f"Error al trazar cadena: {exc}") from exc
+        raise HTTPException(
+            status_code=400, detail=f"Error al trazar cadena: {exc}"
+        ) from exc
     except Exception as exc:
         logger.exception("Unexpected error in trace_chain endpoint")
         raise HTTPException(
@@ -286,11 +292,7 @@ async def get_all_chains(
     - Detectar endpoints y sus cadenas de ejecución
     - Identificar código no utilizado
     """
-    if not TREE_SITTER_AVAILABLE:
-        raise HTTPException(
-            status_code=500,
-            detail="tree-sitter no disponible",
-        )
+    _require_tree_sitter()
 
     # Resolver ruta
     try:
@@ -348,7 +350,9 @@ async def get_all_chains(
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except (ValueError, OSError, PermissionError) as exc:
-        raise HTTPException(status_code=400, detail=f"Error al extraer cadenas: {exc}") from exc
+        raise HTTPException(
+            status_code=400, detail=f"Error al extraer cadenas: {exc}"
+        ) from exc
     except Exception as exc:
         logger.exception("Unexpected error in get_all_chains endpoint")
         raise HTTPException(
@@ -482,11 +486,7 @@ async def analyze_cross_file(
     }
     ```
     """
-    if not TREE_SITTER_AVAILABLE:
-        raise HTTPException(
-            status_code=500,
-            detail="tree-sitter no disponible",
-        )
+    _require_tree_sitter()
 
     # Resolver ruta
     try:
@@ -527,7 +527,9 @@ async def analyze_cross_file(
         )
 
     except (ValueError, OSError, PermissionError) as exc:
-        raise HTTPException(status_code=400, detail=f"Error en análisis cross-file: {exc}") from exc
+        raise HTTPException(
+            status_code=400, detail=f"Error en análisis cross-file: {exc}"
+        ) from exc
     except Exception as exc:
         logger.exception("Unexpected error in analyze_cross_file endpoint")
         raise HTTPException(
@@ -561,8 +563,7 @@ async def trace_cross_file(
     }
     ```
     """
-    if not TREE_SITTER_AVAILABLE:
-        raise HTTPException(status_code=500, detail="tree-sitter no disponible")
+    _require_tree_sitter()
 
     try:
         # Parsear el nombre cualificado
@@ -633,7 +634,9 @@ async def trace_cross_file(
     except HTTPException:
         raise
     except (ValueError, KeyError) as exc:
-        raise HTTPException(status_code=400, detail=f"Error al trazar cross-file: {exc}") from exc
+        raise HTTPException(
+            status_code=400, detail=f"Error al trazar cross-file: {exc}"
+        ) from exc
     except Exception as exc:
         logger.exception("Unexpected error in trace_cross_file endpoint")
         raise HTTPException(

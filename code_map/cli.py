@@ -69,7 +69,7 @@ def run(
         help="Host donde exponer la API (usa 0.0.0.0 para acceso externo controlado). Env: CODE_MAP_HOST",
     ),
     port: int = typer.Option(
-        int(os.getenv("CODE_MAP_PORT", "8000")),
+        int(os.getenv("CODE_MAP_PORT", "8010")),
         help="Puerto donde escuchar. Env: CODE_MAP_PORT",
     ),
     log_level: str = typer.Option(

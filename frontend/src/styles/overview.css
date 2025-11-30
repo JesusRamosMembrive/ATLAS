@@ -299,6 +299,7 @@
   align-items: center;
   gap: 16px;
   color: #e2e8f0;
+  box-shadow: 0 12px 36px rgba(8, 15, 30, 0.3);
 }
 
 .overview-alert--info {
@@ -307,8 +308,8 @@
 }
 
 .overview-alert--warn {
-  background: rgba(248, 113, 113, 0.12);
-  border-color: rgba(248, 113, 113, 0.28);
+  background: rgba(248, 180, 28, 0.14);
+  border-color: rgba(248, 180, 28, 0.28);
 }
 
 .overview-alert--danger {
@@ -321,6 +322,9 @@
   font-weight: 600;
   white-space: nowrap;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .overview-timeline {
@@ -357,13 +361,22 @@
 .overview-timeline__item {
   position: relative;
   padding: 20px 22px;
-  border-radius: 20px;
-  background: rgba(11, 17, 31, 0.78);
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 16px;
+  /* Glassmorphism effect */
+  background: rgba(11, 17, 31, 0.6);
+  backdrop-filter: blur(10.5px);
+  -webkit-backdrop-filter: blur(10.5px);
+  border: 1px solid rgba(148, 163, 184, 0.25);
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: 0 14px 38px rgba(8, 15, 30, 0.3);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.overview-timeline__item:hover {
+  transform: translateX(6px);
+  border-color: rgba(96, 165, 250, 0.35);
 }
 
 .overview-timeline__item::before {
@@ -444,13 +457,23 @@
 
 .overview-card {
   padding: 28px;
-  border-radius: 24px;
-  background: linear-gradient(140deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.92));
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  box-shadow: 0 24px 70px rgba(8, 15, 30, 0.45);
+  border-radius: 16px;
+  /* Glassmorphism effect */
+  background: rgba(30, 41, 59, 0.7);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10.5px);
+  -webkit-backdrop-filter: blur(10.5px);
+  border: 1px solid rgba(148, 163, 184, 0.3);
   display: flex;
   flex-direction: column;
   gap: 18px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.overview-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+  border-color: rgba(96, 165, 250, 0.4);
 }
 
 .overview-card__header {
@@ -482,18 +505,51 @@
   background: rgba(45, 212, 191, 0.18);
   border-color: rgba(45, 212, 191, 0.3);
   color: #5eead4;
+  box-shadow: 0 0 20px rgba(45, 212, 191, 0.3);
+  animation: pulseGlowSuccess 2s ease-in-out infinite;
+}
+
+@keyframes pulseGlowSuccess {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(45, 212, 191, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(45, 212, 191, 0.45);
+  }
 }
 
 .overview-pill.warn {
   background: rgba(251, 191, 36, 0.18);
   border-color: rgba(251, 191, 36, 0.36);
   color: #facc15;
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.25);
+  animation: pulseGlowWarn 2s ease-in-out infinite;
+}
+
+@keyframes pulseGlowWarn {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(251, 191, 36, 0.4);
+  }
 }
 
 .overview-pill.danger {
   background: rgba(248, 113, 113, 0.2);
   border-color: rgba(248, 113, 113, 0.34);
   color: #fca5a5;
+  box-shadow: 0 0 20px rgba(248, 113, 113, 0.3);
+  animation: pulseGlowDanger 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseGlowDanger {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(248, 113, 113, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(248, 113, 113, 0.5);
+  }
 }
 
 .overview-pill.neutral {
@@ -507,6 +563,60 @@
   color: #cbd5f5;
   line-height: 1.6;
   min-height: 54px;
+}
+
+.overview-code-changes {
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(7, 11, 21, 0.6);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.overview-code-changes__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.overview-code-changes__meta {
+  color: #cbd5f5;
+  font-size: 0.85rem;
+}
+
+.overview-code-changes__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.overview-code-changes__list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.overview-code-changes__path {
+  font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.overview-code-changes__hint {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.82rem;
 }
 
 .ollama-insights-list {

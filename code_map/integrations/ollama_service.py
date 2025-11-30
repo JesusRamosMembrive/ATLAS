@@ -485,7 +485,11 @@ def _run_command(
         return None, "Comando no encontrado."
     except subprocess.TimeoutExpired:
         return None, "Tiempo de espera agotado."
-    except (OSError, subprocess.SubprocessError, PermissionError) as exc:  # pragma: no cover
+    except (
+        OSError,
+        subprocess.SubprocessError,
+        PermissionError,
+    ) as exc:  # pragma: no cover
         # Catch common subprocess errors
         return None, f"Error ejecutando {' '.join(sanitized_command)}: {exc}"
     except Exception as exc:  # pragma: no cover
@@ -546,7 +550,11 @@ def start_ollama_server(
                 close_fds=True,
             )
         )
-    except (OSError, subprocess.SubprocessError, PermissionError) as exc:  # pragma: no cover
+    except (
+        OSError,
+        subprocess.SubprocessError,
+        PermissionError,
+    ) as exc:  # pragma: no cover
         # Catch common subprocess errors: missing binary, permissions, resources
         raise OllamaStartError(
             "No se pudo iniciar el proceso ollama serve.",

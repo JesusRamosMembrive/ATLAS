@@ -660,6 +660,42 @@ def test_preview_endpoint_rejects_binary_file(tmp_path: Path) -> None:
         assert "no compatible" in response.json()["detail"].lower()
 
 
+def test_audit_run_flow(api_client: TestClient) -> None:
+    create_resp = api_client.post(
+        "/audit/runs",
+        json={"name": "Demo run", "notes": "Pair programming audit"},
+    )
+    assert create_resp.status_code == 200
+    run = create_resp.json()
+    run_id = run["id"]
+    assert run["status"] == "open"
+
+    list_resp = api_client.get("/audit/runs")
+    assert list_resp.status_code == 200
+    runs_payload = list_resp.json()
+    assert any(item["id"] == run_id for item in runs_payload["runs"])
+
+    event_resp = api_client.post(
+        f"/audit/runs/{run_id}/events",
+        json={"type": "command", "title": "Run tests", "actor": "agent"},
+    )
+    assert event_resp.status_code == 200
+    event_payload = event_resp.json()
+    assert event_payload["run_id"] == run_id
+    assert event_payload["type"] == "command"
+
+    events_resp = api_client.get(f"/audit/runs/{run_id}/events")
+    assert events_resp.status_code == 200
+    events = events_resp.json()["events"]
+    assert len(events) == 1
+    assert events[0]["title"] == "Run tests"
+
+    close_resp = api_client.post(f"/audit/runs/{run_id}/close", json={"status": "closed"})
+    assert close_resp.status_code == 200
+    closed_run = close_resp.json()
+    assert closed_run["status"] == "closed"
+
+
 def test_linters_discovery_endpoint(api_client: TestClient) -> None:
     response = api_client.get("/linters/discovery")
     assert response.status_code == 200

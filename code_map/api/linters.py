@@ -152,15 +152,13 @@ async def run_linters(
     state: AppState = Depends(get_app_state),
 ) -> LintersReportRecordSchema:
     """Ejecuta el pipeline de linters manualmente y retorna el nuevo reporte."""
-    state._schedule_linters_pipeline(force=True)
+    try:
+        report_id = await state.run_linters_now()
+    except RuntimeError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
-    # Esperar a que el task se cree y ejecute
-    if state._linters_task:
-        await state._linters_task
-
-    # Obtener el último reporte generado
-    stored = get_latest_linters_report(root_path=state.settings.root_path)
-    if stored is None:
+    stored = get_linters_report(report_id)
+    if stored is None or stored.root_path != str(state.settings.root_path.resolve()):
         raise HTTPException(status_code=500, detail="No se pudo generar el reporte")
 
     return _to_report_record(stored)

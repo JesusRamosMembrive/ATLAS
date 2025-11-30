@@ -5,6 +5,8 @@
 @import "./detail.css";
 @import "./preview.css";
 @import "./search.css";
+@import "./changes.css";
+@import "./docs.css";
 @import "./activity.css";
 @import "./status.css";
 @import "./settings.css";
@@ -15,4 +17,6 @@
 @import "./uml.css";
 @import "./utilities.css";
 @import "./linters.css";
+@import "./audit.css";
+@import "../components/terminal/AgentOverlay.css";
 @import "./responsive.css";

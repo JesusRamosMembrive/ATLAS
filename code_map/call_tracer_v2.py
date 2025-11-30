@@ -243,7 +243,9 @@ class CrossFileCallGraphExtractor:
         """
         # Handle different node types via extracted methods
         if node.type == "class_definition":
-            current_class = self._handle_class_definition(node, source, filepath, current_class)
+            current_class = self._handle_class_definition(
+                node, source, filepath, current_class
+            )
         elif node.type == "function_definition":
             current_func = self._handle_function_definition(
                 node, source, local_graph, current_func, current_class
@@ -251,7 +253,9 @@ class CrossFileCallGraphExtractor:
         elif node.type == "assignment":
             self._handle_assignment(node, source, filepath, current_class, current_func)
         elif node.type == "call":
-            self._handle_call(node, source, filepath, local_graph, current_func, current_class)
+            self._handle_call(
+                node, source, filepath, local_graph, current_func, current_class
+            )
 
         # Recursión
         for child in node.children:
@@ -329,7 +333,9 @@ class CrossFileCallGraphExtractor:
         obj_node = left_node.child_by_field_name("object")
         attr_node = left_node.child_by_field_name("attribute")
 
-        if not (obj_node and attr_node and self._get_node_text(obj_node, source) == "self"):
+        if not (
+            obj_node and attr_node and self._get_node_text(obj_node, source) == "self"
+        ):
             return
 
         attr_name = self._get_node_text(attr_node, source)

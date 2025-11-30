@@ -68,7 +68,7 @@ docker compose ps
 **Success criteria:**
 - Container starts without errors
 - Healthcheck passes (status: healthy)
-- Logs show: "Uvicorn running on http://0.0.0.0:8000"
+- Logs show: "Uvicorn running on http://0.0.0.0:8010"
 
 ### Test 3: API Accessibility
 

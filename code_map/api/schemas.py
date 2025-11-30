@@ -48,6 +48,50 @@ class FileSummarySchema(BaseModel):
     modified_at: Optional[datetime] = None
     symbols: List[SymbolSchema] = Field(default_factory=list)
     errors: List[AnalysisErrorSchema] = Field(default_factory=list)
+    change_status: Optional[str] = None
+    change_summary: Optional[str] = None
+
+
+class FileDiffResponse(BaseModel):
+    """Respuesta básica con el diff del working tree versus HEAD."""
+
+    path: str
+    diff: str
+    has_changes: bool
+    change_status: Optional[str] = None
+    change_summary: Optional[str] = None
+
+
+class DocFileSchema(BaseModel):
+    """Representa un archivo markdown dentro del directorio docs/."""
+
+    name: str
+    path: str
+    size_bytes: int
+    modified_at: Optional[datetime] = None
+
+
+class DocsListResponse(BaseModel):
+    """Respuesta para la lista de archivos de documentación."""
+
+    docs_path: str
+    exists: bool
+    file_count: int
+    files: List[DocFileSchema] = Field(default_factory=list)
+
+
+class WorkingTreeChangeSchema(BaseModel):
+    """Representa un archivo con cambios pendientes respecto a HEAD."""
+
+    path: str
+    status: str
+    summary: Optional[str] = None
+
+
+class ChangesResponse(BaseModel):
+    """Respuesta con la lista completa de cambios detectados."""
+
+    changes: List[WorkingTreeChangeSchema] = Field(default_factory=list)
 
 
 class TreeNodeSchema(BaseModel):
@@ -60,6 +104,8 @@ class TreeNodeSchema(BaseModel):
     symbols: Optional[List[SymbolSchema]] = None
     errors: Optional[List[AnalysisErrorSchema]] = None
     modified_at: Optional[datetime] = None
+    change_status: Optional[str] = None
+    change_summary: Optional[str] = None
 
 
 TreeNodeSchema.model_rebuild()
@@ -123,7 +169,7 @@ class SettingsUpdateRequest(BaseModel):
         default=None,
         min_length=0,
         max_length=256,
-        description="URL del servidor backend (ej: http://192.168.1.100:8000)",
+        description="URL del servidor backend (ej: http://192.168.1.100:8010)",
     )
 
 
@@ -156,6 +202,9 @@ class StatusResponse(BaseModel):
     ollama_insights_enabled: bool
     ollama_insights_model: Optional[str]
     ollama_insights_frequency_minutes: Optional[int]
+    ollama_insights_last_model: Optional[str] = None
+    ollama_insights_last_message: Optional[str] = None
+    ollama_insights_last_error: Optional[str] = None
     ollama_insights_last_run: Optional[datetime]
     ollama_insights_next_run: Optional[datetime]
     ollama_insights_focus: Optional[str]
@@ -164,6 +213,8 @@ class StatusResponse(BaseModel):
     files_indexed: int
     symbols_indexed: int
     pending_events: int
+    analyzers_degraded: bool = False
+    degraded_capabilities: List[str] = Field(default_factory=list)
     capabilities: List[AnalyzerCapabilitySchema] = Field(default_factory=list)
 
 
@@ -347,6 +398,28 @@ class StageInitResponse(BaseModel):
     stdout: str
     stderr: str
     status: StageStatusResponse
+
+
+class SuperClaudeLogEntry(BaseModel):
+    """Salida detallada de cada comando ejecutado por el instalador."""
+
+    command: List[str]
+    stdout: str
+    stderr: str
+    exit_code: int
+
+
+class SuperClaudeInstallResponse(BaseModel):
+    """Resultado de sincronizar el framework SuperClaude."""
+
+    success: bool
+    error: Optional[str] = None
+    installed_at: Optional[datetime] = None
+    source_repo: str
+    source_commit: Optional[str] = None
+    component_counts: Dict[str, int] = Field(default_factory=dict)
+    copied_paths: List[str] = Field(default_factory=list)
+    logs: List[SuperClaudeLogEntry] = Field(default_factory=list)
 
 
 class LinterToolSchema(BaseModel):
@@ -610,6 +683,106 @@ class UMLDiagramResponse(BaseModel):
     stats: Dict[str, int]
 
 
+class AuditRunSchema(BaseModel):
+    """Metadata for an auditable agent session."""
+
+    id: int
+    name: Optional[str] = None
+    status: str
+    root_path: Optional[str] = None
+    notes: Optional[str] = None
+    created_at: datetime
+    closed_at: Optional[datetime] = None
+    event_count: int = 0
+
+
+class AuditRunCreateRequest(BaseModel):
+    """Payload to start a new audit run."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Optional[str] = Field(
+        default=None, max_length=128, description="Human-friendly label for the session"
+    )
+    notes: Optional[str] = Field(
+        default=None, max_length=2000, description="Optional context or goal"
+    )
+    root_path: Optional[str] = Field(
+        default=None, description="Root path to associate with the run"
+    )
+
+
+class AuditRunCloseRequest(BaseModel):
+    """Payload to finalize a run."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    status: Optional[str] = Field(
+        default="closed", description="Status label when closing the run"
+    )
+    notes: Optional[str] = Field(
+        default=None, max_length=2000, description="Extra notes captured on close"
+    )
+
+
+class AuditRunListResponse(BaseModel):
+    """List wrapper for runs."""
+
+    runs: List[AuditRunSchema]
+
+
+class AuditEventSchema(BaseModel):
+    """Single auditable event within a run."""
+
+    id: int
+    run_id: int
+    type: str
+    title: str
+    detail: Optional[str] = None
+    actor: Optional[str] = None
+    phase: Optional[str] = None
+    status: Optional[str] = None
+    ref: Optional[str] = None
+    payload: Optional[Dict[str, Any]] = None
+    created_at: datetime
+
+
+class AuditEventCreateRequest(BaseModel):
+    """Payload to append a new event to a run."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    type: str = Field(
+        ...,
+        description="Event type, e.g. intent|plan|command|command_result|diff|test|note",
+    )
+    title: str = Field(..., max_length=200, description="Short label for the event")
+    detail: Optional[str] = Field(
+        default=None, description="Optional expanded description or output"
+    )
+    actor: Optional[str] = Field(
+        default=None, description="Who triggered the event (agent|human)"
+    )
+    phase: Optional[str] = Field(
+        default=None, description="Workflow phase like explore|plan|apply|validate"
+    )
+    status: Optional[str] = Field(
+        default=None, description="Status marker (ok|error|pending|running)"
+    )
+    ref: Optional[str] = Field(
+        default=None, description="File or resource reference related to the event"
+    )
+    payload: Optional[Dict[str, Any]] = Field(
+        default=None, description="Structured payload (command args, exit code, etc.)"
+    )
+
+
+class AuditEventListResponse(BaseModel):
+    """List wrapper for events."""
+
+    events: List[AuditEventSchema]
+
+
 def serialize_symbol(
     symbol: SymbolInfo, state: AppState, *, include_path: bool = True
 ) -> SymbolSchema:
@@ -634,25 +807,38 @@ def serialize_error(error: AnalysisError) -> AnalysisErrorSchema:
     )
 
 
-def serialize_summary(summary: FileSummary, state: AppState) -> FileSummarySchema:
+def serialize_summary(
+    summary: FileSummary,
+    state: AppState,
+    change: Optional[Dict[str, str]] = None,
+) -> FileSummarySchema:
     """Serializa un objeto FileSummary a un FileSummarySchema."""
     symbols = [
         serialize_symbol(symbol, state, include_path=False)
         for symbol in summary.symbols
     ]
     errors = [serialize_error(error) for error in summary.errors]
+    change_status = change.get("status") if change else None
+    change_summary = change.get("summary") if change else None
     return FileSummarySchema(
         path=state.to_relative(summary.path),
         modified_at=summary.modified_at,
         symbols=symbols,
         errors=errors,
+        change_status=change_status,
+        change_summary=change_summary,
     )
 
 
-def serialize_tree(node: ProjectTreeNode, state: AppState) -> TreeNodeSchema:
+def serialize_tree(
+    node: ProjectTreeNode,
+    state: AppState,
+    *,
+    change_map: Optional[Dict[str, Dict[str, str]]] = None,
+) -> TreeNodeSchema:
     """Serializa un objeto ProjectTreeNode a un TreeNodeSchema."""
     children = [
-        serialize_tree(child, state)
+        serialize_tree(child, state, change_map=change_map)
         for child in sorted(node.children.values(), key=lambda n: n.name)
     ]
     summary = node.file_summary
@@ -667,6 +853,17 @@ def serialize_tree(node: ProjectTreeNode, state: AppState) -> TreeNodeSchema:
         errors = [serialize_error(error) for error in summary.errors]
         modified_at = summary.modified_at
 
+    rel_path = state.to_relative(node.path)
+    change = change_map.get(rel_path) if change_map else None
+    change_status = change.get("status") if change else None
+    change_summary = change.get("summary") if change else None
+
+    if node.is_dir and not change_status:
+        child_has_changes = any(child.change_status for child in children)
+        if child_has_changes:
+            change_status = "modified"
+            change_summary = "Contiene archivos modificados desde el último commit"
+
     return TreeNodeSchema(
         name=node.name,
         path=state.to_relative(node.path),
@@ -675,6 +872,8 @@ def serialize_tree(node: ProjectTreeNode, state: AppState) -> TreeNodeSchema:
         symbols=symbols,
         errors=errors,
         modified_at=modified_at,
+        change_status=change_status,
+        change_summary=change_summary,
     )
 
 

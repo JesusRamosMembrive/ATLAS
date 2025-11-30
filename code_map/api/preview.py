@@ -23,6 +23,24 @@ ADDITIONAL_TEXT_MIME_TYPES = {
     "application/javascript",
     "application/json",
     "application/xml",
+    "application/yaml",
+    "application/x-yaml",
+    "text/yaml",
+    "application/toml",
+    "application/x-toml",
+    "text/toml",
+    "application/json5",
+}
+
+CUSTOM_TEXT_MEDIA_TYPES = {
+    ".yml": "application/yaml",
+    ".yaml": "application/yaml",
+    ".toml": "application/toml",
+    ".ini": "text/plain",
+    ".env": "text/plain",
+    ".cfg": "text/plain",
+    ".json5": "application/json5",
+    ".jsonc": "application/json",
 }
 
 
@@ -74,6 +92,10 @@ async def preview_file(
 
 
 def _guess_media_type(path: Path) -> str:
+    custom_type = CUSTOM_TEXT_MEDIA_TYPES.get(path.suffix.lower())
+    if custom_type:
+        return custom_type
+
     mime_type, _encoding = mimetypes.guess_type(path.name)
     if not mime_type:
         return "text/plain"

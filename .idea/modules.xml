@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Claude Prompt Library.iml" filepath="$PROJECT_DIR$/.idea/Claude Prompt Library.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../agendaRenta4/.idea/agendaRenta4.iml" filepath="$PROJECT_DIR$/../agendaRenta4/.idea/agendaRenta4.iml" />
     </modules>
   </component>
 </project>

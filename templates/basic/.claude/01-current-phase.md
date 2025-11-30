@@ -1,57 +1,98 @@
-# Estado Actual
+# Estado Actual del Proyecto
 
-**Fecha**: 2025-10-18
-**Etapa**: 1 (Prototipado)
-**Sesión**: 2
+**Última actualización**: {{DATE}}
+**Etapa detectada**: [Se actualiza automáticamente]
+**Versión**: 1.0
 
-## Objetivo de hoy
-✅ COMPLETADO: Implementar init_project.py básico
+---
 
-## Progreso
-- [x] Crear init_project.py
-- [x] Implementar copy_templates()
-- [x] Implementar replace_placeholders()
-- [x] Probar manualmente con 3 casos
-- [x] Actualizar test_full_flow.sh
-- [x] Tests pasan exitosamente
+## 📍 ESTADO ACTUAL
 
-## Dolor actual
-Ninguno aún - script funciona bien.
+**En progreso:**
+- [Describe qué estás implementando/investigando AHORA]
 
-## Decisiones tomadas
+**Completado recientemente:**
+- [Último cambio importante #1]
+- [Último cambio importante #2]
 
-### Implementación de Phase 1 (2025-10-18)
-- **Un solo archivo**: init_project.py (~65 líneas)
-- **Solo stdlib**: pathlib, shutil, sys, datetime
-- **Sin clases**: Solo funciones simples
-- **Placeholders soportados**: PROJECT_NAME, DATE, YEAR
-- **Validación mínima**: Solo check si directorio existe
+**Bloqueado/Pendiente:**
+- [Issues que necesitan resolverse antes de continuar]
 
-**Por qué estas decisiones:**
-- Simplicidad extrema para validar la idea
-- Evitar over-engineering
-- Fácil de mantener y entender
-- Suficiente para caso de uso básico
+---
 
-**Qué NO hicimos (deliberadamente):**
-- Múltiples tipos de templates (no hay dolor todavía)
-- Validación compleja de nombres (innecesario)
-- Prompts interactivos (CLI simple es mejor)
-- Configuración persistente (YAGNI)
-- Logging sofisticado (print es suficiente)
-- Progress bars o colores fancy (distrae del core)
+## 🎯 PRÓXIMOS PASOS
 
-## Próxima sesión
+1. **Inmediato** (Esta sesión):
+   - [Tarea prioritaria #1]
+   - [Tarea prioritaria #2]
 
-**ANTES de implementar Phase 2:**
-1. Usar init_project.py en 3-5 proyectos reales
-2. Documentar qué duele o qué falta
-3. Evaluar si necesitamos Phase 2 basados en dolor real
+2. **Corto plazo** (Próximas 1-3 sesiones):
+   - [Feature o mejora planificada]
+   - [Refactor o deuda técnica]
 
-**Posibles dolores que justificarían Phase 2:**
-- Necesito múltiples tipos de templates (web-api, cli-tool, robot)
-- Los placeholders son insuficientes
-- Quiero biblioteca organizada de prompts
-- Necesito buscar/filtrar prompts fácilmente
+3. **Mediano plazo** (Cuando sea necesario):
+   - [Evoluciones futuras basadas en pain points]
 
-**Si no hay dolor → Phase 1 es suficiente. No seguir.**
+---
+
+## 📝 DECISIONES RECIENTES
+
+### [Nombre de la decisión] ({{DATE}})
+**Qué**: [Breve descripción]
+**Por qué**: [Razón principal]
+**Impacto**: [Archivos/componentes afectados]
+
+### [Decisión anterior importante]
+**Qué**: [Descripción]
+**Por qué**: [Razón]
+**Impacto**: [Archivos afectados]
+
+---
+
+## 🚨 CONTEXTO CRÍTICO
+
+**Restricciones importantes:**
+- [Constraint #1 que afecta decisiones de diseño]
+- [Constraint #2]
+
+**Patrones establecidos:**
+- [Patrón #1 que debe seguirse en nuevo código]
+- [Patrón #2]
+
+**No hacer:**
+- [Anti-patrón o decisión explícitamente rechazada]
+
+---
+
+## 📚 RECURSOS
+
+- **Historial completo**: Ver `.claude/01-session-history.md` para contexto profundo
+- **Arquitectura**: Ver `.claude/doc/{feature}/architecture.md` para planes detallados
+- **Documentación**: Ver `docs/` para guías técnicas
+
+---
+
+## 🔄 TEMPLATE DE ACTUALIZACIÓN
+
+**Al final de cada sesión, actualiza esta sección:**
+
+```markdown
+## Sesión: [YYYY-MM-DD]
+
+**Implementado:**
+- [Archivo]: [Cambio específico]
+- [Archivo]: [Cambio específico]
+
+**Decisiones:**
+- [Decisión técnica tomada y por qué]
+
+**Próxima sesión debe:**
+- [Acción prioritaria #1]
+- [Acción prioritaria #2]
+
+**Movido a historial:** ✅ (Copiar detalle completo a 01-session-history.md)
+```
+
+---
+
+**💡 TIP**: Mantén este archivo <150 líneas. Mueve detalles antiguos a `01-session-history.md` regularmente.

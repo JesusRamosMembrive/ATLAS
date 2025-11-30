@@ -392,10 +392,13 @@ def _select_stage_definition(
     patterns = len(metrics.patterns_found)
     layers = len(metrics.architectural_folders)
 
-    stage = STAGE_DEFINITIONS[-1]
+    # Scoring system: cada métrica contribuye a un score para cada stage
+    # Stage is selected when score >= threshold (2 out of 4 metrics must fit)
+    stage = STAGE_DEFINITIONS[-1]  # Default to Stage 3
 
     for definition in STAGE_DEFINITIONS:
         thresholds = definition.thresholds
+        score = 0
 
         files_ok = thresholds.max_files is None or files <= thresholds.max_files
         loc_ok = thresholds.max_loc is None or loc < thresholds.max_loc
@@ -406,7 +409,18 @@ def _select_stage_definition(
             thresholds.max_arch_layers is None or layers <= thresholds.max_arch_layers
         )
 
-        if files_ok and loc_ok and patterns_ok and layers_ok:
+        if files_ok:
+            score += 1
+        if loc_ok:
+            score += 1
+        if patterns_ok:
+            score += 1
+        if layers_ok:
+            score += 1
+
+        # Stage fits if at least 3 out of 4 metrics are within bounds
+        # This filters out single-metric spikes (like high LOC with simple structure)
+        if score >= 3:
             stage = definition
             break
 

@@ -68,6 +68,9 @@ class StateReporter:
         pending_events: int,
         insights_last_run: Optional[datetime],
         insights_next_run: Optional[datetime],
+        insights_last_model: Optional[str],
+        insights_last_message: Optional[str],
+        insights_last_error: Optional[str],
     ) -> Dict[str, Any]:
         """
         Construye el payload de estado para la API.
@@ -87,6 +90,11 @@ class StateReporter:
         capabilities = [
             _serialize_capability(cap) for cap in self.scanner.registry.capabilities
         ]
+        degraded = [
+            cap
+            for cap in capabilities
+            if (not cap["available"]) or (cap.get("degraded_extensions"))
+        ]
 
         return {
             "root_path": self.settings.root_path.as_posix(),
@@ -99,10 +107,15 @@ class StateReporter:
             "ollama_insights_focus": self.settings.ollama_insights_focus or "general",
             "ollama_insights_last_run": insights_last_run,
             "ollama_insights_next_run": insights_next_run,
+            "ollama_insights_last_model": insights_last_model,
+            "ollama_insights_last_message": insights_last_message,
+            "ollama_insights_last_error": insights_last_error,
             "last_full_scan": last_full_scan,
             "last_event_batch": last_event_batch,
             "files_indexed": total_files,
             "symbols_indexed": total_symbols,
             "pending_events": pending_events,
             "capabilities": capabilities,
+            "analyzers_degraded": bool(degraded),
+            "degraded_capabilities": [cap["key"] for cap in degraded],
         }

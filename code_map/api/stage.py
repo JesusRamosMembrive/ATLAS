@@ -8,10 +8,20 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends
 
-from ..stage_toolkit import AgentSelection, run_initializer, stage_status
+from ..stage_toolkit import (
+    AgentSelection,
+    install_superclaude_framework,
+    run_initializer,
+    stage_status,
+)
 from ..state import AppState
 from .deps import get_app_state
-from .schemas import StageInitRequest, StageInitResponse, StageStatusResponse
+from .schemas import (
+    StageInitRequest,
+    StageInitResponse,
+    StageStatusResponse,
+    SuperClaudeInstallResponse,
+)
 
 router = APIRouter(prefix="/stage", tags=["stage"])
 
@@ -34,3 +44,12 @@ async def initialize_stage_assets(
     agents: AgentSelection = request.agents  # type: ignore[assignment]
     result = await run_initializer(state.settings.root_path, agents)
     return StageInitResponse.model_validate(result)
+
+
+@router.post("/superclaude/install", response_model=SuperClaudeInstallResponse)
+async def install_superclaude(
+    state: AppState = Depends(get_app_state),
+) -> SuperClaudeInstallResponse:
+    """Sincroniza los activos del framework SuperClaude en el workspace."""
+    payload = await install_superclaude_framework(state.settings.root_path)
+    return SuperClaudeInstallResponse.model_validate(payload)

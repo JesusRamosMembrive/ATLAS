@@ -6,6 +6,7 @@ Pipeline para ejecutar linters, recopilar resultados y generar un LintersReport.
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess  # nosec B404 - invoca herramientas de linters definidas por la app
 import sys
@@ -18,7 +19,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Tuple, ca
 
 from defusedxml import ElementTree as _ElementTree  # type: ignore[import-not-found, import-untyped]
 
-from ..scanner import DEFAULT_EXCLUDED_DIRS
+from ..constants import DEFAULT_EXCLUDED_DIRS
 from .report_schema import (
     ChartData,
     CheckStatus,
@@ -38,12 +39,14 @@ ElementTree = cast(Any, _ElementTree)
 # CONSTANTS - Linter Pipeline Configuration
 # ============================================================================
 
+
 @dataclass(frozen=True)
 class LinterConfig:
     """
     Centralized configuration for linter pipeline.
     All magic numbers and thresholds in one place for easy tuning.
     """
+
     # Output truncation limits
     max_output_chars: int = 2000  # Maximum characters before truncating tool output
     max_issues_sample: int = 25  # Maximum issues to include in report samples
@@ -55,7 +58,9 @@ class LinterConfig:
 
     # File length thresholds
     max_file_length_warn: int = 500  # Recommended maximum lines per file before warning
-    max_file_length_critical: int = 1000  # Critical threshold where files are severely oversized
+    max_file_length_critical: int = (
+        1000  # Critical threshold where files are severely oversized
+    )
 
     # Default timeout fallback
     default_timeout: int = 300  # Used when no specific timeout is defined
@@ -347,7 +352,7 @@ def _check_max_file_length(
 
 
 def _execute_tool(
-    root: Path, spec: ToolSpec
+    root: Path, spec: ToolSpec, audit_run_id: Optional[int] = None
 ) -> Tuple[ToolRunResult, Optional[CoverageSnapshot]]:
     base_command = list(spec.command)
     binary = base_command[0]
@@ -371,37 +376,82 @@ def _execute_tool(
             )
 
     start = time.perf_counter()
-    try:
-        completed = (
-            subprocess.run(  # nosec B603 - comandos provienen de ToolSpec controlado
+
+    # Use audit hook if run_id provided
+    if audit_run_id is not None:
+        try:
+            from ..audit.hooks import audit_run_command
+
+            completed = audit_run_command(
+                effective_command,
+                run_id=audit_run_id,
+                phase="validate",
+                actor="system",
+                timeout=spec.timeout,
+                cwd=root,
+            )
+        except ImportError:
+            # Fallback if audit module not available
+            try:
+                completed = subprocess.run(  # nosec B603
+                    effective_command,
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
+                    timeout=spec.timeout,
+                )
+            except subprocess.TimeoutExpired as exc:
+                duration_ms = int((time.perf_counter() - start) * 1000)
+                message = f"Ejecución excedió el timeout ({spec.timeout}s)."
+                issue = IssueDetail(message=message, severity=Severity.HIGH)
+                stdout_excerpt = _truncate_output(_ensure_text(exc.stdout))
+                stderr_excerpt = _truncate_output(_ensure_text(exc.stderr))
+                return (
+                    ToolRunResult(
+                        key=spec.key,
+                        name=spec.name,
+                        status=CheckStatus.ERROR,
+                        command=" ".join(effective_command),
+                        duration_ms=duration_ms,
+                        exit_code=None,
+                        issues_found=1,
+                        issues_sample=[issue],
+                        stdout_excerpt=stdout_excerpt,
+                        stderr_excerpt=stderr_excerpt,
+                    ),
+                    None,
+                )
+    else:
+        # Normal execution without audit
+        try:
+            completed = subprocess.run(  # nosec B603 - comandos provienen de ToolSpec controlado
                 effective_command,
                 cwd=root,
                 capture_output=True,
                 text=True,
                 timeout=spec.timeout,
             )
-        )
-    except subprocess.TimeoutExpired as exc:
-        duration_ms = int((time.perf_counter() - start) * 1000)
-        message = f"Ejecución excedió el timeout ({spec.timeout}s)."
-        issue = IssueDetail(message=message, severity=Severity.HIGH)
-        stdout_excerpt = _truncate_output(_ensure_text(exc.stdout))
-        stderr_excerpt = _truncate_output(_ensure_text(exc.stderr))
-        return (
-            ToolRunResult(
-                key=spec.key,
-                name=spec.name,
-                status=CheckStatus.ERROR,
-                command=" ".join(effective_command),
-                duration_ms=duration_ms,
-                exit_code=None,
-                issues_found=1,
-                issues_sample=[issue],
-                stdout_excerpt=stdout_excerpt,
-                stderr_excerpt=stderr_excerpt,
-            ),
-            None,
-        )
+        except subprocess.TimeoutExpired as exc:
+            duration_ms = int((time.perf_counter() - start) * 1000)
+            message = f"Ejecución excedió el timeout ({spec.timeout}s)."
+            issue = IssueDetail(message=message, severity=Severity.HIGH)
+            stdout_excerpt = _truncate_output(_ensure_text(exc.stdout))
+            stderr_excerpt = _truncate_output(_ensure_text(exc.stderr))
+            return (
+                ToolRunResult(
+                    key=spec.key,
+                    name=spec.name,
+                    status=CheckStatus.ERROR,
+                    command=" ".join(effective_command),
+                    duration_ms=duration_ms,
+                    exit_code=None,
+                    issues_found=1,
+                    issues_sample=[issue],
+                    stdout_excerpt=stdout_excerpt,
+                    stderr_excerpt=stderr_excerpt,
+                ),
+                None,
+            )
 
     duration_ms = int((time.perf_counter() - start) * 1000)
     returncode = completed.returncode
@@ -551,11 +601,22 @@ def _aggregate_summary(
 
 
 def run_linters_pipeline(
-    root: Path, options: Optional[LinterRunOptions] = None
+    root: Path,
+    options: Optional[LinterRunOptions] = None,
+    audit_run_id: Optional[int] = None,
 ) -> LintersReport:
     """Ejecuta las herramientas estándar y devuelve un reporte completo."""
     resolved_root = Path(root).expanduser().resolve()
     start = time.perf_counter()
+
+    # Get audit run ID from environment if not provided
+    if audit_run_id is None:
+        audit_run_id_str = os.getenv("ATLAS_AUDIT_RUN_ID")
+        if audit_run_id_str:
+            try:
+                audit_run_id = int(audit_run_id_str)
+            except ValueError:
+                pass
 
     selected_specs = _select_tool_specs(options)
     if not selected_specs:
@@ -598,7 +659,9 @@ def run_linters_pipeline(
     tool_results: List[ToolRunResult] = []
     coverage_snapshot: Optional[CoverageSnapshot] = None
     for spec in selected_specs:
-        tool_result, coverage = _execute_tool(resolved_root, spec)
+        tool_result, coverage = _execute_tool(
+            resolved_root, spec, audit_run_id=audit_run_id
+        )
         tool_results.append(tool_result)
         if coverage:
             coverage_snapshot = coverage

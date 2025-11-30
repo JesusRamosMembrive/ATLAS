@@ -10,7 +10,11 @@ import { useSelectionStore } from "../state/useSelectionStore";
 const DIRECTORY_ICONS = ["📂", "📁"];
 const FILE_ICON = "📄";
 
-export function Sidebar(): JSX.Element {
+export function Sidebar({
+  onShowDiff,
+}: {
+  onShowDiff?: (path: string) => void;
+}): JSX.Element {
   const [filter, setFilter] = useState("");
   const clearSelection = useSelectionStore((state) => state.clearSelection);
   const selectedPath = useSelectionStore((state) => state.selectedPath);
@@ -70,7 +74,12 @@ export function Sidebar(): JSX.Element {
 
       <ul className="tree-list">
         {nodes.map((node) => (
-          <TreeNodeItem key={`${node.path}-${node.name}`} node={node} depth={0} />
+          <TreeNodeItem
+            key={`${node.path}-${node.name}`}
+            node={node}
+            depth={0}
+            onShowDiff={onShowDiff}
+          />
         ))}
       </ul>
     </aside>
@@ -80,9 +89,11 @@ export function Sidebar(): JSX.Element {
 function TreeNodeItem({
   node,
   depth,
+  onShowDiff,
 }: {
   node: ProjectTreeNode;
   depth: number;
+  onShowDiff?: (path: string) => void;
 }): JSX.Element {
   const selectedPath = useSelectionStore((state) => state.selectedPath);
   const selectPath = useSelectionStore((state) => state.selectPath);
@@ -91,6 +102,7 @@ function TreeNodeItem({
   const isDirectory = node.is_dir;
   const isActive = !isDirectory && selectedPath === node.path;
   const symbolCount = node.symbols?.length ?? 0;
+  const hasChange = Boolean(node.change_status);
 
   const handleClick = () => {
     if (isDirectory) {
@@ -105,7 +117,10 @@ function TreeNodeItem({
   return (
     <li>
       <div
-        className={clsx("tree-node", { active: isActive })}
+        className={clsx("tree-node", {
+          active: isActive,
+          "tree-node--changed": hasChange,
+        })}
         style={{ paddingLeft: depth * 14 + 12 }}
         role="button"
         tabIndex={0}
@@ -117,29 +132,83 @@ function TreeNodeItem({
           }
         }}
       >
-        <span>
+        <span className="tree-node__content">
           <span aria-hidden="true">{icon}</span>
-          <span>{node.name}</span>
+          <span
+            className={clsx("tree-node__label", {
+              "tree-node__label--changed": hasChange,
+            })}
+          >
+            {node.name}
+          </span>
         </span>
-        {isDirectory ? (
-          <span className="badge">{node.children?.length ?? 0}</span>
-        ) : symbolCount > 0 ? (
-          <span className="badge">{symbolCount} symbols</span>
-        ) : null}
+        {(isDirectory || symbolCount > 0 || hasChange) && (
+          <div className="tree-node__meta-indicators">
+            {hasChange && (
+              <span
+                className={clsx("tree-node__change-pill", {
+                  "tree-node__change-pill--added": node.change_status === "added" || node.change_status === "untracked",
+                  "tree-node__change-pill--deleted": node.change_status === "deleted",
+                })}
+                title={node.change_summary ?? undefined}
+              >
+                {formatChangeLabel(node.change_status)}
+              </span>
+            )}
+            {!isDirectory && hasChange && onShowDiff && (
+              <button
+                type="button"
+                className="tree-node__diff-button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onShowDiff(node.path);
+                }}
+              >
+                View diff
+              </button>
+            )}
+            {isDirectory ? (
+              <span className="badge">{node.children?.length ?? 0}</span>
+            ) : symbolCount > 0 ? (
+              <span className="badge">{symbolCount} symbols</span>
+            ) : null}
+          </div>
+        )}
       </div>
       {isDirectory && expanded && node.children?.length ? (
         <ul className="tree-children">
           {node.children.map((child) => (
-            <TreeNodeItem
-              key={`${child.path}-${child.name}`}
-              node={child}
-              depth={depth + 1}
-            />
-          ))}
+              <TreeNodeItem
+                key={`${child.path}-${child.name}`}
+                node={child}
+                depth={depth + 1}
+                onShowDiff={onShowDiff}
+              />
+            ))}
         </ul>
       ) : null}
     </li>
   );
+}
+
+function formatChangeLabel(status?: string | null): string {
+  if (!status) {
+    return "";
+  }
+  switch (status) {
+    case "untracked":
+      return "New";
+    case "added":
+      return "Added";
+    case "deleted":
+      return "Deleted";
+    case "renamed":
+      return "Renamed";
+    case "conflict":
+      return "Conflict";
+    default:
+      return "Modified";
+  }
 }
 
 function filterTree(nodes: ProjectTreeNode[], term: string): ProjectTreeNode[] {

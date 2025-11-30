@@ -56,7 +56,7 @@ python -m code_map.cli run --root /path/to/project
 # OR
 python -m code_map --root /path/to/project
 
-# Access API docs at: http://localhost:8000/docs
+# Access API docs at: http://localhost:8010/docs
 ```
 
 ### Testing
@@ -323,7 +323,7 @@ Install with: `pip install -r requirements.txt`
 2. Define Pydantic schemas if needed (see `code_map/api/schemas.py`)
 3. Register router in `code_map/api/routes.py`
 4. Add tests in `tests/test_api.py`
-5. Test manually via FastAPI docs: `http://localhost:8000/docs`
+5. Test manually via FastAPI docs: `http://localhost:8010/docs`
 
 ### Integrate New AI Service
 
@@ -346,7 +346,7 @@ Install with: `pip install -r requirements.txt`
 ### Code Map Tests
 - **Unit:** `pytest tests/test_*.py`
 - **Focused:** `pytest tests/test_linters_pipeline.py -v`
-- **Integration:** Start server and test via `http://localhost:8000/docs`
+- **Integration:** Start server and test via `http://localhost:8010/docs`
 - **Coverage:** `pytest --cov=code_map --cov=stage_init`
 
 ### Philosophy

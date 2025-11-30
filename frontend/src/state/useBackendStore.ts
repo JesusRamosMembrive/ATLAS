@@ -26,7 +26,7 @@ const STORAGE_KEY = "code-map-backend-url";
  *
  * Usage:
  *     const { backendUrl, setBackendUrl } = useBackendStore();
- *     setBackendUrl("http://192.168.1.100:8000");
+ *     setBackendUrl("http://192.168.1.100:8010");
  *
  * Notes:
  *     - Store singleton (compartido por todos los componentes)

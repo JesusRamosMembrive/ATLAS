@@ -32,7 +32,7 @@ This Docker setup provides a **production-ready** environment for Code Map with 
 ┌─────────────────────────────────────┐
 │      Docker Container               │
 │  ┌───────────────────────────────┐  │
-│  │  FastAPI Backend (port 8000)  │  │
+│  │  FastAPI Backend (port 8010)  │  │
 │  │  - API endpoints: /api/*      │  │
 │  │  - Call tracer: /tracer/*     │  │
 │  │  - Serves frontend at /       │  │
@@ -42,7 +42,7 @@ This Docker setup provides a **production-ready** environment for Code Map with 
 │  - /work → Your project (read-only) │
 │  - .code-map → Database (persistent)│
 └──────────────────┬───────────────────┘
-                   │ Port 8080:8000
+                   │ Port 8080:8010
                    ↓
        ┌───────────────────────┐
        │   Host Machine        │
@@ -198,7 +198,7 @@ To change the exposed port, edit `docker-compose.yml`:
 
 ```yaml
 ports:
-  - "9000:8000"  # Change 9000 to your preferred port
+  - "9000:8010"  # Change 9000 to your preferred port
 ```
 
 Then update launcher scripts to use the new port.
@@ -262,7 +262,7 @@ sudo lsof -i :8080  # Find process using port
 sudo kill <PID>     # Kill the process
 
 # Option 2: Change port in docker-compose.yml
-# Edit: "9000:8000" instead of "8080:8000"
+# Edit: "9000:8010" instead of "8080:8010"
 ```
 
 ### Build Takes Too Long
@@ -386,7 +386,7 @@ services:
     image: code-map:latest
     restart: always
     ports:
-      - "80:8000"
+      - "80:8010"
     volumes:
       - ./projects:/work:ro
       - code-map-data:/app/.code-map

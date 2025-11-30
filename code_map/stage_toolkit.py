@@ -7,6 +7,7 @@ que consumen Claude Code y Codex CLI.
 from __future__ import annotations
 
 import asyncio
+import shutil
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -51,6 +52,23 @@ DOCS_REQUIRED: Tuple[str, ...] = (
     "docs/GUIDE.md",
     "docs/CLAUDE_CODE_REFERENCE.md",
     "docs/CODEX_CLI_REFERENCE.md",
+)
+
+SUPERCLAUDE_REPO_URL = "https://github.com/SuperClaude-Org/SuperClaude_Framework.git"
+SUPERCLAUDE_BRANCH = "master"
+SUPERCLAUDE_REFERENCE_COUNTS: Dict[str, int] = {
+    "plugin_commands": 3,
+    "specialist_agents": 16,
+    "behavior_modes": 7,
+    "mcp_servers": 8,
+}
+SUPERCLAUDE_DOC_EXPORTS: Tuple[Tuple[str, str], ...] = (
+    ("README.md", "docs/superclaude/README.md"),
+    ("AGENTS.md", "docs/superclaude/AGENTS.md"),
+    ("docs/user-guide/commands.md", "docs/superclaude/commands.md"),
+    ("docs/user-guide/agents.md", "docs/superclaude/agents.md"),
+    ("docs/user-guide/modes.md", "docs/superclaude/modes.md"),
+    ("docs/user-guide/mcp-servers.md", "docs/superclaude/mcp-servers.md"),
 )
 
 
@@ -224,4 +242,177 @@ async def run_initializer(root: Path, agents: AgentSelection) -> Dict[str, objec
         "stdout": stdout,
         "stderr": stderr,
         "status": status_payload,
+    }
+
+
+async def install_superclaude_framework(root: Path) -> Dict[str, object]:
+    """
+    Clona o actualiza SuperClaude Framework y sincroniza sus assets principales.
+    """
+    from asyncio.subprocess import PIPE  # noqa: WPS433
+
+    workspace = root.expanduser().resolve()
+    cache_root = workspace / ".stage-cache"
+    clone_dir = cache_root / "superclaude-framework"
+
+    logs: List[Dict[str, object]] = []
+    copied_paths: List[str] = []
+    source_commit: Optional[str] = None
+    component_counts: Dict[str, int] = {}
+    error_message: Optional[str] = None
+
+    async def run_command(
+        command: Sequence[str], *, cwd: Optional[Path] = None
+    ) -> Dict[str, object]:
+        process = await asyncio.create_subprocess_exec(
+            *command,
+            stdout=PIPE,
+            stderr=PIPE,
+            cwd=str(cwd) if cwd else None,
+        )
+        stdout_bytes, stderr_bytes = await process.communicate()
+        entry: Dict[str, object] = {
+            "command": list(command),
+            "stdout": stdout_bytes.decode("utf-8", errors="replace"),
+            "stderr": stderr_bytes.decode("utf-8", errors="replace"),
+            "exit_code": process.returncode,
+        }
+        logs.append(entry)
+        if process.returncode != 0:
+            raise RuntimeError(
+                f"El comando {' '.join(command)} terminó con código {process.returncode}",
+            )
+        return entry
+
+    def _record_copy(dest: Path) -> None:
+        try:
+            copied_paths.append(str(dest.relative_to(workspace)))
+        except ValueError:  # pragma: no cover - defensive
+            copied_paths.append(str(dest))
+
+    def _copytree_sync(src: Path, dest: Path) -> None:
+        if dest.exists():
+            shutil.rmtree(dest)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(src, dest)
+
+    def _copyfile_sync(src: Path, dest: Path) -> None:
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dest)
+
+    async def copy_tree(relative_src: str, relative_dest: str) -> None:
+        src = (clone_dir / relative_src).resolve()
+        dest = (workspace / relative_dest).resolve()
+        if not src.exists():
+            return
+        await asyncio.to_thread(_copytree_sync, src, dest)
+        logs.append(
+            {
+                "command": ["copytree", str(src), str(dest)],
+                "stdout": f"Copiado {relative_src} → {relative_dest}",
+                "stderr": "",
+                "exit_code": 0,
+            }
+        )
+        _record_copy(dest)
+
+    async def copy_file(relative_src: str, relative_dest: str) -> None:
+        src = (clone_dir / relative_src).resolve()
+        dest = (workspace / relative_dest).resolve()
+        if not src.exists():
+            return
+        await asyncio.to_thread(_copyfile_sync, src, dest)
+        logs.append(
+            {
+                "command": ["copyfile", str(src), str(dest)],
+                "stdout": f"Copiado {relative_src} → {relative_dest}",
+                "stderr": "",
+                "exit_code": 0,
+            }
+        )
+        _record_copy(dest)
+
+    try:
+        cache_root.mkdir(parents=True, exist_ok=True)
+        if clone_dir.exists() and (clone_dir / ".git").exists():
+            await run_command(
+                [
+                    "git",
+                    "-C",
+                    str(clone_dir),
+                    "fetch",
+                    "--depth",
+                    "1",
+                    "origin",
+                    SUPERCLAUDE_BRANCH,
+                ]
+            )
+            await run_command(
+                [
+                    "git",
+                    "-C",
+                    str(clone_dir),
+                    "reset",
+                    "--hard",
+                    f"origin/{SUPERCLAUDE_BRANCH}",
+                ]
+            )
+        else:
+            if clone_dir.exists():
+                await asyncio.to_thread(shutil.rmtree, clone_dir)
+            await run_command(
+                [
+                    "git",
+                    "clone",
+                    "--depth",
+                    "1",
+                    "--branch",
+                    SUPERCLAUDE_BRANCH,
+                    SUPERCLAUDE_REPO_URL,
+                    str(clone_dir),
+                ]
+            )
+
+        rev_entry = await run_command(
+            ["git", "-C", str(clone_dir), "rev-parse", "HEAD"]
+        )
+        stdout = rev_entry["stdout"]
+        source_commit = str(stdout).strip() if stdout else None
+
+        await copy_tree("plugins/superclaude", ".claude/plugins/superclaude")
+        await copy_tree(".claude/skills", ".claude/skills/superclaude")
+
+        for relative_src, relative_dest in SUPERCLAUDE_DOC_EXPORTS:
+            await copy_file(relative_src, relative_dest)
+
+        plugin_commands_dir = (
+            workspace / ".claude" / "plugins" / "superclaude" / "commands"
+        )
+        plugin_command_count = (
+            len(list(plugin_commands_dir.glob("*.md")))
+            if plugin_commands_dir.exists()
+            else 0
+        )
+        component_counts = dict(SUPERCLAUDE_REFERENCE_COUNTS)
+        if plugin_command_count:
+            component_counts["plugin_commands"] = plugin_command_count
+
+    except Exception as exc:  # pragma: no cover - runtime protection
+        error_message = str(exc)
+
+    success = error_message is None
+    timestamp = datetime.now(timezone.utc).isoformat() if success else None
+
+    if not component_counts:
+        component_counts = dict(SUPERCLAUDE_REFERENCE_COUNTS)
+
+    return {
+        "success": success,
+        "error": error_message,
+        "installed_at": timestamp,
+        "source_repo": SUPERCLAUDE_REPO_URL,
+        "source_commit": source_commit,
+        "component_counts": component_counts,
+        "copied_paths": copied_paths,
+        "logs": logs,
     }

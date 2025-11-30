@@ -182,7 +182,7 @@ def update_current_phase_with_stage(
         f"{', '.join(metrics.patterns_found[:3]) if metrics.patterns_found else 'None'}\n"
         "\n**Recommended actions:**\n"
         f"- Follow rules in `.claude/02-stage{stage}-rules.md`\n"
-        "- Use stage-aware subagents for guidance\n"
+        "- Use stage-aware agents for guidance\n"
         "- Re-assess stage after significant changes\n"
     )
 

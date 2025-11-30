@@ -18,7 +18,11 @@ interface GroupedSymbols {
   functions: SymbolInfo[];
 }
 
-export function DetailPanel(): JSX.Element {
+export function DetailPanel({
+  onShowDiff,
+}: {
+  onShowDiff?: (path: string) => void;
+}): JSX.Element {
   const selectedPath = useSelectionStore((state) => state.selectedPath);
   const [traceTarget, setTraceTarget] = useState<string | null>(null);
 
@@ -105,8 +109,17 @@ export function DetailPanel(): JSX.Element {
     );
   }
 
+  const hasSymbols =
+    grouped.classes.length > 0 || grouped.functions.length > 0;
+  const showPreviewFirst = !hasSymbols;
+  const showSymbolPlaceholder =
+    !hasSymbols &&
+    shouldShowSymbolPlaceholder(selectedPath, data.symbols.length);
+
   const modified =
     data.modified_at != null ? new Date(data.modified_at).toLocaleString() : "—";
+  const hasWorkingChanges = Boolean(data.change_status);
+  const changeLabel = formatChangeStatus(data.change_status);
 
   return (
     <section className="panel">
@@ -116,6 +129,25 @@ export function DetailPanel(): JSX.Element {
           <div className="detail-meta">
             Last modified: {modified} · {data.symbols.length} symbols
           </div>
+          {hasWorkingChanges && (
+            <div className="detail-change-banner">
+              <div className="detail-change-info">
+                {changeLabel && <span className="detail-change-pill">{changeLabel}</span>}
+                {data.change_summary && (
+                  <span className="detail-change-summary">{data.change_summary}</span>
+                )}
+              </div>
+              {onShowDiff && (
+                <button
+                  type="button"
+                  className="detail-change-button"
+                  onClick={() => onShowDiff(selectedPath)}
+                >
+                  View latest changes
+                </button>
+              )}
+            </div>
+          )}
         </div>
         {data.errors.length > 0 && (
           <span className="badge" style={{ background: "rgba(249, 115, 22, 0.18)", color: "#f9a84b" }}>
@@ -285,7 +317,14 @@ export function DetailPanel(): JSX.Element {
         </article>
       ))}
 
-      {grouped.classes.length === 0 && grouped.functions.length === 0 && (
+      {showPreviewFirst && (
+        <div className="preview-container">
+          <h3 className="preview-title">Preview</h3>
+          <PreviewPane path={selectedPath} />
+        </div>
+      )}
+
+      {showSymbolPlaceholder && (
         <div className="placeholder">
           <h3>File without exportable symbols</h3>
           <p>
@@ -295,7 +334,7 @@ export function DetailPanel(): JSX.Element {
         </div>
       )}
 
-      {selectedPath && (
+      {selectedPath && !showPreviewFirst && (
         <div className="preview-container">
           <h3 className="preview-title">Preview</h3>
           <PreviewPane path={selectedPath} />
@@ -314,4 +353,52 @@ export function DetailPanel(): JSX.Element {
 
 function formatDocstring(docstring: string): string {
   return docstring.trim().split("\n\n")[0].replace(/\s+/g, " ");
+}
+
+function formatChangeStatus(status?: string | null): string {
+  if (!status) {
+    return "";
+  }
+  switch (status) {
+    case "untracked":
+      return "New file";
+    case "added":
+      return "Added";
+    case "deleted":
+      return "Deleted";
+    case "renamed":
+      return "Renamed";
+    case "conflict":
+      return "Conflict";
+    default:
+      return "Modified";
+  }
+}
+
+const SYMBOL_FRIENDLY_EXTENSIONS = [
+  "py",
+  "ts",
+  "tsx",
+  "js",
+  "jsx",
+  "java",
+  "go",
+  "rb",
+  "rs",
+  "php",
+  "cs",
+  "cpp",
+  "c",
+  "m",
+  "swift",
+];
+
+function shouldShowSymbolPlaceholder(path: string, symbolCount: number): boolean {
+  if (symbolCount > 0) {
+    return false;
+  }
+  const normalized = path.toLowerCase();
+  return SYMBOL_FRIENDLY_EXTENSIONS.some((ext) =>
+    normalized.endsWith(`.${ext}`)
+  );
 }

@@ -16,12 +16,16 @@ npm install
 Opcionalmente puedes crear un archivo `.env` en este directorio:
 
 ```
-VITE_API_BASE_URL=http://localhost:8000
+VITE_API_BASE_URL=http://0.0.0.0:8010
+VITE_DEPLOY_BACKEND_URL=http://0.0.0.0:8010
 VITE_DEV_PORT=5173
 VITE_DEV_HOST=127.0.0.1
 ```
 
-Si `VITE_API_BASE_URL` no está definida, el cliente intentará usar `/api/...` y se apoyará en el proxy configurado en `vite.config.ts`.
+Notas:
+- Las URLs anteriores deben apuntar a la raíz del backend; el cliente añade automáticamente el sufijo `/api`.
+- `VITE_DEPLOY_BACKEND_URL` define el destino por defecto para despliegues (por defecto `http://0.0.0.0:8010`). Asigna una cadena vacía para desactivar este fallback.
+- Si ninguna de las dos variables está definida, el cliente intentará usar `/api/...` y confiar en el proxy configurado en `vite.config.ts`.
 
 ## Scripts
 - `npm run dev` – lanza Vite con hot reload.

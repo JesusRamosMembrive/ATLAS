@@ -8,9 +8,8 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
-from contextlib import suppress
 from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Set, Mapping
 
@@ -18,23 +17,18 @@ from .cache import SnapshotStore
 from .index import SymbolIndex
 from .scanner import ProjectScanner
 from .scheduler import ChangeScheduler
-from .watcher import WatcherService
 from .settings import AppSettings, save_settings, ENV_DISABLE_LINTERS, ENV_CACHE_DIR
 from .linters import (
-    CheckStatus,
-    Severity,
-    record_linters_report,
-    record_notification,
-    run_linters_pipeline,
     LinterRunOptions,
     get_latest_linters_report,
     LINTER_TIMEOUT_FAST,  # Re-export for consistency
 )
 from .stage_toolkit import stage_status as compute_stage_status
 from .state_reporter import StateReporter
-from .insights import run_ollama_insights, VALID_INSIGHTS_FOCUS
-from .insights.storage import record_insight
-from .integrations import OllamaChatError
+from .insights import VALID_INSIGHTS_FOCUS
+from .services.linters_service import LintersService, LintersConfig
+from .services.insights_service import InsightsService, InsightsConfig
+from .services.watcher_manager import WatcherManager, WatcherConfig
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +59,15 @@ def _parse_int_env(raw: Optional[str]) -> Optional[int]:
     return value if value >= 0 else None
 
 
+def _linters_disabled_from_env() -> bool:
+    return os.environ.get(ENV_DISABLE_LINTERS, "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+
 @dataclass
 class AppState:
     """Estado compartido de la aplicación FastAPI."""
@@ -74,58 +77,21 @@ class AppState:
     scanner: ProjectScanner = field(init=False)
     index: SymbolIndex = field(init=False)
     snapshot_store: SnapshotStore = field(init=False)
-    watcher: Optional[WatcherService] = field(init=False, default=None)
+    watcher: WatcherManager = field(init=False)
     last_full_scan: Optional[datetime] = field(init=False, default=None)
     last_event_batch: Optional[datetime] = field(init=False, default=None)
     reporter: StateReporter = field(init=False)
+    linters: LintersService = field(init=False)
+    insights: InsightsService = field(init=False)
 
     def __post_init__(self) -> None:
         self.event_queue: "asyncio.Queue[Dict[str, Any]]" = asyncio.Queue()
         self._stop_event = asyncio.Event()
         self._scheduler_task: Optional[asyncio.Task[None]] = None
-        self._linters_task: Optional[asyncio.Task[None]] = None
-        self._linters_pending = False
-        self._linters_disabled = os.environ.get(
-            ENV_DISABLE_LINTERS, ""
-        ).strip().lower() in {
-            "1",
-            "true",
-            "yes",
-            "on",
-        }
-        tools_env = os.environ.get("CODE_MAP_LINTERS_TOOLS")
-        enabled_tools = _parse_enabled_tools_env(tools_env)
-        max_files_env = os.environ.get("CODE_MAP_LINTERS_MAX_PROJECT_FILES")
-        max_size_env = os.environ.get("CODE_MAP_LINTERS_MAX_PROJECT_SIZE_MB")
-        min_interval_env = os.environ.get("CODE_MAP_LINTERS_MIN_INTERVAL_SECONDS")
-
-        max_project_files = _parse_int_env(max_files_env)
-        max_project_size_mb = _parse_int_env(max_size_env)
-        max_project_bytes = (
-            max_project_size_mb * 1024 * 1024 if max_project_size_mb else None
-        )
-
-        min_interval = _parse_int_env(min_interval_env)
-        self._linters_min_interval = max(
-            0, min_interval or LINTERS_MIN_INTERVAL_SECONDS
-        )
-
-        self._linters_options = LinterRunOptions(
-            enabled_tools=enabled_tools,
-            max_project_files=max_project_files,
-            max_project_bytes=max_project_bytes,
-        )
-        self._linters_last_run: Optional[datetime] = None
-        self._linters_timer: Optional[asyncio.Task[None]] = None
-        self.last_linters_report_id: Optional[int] = None
-        self._insights_task: Optional[asyncio.Task[None]] = None
-        self._insights_timer: Optional[asyncio.Task[None]] = None
-        self._insights_pending = False
-        self._insights_last_run: Optional[datetime] = None
         self._recent_changes: List[str] = []
 
         self._build_components()
-        self._schedule_insights_pipeline()
+        self.insights.schedule()
 
     async def startup(self) -> None:
         """Inicializa el estado de la aplicación."""
@@ -143,39 +109,22 @@ class AppState:
         )
         if summaries:
             self.last_full_scan = datetime.now(timezone.utc)
-        if self.watcher:
-            started = await asyncio.to_thread(self.watcher.start)
-            if not started:
-                logger.warning("Watcher no iniciado (watchdog ausente o error).")
-        self._schedule_linters_pipeline()
-        self._schedule_insights_pipeline()
+        started = await asyncio.to_thread(self.watcher.start)
+        if not started:
+            logger.warning("Watcher no iniciado (watchdog ausente o error).")
+        self.linters.schedule(pending_changes=self.scheduler.pending_count())
+        self.insights.schedule()
         self._scheduler_task = asyncio.create_task(self._scheduler_loop())
 
     async def shutdown(self) -> None:
         """Detiene el estado de la aplicación."""
         logger.info("Deteniendo estado de la app")
         self._stop_event.set()
-        self._linters_pending = False
-        if self._linters_timer:
-            self._linters_timer.cancel()
-            with suppress(asyncio.CancelledError):
-                await self._linters_timer
-            self._linters_timer = None
-        if self._linters_task:
-            await self._linters_task
-        self._insights_pending = False
-        if self._insights_timer:
-            self._insights_timer.cancel()
-            with suppress(asyncio.CancelledError):
-                await self._insights_timer
-            self._insights_timer = None
-        if self._insights_task:
-            with suppress(asyncio.CancelledError):
-                await self._insights_task
+        await self.linters.shutdown()
+        await self.insights.shutdown()
         if self._scheduler_task:
             await self._scheduler_task
-        if self.watcher:
-            await asyncio.to_thread(self.watcher.stop)
+        await asyncio.to_thread(self.watcher.stop)
 
     async def _scheduler_loop(self) -> None:
         """Bucle principal del programador de cambios."""
@@ -193,8 +142,10 @@ class AppState:
                 if payload["updated"] or payload["deleted"]:
                     self.last_event_batch = datetime.now(timezone.utc)
                     await self.event_queue.put(payload)
-                    self._schedule_linters_pipeline()
-                    self._schedule_insights_pipeline()
+                    self.linters.schedule(
+                        pending_changes=self.scheduler.pending_count()
+                    )
+                    self.insights.schedule()
             await asyncio.sleep(self.scheduler.debounce_seconds)
 
     def _serialize_changes(
@@ -226,130 +177,12 @@ class AppState:
             await self.event_queue.put(payload)
             self._recent_changes = updated[:MAX_RECENT_CHANGES_TRACKED]
         self.last_full_scan = datetime.now(timezone.utc)
-        self._schedule_linters_pipeline()
-        self._schedule_insights_pipeline()
+        self.linters.schedule(pending_changes=self.scheduler.pending_count())
+        self.insights.schedule()
         return len(summaries)
 
-    def _schedule_linters_pipeline(self, *, force: bool = False) -> None:
-        """Programa la ejecución del pipeline de linters."""
-        if self._linters_disabled:
-            return
-        if self._linters_task and not self._linters_task.done():
-            self._linters_pending = True
-            return
-        if not force:
-            if self.scheduler.pending_count() > 0:
-                self._linters_pending = True
-                return
-
-            if self._linters_min_interval and self._linters_last_run is not None:
-                elapsed = (
-                    datetime.now(timezone.utc) - self._linters_last_run
-                ).total_seconds()
-                remaining = self._linters_min_interval - elapsed
-                if remaining > 0:
-                    self._linters_pending = True
-                    if self._linters_timer is None or self._linters_timer.done():
-                        self._linters_timer = asyncio.create_task(
-                            self._schedule_linters_pipeline_later(remaining)
-                        )
-                    return
-
-        self._linters_pending = False
-        self._linters_task = asyncio.create_task(self._run_linters_pipeline())
-
-    async def _run_linters_pipeline(self) -> None:
-        """Ejecuta el pipeline de linters y persiste el resultado."""
-        try:
-            report = await asyncio.to_thread(
-                run_linters_pipeline,
-                self.settings.root_path,
-                options=self._linters_options,
-            )
-            report_id = record_linters_report(report)
-            self.last_linters_report_id = report_id
-            summary = report.summary
-            status = summary.overall_status
-            self._linters_last_run = datetime.now(timezone.utc)
-
-            if status in {CheckStatus.FAIL, CheckStatus.WARN, CheckStatus.SKIPPED}:
-                if status == CheckStatus.FAIL:
-                    severity = (
-                        Severity.CRITICAL if summary.critical_issues else Severity.HIGH
-                    )
-                    message = (
-                        f"{summary.issues_total} incidencias detectadas (críticas: {summary.critical_issues})."
-                        if summary.issues_total
-                        else "El pipeline falló. Revisa la salida de las herramientas."
-                    )
-                elif status == CheckStatus.WARN:
-                    severity = Severity.MEDIUM
-                    message = (
-                        f"{summary.issues_total} advertencias encontradas."
-                        if summary.issues_total
-                        else "El pipeline reportó advertencias."
-                    )
-                else:
-                    severity = Severity.LOW
-                    message = "No se pudieron ejecutar las herramientas configuradas."
-
-                record_notification(
-                    channel="linters",
-                    severity=severity,
-                    title=f"Pipeline de linters: {status.value.upper()}",
-                    message=message,
-                    root_path=self.settings.root_path,
-                    payload={
-                        "report_id": report_id,
-                        "status": status.value,
-                        "issues_total": summary.issues_total,
-                        "critical_issues": summary.critical_issues,
-                    },
-                )
-        except Exception:  # pragma: no cover
-            # Intentional broad exception: background task must never crash the app
-            # Logs error for debugging but allows service to continue
-            logger.exception("Error al ejecutar el pipeline de linters")
-        finally:
-            self._linters_task = None
-            if self._linters_timer and self._linters_timer.done():
-                self._linters_timer = None
-            if self._linters_pending:
-                self._linters_pending = False
-                self._schedule_linters_pipeline()
-
-    async def _schedule_linters_pipeline_later(self, delay: float) -> None:
-        try:
-            await asyncio.sleep(max(delay, 0))
-            if self._stop_event.is_set():
-                return
-            self._linters_timer = None
-            self._schedule_linters_pipeline(force=True)
-        except asyncio.CancelledError:
-            self._linters_timer = None
-            raise
-
-    def _insights_settings_valid(self) -> bool:
-        return bool(
-            self.settings.ollama_insights_enabled
-            and self.settings.ollama_insights_model
-        )
-
-    def _insights_interval_seconds(self) -> int:
-        minutes = (
-            self.settings.ollama_insights_frequency_minutes
-            or DEFAULT_INSIGHTS_INTERVAL_MINUTES
-        )
-        return max(1, minutes) * 60
-
     def _compute_insights_next_run(self) -> Optional[datetime]:
-        if not self._insights_settings_valid():
-            return None
-        if self._insights_last_run is None:
-            return datetime.now(timezone.utc)
-        return self._insights_last_run + timedelta(
-            seconds=self._insights_interval_seconds()
-        )
+        return self.insights.next_run
 
     async def _build_insights_context(self) -> str:
         parts: List[str] = []
@@ -410,122 +243,6 @@ class AppState:
             return "\n".join(parts)
         return "Sin contexto adicional relevante disponible en linters o stage."
 
-    def _schedule_insights_pipeline(self, *, force: bool = False) -> None:
-        """Programa la ejecución del generador de insights de Ollama."""
-        if not self._insights_settings_valid():
-            if self._insights_timer and not self._insights_timer.done():
-                self._insights_timer.cancel()
-            self._insights_timer = None
-            return
-
-        try:
-            loop = asyncio.get_running_loop()
-        except RuntimeError:
-            # No event loop available yet (e.g. during import-time in tests).
-            self._insights_pending = True
-            return
-
-        if self._insights_task and not self._insights_task.done():
-            self._insights_pending = True
-            return
-
-        interval_seconds = self._insights_interval_seconds()
-
-        if not force and self._insights_last_run is not None:
-            elapsed = (
-                datetime.now(timezone.utc) - self._insights_last_run
-            ).total_seconds()
-            remaining = interval_seconds - elapsed
-            if remaining > 0:
-                self._insights_pending = True
-                if self._insights_timer is None or self._insights_timer.done():
-                    self._insights_timer = loop.create_task(
-                        self._schedule_insights_pipeline_later(remaining)
-                    )
-                return
-
-        self._insights_pending = False
-        self._insights_task = loop.create_task(self._run_insights_pipeline())
-
-    async def _run_insights_pipeline(self) -> None:
-        """Ejecuta el pipeline de insights basado en Ollama."""
-        model = self.settings.ollama_insights_model
-        if not model:
-            return
-
-        try:
-            context = await self._build_insights_context()
-            result = await asyncio.to_thread(
-                run_ollama_insights,
-                model=model,
-                root_path=self.settings.root_path,
-                endpoint=None,
-                context=context,
-                focus=self.settings.ollama_insights_focus,
-            )
-            record_insight(
-                model=result.model,
-                message=result.message,
-                raw=result.raw.raw,
-                root_path=self.settings.root_path,
-            )
-            self._insights_last_run = result.generated_at
-        except OllamaChatError as exc:
-            logger.warning(
-                "Fallo generando insights (modelo=%s, endpoint=%s): %s",
-                model,
-                exc.endpoint,
-                exc,
-            )
-            record_notification(
-                channel="insights",
-                severity=Severity.MEDIUM,
-                title="Insights automáticos: error",
-                message=str(exc),
-                root_path=self.settings.root_path,
-                payload={
-                    "endpoint": exc.endpoint,
-                    "reason_code": getattr(exc, "reason_code", None),
-                    "original_error": exc.original_error,
-                },
-            )
-        except Exception:  # pragma: no cover
-            # Intentional broad exception: background task must never crash the app
-            # Logs error for debugging but allows service to continue
-            logger.exception(
-                "Error inesperado al generar insights automáticos con Ollama"
-            )
-            record_notification(
-                channel="insights",
-                severity=Severity.MEDIUM,
-                title="Insights automáticos: excepción inesperada",
-                message="Consulta los logs del backend para más detalles.",
-                root_path=self.settings.root_path,
-                payload=None,
-            )
-        finally:
-            self._insights_task = None
-            if self._insights_timer and self._insights_timer.done():
-                self._insights_timer = None
-            if self._stop_event.is_set():
-                return
-            if self._insights_pending:
-                self._insights_pending = False
-                self._schedule_insights_pipeline(force=True)
-            else:
-                self._schedule_insights_pipeline()
-
-    async def _schedule_insights_pipeline_later(self, delay: float) -> None:
-        try:
-            await asyncio.sleep(max(delay, 0))
-            if self._stop_event.is_set():
-                return
-            self._insights_timer = None
-            self._schedule_insights_pipeline(force=True)
-        except asyncio.CancelledError:
-            self._insights_timer = None
-            raise
-
     def to_relative(self, path: Path) -> str:
         """Convierte una ruta absoluta en una ruta relativa al root del proyecto."""
         try:
@@ -564,8 +281,15 @@ class AppState:
             last_full_scan=self.last_full_scan,
             last_event_batch=self.last_event_batch,
             pending_events=self.event_queue.qsize(),
-            insights_last_run=self._insights_last_run,
+            insights_last_run=self.insights.last_run,
             insights_next_run=self._compute_insights_next_run(),
+            insights_last_model=(
+                self.insights.last_result.model if self.insights.last_result else None
+            ),
+            insights_last_message=(
+                self.insights.last_result.message if self.insights.last_result else None
+            ),
+            insights_last_error=self.insights.last_error,
         )
 
     async def update_settings(
@@ -647,6 +371,7 @@ class AppState:
         if not updated_fields:
             return []
 
+        await self._cancel_background_tasks()
         await self._apply_settings(new_settings)
         save_settings(self.settings)
         return updated_fields
@@ -670,11 +395,56 @@ class AppState:
             scanner=self.scanner,
             index=self.index,
         )
-        self.watcher = WatcherService(
-            self.settings.root_path,
-            self.scheduler,
-            exclude_dirs=self.settings.exclude_dirs,
-            extensions=self.scanner.extensions,
+        self.watcher = WatcherManager(
+            WatcherConfig(
+                root_path=self.settings.root_path,
+                scheduler=self.scheduler,
+                exclude_dirs=self.settings.exclude_dirs,
+                extensions=self.scanner.extensions,
+            )
+        )
+        self.linters = LintersService(self._build_linters_config())
+        self.insights = InsightsService(
+            self._build_insights_config(), context_builder=self._build_insights_context
+        )
+
+    def _build_linters_config(self) -> LintersConfig:
+        """Construye la configuración para el servicio de linters."""
+        tools_env = os.environ.get("CODE_MAP_LINTERS_TOOLS")
+        enabled_tools = _parse_enabled_tools_env(tools_env)
+        max_files_env = os.environ.get("CODE_MAP_LINTERS_MAX_PROJECT_FILES")
+        max_size_env = os.environ.get("CODE_MAP_LINTERS_MAX_PROJECT_SIZE_MB")
+        min_interval_env = os.environ.get("CODE_MAP_LINTERS_MIN_INTERVAL_SECONDS")
+
+        max_project_files = _parse_int_env(max_files_env)
+        max_project_size_mb = _parse_int_env(max_size_env)
+        max_project_bytes = (
+            max_project_size_mb * 1024 * 1024 if max_project_size_mb else None
+        )
+
+        min_interval = _parse_int_env(min_interval_env)
+        min_interval_seconds = max(0, min_interval or LINTERS_MIN_INTERVAL_SECONDS)
+
+        options = LinterRunOptions(
+            enabled_tools=enabled_tools,
+            max_project_files=max_project_files,
+            max_project_bytes=max_project_bytes,
+        )
+        return LintersConfig(
+            root_path=self.settings.root_path,
+            options=options,
+            min_interval_seconds=min_interval_seconds,
+            disabled=_linters_disabled_from_env(),
+        )
+
+    def _build_insights_config(self) -> InsightsConfig:
+        """Construye la configuración para el servicio de insights."""
+        return InsightsConfig(
+            root_path=self.settings.root_path,
+            enabled=bool(self.settings.ollama_insights_enabled),
+            model=self.settings.ollama_insights_model,
+            frequency_minutes=self.settings.ollama_insights_frequency_minutes,
+            focus=self.settings.ollama_insights_focus,
         )
 
     async def _apply_settings(self, new_settings: AppSettings) -> None:
@@ -716,12 +486,38 @@ class AppState:
             self.last_event_batch = datetime.now(timezone.utc)
             await self.event_queue.put(payload)
 
-        if self.watcher:
-            started = await asyncio.to_thread(self.watcher.start)
-            if not started:
-                logger.warning(
-                    "Watcher no iniciado tras actualizar settings para %s",
-                    self.settings.root_path,
-                )
-        self._schedule_linters_pipeline()
-        self._schedule_insights_pipeline()
+        started = await asyncio.to_thread(self.watcher.start)
+        if not started:
+            logger.warning(
+                "Watcher no iniciado tras actualizar settings para %s",
+                self.settings.root_path,
+            )
+        self.linters.schedule(pending_changes=self.scheduler.pending_count())
+        self.insights.schedule()
+
+    async def run_linters_now(self) -> int:
+        """Ejecuta el pipeline de linters inmediatamente y devuelve el ID del reporte."""
+        return await self.linters.run_now()
+
+    async def run_insights_now(
+        self,
+        *,
+        model: str,
+        focus: Optional[str] = None,
+        timeout: Optional[float] = None,
+    ):
+        """Genera insights inmediatamente usando la configuración actual."""
+        return await self.insights.run_now(model=model, focus=focus, timeout=timeout)
+
+    async def build_insights_context(self) -> str:
+        """Expone el contexto usado por el generador de insights."""
+        return await self._build_insights_context()
+
+    async def _cancel_background_tasks(self) -> None:
+        """Cancela y limpia timers/tareas de linters e insights."""
+        await self.linters.shutdown()
+        await self._cancel_insights_tasks()
+        self._recent_changes = []
+
+    async def _cancel_insights_tasks(self) -> None:
+        await self.insights.shutdown()

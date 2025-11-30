@@ -60,7 +60,7 @@ Edita `docker-compose.yml`:
 
 ```yaml
 ports:
-  - "9000:8000"  # Cambia 8080 por el puerto que prefieras
+  - "9000:8010"  # Cambia 8080 por el puerto que prefieras
 ```
 
 Luego actualiza los scripts de launcher para usar el nuevo puerto.

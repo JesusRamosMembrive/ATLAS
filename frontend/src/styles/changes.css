@@ -1,0 +1,119 @@
+.change-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.change-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.change-panel__header button {
+  background: transparent;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 8px;
+  color: #c7d2fe;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.change-panel__hint {
+  color: #8c94b3;
+  font-size: 13px;
+  margin: 0;
+}
+
+.change-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.change-item {
+  border: 1px solid rgba(59, 130, 246, 0.12);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(10, 14, 26, 0.75);
+}
+
+.change-item__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.change-item__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.change-item__link {
+  background: transparent;
+  border: none;
+  color: #93c5fd;
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.change-item__path {
+  font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+  font-size: 13px;
+  margin-top: 8px;
+  color: #e4e6eb;
+  cursor: pointer;
+}
+
+.change-item__summary {
+  color: #9ca3af;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.change-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-size: 11px;
+  text-transform: capitalize;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #e2e8f0;
+}
+
+.change-pill--added {
+  background: rgba(34, 197, 94, 0.18);
+  border-color: rgba(34, 197, 94, 0.45);
+  color: #4ade80;
+}
+
+.change-pill--deleted {
+  background: rgba(248, 113, 113, 0.18);
+  border-color: rgba(248, 113, 113, 0.45);
+  color: #f87171;
+}
+
+.change-pill--conflict {
+  background: rgba(248, 250, 107, 0.18);
+  border-color: rgba(248, 250, 107, 0.45);
+  color: #facc15;
+}
+
+.change-pill--renamed {
+  background: rgba(96, 165, 250, 0.18);
+  border-color: rgba(96, 165, 250, 0.45);
+  color: #bfdbfe;
+}
+
+.change-pill--default {
+  background: rgba(59, 130, 246, 0.18);
+  border-color: rgba(59, 130, 246, 0.45);
+  color: #93c5fd;
+}

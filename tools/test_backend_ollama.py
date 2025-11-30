@@ -5,7 +5,7 @@ Utilidad de línea de comandos para probar el endpoint
 
 Ejemplo:
     python tools/test_backend_ollama.py \
-        --api http://127.0.0.1:8000 \
+        --api http://127.0.0.1:8010 \
         --model gpt-oss:latest \
         --prompt "Ping de prueba"
 """
@@ -19,7 +19,7 @@ import time
 
 import httpx
 
-DEFAULT_API_BASE = "http://127.0.0.1:8000"
+DEFAULT_API_BASE = "http://127.0.0.1:8010"
 
 
 def parse_args() -> argparse.Namespace:

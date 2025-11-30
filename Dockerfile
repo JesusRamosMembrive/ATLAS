@@ -54,7 +54,7 @@ COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 RUN mkdir -p /work /app/.code-map
 
 # Expose FastAPI port
-EXPOSE 8000
+EXPOSE 8010
 
 # Environment variables for production
 ENV CODE_MAP_ROOT=/work
@@ -64,10 +64,10 @@ ENV CODE_MAP_INCLUDE_DOCSTRINGS=1
 
 # Health check endpoint
 HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:8000/api/settings || exit 1
+    CMD curl -f http://localhost:8010/api/settings || exit 1
 
 # Start Uvicorn server
 # --host 0.0.0.0: Listen on all interfaces (required for Docker)
-# --port 8000: Internal container port
+# --port 8010: Internal container port
 # --log-level info: Production logging level
-CMD ["uvicorn", "code_map.server:app", "--host", "0.0.0.0", "--port", "8000", "--log-level", "info"]
+CMD ["uvicorn", "code_map.server:app", "--host", "0.0.0.0", "--port", "8010", "--log-level", "info"]

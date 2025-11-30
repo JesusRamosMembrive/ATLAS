@@ -10,7 +10,10 @@ import { OverviewDashboard } from "./components/OverviewDashboard";
 import { PromptLibraryView } from "./components/PromptLibraryView";
 import { AppLayout } from "./components/AppLayout";
 import { OllamaInsightsView } from "./components/OllamaInsightsView";
+import { RemoteTerminalView } from "./components/RemoteTerminalView";
+import { ClaudeAgentView } from "./components/ClaudeAgentView";
 import CodeTimelineView from "./components/CodeTimelineView";
+import { DocsLibraryView } from "./components/DocsLibraryView";
 import { useEventStream } from "./hooks/useEventStream";
 import { useSettingsQuery } from "./hooks/useSettingsQuery";
 import { useStatusQuery } from "./hooks/useStatusQuery";
@@ -50,15 +53,19 @@ export function App(): JSX.Element {
         <Routes>
           <Route
             path="/"
-            element={withLayout("Stage-Aware Workspace", <HomeView statusQuery={statusQuery} />)}
+            element={withLayout("ATLAS - Home", <HomeView statusQuery={statusQuery} />)}
           />
-      <Route
-        path="/overview"
-        element={withLayout("Workspace Overview", <OverviewDashboard statusQuery={statusQuery} />)}
+          <Route
+            path="/overview"
+            element={withLayout("Workspace Overview", <OverviewDashboard statusQuery={statusQuery} />)}
           />
           <Route
             path="/code-map"
             element={withLayout("Code Map", <CodeMapDashboard statusQuery={statusQuery} />)}
+          />
+          <Route
+            path="/docs"
+            element={withLayout("Project Docs", <DocsLibraryView />)}
           />
           <Route
             path="/stage-toolkit"
@@ -76,13 +83,21 @@ export function App(): JSX.Element {
             path="/prompts"
             element={withLayout("Prompt Library", <PromptLibraryView />)}
           />
-      <Route
-        path="/linters"
-        element={withLayout("Linters & Quality", <LintersView />)}
+          <Route
+            path="/linters"
+            element={withLayout("Linters & Quality", <LintersView />)}
           />
           <Route
             path="/timeline"
             element={withLayout("Code Timeline", <CodeTimelineView />)}
+          />
+          <Route
+            path="/terminal"
+            element={withLayout("Remote Terminal", <RemoteTerminalView />)}
+          />
+          <Route
+            path="/agent"
+            element={withLayout("Claude Agent", <ClaudeAgentView />)}
           />
           <Route
             path="/settings"

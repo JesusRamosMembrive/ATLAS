@@ -8,7 +8,7 @@ interface PreviewPaneProps {
 }
 
 const HTML_MIME_RE = /html/i;
-const TEXT_MIME_RE = /(text|json|xml)/i;
+const TEXT_MIME_RE = /(text|json|xml|yaml|toml)/i;
 
 // Función para detectar el tipo de archivo por extensión
 function getFileExtension(path: string): string {

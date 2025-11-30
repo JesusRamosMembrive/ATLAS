@@ -32,7 +32,7 @@ Después, reactiva `.venv`, reinstala dependencias si es necesario y comprueba q
 
 ## Arranque del servidor
 ```bash
-python -m code_map run --host 0.0.0.0 --port 8000 --log-level info
+python -m code_map run --host 0.0.0.0 --port 8010 --log-level info
 ```
 
 - Añade `--root /ruta/al/proyecto` si quieres sobreescribir temporalmente la ruta configurada.
@@ -59,7 +59,7 @@ Cuando necesites distribuir el backend como ejecutable autónomo, usa `pyinstall
 3. Copia el ejecutable donde lo vayas a publicar (por ejemplo, una release en GitHub) o súbelo a tu web.
 4. Al ejecutar el binario, pasa los mismos argumentos que usarías con `python -m code_map`:
    ```bash
-   ./code-map-backend --host 0.0.0.0 --port 8000 --root /ruta/al/proyecto
+   ./code-map-backend --host 0.0.0.0 --port 8010 --root /ruta/al/proyecto
    ```
 
 Recuerda incluir junto al ejecutable cualquier archivo de configuración requerido (`.code-map/code-map.json`, etc.) o documentar cómo generar la configuración al primer arranque.
@@ -71,16 +71,16 @@ Recuerda incluir junto al ejecutable cualquier archivo de configuración requeri
    ```
 2. **Consultar el árbol y archivos**:
    ```bash
-   curl http://localhost:8000/tree | jq
-   curl http://localhost:8000/files/demo.py | jq
+   curl http://localhost:8010/tree | jq
+   curl http://localhost:8010/files/demo.py | jq
    ```
 3. **Escuchar eventos SSE** (verás `event: update` cuando haya cambios):
    ```bash
-   curl -N http://localhost:8000/events
+   curl -N http://localhost:8010/events
    ```
 4. **Forzar un rescan completo** (si el watcher está desactivado o después de muchos cambios):
    ```bash
-   curl -X POST http://localhost:8000/rescan
+   curl -X POST http://localhost:8010/rescan
    ```
 
 El backend persiste un snapshot en `<root>/.code-map/code-map.json`; al reiniciar lo carga para responder rápido y luego ejecuta un escaneo completo en segundo plano.
@@ -98,11 +98,11 @@ Para que el panel "Stage Toolkit" pueda consultar y hacer ping a modelos locales
    - Si prefieres otra dirección/puerto, exporta `OLLAMA_HOST=http://host:puerto` antes de iniciar Uvicorn.
 3. **Verifica la conexión** desde nuestro backend:
    ```bash
-   curl -s http://localhost:8000/integrations/ollama/status | jq
+   curl -s http://localhost:8010/integrations/ollama/status | jq
    ```
    Deberías ver `installed: true` y `running: true`. Si todo está correcto puedes probar un chat corto:
    ```bash
-   curl -s -X POST http://localhost:8000/integrations/ollama/test \
+   curl -s -X POST http://localhost:8010/integrations/ollama/test \
      -H 'Content-Type: application/json' \
      -d '{"model":"gpt-oss:latest","prompt":"ping"}' | jq
    ```

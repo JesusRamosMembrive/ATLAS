@@ -58,8 +58,30 @@
   background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.35), transparent 60%),
     radial-gradient(circle at bottom right, rgba(45, 212, 191, 0.16), transparent 55%),
     rgba(11, 17, 31, 0.92);
-  border: 1px solid rgba(96, 165, 250, 0.25);
+  border: 2px solid transparent;
   box-shadow: 0 40px 120px rgba(15, 23, 42, 0.55);
+}
+
+/* Animated border gradient for hero */
+.home-hero::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 28px;
+  background: linear-gradient(90deg, #3b82f6, #2dd4bf, #a855f7, #3b82f6);
+  background-size: 300% 100%;
+  animation: borderFlow 4s linear infinite;
+  z-index: -1;
+  opacity: 0.6;
+}
+
+@keyframes borderFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 300% 50%;
+  }
 }
 
 .home-hero__glow {
@@ -106,8 +128,69 @@
   }
 }
 
+/* Órbitas de partículas */
+@keyframes orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orbit-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.orbit {
+  transform-origin: 100px 100px; /* Centro del SVG */
+}
+
+.orbit--slow {
+  animation: orbit 20s linear infinite;
+}
+
+.orbit--slow-reverse {
+  animation: orbit-reverse 25s linear infinite;
+}
+
+.orbit--medium {
+  animation: orbit 15s linear infinite;
+}
+
+.orbit--medium-reverse {
+  animation: orbit-reverse 18s linear infinite;
+}
+
+.orbit--fast {
+  animation: orbit 10s linear infinite;
+}
+
+.home-hero__badges {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.home-version-pill {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(139, 92, 246, 0.25));
+  color: #a5b4fc;
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  backdrop-filter: blur(8px);
+}
+
 .home-stage-pill {
-  align-self: flex-start;
   padding: 6px 14px;
   border-radius: 999px;
   font-size: 0.8rem;
@@ -138,12 +221,50 @@
   color: #f8fafc;
 }
 
+.home-hero__acronym {
+  margin: 0;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #94a3b8;
+  letter-spacing: 0.03em;
+}
+
 .home-hero p {
   margin: 0;
   font-size: 1.03rem;
   color: #dbe4ff;
   max-width: 680px;
   line-height: 1.65;
+}
+
+.home-hero__credits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 0.78rem;
+  color: #64748b;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.home-hero__credits:hover {
+  opacity: 1;
+}
+
+.home-hero__credits span {
+  color: #94a3b8;
+}
+
+.home-hero__credits a {
+  color: #60a5fa;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.15s ease;
+}
+
+.home-hero__credits a:hover {
+  opacity: 1;
+  text-decoration: underline;
 }
 
 .home-summary {
@@ -245,12 +366,18 @@
   justify-content: space-between;
   gap: 20px;
   padding: 30px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.88), rgba(17, 24, 39, 0.88));
+  border-radius: 16px;
+  /* Glassmorphism effect with original dark background */
+  background: rgba(30, 41, 59, 0.7);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10.5px);
+  -webkit-backdrop-filter: blur(10.5px);
+  border: 1px solid rgba(148, 163, 184, 0.3);
   color: inherit;
   text-decoration: none;
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease,
+  /* 3D Tilt effect support */
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out, border-color 0.22s ease, box-shadow 0.22s ease,
     background 0.22s ease;
   position: relative;
   overflow: hidden;
@@ -259,17 +386,16 @@
 .home-card::before {
   content: "";
   position: absolute;
-  inset: -40% 40% auto -30%;
-  height: 180%;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.18), transparent 70%);
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(59, 130, 246, 0.18), transparent 70%);
   opacity: 0;
   transition: opacity 0.22s ease;
 }
 
 .home-card:hover {
-  transform: translateY(-6px);
   border-color: rgba(96, 165, 250, 0.45);
-  box-shadow: 0 24px 46px rgba(15, 23, 42, 0.55);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25), 0 0 30px rgba(59, 130, 246, 0.15);
+  background: rgba(30, 41, 59, 0.85);
 }
 
 .home-card:hover::before {
@@ -362,4 +488,42 @@
     width: 100%;
     text-align: center;
   }
+}
+
+/* ============================================================================
+   Agent Type Selector - used in ClaudeAgentView header
+   ============================================================================ */
+
+.agent-type-select {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #e2e8f0;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 28px;
+}
+
+.agent-type-select:hover {
+  border-color: rgba(96, 165, 250, 0.5);
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.15);
+}
+
+.agent-type-select:focus {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.6);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
+}
+
+.agent-type-select option {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 8px;
 }

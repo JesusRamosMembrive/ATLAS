@@ -191,7 +191,7 @@ class ProjectInitializer:
         if self.config.dry_run:
             return
 
-        subagents_dir = claude_dir / "subagents"
+        subagents_dir = claude_dir / "agents"
         agents_dir = claude_dir / "agents"
 
         if subagents_dir.exists():
@@ -209,7 +209,7 @@ class ProjectInitializer:
                     subagents_dir.rmdir()
                 except OSError:
                     self.log.warning(
-                        "Could not remove deprecated subagents directory (not empty): %s",
+                        "Could not remove deprecated agents directory (not empty): %s",
                         subagents_dir,
                     )
             else:
