@@ -250,7 +250,7 @@
   {
     "path": "code_map/api/analysis.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:01:48.981503+00:00",
+    "modified_at": "2025-11-29T21:29:15.907859+00:00",
     "symbols": [
       {
         "name": "_get_git_history",
@@ -370,7 +370,7 @@
   {
     "path": "code_map/api/audit.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:07:25.992275+00:00",
+    "modified_at": "2025-11-29T21:29:15.907921+00:00",
     "symbols": [
       {
         "name": "_serialize_run",
@@ -448,7 +448,7 @@
   {
     "path": "code_map/api/claude_permissions.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:31:41.657055+00:00",
+    "modified_at": "2025-11-29T21:29:15.907921+00:00",
     "symbols": [
       {
         "name": "ClaudePermissions",
@@ -598,7 +598,7 @@
   {
     "path": "code_map/api/handlers/approval.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:01:48.583674+00:00",
+    "modified_at": "2025-11-29T21:29:15.907921+00:00",
     "symbols": [
       {
         "name": "ApprovalRequestProtocol",
@@ -627,7 +627,7 @@
   {
     "path": "code_map/api/handlers/base.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:01:48.628860+00:00",
+    "modified_at": "2025-11-29T21:29:15.907921+00:00",
     "symbols": [
       {
         "name": "HandlerCallbacks",
@@ -698,7 +698,7 @@
   {
     "path": "code_map/api/handlers/cli_handler.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:25:28.986198+00:00",
+    "modified_at": "2025-11-29T21:29:15.907921+00:00",
     "symbols": [
       {
         "name": "CLIModeHandler",
@@ -805,7 +805,7 @@
   {
     "path": "code_map/api/handlers/mcp_proxy_handler.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:25:16.063272+00:00",
+    "modified_at": "2025-11-29T21:29:15.907921+00:00",
     "symbols": [
       {
         "name": "MCPProxyModeHandler",
@@ -855,7 +855,7 @@
   {
     "path": "code_map/api/handlers/sdk_handler.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:25:47.843021+00:00",
+    "modified_at": "2025-11-29T21:29:15.907921+00:00",
     "symbols": [
       {
         "name": "SDKModeHandler",
@@ -1702,7 +1702,7 @@
   {
     "path": "code_map/api/terminal.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:26:58.301678+00:00",
+    "modified_at": "2025-11-29T21:29:15.908431+00:00",
     "symbols": [
       {
         "name": "get_or_create_mcp_socket_server",
@@ -1837,7 +1837,7 @@
   {
     "path": "code_map/api/tracer.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:01:49.005940+00:00",
+    "modified_at": "2025-11-29T21:29:15.908540+00:00",
     "symbols": [
       {
         "name": "_require_tree_sitter",
@@ -1993,7 +1993,7 @@
   {
     "path": "code_map/audit/file_watcher_hook.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:24:45.259014+00:00",
+    "modified_at": "2025-11-29T21:29:15.908619+00:00",
     "symbols": [
       {
         "name": "AuditFileWatcher",
@@ -2085,7 +2085,7 @@
   {
     "path": "code_map/audit/hooks.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:07:26.003275+00:00",
+    "modified_at": "2025-11-29T21:29:15.908688+00:00",
     "symbols": [
       {
         "name": "AuditContext",
@@ -2142,7 +2142,7 @@
   {
     "path": "code_map/audit/storage.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:01:49.012361+00:00",
+    "modified_at": "2025-11-29T21:29:15.908688+00:00",
     "symbols": [
       {
         "name": "AuditRun",
@@ -2333,7 +2333,7 @@
   {
     "path": "code_map/call_tracer_v2.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:01:49.981040+00:00",
+    "modified_at": "2025-11-29T21:29:15.908834+00:00",
     "symbols": [
       {
         "name": "CrossFileCallGraphExtractor",
@@ -2863,7 +2863,7 @@
   {
     "path": "code_map/git_history.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:01:49.568507+00:00",
+    "modified_at": "2025-11-29T21:29:15.908922+00:00",
     "symbols": [
       {
         "name": "GitHistoryError",
@@ -3324,7 +3324,7 @@
   {
     "path": "code_map/integrations/ollama_service.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:01:49.489851+00:00",
+    "modified_at": "2025-11-29T21:29:15.909021+00:00",
     "symbols": [
       {
         "name": "_normalize_endpoint",
@@ -3692,7 +3692,7 @@
   {
     "path": "code_map/linters/pipeline.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:01:50.617961+00:00",
+    "modified_at": "2025-11-29T21:29:15.909132+00:00",
     "symbols": [
       {
         "name": "LinterConfig",
@@ -4129,7 +4129,7 @@
   {
     "path": "code_map/mcp/approval_bridge.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:09:14.421317+00:00",
+    "modified_at": "2025-11-29T21:29:15.909261+00:00",
     "symbols": [
       {
         "name": "ApprovalRequest",
@@ -4277,14 +4277,14 @@
   {
     "path": "code_map/mcp/constants.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:31:12.951783+00:00",
+    "modified_at": "2025-11-29T21:29:15.909261+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/mcp/permission_server.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:29:36.309717+00:00",
+    "modified_at": "2025-11-29T21:29:15.909261+00:00",
     "symbols": [
       {
         "name": "PermissionServer",
@@ -4362,7 +4362,7 @@
   {
     "path": "code_map/mcp/socket_server.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:09:15.102952+00:00",
+    "modified_at": "2025-11-29T21:29:15.909261+00:00",
     "symbols": [
       {
         "name": "MCPSocketServer",
@@ -4447,7 +4447,7 @@
   {
     "path": "code_map/mcp/tool_proxy_server.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:07:26.006275+00:00",
+    "modified_at": "2025-11-29T21:29:15.909528+00:00",
     "symbols": [
       {
         "name": "ToolProxyServer",
@@ -4781,7 +4781,7 @@
   {
     "path": "code_map/services/insights_service.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:01:49.726130+00:00",
+    "modified_at": "2025-11-29T21:29:15.909528+00:00",
     "symbols": [
       {
         "name": "InsightsConfig",
@@ -4887,7 +4887,7 @@
   {
     "path": "code_map/services/linters_service.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:07:25.998275+00:00",
+    "modified_at": "2025-11-29T21:29:15.909528+00:00",
     "symbols": [
       {
         "name": "LintersConfig",
@@ -4965,7 +4965,7 @@
   {
     "path": "code_map/services/watcher_manager.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:07:25.999274+00:00",
+    "modified_at": "2025-11-29T21:29:15.909528+00:00",
     "symbols": [
       {
         "name": "WatcherConfig",
@@ -5128,7 +5128,7 @@
   {
     "path": "code_map/stage_toolkit.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:22:34.429980+00:00",
+    "modified_at": "2025-11-29T21:29:15.909528+00:00",
     "symbols": [
       {
         "name": "FileStatus",
@@ -5199,7 +5199,7 @@
   {
     "path": "code_map/state.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:07:25.995275+00:00",
+    "modified_at": "2025-11-29T21:29:15.909886+00:00",
     "symbols": [
       {
         "name": "_parse_enabled_tools_env",
@@ -5446,7 +5446,7 @@
   {
     "path": "code_map/terminal/agent_events.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:07:26.010051+00:00",
+    "modified_at": "2025-11-29T21:29:15.909967+00:00",
     "symbols": [
       {
         "name": "CommandExecution",
@@ -5601,7 +5601,7 @@
   {
     "path": "code_map/terminal/agent_parser.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:21:57.183260+00:00",
+    "modified_at": "2025-11-29T21:29:15.910050+00:00",
     "symbols": [
       {
         "name": "AgentEventType",
@@ -5791,7 +5791,7 @@
   {
     "path": "code_map/terminal/claude_runner.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:23:55.307011+00:00",
+    "modified_at": "2025-11-29T21:29:15.910200+00:00",
     "symbols": [
       {
         "name": "find_claude_cli",
@@ -5974,7 +5974,7 @@
   {
     "path": "code_map/terminal/gemini_runner.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:23:07.888549+00:00",
+    "modified_at": "2025-11-29T21:29:15.910200+00:00",
     "symbols": [
       {
         "name": "find_gemini_cli",
@@ -6073,7 +6073,7 @@
   {
     "path": "code_map/terminal/json_parser.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:09:15.763035+00:00",
+    "modified_at": "2025-11-29T21:29:15.910200+00:00",
     "symbols": [
       {
         "name": "EventType",
@@ -6186,7 +6186,7 @@
   {
     "path": "code_map/terminal/mcp_proxy_runner.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:07:26.004275+00:00",
+    "modified_at": "2025-11-29T21:29:15.910200+00:00",
     "symbols": [
       {
         "name": "MCPProxyRunnerConfig",
@@ -6299,7 +6299,7 @@
   {
     "path": "code_map/terminal/pty_parser.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:21:22.455187+00:00",
+    "modified_at": "2025-11-29T21:29:15.910486+00:00",
     "symbols": [
       {
         "name": "EventType",
@@ -6426,7 +6426,7 @@
   {
     "path": "code_map/terminal/pty_runner.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:30:52.654047+00:00",
+    "modified_at": "2025-11-29T21:29:15.910486+00:00",
     "symbols": [
       {
         "name": "RunnerState",
@@ -6546,7 +6546,7 @@
   {
     "path": "code_map/terminal/pty_shell.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:01:51.125243+00:00",
+    "modified_at": "2025-11-29T21:29:15.910486+00:00",
     "symbols": [
       {
         "name": "PTYShell",
@@ -6638,7 +6638,7 @@
   {
     "path": "code_map/terminal/sdk_runner.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:26:22.838983+00:00",
+    "modified_at": "2025-11-29T21:29:15.910714+00:00",
     "symbols": [
       {
         "name": "SDKRunnerConfig",
@@ -6800,7 +6800,7 @@
   {
     "path": "code_map/terminal/tool_approval.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:07:26.011275+00:00",
+    "modified_at": "2025-11-29T21:29:15.910714+00:00",
     "symbols": [
       {
         "name": "ApprovalStatus",
@@ -7413,56 +7413,6 @@
         "lineno": 186,
         "parent": "WatcherService",
         "docstring": "Detiene el observador y espera a que finalice."
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "docs/ui_mockup.html",
-    "relative": true,
-    "modified_at": "2025-11-10T11:33:54.685321+00:00",
-    "symbols": [
-      {
-        "name": "dashboard",
-        "kind": "element",
-        "lineno": 0,
-        "parent": "div",
-        "docstring": null
-      },
-      {
-        "name": "open-settings",
-        "kind": "element",
-        "lineno": 0,
-        "parent": "button",
-        "docstring": null
-      },
-      {
-        "name": "rescan-btn",
-        "kind": "element",
-        "lineno": 0,
-        "parent": "button",
-        "docstring": null
-      },
-      {
-        "name": "settings",
-        "kind": "element",
-        "lineno": 0,
-        "parent": "div",
-        "docstring": null
-      },
-      {
-        "name": "back-dashboard",
-        "kind": "element",
-        "lineno": 0,
-        "parent": "button",
-        "docstring": null
-      },
-      {
-        "name": "root-input",
-        "kind": "element",
-        "lineno": 0,
-        "parent": "input",
-        "docstring": null
       }
     ],
     "errors": []
@@ -8208,7 +8158,7 @@
   {
     "path": "frontend/src/components/ClaudeAgentView.tsx",
     "relative": true,
-    "modified_at": "2025-11-29T21:04:13.409659+00:00",
+    "modified_at": "2025-11-29T21:29:15.910991+00:00",
     "symbols": [
       {
         "name": "extractResultContent",
@@ -8262,21 +8212,21 @@
       {
         "name": "PermissionDenialsBanner",
         "kind": "function",
-        "lineno": 803,
+        "lineno": 813,
         "parent": null,
         "docstring": null
       },
       {
         "name": "truncateInput",
         "kind": "function",
-        "lineno": 864,
+        "lineno": 874,
         "parent": null,
         "docstring": null
       },
       {
         "name": "truncatePath",
         "kind": "function",
-        "lineno": 874,
+        "lineno": 884,
         "parent": null,
         "docstring": "============================================================================"
       }
@@ -9506,7 +9456,7 @@
   {
     "path": "frontend/src/components/icons/AgentIcons.tsx",
     "relative": true,
-    "modified_at": "2025-11-29T08:16:13.149920+00:00",
+    "modified_at": "2025-11-29T21:29:15.910991+00:00",
     "symbols": [
       {
         "name": "MessageCircleIcon",
@@ -10420,7 +10370,7 @@
   {
     "path": "frontend/src/stores/claudeSessionStore.ts",
     "relative": true,
-    "modified_at": "2025-11-29T08:18:03.151980+00:00",
+    "modified_at": "2025-11-29T21:29:15.911235+00:00",
     "symbols": [
       {
         "name": "selectConnected",
@@ -10733,7 +10683,7 @@
   {
     "path": "frontend/src/types/claude-events.ts",
     "relative": true,
-    "modified_at": "2025-11-29T08:16:28.849763+00:00",
+    "modified_at": "2025-11-29T21:29:15.911235+00:00",
     "symbols": [
       {
         "name": "isPTYPermissionRequestEvent",
@@ -53758,7 +53708,7 @@
   {
     "path": "stage_config.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:09:16.443284+00:00",
+    "modified_at": "2025-11-29T21:29:15.911425+00:00",
     "symbols": [
       {
         "name": "StageThresholds",
@@ -54220,7 +54170,7 @@
   {
     "path": "test_structured.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:07:25.993274+00:00",
+    "modified_at": "2025-11-29T21:29:15.911425+00:00",
     "symbols": [
       {
         "name": "TestStructuredOutput",
@@ -54270,7 +54220,7 @@
   {
     "path": "tests/test_agent_bridge.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:10:16.958467+00:00",
+    "modified_at": "2025-11-29T21:29:15.911581+00:00",
     "symbols": [
       {
         "name": "temp_root",
@@ -54446,7 +54396,7 @@
   {
     "path": "tests/test_agent_controller.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:07:26.001275+00:00",
+    "modified_at": "2025-11-29T21:29:15.911581+00:00",
     "symbols": [
       {
         "name": "TestAgentTask",
@@ -54566,7 +54516,7 @@
   {
     "path": "tests/test_agent_parser.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:07:26.002275+00:00",
+    "modified_at": "2025-11-29T21:29:15.911581+00:00",
     "symbols": [
       {
         "name": "TestAgentOutputParser",
@@ -55087,7 +55037,7 @@
   {
     "path": "tests/test_audit_hooks.py",
     "relative": true,
-    "modified_at": "2025-11-29T09:09:51.720407+00:00",
+    "modified_at": "2025-11-29T21:29:15.911768+00:00",
     "symbols": [
       {
         "name": "temp_root",

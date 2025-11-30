@@ -1,7 +1,0 @@
-### Progreso reciente
-
-- Se consolidó el pipeline de linters en backend (ejecución secuencial de ruff, black, mypy, bandit, pytest con cobertura y regla de longitud de archivo). Los reportes se guardan en SQLite y generan notificaciones según severidad.
-- Se creó la vista “Linters” en el frontend: listado del último reporte con métricas, herramientas, reglas personalizadas, historial y notificaciones. Ahora la tabla permite seleccionar una herramienta para ver incidencias detalladas (archivo, línea, severidad y sugerencias), además de mostrar la salida estándar/errores.
-- Se endurecieron los analizadores JS/TS para soportar más patrones (clases, métodos, exports) y se añadieron pruebas de regresión adicionales que ejercen símbolos complejos.
-- Se ajustaron pequeños fallos del pipeline (flags correctos para Ruff y Black) y se instalaron dependencias opcionales (`sqlmodel`, `types-psutil`) cuando fueron necesarias para mypy.
-- Pendiente futuro: agregar navegación al historial para abrir reportes anteriores desde la UI y permitir filtrar incidencias por archivo.

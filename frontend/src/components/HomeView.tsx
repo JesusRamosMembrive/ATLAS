@@ -62,6 +62,16 @@ export function HomeView({
           <p>
             Automated Tracing, Linting And Source-mapping. Define shared standards, monitor code quality with integrated linters, trace function calls across files, and rely on local AI for contextual insights.
           </p>
+          <div className="home-hero__credits">
+            <span>Programmed by Jesús Ramos Membrive</span>
+            <a
+              href="https://github.com/JesusRamosMembrive/ATLAS"
+              target="_blank"
+              rel="noreferrer"
+            >
+              github.com/JesusRamosMembrive/ATLAS
+            </a>
+          </div>
         </div>
         <div className="home-hero__logo">
           <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -115,11 +125,26 @@ export function HomeView({
               <circle cx="150" cy="50" r="4" fill="#5eead4" />
             </g>
 
-            {/* Partículas decorativas */}
-            <circle cx="40" cy="100" r="2" fill="#60a5fa" opacity="0.6" />
-            <circle cx="160" cy="100" r="2" fill="#2dd4bf" opacity="0.6" />
-            <circle cx="100" cy="40" r="2" fill="#34d399" opacity="0.5" />
-            <circle cx="100" cy="160" r="2" fill="#5eead4" opacity="0.5" />
+            {/* Partículas orbitando - círculo exterior (r=70) */}
+            <g className="orbit orbit--slow">
+              <circle cx="170" cy="100" r="2.5" fill="#60a5fa" opacity="0.8" />
+            </g>
+            <g className="orbit orbit--slow-reverse">
+              <circle cx="30" cy="100" r="2" fill="#2dd4bf" opacity="0.7" />
+            </g>
+
+            {/* Partículas orbitando - círculo medio (r=55) */}
+            <g className="orbit orbit--medium">
+              <circle cx="155" cy="100" r="2" fill="#34d399" opacity="0.7" />
+            </g>
+            <g className="orbit orbit--medium-reverse">
+              <circle cx="45" cy="100" r="1.5" fill="#5eead4" opacity="0.6" />
+            </g>
+
+            {/* Partículas extra para más dinamismo */}
+            <g className="orbit orbit--fast">
+              <circle cx="140" cy="100" r="1.5" fill="#a5b4fc" opacity="0.5" />
+            </g>
           </svg>
         </div>
       </section>
