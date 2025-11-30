@@ -8,8 +8,36 @@
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10.5px);
   -webkit-backdrop-filter: blur(10.5px);
-  border: 1px solid rgba(148, 163, 184, 0.3);
+  border: 1px solid transparent;
   padding: 22px 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle animated border gradient for header */
+.header-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1px;
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.5), rgba(45, 212, 191, 0.5), rgba(168, 85, 247, 0.5), rgba(59, 130, 246, 0.5));
+  background-size: 300% 100%;
+  animation: headerBorderFlow 6s linear infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+@keyframes headerBorderFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 300% 50%;
+  }
 }
 
 .header-left {

@@ -192,11 +192,11 @@ export function ClaudeAgentView() {
   useEffect(() => {
     if (messages.length > 0 && !running) {
       const timer = setTimeout(() => {
-        saveSession(sessionInfo.sessionId, sessionInfo.model, messages);
+        saveSession(sessionInfo.sessionId, sessionInfo.model, agentType, messages);
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [messages, running, sessionInfo.sessionId, sessionInfo.model, saveSession]);
+  }, [messages, running, sessionInfo.sessionId, sessionInfo.model, agentType, saveSession]);
 
   // Handle loading a session from history
   const handleLoadSession = useCallback(
@@ -400,6 +400,7 @@ export function ClaudeAgentView() {
         onShowDiff={setDiffTarget}
         totalInputTokens={totalInputTokens}
         totalOutputTokens={totalOutputTokens}
+        agentType={agentType}
       />
 
       {/* Header */}

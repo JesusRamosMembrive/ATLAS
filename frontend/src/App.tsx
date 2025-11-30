@@ -53,7 +53,7 @@ export function App(): JSX.Element {
         <Routes>
           <Route
             path="/"
-            element={withLayout("Stage-Aware Workspace", <HomeView statusQuery={statusQuery} />)}
+            element={withLayout("ATLAS - Home", <HomeView statusQuery={statusQuery} />)}
           />
           <Route
             path="/overview"

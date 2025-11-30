@@ -7636,9 +7636,9 @@
     "errors": []
   },
   {
-    "path": "frontend/dist/assets/index-CeutnGbR.js",
+    "path": "frontend/dist/assets/index-CxaveY4g.js",
     "relative": true,
-    "modified_at": "2025-11-30T18:36:31.519032+00:00",
+    "modified_at": "2025-11-30T21:24:32.712740+00:00",
     "symbols": [],
     "errors": [
       {
@@ -7665,7 +7665,7 @@
   {
     "path": "frontend/dist/index.html",
     "relative": true,
-    "modified_at": "2025-11-30T18:36:31.518669+00:00",
+    "modified_at": "2025-11-30T21:24:32.712740+00:00",
     "symbols": [
       {
         "name": "root",
@@ -7695,7 +7695,7 @@
   {
     "path": "frontend/src/App.tsx",
     "relative": true,
-    "modified_at": "2025-11-29T06:40:37.068541+00:00",
+    "modified_at": "2025-11-30T21:24:46.946819+00:00",
     "symbols": [
       {
         "name": "App",
@@ -8069,47 +8069,47 @@
   {
     "path": "frontend/src/components/AgentSidebar.tsx",
     "relative": true,
-    "modified_at": "2025-11-26T21:22:32.281725+00:00",
+    "modified_at": "2025-11-30T20:06:37.103122+00:00",
     "symbols": [
       {
         "name": "AgentSidebar",
         "kind": "function",
-        "lineno": 40,
+        "lineno": 42,
         "parent": null,
         "docstring": "============================================================================="
       },
       {
         "name": "HistoryTab",
         "kind": "function",
-        "lineno": 132,
+        "lineno": 137,
         "parent": null,
         "docstring": null
       },
       {
         "name": "formatDate",
         "kind": "function",
-        "lineno": 175,
+        "lineno": 183,
         "parent": null,
         "docstring": null
       },
       {
         "name": "FilesTab",
         "kind": "function",
-        "lineno": 252,
+        "lineno": 260,
         "parent": null,
         "docstring": null
       },
       {
         "name": "FileItem",
         "kind": "function",
-        "lineno": 304,
+        "lineno": 312,
         "parent": null,
         "docstring": null
       },
       {
         "name": "StatsTab",
         "kind": "function",
-        "lineno": 342,
+        "lineno": 350,
         "parent": null,
         "docstring": null
       }
@@ -8341,7 +8341,7 @@
   {
     "path": "frontend/src/components/ClaudeAgentView.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T18:36:18.458762+00:00",
+    "modified_at": "2025-11-30T20:07:01.930435+00:00",
     "symbols": [
       {
         "name": "extractResultContent",
@@ -8374,42 +8374,42 @@
       {
         "name": "AgentHeader",
         "kind": "function",
-        "lineno": 657,
+        "lineno": 658,
         "parent": null,
         "docstring": null
       },
       {
         "name": "EmptyState",
         "kind": "function",
-        "lineno": 792,
+        "lineno": 793,
         "parent": null,
         "docstring": null
       },
       {
         "name": "MessageItem",
         "kind": "function",
-        "lineno": 811,
+        "lineno": 812,
         "parent": null,
         "docstring": null
       },
       {
         "name": "PermissionDenialsBanner",
         "kind": "function",
-        "lineno": 976,
+        "lineno": 977,
         "parent": null,
         "docstring": null
       },
       {
         "name": "truncateInput",
         "kind": "function",
-        "lineno": 1037,
+        "lineno": 1038,
         "parent": null,
         "docstring": null
       },
       {
         "name": "truncatePath",
         "kind": "function",
-        "lineno": 1047,
+        "lineno": 1048,
         "parent": null,
         "docstring": "============================================================================"
       }
@@ -8707,19 +8707,19 @@
   {
     "path": "frontend/src/components/HomeView.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T07:50:39.514051+00:00",
+    "modified_at": "2025-11-30T19:01:02.451006+00:00",
     "symbols": [
       {
         "name": "detectionBadgeLabel",
         "kind": "function",
-        "lineno": 7,
+        "lineno": 8,
         "parent": null,
         "docstring": null
       },
       {
         "name": "HomeView",
         "kind": "function",
-        "lineno": 19,
+        "lineno": 20,
         "parent": null,
         "docstring": null
       }
@@ -9494,6 +9494,35 @@
         "name": "getPhaseColor",
         "kind": "function",
         "lineno": 325,
+        "parent": null,
+        "docstring": null
+      }
+    ],
+    "errors": []
+  },
+  {
+    "path": "frontend/src/components/TiltCard.tsx",
+    "relative": true,
+    "modified_at": "2025-11-30T19:00:24.175776+00:00",
+    "symbols": [
+      {
+        "name": "TiltCard",
+        "kind": "function",
+        "lineno": 10,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "handleMouseMove",
+        "kind": "function",
+        "lineno": 13,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "handleMouseLeave",
+        "kind": "function",
+        "lineno": 29,
         "parent": null,
         "docstring": null
       }
@@ -10717,40 +10746,40 @@
   {
     "path": "frontend/src/stores/sessionHistoryStore.ts",
     "relative": true,
-    "modified_at": "2025-11-26T17:40:36.220414+00:00",
+    "modified_at": "2025-11-30T20:05:52.088542+00:00",
     "symbols": [
       {
         "name": "generateSessionId",
         "kind": "function",
-        "lineno": 71,
+        "lineno": 77,
         "parent": null,
         "docstring": "============================================================================"
       },
       {
         "name": "generateTitle",
         "kind": "function",
-        "lineno": 75,
+        "lineno": 81,
         "parent": null,
         "docstring": null
       },
       {
         "name": "generatePreview",
         "kind": "function",
-        "lineno": 91,
+        "lineno": 97,
         "parent": null,
         "docstring": null
       },
       {
         "name": "serializeMessages",
         "kind": "function",
-        "lineno": 106,
+        "lineno": 112,
         "parent": null,
         "docstring": "Serialize messages for storage (convert Date to string)"
       },
       {
         "name": "deserializeMessages",
         "kind": "function",
-        "lineno": 114,
+        "lineno": 120,
         "parent": null,
         "docstring": "Deserialize messages from storage (convert string to Date)"
       }

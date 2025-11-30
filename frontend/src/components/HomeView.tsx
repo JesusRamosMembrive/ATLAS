@@ -3,6 +3,7 @@ import type { UseQueryResult } from "@tanstack/react-query";
 
 import type { StageDetectionStatus, StatusPayload } from "../api/types";
 import { useStageStatusQuery } from "../hooks/useStageStatusQuery";
+import { TiltCard } from "./TiltCard";
 
 function detectionBadgeLabel(detection?: StageDetectionStatus): string {
   if (!detection) {
@@ -55,9 +56,12 @@ export function HomeView({
       <section className="home-hero">
         <div className="home-hero__glow" aria-hidden />
         <div className="home-hero__content">
-          <span className={`home-stage-pill ${detectionTone}`}>
-            {stageStatusQuery.isLoading ? "Calculating…" : detectionLabel}
-          </span>
+          <div className="home-hero__badges">
+            <span className="home-version-pill">v1.0.0</span>
+            <span className={`home-stage-pill ${detectionTone}`}>
+              {stageStatusQuery.isLoading ? "Calculating…" : detectionLabel}
+            </span>
+          </div>
           <h2>ATLAS: Control Your Code, Guide Your Agents</h2>
           <p className="home-hero__acronym">
             Agent Tooling, Linting And Source-mapping
@@ -153,7 +157,7 @@ export function HomeView({
       </section>
 
       <section className="home-card-grid">
-        <Link to="/stage-toolkit" className="home-card">
+        <TiltCard to="/stage-toolkit">
           <div className="home-card-body">
             <h3>Project Stage Toolkit</h3>
             <p>
@@ -162,9 +166,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open toolkit →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/overview" className="home-card">
+        <TiltCard to="/overview">
           <div className="home-card-body">
             <h3>Overview</h3>
             <p>
@@ -173,9 +177,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open overview →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/code-map" className="home-card">
+        <TiltCard to="/code-map">
           <div className="home-card-body">
             <h3>Code Analysis</h3>
             <p>
@@ -184,9 +188,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open Analysis →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/docs" className="home-card">
+        <TiltCard to="/docs">
           <div className="home-card-body">
             <h3>Docs</h3>
             <p>
@@ -195,9 +199,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open Docs →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/class-uml" className="home-card">
+        <TiltCard to="/class-uml">
           <div className="home-card-body">
             <h3>Class UML</h3>
             <p>
@@ -206,9 +210,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">View UML →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/timeline" className="home-card">
+        <TiltCard to="/timeline">
           <div className="home-card-body">
             <h3>Code Timeline</h3>
             <p>
@@ -216,9 +220,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open Timeline →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/terminal" className="home-card">
+        <TiltCard to="/terminal">
           <div className="home-card-body">
             <h3>Remote Terminal</h3>
             <p>
@@ -226,9 +230,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open Terminal →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/agent" className="home-card">
+        <TiltCard to="/agent">
           <div className="home-card-body">
             <h3>Claude Agent</h3>
             <p>
@@ -236,9 +240,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open Agent →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/linters" className="home-card">
+        <TiltCard to="/linters">
           <div className="home-card-body">
             <h3>Linters</h3>
             <p>
@@ -246,9 +250,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">View linters →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/ollama" className="home-card">
+        <TiltCard to="/ollama">
           <div className="home-card-body">
             <h3>Ollama Insights</h3>
             <p>
@@ -256,9 +260,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open Ollama →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/prompts" className="home-card">
+        <TiltCard to="/prompts">
           <div className="home-card-body">
             <h3>Prompts</h3>
             <p>
@@ -266,9 +270,9 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open Prompts →</span>
-        </Link>
+        </TiltCard>
 
-        <Link to="/settings" className="home-card">
+        <TiltCard to="/settings">
           <div className="home-card-body">
             <h3>Settings</h3>
             <p>
@@ -276,7 +280,7 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">Open Settings →</span>
-        </Link>
+        </TiltCard>
       </section>
     </div>
   );

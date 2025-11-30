@@ -8,6 +8,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { ClaudeMessage } from "../types/claude-events";
+import { type AgentType } from "./claudeSessionStore";
 
 // ============================================================================
 // Types
@@ -23,6 +24,7 @@ interface SerializedSessionSnapshot {
   id: string;
   sessionId: string | null;
   model: string | null;
+  agentType: AgentType;
   title: string;
   preview: string;
   messageCount: number;
@@ -36,6 +38,7 @@ export interface SessionSnapshot {
   id: string;
   sessionId: string | null;
   model: string | null;
+  agentType: AgentType;
   title: string;
   preview: string;
   messageCount: number;
@@ -54,11 +57,14 @@ interface SessionHistoryState {
   saveSession: (
     sessionId: string | null,
     model: string | null,
+    agentType: AgentType,
     messages: ClaudeMessage[]
   ) => string;
   loadSession: (id: string) => SessionSnapshot | null;
+  getSessionsByAgent: (agentType: AgentType) => SessionSnapshot[];
   deleteSession: (id: string) => void;
   clearAllSessions: () => void;
+  clearSessionsByAgent: (agentType: AgentType) => void;
   setCurrentSessionId: (id: string | null) => void;
   toggleSidebar: () => void;
   setSidebarOpen: (open: boolean) => void;
@@ -129,7 +135,7 @@ export const useSessionHistoryStore = create<SessionHistoryState>()(
       currentSessionId: null,
       sidebarOpen: false,
 
-      saveSession: (sessionId, model, messages) => {
+      saveSession: (sessionId, model, agentType, messages) => {
         if (messages.length === 0) {
           return get().currentSessionId || generateSessionId();
         }
@@ -144,6 +150,7 @@ export const useSessionHistoryStore = create<SessionHistoryState>()(
           id: state.currentSessionId || generateSessionId(),
           sessionId,
           model,
+          agentType,
           title: generateTitle(messages),
           preview: generatePreview(messages),
           messageCount: messages.length,
@@ -179,6 +186,15 @@ export const useSessionHistoryStore = create<SessionHistoryState>()(
         return null;
       },
 
+      getSessionsByAgent: (agentType) => {
+        return get()
+          .sessions.filter((s) => s.agentType === agentType)
+          .map((s) => ({
+            ...s,
+            messages: deserializeMessages(s.messages),
+          }));
+      },
+
       deleteSession: (id) => {
         set((state) => ({
           sessions: state.sessions.filter((s) => s.id !== id),
@@ -188,6 +204,13 @@ export const useSessionHistoryStore = create<SessionHistoryState>()(
 
       clearAllSessions: () => {
         set({ sessions: [], currentSessionId: null });
+      },
+
+      clearSessionsByAgent: (agentType) => {
+        set((state) => ({
+          sessions: state.sessions.filter((s) => s.agentType !== agentType),
+          currentSessionId: null,
+        }));
       },
 
       setCurrentSessionId: (id) => {
@@ -204,10 +227,21 @@ export const useSessionHistoryStore = create<SessionHistoryState>()(
     }),
     {
       name: "claude-session-history",
+      version: 1,
       partialize: (state) => ({
         sessions: state.sessions,
         sidebarOpen: state.sidebarOpen,
       }),
+      migrate: (persistedState, version) => {
+        const state = persistedState as { sessions: SerializedSessionSnapshot[]; sidebarOpen: boolean };
+        if (version === 0) {
+          // Migration v0 -> v1: Remove sessions without agentType (legacy sessions)
+          state.sessions = state.sessions.filter(
+            (s) => s.agentType != null && s.agentType !== undefined
+          );
+        }
+        return state;
+      },
     }
   )
 );

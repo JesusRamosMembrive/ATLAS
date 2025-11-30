@@ -11,6 +11,7 @@ import {
   useSessionHistoryStore,
   SessionSnapshot,
 } from "../stores/sessionHistoryStore";
+import { type AgentType } from "../stores/claudeSessionStore";
 import { getWorkingTreeChanges } from "../api/client";
 import { queryKeys } from "../api/queryKeys";
 import { useSelectionStore } from "../state/useSelectionStore";
@@ -31,6 +32,7 @@ interface AgentSidebarProps {
   onShowDiff: (path: string) => void;
   totalInputTokens: number;
   totalOutputTokens: number;
+  agentType: AgentType;
 }
 
 // =============================================================================
@@ -45,6 +47,7 @@ export function AgentSidebar({
   onShowDiff,
   totalInputTokens,
   totalOutputTokens,
+  agentType,
 }: AgentSidebarProps) {
   const [activeTab, setActiveTab] = useState<TabType>("history");
 
@@ -101,6 +104,7 @@ export function AgentSidebar({
             <HistoryTab
               onLoadSession={onLoadSession}
               onNewSession={onNewSession}
+              agentType={agentType}
             />
           )}
           {activeTab === "files" && (
@@ -127,17 +131,21 @@ export function AgentSidebar({
 interface HistoryTabProps {
   onLoadSession: (messages: SessionSnapshot["messages"]) => void;
   onNewSession: () => void;
+  agentType: AgentType;
 }
 
-function HistoryTab({ onLoadSession, onNewSession }: HistoryTabProps) {
+function HistoryTab({ onLoadSession, onNewSession, agentType }: HistoryTabProps) {
   const {
-    sessions,
     currentSessionId,
     loadSession,
     deleteSession,
-    clearAllSessions,
+    clearSessionsByAgent,
     setCurrentSessionId,
+    getSessionsByAgent,
   } = useSessionHistoryStore();
+
+  // Get sessions filtered by current agent type
+  const sessions = getSessionsByAgent(agentType);
 
   const handleLoadSession = useCallback(
     (id: string) => {
@@ -166,11 +174,11 @@ function HistoryTab({ onLoadSession, onNewSession }: HistoryTabProps) {
   );
 
   const handleClearAll = useCallback(() => {
-    if (confirm("Delete all sessions? This cannot be undone.")) {
-      clearAllSessions();
+    if (confirm("Delete all sessions for this agent? This cannot be undone.")) {
+      clearSessionsByAgent(agentType);
       onNewSession();
     }
-  }, [clearAllSessions, onNewSession]);
+  }, [clearSessionsByAgent, agentType, onNewSession]);
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
