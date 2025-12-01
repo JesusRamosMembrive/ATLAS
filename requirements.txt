@@ -23,3 +23,7 @@ esprima>=4.0,<5
 tree_sitter>=0.20,<0.22
 tree_sitter_languages>=1.10,<2
 defusedxml>=0.7,<0.8
+
+# Terminal / Agent runners
+pexpect>=4.9,<5
+anthropic>=0.40,<1

@@ -19,6 +19,9 @@ RUN npm ci
 COPY frontend/ ./
 
 # Build production frontend (output to dist/)
+# VITE_DEPLOY_BACKEND_URL="" forces the frontend to use window.location.origin
+# This is correct for Docker where frontend and backend are served from same port
+ENV VITE_DEPLOY_BACKEND_URL=""
 RUN npm run build
 
 # ============================================================================

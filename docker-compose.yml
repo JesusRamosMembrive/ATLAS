@@ -11,18 +11,22 @@ services:
       - "8080:8010"
 
     volumes:
-      # Mount project to analyze (user specifies via PROJECT_PATH env var)
-      # Default to current directory if not specified
-      # :ro = read-only mount (safer for code analysis)
-      - ${PROJECT_PATH:-./}:/work:ro
+      # Mount user's home directory for full project access
+      # This allows browsing and selecting any project from the UI
+      - /home:/home:ro
 
       # Persistent database storage
       # Named volume ensures data persists across container restarts
       - code-map-data:/app/.code-map
 
     environment:
-      # Project root path inside container
-      - CODE_MAP_ROOT=/work
+      # Project root path inside container (default, can be changed from UI)
+      # Uses $HOME to be user-agnostic; user can change via Settings
+      - CODE_MAP_ROOT=${HOME}
+
+      # Skip initial scan to allow fast startup with large directories
+      # User should configure specific project path via Settings UI
+      - CODE_MAP_SKIP_INITIAL_SCAN=1
 
       # Include docstrings in analysis
       - CODE_MAP_INCLUDE_DOCSTRINGS=1

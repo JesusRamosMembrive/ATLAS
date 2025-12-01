@@ -17,7 +17,7 @@ from .cache import SnapshotStore
 from .index import SymbolIndex
 from .scanner import ProjectScanner
 from .scheduler import ChangeScheduler
-from .settings import AppSettings, save_settings, ENV_DISABLE_LINTERS, ENV_CACHE_DIR
+from .settings import AppSettings, save_settings, ENV_DISABLE_LINTERS, ENV_CACHE_DIR, should_skip_initial_scan
 from .linters import (
     LinterRunOptions,
     get_latest_linters_report,
@@ -96,22 +96,33 @@ class AppState:
     async def startup(self) -> None:
         """Inicializa el estado de la aplicación."""
         logger.info("Inicializando estado de la app para %s", self.settings.root_path)
-        await asyncio.to_thread(
-            self.scanner.hydrate_index_from_snapshot,
-            self.index,
-            store=self.snapshot_store,
-        )
-        summaries = await asyncio.to_thread(
-            self.scanner.scan_and_update_index,
-            self.index,
-            persist=True,
-            store=self.snapshot_store,
-        )
-        if summaries:
-            self.last_full_scan = datetime.now(timezone.utc)
-        started = await asyncio.to_thread(self.watcher.start)
-        if not started:
-            logger.warning("Watcher no iniciado (watchdog ausente o error).")
+
+        skip_scan = should_skip_initial_scan()
+        if skip_scan:
+            logger.info(
+                "Saltando escaneo inicial (CODE_MAP_SKIP_INITIAL_SCAN=1). "
+                "Configure la ruta del proyecto desde la UI."
+            )
+        else:
+            await asyncio.to_thread(
+                self.scanner.hydrate_index_from_snapshot,
+                self.index,
+                store=self.snapshot_store,
+            )
+            summaries = await asyncio.to_thread(
+                self.scanner.scan_and_update_index,
+                self.index,
+                persist=True,
+                store=self.snapshot_store,
+            )
+            if summaries:
+                self.last_full_scan = datetime.now(timezone.utc)
+
+            # Solo iniciar watcher si no estamos en modo skip
+            started = await asyncio.to_thread(self.watcher.start)
+            if not started:
+                logger.warning("Watcher no iniciado (watchdog ausente o error).")
+
         self.linters.schedule(pending_changes=self.scheduler.pending_count())
         self.insights.schedule()
         self._scheduler_task = asyncio.create_task(self._scheduler_loop())

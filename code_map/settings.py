@@ -21,6 +21,7 @@ ENV_INCLUDE_DOCSTRINGS = "CODE_MAP_INCLUDE_DOCSTRINGS"
 ENV_DB_PATH = "CODE_MAP_DB_PATH"
 ENV_DISABLE_LINTERS = "CODE_MAP_DISABLE_LINTERS"
 ENV_CACHE_DIR = "CODE_MAP_CACHE_DIR"
+ENV_SKIP_INITIAL_SCAN = "CODE_MAP_SKIP_INITIAL_SCAN"
 SETTINGS_VERSION = 2
 DB_FILENAME = "state.db"
 
@@ -141,6 +142,13 @@ def _parse_env_flag(raw: Optional[str]) -> Optional[bool]:
     if value in {"0", "false", "no", "off"}:
         return False
     return None
+
+
+def should_skip_initial_scan(env: Optional[Mapping[str, str]] = None) -> bool:
+    """Determina si se debe saltar el escaneo inicial."""
+    effective_env: Mapping[str, str] = env or os.environ
+    flag = _parse_env_flag(effective_env.get(ENV_SKIP_INITIAL_SCAN))
+    return flag is True
 
 
 def _coerce_path(value: Optional[str | Path]) -> Optional[Path]:
