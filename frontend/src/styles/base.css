@@ -53,14 +53,17 @@ body {
 }
 
 .secondary-btn {
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  color: #a5adc7;
-  background: rgba(17, 20, 30, 0.6);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  color: #fff;
+  background: transparent;
+  box-shadow: 0 0 40px 40px #3b82f6 inset, 0 0 0 0 #3b82f6;
+  transition: all 150ms ease-in-out;
 }
 
 .secondary-btn:hover {
-  color: #3b82f6;
-  border-color: rgba(59, 130, 246, 0.4);
+  color: #fff;
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow: 0 0 10px 0 #3b82f6 inset, 0 0 10px 4px #3b82f6;
 }
 
 .ghost-btn {
