@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=ATLAS Code Map
+Comment=Code analysis and visualization tool
+Exec=/home/jesusramos/Workspace/ATLAS/start-app.sh --window
+Icon=applications-development
+Terminal=false
+Categories=Development;IDE;
+StartupNotify=true
+StartupWMClass=code-map
