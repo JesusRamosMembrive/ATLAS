@@ -490,12 +490,76 @@ pip install ruff mypy bandit pytest pytest-cov
 # https://ollama.ai/download
 ```
 
-### Docker Setup (Coming Soon)
+### Docker Setup (Desktop App Mode)
+
+Docker mode runs ATLAS as a desktop-like application with kiosk mode browser.
+
+> **Note:** Agent features (Claude/Codex/Gemini) do NOT work in Docker mode.
+> Use `./start-local.sh` if you need agent functionality.
 
 ```bash
-# Full stack with Docker Compose
-docker compose up
+# Start in kiosk mode (fullscreen, no browser UI)
+./start-app.sh
+
+# Start in windowed mode (app-like window)
+./start-app.sh --window
+
+# Stop the container
+./start-app.sh --stop
+
+# Check container status
+docker ps
 ```
+
+The script automatically:
+1. Starts the Docker container
+2. Waits for the API to be ready
+3. Opens the browser in kiosk/window mode
+
+**Manual Docker commands (without browser launch):**
+```bash
+# Start container only
+docker compose up -d
+
+# View logs
+docker logs -f code-map-app
+
+# Stop container
+docker compose down
+```
+
+### Local Setup (With Agent Support)
+
+Local mode provides full agent CLI support (Claude, Codex, Gemini).
+
+```bash
+# Start backend + frontend + open browser
+./start-local.sh
+
+# Start backend only
+./start-local.sh --backend
+
+# Stop all servers
+./start-local.sh --stop
+
+# Check status
+./start-local.sh --status
+```
+
+**Requirements for local mode:**
+- Python venv: `.venv/` with dependencies installed
+- Node.js: `frontend/node_modules/`
+- Optional: `claude`, `codex`, or `gemini` CLI in PATH
+
+**Environment variables:**
+```bash
+# Set project root (default: $HOME)
+CODE_MAP_ROOT=/path/to/projects ./start-local.sh
+```
+
+**Logs:**
+- Backend: `/tmp/atlas-backend.log`
+- Frontend: `/tmp/atlas-frontend.log`
 
 ---
 
@@ -609,7 +673,7 @@ This framework emerged from experience developing with Claude Code and other AI 
 **Roadmap:**
 - [ ] Stage 3 visual call graph (D3.js/ReactFlow)
 - [ ] Export functionality (DOT, Mermaid, JSON)
-- [ ] Docker Compose deployment
+- [x] Docker Compose deployment
 - [ ] Stage transition validation
 - [ ] Team collaboration features
 - [ ] IDE integrations (VS Code extension)
