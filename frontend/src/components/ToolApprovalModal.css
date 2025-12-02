@@ -22,8 +22,8 @@
   background-color: var(--vscode-editor-background, #1e1e1e);
   border: 1px solid var(--vscode-panel-border, #3c3c3c);
   border-radius: 8px;
-  width: 90%;
-  max-width: 800px;
+  width: 95%;
+  max-width: 1200px;
   max-height: 85vh;
   display: flex;
   flex-direction: column;
@@ -185,6 +185,19 @@
 
 .tool-approval-diff-removed-count {
   color: #f44336;
+}
+
+/* Split diff view inside tool approval modal */
+.tool-approval-diff-viewer .diff-side-by-side {
+  max-height: 450px;
+  overflow: auto;
+  border-radius: 0 0 6px 6px;
+}
+
+.tool-approval-diff-viewer .diff-columns-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .tool-approval-diff-content-wrapper {

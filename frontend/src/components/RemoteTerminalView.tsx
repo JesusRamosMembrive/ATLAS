@@ -218,11 +218,7 @@ export function RemoteTerminalView() {
       // Clear terminal and show connected message
       terminal.clear();
       terminal.writeln("\x1b[1;32m✓ Connected to shell\x1b[0m");
-      terminal.writeln("\x1b[2mLaunching Claude Code...\x1b[0m");
       terminal.writeln("");
-
-      // Auto-launch Claude Code after a brief delay
-
     };
 
     socket.onmessage = (event) => {

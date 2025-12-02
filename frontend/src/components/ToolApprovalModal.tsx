@@ -18,42 +18,124 @@ import {
   getPreviewBoolean,
   getPreviewString,
 } from "../types/approval";
+import "../styles/diff.css";
+import "./ToolApprovalModal.css";
 
 // Create namespaced logger
 const log = createLogger("ToolApprovalModal");
 
 // ============================================================================
-// Diff Viewer Component
+// Diff Viewer Component - Split View (Side by Side)
 // ============================================================================
 
-interface DiffLineProps {
-  line: string;
-  lineNumber: number;
+interface DiffLine {
+  type: "context" | "added" | "removed" | "hunk" | "meta";
+  content: string;
+  oldLineNum?: number;
+  newLineNum?: number;
 }
 
-const DiffLine: React.FC<DiffLineProps> = ({ line }) => {
-  let className = "tool-approval-diff-line";
-  let prefix = " ";
+interface SideBySidePair {
+  left: DiffLine | null;
+  right: DiffLine | null;
+}
 
-  if (line.startsWith("+++") || line.startsWith("---")) {
-    className += " tool-approval-diff-header";
-  } else if (line.startsWith("@@")) {
-    className += " tool-approval-diff-hunk";
-  } else if (line.startsWith("+")) {
-    className += " tool-approval-diff-added";
-    prefix = "+";
-  } else if (line.startsWith("-")) {
-    className += " tool-approval-diff-removed";
-    prefix = "-";
+/**
+ * Parse diff lines array into side-by-side pairs for split view
+ */
+function parseDiffLinesToSideBySide(diffLines: string[]): SideBySidePair[] {
+  const pairs: SideBySidePair[] = [];
+
+  let oldLineNum = 1;
+  let newLineNum = 1;
+
+  // Buffers for collecting removed/added lines to pair them
+  const removedBuffer: DiffLine[] = [];
+  const addedBuffer: DiffLine[] = [];
+
+  const flushBuffers = () => {
+    // Pair up removed and added lines
+    const maxLen = Math.max(removedBuffer.length, addedBuffer.length);
+    for (let i = 0; i < maxLen; i++) {
+      pairs.push({
+        left: removedBuffer[i] || null,
+        right: addedBuffer[i] || null,
+      });
+    }
+    removedBuffer.length = 0;
+    addedBuffer.length = 0;
+  };
+
+  for (const line of diffLines) {
+    // Meta lines (--- and +++)
+    if (line.startsWith("---") || line.startsWith("+++")) {
+      flushBuffers();
+      pairs.push({
+        left: { type: "meta", content: line },
+        right: { type: "meta", content: "" },
+      });
+      continue;
+    }
+
+    // Hunk header (@@ -x,y +a,b @@)
+    if (line.startsWith("@@")) {
+      flushBuffers();
+      // Parse line numbers from hunk header
+      const match = line.match(/@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
+      if (match) {
+        oldLineNum = parseInt(match[1], 10);
+        newLineNum = parseInt(match[2], 10);
+      }
+      pairs.push({
+        left: { type: "hunk", content: line },
+        right: { type: "hunk", content: "" },
+      });
+      continue;
+    }
+
+    // Removed line
+    if (line.startsWith("-")) {
+      removedBuffer.push({
+        type: "removed",
+        content: line.substring(1),
+        oldLineNum: oldLineNum++,
+      });
+      continue;
+    }
+
+    // Added line
+    if (line.startsWith("+")) {
+      addedBuffer.push({
+        type: "added",
+        content: line.substring(1),
+        newLineNum: newLineNum++,
+      });
+      continue;
+    }
+
+    // Context line (unchanged)
+    flushBuffers();
+    const content = line.startsWith(" ") ? line.substring(1) : line;
+    pairs.push({
+      left: { type: "context", content, oldLineNum: oldLineNum++ },
+      right: { type: "context", content, newLineNum: newLineNum++ },
+    });
   }
 
-  return (
-    <div className={className}>
-      <span className="tool-approval-diff-prefix">{prefix}</span>
-      <span className="tool-approval-diff-content">{line.slice(1) || line}</span>
-    </div>
-  );
-};
+  flushBuffers();
+  return pairs;
+}
+
+function getCellClass(line: DiffLine | null): string {
+  if (!line) return "diff-cell--empty";
+  switch (line.type) {
+    case "added": return "diff-cell--added";
+    case "removed": return "diff-cell--removed";
+    case "hunk": return "diff-cell--hunk";
+    case "meta": return "diff-cell--meta";
+    default: return "";
+  }
+}
 
 interface DiffViewerProps {
   diffLines: string[];
@@ -79,6 +161,11 @@ const DiffViewer: React.FC<DiffViewerProps> = ({
     return { added, removed };
   }, [diffLines]);
 
+  const sideBySidePairs = useMemo(
+    () => parseDiffLinesToSideBySide(diffLines),
+    [diffLines]
+  );
+
   return (
     <div className="tool-approval-diff-viewer">
       <div className="tool-approval-diff-header-bar">
@@ -92,15 +179,55 @@ const DiffViewer: React.FC<DiffViewerProps> = ({
           <span className="tool-approval-diff-removed-count">-{stats.removed}</span>
         </span>
       </div>
-      <div className="tool-approval-diff-content-wrapper">
-        {diffLines.length > 0 ? (
-          diffLines.map((line, idx) => (
-            <DiffLine key={idx} line={line} lineNumber={idx + 1} />
-          ))
-        ) : (
-          <div className="tool-approval-diff-empty">No changes to preview</div>
-        )}
-      </div>
+
+      {diffLines.length > 0 ? (
+        <div className="diff-side-by-side">
+          {/* Column headers */}
+          <div className="diff-columns-header">
+            <div className="diff-column-header diff-column-header--old">Original</div>
+            <div className="diff-column-header diff-column-header--new">Modified</div>
+          </div>
+
+          {/* Diff content */}
+          <div className="diff-columns">
+            {sideBySidePairs.map((pair, index) => (
+              <div key={index} className="diff-row">
+                {/* Left side (old/removed) */}
+                <div className={`diff-cell diff-cell--left ${getCellClass(pair.left)}`}>
+                  {pair.left && (
+                    <>
+                      <span className="diff-line-num">
+                        {pair.left.oldLineNum ?? ""}
+                      </span>
+                      <span className="diff-line-content">
+                        {pair.left.content || "\u00A0"}
+                      </span>
+                    </>
+                  )}
+                  {!pair.left && <span className="diff-line-content diff-empty">&nbsp;</span>}
+                </div>
+
+                {/* Right side (new/added) */}
+                <div className={`diff-cell diff-cell--right ${getCellClass(pair.right)}`}>
+                  {pair.right && (
+                    <>
+                      <span className="diff-line-num">
+                        {pair.right.newLineNum ?? ""}
+                      </span>
+                      <span className="diff-line-content">
+                        {pair.right.content || "\u00A0"}
+                      </span>
+                    </>
+                  )}
+                  {!pair.right && <span className="diff-line-content diff-empty">&nbsp;</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="tool-approval-diff-empty">No changes to preview</div>
+      )}
     </div>
   );
 };

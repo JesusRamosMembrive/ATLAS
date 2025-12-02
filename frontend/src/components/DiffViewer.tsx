@@ -24,7 +24,7 @@ interface DiffViewerProps {
  * - Statistics (lines added/removed)
  */
 export function DiffViewer({ event }: DiffViewerProps) {
-  const [viewType, setViewType] = useState<"split" | "unified">("unified");
+  const [viewType, setViewType] = useState<"split" | "unified">("split");
 
   // Extract diff from event detail
   const diffText = event.detail || "";

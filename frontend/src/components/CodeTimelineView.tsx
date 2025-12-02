@@ -2,9 +2,10 @@
  * CodeTimelineView - DAW-style visualization of git commit history
  */
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import "../styles/timeline.css";
+import "../styles/diff.css";
 
 interface CommitInfo {
   hash: string;
@@ -27,6 +28,109 @@ interface DiffModalProps {
   onClose: () => void;
 }
 
+// Types for split view
+interface DiffLine {
+  type: "context" | "added" | "removed" | "hunk" | "meta";
+  content: string;
+  oldLineNum?: number;
+  newLineNum?: number;
+}
+
+interface SideBySidePair {
+  left: DiffLine | null;
+  right: DiffLine | null;
+}
+
+/**
+ * Parse diff text into side-by-side pairs for split view
+ */
+function parseDiffToSideBySide(diffText: string): SideBySidePair[] {
+  const lines = diffText.split(/\r?\n/);
+  const pairs: SideBySidePair[] = [];
+
+  let oldLineNum = 1;
+  let newLineNum = 1;
+
+  const removedBuffer: DiffLine[] = [];
+  const addedBuffer: DiffLine[] = [];
+
+  const flushBuffers = () => {
+    const maxLen = Math.max(removedBuffer.length, addedBuffer.length);
+    for (let i = 0; i < maxLen; i++) {
+      pairs.push({
+        left: removedBuffer[i] || null,
+        right: addedBuffer[i] || null,
+      });
+    }
+    removedBuffer.length = 0;
+    addedBuffer.length = 0;
+  };
+
+  for (const line of lines) {
+    if (line.startsWith("---") || line.startsWith("+++")) {
+      flushBuffers();
+      pairs.push({
+        left: { type: "meta", content: line },
+        right: { type: "meta", content: "" },
+      });
+      continue;
+    }
+
+    if (line.startsWith("@@")) {
+      flushBuffers();
+      const match = line.match(/@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
+      if (match) {
+        oldLineNum = parseInt(match[1], 10);
+        newLineNum = parseInt(match[2], 10);
+      }
+      pairs.push({
+        left: { type: "hunk", content: line },
+        right: { type: "hunk", content: "" },
+      });
+      continue;
+    }
+
+    if (line.startsWith("-")) {
+      removedBuffer.push({
+        type: "removed",
+        content: line.substring(1),
+        oldLineNum: oldLineNum++,
+      });
+      continue;
+    }
+
+    if (line.startsWith("+")) {
+      addedBuffer.push({
+        type: "added",
+        content: line.substring(1),
+        newLineNum: newLineNum++,
+      });
+      continue;
+    }
+
+    flushBuffers();
+    const content = line.startsWith(" ") ? line.substring(1) : line;
+    pairs.push({
+      left: { type: "context", content, oldLineNum: oldLineNum++ },
+      right: { type: "context", content, newLineNum: newLineNum++ },
+    });
+  }
+
+  flushBuffers();
+  return pairs;
+}
+
+function getCellClass(line: DiffLine | null): string {
+  if (!line) return "diff-cell--empty";
+  switch (line.type) {
+    case "added": return "diff-cell--added";
+    case "removed": return "diff-cell--removed";
+    case "hunk": return "diff-cell--hunk";
+    case "meta": return "diff-cell--meta";
+    default: return "";
+  }
+}
+
 function DiffModal({ commit, onClose }: DiffModalProps) {
   const { data: diffData, isLoading, error } = useQuery({
     queryKey: ["file-diff", commit.hash, commit.file],
@@ -41,21 +145,14 @@ function DiffModal({ commit, onClose }: DiffModalProps) {
     },
   });
 
-  const formatDiffLine = (line: string) => {
-    if (line.startsWith('+') && !line.startsWith('+++')) {
-      return <div className="timeline-diff-line timeline-diff-added">{line}</div>;
-    } else if (line.startsWith('-') && !line.startsWith('---')) {
-      return <div className="timeline-diff-line timeline-diff-removed">{line}</div>;
-    } else if (line.startsWith('@@')) {
-      return <div className="timeline-diff-line timeline-diff-hunk">{line}</div>;
-    } else {
-      return <div className="timeline-diff-line timeline-diff-context">{line}</div>;
-    }
-  };
+  const sideBySidePairs = useMemo(() => {
+    if (!diffData?.diff) return [];
+    return parseDiffToSideBySide(diffData.diff);
+  }, [diffData]);
 
   return (
     <div className="timeline-modal-overlay" onClick={onClose}>
-      <div className="timeline-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="timeline-modal timeline-modal--wide" onClick={(e) => e.stopPropagation()}>
         <div className="timeline-modal-header">
           <h2>File Changes</h2>
           <button className="timeline-modal-close" onClick={onClose}>
@@ -88,12 +185,51 @@ function DiffModal({ commit, onClose }: DiffModalProps) {
             </div>
           )}
 
-          {diffData && (
+          {diffData && sideBySidePairs.length > 0 && (
             <div className="timeline-modal-changes">
-              <div className="timeline-diff-container">
-                {diffData.diff.split('\n').map((line: string, idx: number) => (
-                  <div key={idx}>{formatDiffLine(line)}</div>
-                ))}
+              <div className="diff-side-by-side">
+                {/* Column headers */}
+                <div className="diff-columns-header">
+                  <div className="diff-column-header diff-column-header--old">Original</div>
+                  <div className="diff-column-header diff-column-header--new">Modified</div>
+                </div>
+
+                {/* Diff content */}
+                <div className="diff-columns">
+                  {sideBySidePairs.map((pair, index) => (
+                    <div key={index} className="diff-row">
+                      {/* Left side (old/removed) */}
+                      <div className={`diff-cell diff-cell--left ${getCellClass(pair.left)}`}>
+                        {pair.left && (
+                          <>
+                            <span className="diff-line-num">
+                              {pair.left.oldLineNum ?? ""}
+                            </span>
+                            <span className="diff-line-content">
+                              {pair.left.content || "\u00A0"}
+                            </span>
+                          </>
+                        )}
+                        {!pair.left && <span className="diff-line-content diff-empty">&nbsp;</span>}
+                      </div>
+
+                      {/* Right side (new/added) */}
+                      <div className={`diff-cell diff-cell--right ${getCellClass(pair.right)}`}>
+                        {pair.right && (
+                          <>
+                            <span className="diff-line-num">
+                              {pair.right.newLineNum ?? ""}
+                            </span>
+                            <span className="diff-line-content">
+                              {pair.right.content || "\u00A0"}
+                            </span>
+                          </>
+                        )}
+                        {!pair.right && <span className="diff-line-content diff-empty">&nbsp;</span>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}

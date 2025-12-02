@@ -590,6 +590,25 @@
   animation: slideUp 0.3s ease-out;
 }
 
+.timeline-modal--wide {
+  max-width: 1400px;
+  width: 95%;
+}
+
+/* Split diff view inside timeline modal */
+.timeline-modal .diff-side-by-side {
+  max-height: 450px;
+  overflow: auto;
+  border-radius: 8px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.timeline-modal .diff-columns-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
 @keyframes slideUp {
   from {
     transform: translateY(20px);

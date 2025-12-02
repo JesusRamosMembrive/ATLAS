@@ -30,7 +30,8 @@ defusedxml>=0.7,<0.8
 # Terminal / Agent runners (cross-platform)
 anthropic>=0.40,<1
 
-# Unix-only dependencies (PTY shell support)
-# pexpect is only required for PTY-based shell on Unix
-# On Windows, the /ws/agent endpoint works without PTY
+# Platform-specific PTY shell support
+# Unix: pexpect for PTY-based shell and agent runner
 pexpect>=4.9,<5; sys_platform != "win32"
+# Windows: pywinpty for ConPTY-based shell
+pywinpty>=2.0,<3; sys_platform == "win32"
