@@ -1,12 +1,16 @@
 # SPDX-License-Identifier: MIT
 """
-Unix Socket Server for MCP Permission Communication.
+Socket Server for MCP Permission Communication.
 
 This server runs as part of the AEGIS backend and listens for
 permission requests from the MCP Permission Server subprocess.
 
 It bridges the MCP server (running as Claude Code subprocess) with
 the frontend (via WebSocket).
+
+Platform support:
+- Unix: Uses Unix domain sockets
+- Windows: Uses TCP sockets on localhost
 """
 
 from __future__ import annotations
@@ -18,17 +22,25 @@ from pathlib import Path
 from typing import Optional, Callable, Awaitable, Any
 
 from .approval_bridge import ApprovalBridge, ApprovalRequest
-from .constants import DEFAULT_SOCKET_PATH, APPROVAL_TIMEOUT
+from .constants import (
+    DEFAULT_SOCKET_PATH,
+    DEFAULT_SOCKET_HOST,
+    DEFAULT_SOCKET_PORT,
+    APPROVAL_TIMEOUT,
+    IS_WINDOWS,
+)
 
 logger = logging.getLogger(__name__)
 
 
 class MCPSocketServer:
     """
-    Unix Socket server that receives permission requests from MCP server.
+    Socket server that receives permission requests from MCP server.
 
     This runs in the main AEGIS backend process and:
-    1. Listens on a Unix socket for requests from MCP Permission Server
+    1. Listens on a socket for requests from MCP Permission Server
+       - Unix: Unix domain socket
+       - Windows: TCP socket on localhost
     2. Forwards requests to the ApprovalBridge
     3. The bridge notifies the frontend and waits for user response
     4. Returns the response to the MCP server via socket
@@ -43,6 +55,20 @@ class MCPSocketServer:
     ):
         self.socket_path = socket_path
         self.cwd = cwd
+
+        # Parse socket address for TCP mode (Windows)
+        self._use_tcp = IS_WINDOWS or socket_path.startswith("tcp://")
+        if self._use_tcp:
+            if socket_path.startswith("tcp://"):
+                # Parse tcp://host:port format
+                addr = socket_path[6:]  # Remove "tcp://"
+                host, port = addr.rsplit(":", 1)
+                self._tcp_host = host
+                self._tcp_port = int(port)
+            else:
+                # Use defaults
+                self._tcp_host = DEFAULT_SOCKET_HOST or "127.0.0.1"
+                self._tcp_port = DEFAULT_SOCKET_PORT or 18010
 
         # Create approval bridge
         self.bridge = ApprovalBridge(
@@ -65,22 +91,34 @@ class MCPSocketServer:
         self.bridge.set_notify_callback(callback)
 
     async def start(self) -> None:
-        """Start the socket server"""
-        # Remove old socket if exists
-        socket_path = Path(self.socket_path)
-        if socket_path.exists():
-            socket_path.unlink()
+        """Start the socket server (Unix socket or TCP depending on platform)"""
+        if self._use_tcp:
+            # Windows/TCP mode: Use TCP socket on localhost
+            self._server = await asyncio.start_server(
+                self._handle_client,
+                host=self._tcp_host,
+                port=self._tcp_port,
+            )
+            self._running = True
+            logger.info(f"MCP Socket Server started on tcp://{self._tcp_host}:{self._tcp_port}")
+        else:
+            # Unix mode: Use Unix domain socket
+            socket_path = Path(self.socket_path)
 
-        # Ensure parent directory exists
-        socket_path.parent.mkdir(parents=True, exist_ok=True)
+            # Remove old socket if exists
+            if socket_path.exists():
+                socket_path.unlink()
 
-        # Start server
-        self._server = await asyncio.start_unix_server(
-            self._handle_client, path=self.socket_path
-        )
+            # Ensure parent directory exists
+            socket_path.parent.mkdir(parents=True, exist_ok=True)
 
-        self._running = True
-        logger.info(f"MCP Socket Server started on {self.socket_path}")
+            # Start server
+            self._server = await asyncio.start_unix_server(
+                self._handle_client, path=self.socket_path
+            )
+
+            self._running = True
+            logger.info(f"MCP Socket Server started on {self.socket_path}")
 
     async def stop(self) -> None:
         """Stop the socket server"""
@@ -90,10 +128,11 @@ class MCPSocketServer:
             self._server.close()
             await self._server.wait_closed()
 
-        # Remove socket file
-        socket_path = Path(self.socket_path)
-        if socket_path.exists():
-            socket_path.unlink()
+        # Remove socket file (only for Unix mode)
+        if not self._use_tcp:
+            socket_path = Path(self.socket_path)
+            if socket_path.exists():
+                socket_path.unlink()
 
         logger.info("MCP Socket Server stopped")
 

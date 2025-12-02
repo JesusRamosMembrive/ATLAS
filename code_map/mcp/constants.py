@@ -6,12 +6,34 @@ Centralizes configuration values used across multiple MCP modules
 to eliminate duplication and ensure consistency.
 """
 
+import sys
+import os
+
+# ============================================================================
+# Platform Detection
+# ============================================================================
+
+IS_WINDOWS = sys.platform == "win32"
+
 # ============================================================================
 # Socket Paths
 # ============================================================================
 
 # Primary socket path for tool approval communication
-DEFAULT_SOCKET_PATH = "/tmp/aegis_tool_approval.sock"
+# On Windows, Unix sockets are not available, so we use a named pipe path
+# or fall back to TCP localhost
+if IS_WINDOWS:
+    # Windows: Use temp directory with a named pipe-style path
+    # Note: Windows Named Pipes use \\.\pipe\name format
+    # For asyncio compatibility, we'll use TCP localhost instead
+    DEFAULT_SOCKET_PATH = "tcp://127.0.0.1:18010"
+    DEFAULT_SOCKET_HOST = "127.0.0.1"
+    DEFAULT_SOCKET_PORT = 18010
+else:
+    # Unix: Use Unix socket
+    DEFAULT_SOCKET_PATH = "/tmp/aegis_tool_approval.sock"
+    DEFAULT_SOCKET_HOST = None
+    DEFAULT_SOCKET_PORT = None
 
 # Environment variable names for socket configuration
 ENV_TOOL_SOCKET = "AEGIS_TOOL_SOCKET"

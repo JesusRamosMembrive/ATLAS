@@ -50,7 +50,9 @@
       "Bash(chmod:*)",
       "Bash(/home/jesusramos/Workspace/ATLAS/start-app.sh:*)",
       "Bash(/home/jesusramos/Workspace/ATLAS/start-local.sh:*)",
-      "Bash(fuser:*)"
+      "Bash(fuser:*)",
+      "Bash(dir /b \"C:\\Users\\jesus\\Documents\\Workspace\\AEGIS\\code_map\\terminal\")",
+      "Bash(python -m code_map:*)"
     ],
     "deny": [],
     "ask": []

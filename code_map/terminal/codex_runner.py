@@ -31,35 +31,60 @@ def find_codex_cli() -> str:
     Find the Codex CLI executable.
 
     Checks multiple locations since running with sudo may have different PATH.
+    Supports both Unix and Windows platforms.
 
     Returns:
         Full path to codex CLI, or "codex" if not found (will fail at runtime)
     """
+    import sys
+
+    is_windows = sys.platform == "win32"
+
     # Check if codex is in PATH
     codex_path = shutil.which("codex")
     if codex_path:
         return codex_path
 
-    # Common installation locations
-    home = os.environ.get("HOME") or os.path.expanduser("~")
-    common_paths = [
-        Path(home) / ".npm-global" / "bin" / "codex",
-        Path(home) / ".nvm" / "versions" / "node" / "v24.11.1" / "bin" / "codex",
-        Path("/usr/local/bin/codex"),
-        Path("/usr/bin/codex"),
-    ]
+    # Get home directory (works on both platforms)
+    home = os.environ.get("HOME") or os.environ.get("USERPROFILE") or os.path.expanduser("~")
 
-    # Also check NVM installations
-    nvm_dir = Path(home) / ".nvm" / "versions" / "node"
-    if nvm_dir.exists():
-        for node_version in nvm_dir.iterdir():
-            codex_bin = node_version / "bin" / "codex"
-            if codex_bin.exists():
-                common_paths.insert(0, codex_bin)
-                break
+    if is_windows:
+        # Windows-specific paths
+        appdata = os.environ.get("APPDATA", "")
+        localappdata = os.environ.get("LOCALAPPDATA", "")
+        common_paths = [
+            # npm global installations
+            Path(appdata) / "npm" / "codex.cmd" if appdata else None,
+            Path(appdata) / "npm" / "codex" if appdata else None,
+            # Local npm installations
+            Path(home) / ".npm-global" / "codex.cmd",
+            Path(home) / ".npm-global" / "codex",
+            # Scoop installations
+            Path(home) / "scoop" / "shims" / "codex.cmd",
+            Path(home) / "scoop" / "shims" / "codex.exe",
+        ]
+        # Filter out None values
+        common_paths = [p for p in common_paths if p is not None]
+    else:
+        # Unix-specific paths
+        common_paths = [
+            Path(home) / ".npm-global" / "bin" / "codex",
+            Path(home) / ".nvm" / "versions" / "node" / "v24.11.1" / "bin" / "codex",
+            Path("/usr/local/bin/codex"),
+            Path("/usr/bin/codex"),
+        ]
+
+        # Also check NVM installations
+        nvm_dir = Path(home) / ".nvm" / "versions" / "node"
+        if nvm_dir.exists():
+            for node_version in nvm_dir.iterdir():
+                codex_bin = node_version / "bin" / "codex"
+                if codex_bin.exists():
+                    common_paths.insert(0, codex_bin)
+                    break
 
     for path in common_paths:
-        if path.exists() and os.access(path, os.X_OK):
+        if path.exists() and os.access(path, os.X_OK if not is_windows else os.R_OK):
             logger.info(f"Found Codex CLI at: {path}")
             return str(path)
 

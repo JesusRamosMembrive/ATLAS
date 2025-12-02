@@ -1,6 +1,6 @@
 # Estado Actual del Proyecto
 
-**Última actualización**: 2025-11-26
+**Última actualización**: 2025-12-02
 **Etapa detectada**: Stage 3 (Production-Ready)
 **Proyecto**: AEGIS - Stage-Aware Development Framework + Code Map Backend
 
@@ -9,21 +9,79 @@
 ## ESTADO ACTUAL
 
 **Completado (esta sesión):**
-- ✅ **Claude Agent JSON Streaming - Fases 2-5** - UI completa
-  - Fase 2: Markdown rendering, syntax highlighting, copy buttons
-  - Fase 3: Session history sidebar con localStorage persistence
-  - Fase 4: Token tracking, keyboard shortcuts, progress indicators
-  - Fase 5: Polish (reconexión, responsive, accesibilidad, theming)
+- ✅ **Windows Compatibility - Primera fase**
+  - Imports condicionales para módulos Unix-only (pexpect, pty)
+  - Soporte TCP sockets en Windows (reemplaza Unix sockets)
+  - Rutas de búsqueda CLI cross-platform (claude, codex)
+  - Endpoints PTY con fallback gracioso en Windows
 
 **En progreso:**
-- Ninguno actualmente
+- Completar testing de features avanzados en Windows
 
 **Bloqueado/Pendiente:**
-- Ninguno actualmente
+- tree_sitter_languages no compatible con Python 3.14
 
 ---
 
-## ÚLTIMA SESIÓN: Claude Agent UI Improvements (2025-11-26)
+## ÚLTIMA SESIÓN: Windows Compatibility (2025-12-02)
+
+### Resumen de Cambios
+
+Se implementó la primera fase de compatibilidad con Windows:
+
+### 1. Imports Condicionales ✅
+- **`code_map/terminal/__init__.py`**
+  - Detección de plataforma con `sys.platform`
+  - Imports de PTYShell, PTYClaudeRunner solo en Unix
+  - Variables `_IS_WINDOWS`, `_PTY_AVAILABLE` exportadas
+
+### 2. Socket Server Cross-Platform ✅
+- **`code_map/mcp/constants.py`**
+  - `IS_WINDOWS` detection
+  - TCP socket config para Windows (`tcp://127.0.0.1:18010`)
+  - Unix socket path para Linux/macOS
+
+- **`code_map/mcp/socket_server.py`**
+  - Detección automática TCP vs Unix socket
+  - `asyncio.start_server()` para Windows
+  - `asyncio.start_unix_server()` para Unix
+
+### 3. CLI Path Detection ✅
+- **`code_map/terminal/claude_runner.py`**
+  - Rutas Windows: `%APPDATA%\npm`, scoop shims
+  - Rutas Unix: `~/.local/bin`, `/usr/local/bin`
+  - `USERPROFILE` para home en Windows
+
+- **`code_map/terminal/codex_runner.py`**
+  - Mismo patrón cross-platform
+
+### 4. API Endpoints con Fallback ✅
+- **`code_map/api/terminal.py`**
+  - `/ws` endpoint: Error gracioso en Windows
+  - `/ws/agent-pty` endpoint: Error gracioso en Windows
+  - `/ws/agent` endpoint: Funciona cross-platform
+
+### 5. Dependencies ✅
+- **`requirements.txt`**
+  - `click>=8.0` añadido explícitamente
+  - `pexpect` marcado como Unix-only
+  - `tree_sitter` comentado (incompatible Python 3.14)
+
+### Archivos Modificados
+
+| Archivo | Cambios |
+|---------|---------|
+| `code_map/terminal/__init__.py` | Imports condicionales |
+| `code_map/mcp/constants.py` | TCP socket config Windows |
+| `code_map/mcp/socket_server.py` | TCP support |
+| `code_map/terminal/claude_runner.py` | Windows CLI paths |
+| `code_map/terminal/codex_runner.py` | Windows CLI paths |
+| `code_map/api/terminal.py` | PTY fallback gracioso |
+| `requirements.txt` | click, pexpect conditional |
+
+---
+
+## SESIÓN ANTERIOR: Claude Agent UI Improvements (2025-11-26)
 
 ### Resumen de Cambios
 

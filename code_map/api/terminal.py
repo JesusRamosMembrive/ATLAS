@@ -2,24 +2,37 @@
 Terminal API endpoints
 
 Provides WebSocket endpoints for:
-- /ws: Remote terminal access (PTY shell)
-- /ws/agent: Claude Code JSON streaming mode
+- /ws: Remote terminal access (PTY shell) - Unix only
+- /ws/agent: Claude Code JSON streaming mode - Cross-platform
 """
 
 import asyncio
 import logging
 import json
+import sys
 from typing import Any, Optional, Literal
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException
 from pydantic import BaseModel
 from starlette.websockets import WebSocketState
-from code_map.terminal import PTYShell
+
+# Platform detection
+_IS_WINDOWS = sys.platform == "win32"
+
+# Cross-platform imports
+from code_map.terminal import _PTY_AVAILABLE
 from code_map.terminal.agent_parser import AgentEvent
 from code_map.terminal.agent_events import AgentEventManager
 from code_map.terminal.json_parser import JSONStreamParser
-from code_map.terminal.pty_runner import PTYClaudeRunner, PTYRunnerConfig
 from code_map.terminal.gemini_runner import GeminiAgentRunner, GeminiRunnerConfig
 from code_map.settings import load_settings
+
+# Conditional imports for Unix-only PTY features
+if _PTY_AVAILABLE:
+    from code_map.terminal import PTYShell, PTYClaudeRunner, PTYRunnerConfig
+else:
+    PTYShell = None  # type: ignore
+    PTYClaudeRunner = None  # type: ignore
+    PTYRunnerConfig = None  # type: ignore
 
 # MCP Socket Server for mcpApproval mode
 from code_map.mcp.socket_server import MCPSocketServer
@@ -275,6 +288,9 @@ async def terminal_websocket(websocket: WebSocket):
 
     Spawns a shell process and provides bidirectional communication using text protocol.
 
+    NOTE: This endpoint requires PTY support (Unix only).
+    On Windows, use the /ws/agent endpoint instead.
+
     Client can send:
     - Raw text for shell input
     - "__RESIZE__:cols:rows" for terminal resize
@@ -285,6 +301,16 @@ async def terminal_websocket(websocket: WebSocket):
     - Raw text from shell output
     - "__AGENT__:event:{json}" for agent events (when enabled)
     """
+    # Check PTY availability (not available on Windows)
+    if not _PTY_AVAILABLE or PTYShell is None:
+        await websocket.accept()
+        await websocket.send_text(
+            "ERROR: PTY shell is not available on this platform (Windows).\r\n"
+            "Use the /ws/agent endpoint for Claude Code JSON streaming mode instead.\r\n"
+        )
+        await websocket.close()
+        return
+
     try:
         await websocket.accept()
         logger.info("Terminal WebSocket connection accepted")
@@ -905,6 +931,9 @@ async def agent_pty_websocket(websocket: WebSocket):
     """
     WebSocket endpoint for Claude Code PTY mode with real terminal interaction.
 
+    NOTE: This endpoint requires PTY support (Unix only).
+    On Windows, use the /ws/agent endpoint instead.
+
     This mode spawns Claude in a pseudo-terminal (PTY) for proper Ink UI support,
     parses the terminal output into structured events, and enables real tool approval
     by detecting permission prompts in the output.
@@ -927,6 +956,17 @@ async def agent_pty_websocket(websocket: WebSocket):
     - {"type": "error", "data": {...}}
     - {"type": "session_ended"}
     """
+    # Check PTY availability (not available on Windows)
+    if not _PTY_AVAILABLE or PTYClaudeRunner is None:
+        await websocket.accept()
+        await websocket.send_json({
+            "type": "error",
+            "content": "PTY mode is not available on this platform (Windows). "
+                       "Use the /ws/agent endpoint for JSON streaming mode instead."
+        })
+        await websocket.close()
+        return
+
     await websocket.accept()
     logger.info("Agent PTY WebSocket connection accepted")
 

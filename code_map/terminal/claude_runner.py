@@ -22,32 +22,59 @@ def find_claude_cli() -> str:
     Find the Claude CLI executable.
 
     Checks multiple locations since running with sudo may have different PATH.
+    Supports both Unix and Windows platforms.
 
     Returns:
         Full path to claude CLI, or "claude" if not found (will fail at runtime)
     """
+    import sys
+
+    is_windows = sys.platform == "win32"
+
     # Check if claude is in PATH
     claude_path = shutil.which("claude")
     if claude_path:
         return claude_path
 
-    # Common installation locations
-    home = os.environ.get("HOME") or os.path.expanduser("~")
-    common_paths = [
-        Path(home) / ".local" / "bin" / "claude",
-        Path(home) / ".npm-global" / "bin" / "claude",
-        Path("/usr/local/bin/claude"),
-        Path("/usr/bin/claude"),
-    ]
+    # Get home directory (works on both platforms)
+    home = os.environ.get("HOME") or os.environ.get("USERPROFILE") or os.path.expanduser("~")
 
-    # Also check SUDO_USER's home if running as sudo
-    sudo_user = os.environ.get("SUDO_USER")
-    if sudo_user:
-        sudo_home = Path("/home") / sudo_user
-        common_paths.insert(0, sudo_home / ".local" / "bin" / "claude")
+    if is_windows:
+        # Windows-specific paths
+        appdata = os.environ.get("APPDATA", "")
+        localappdata = os.environ.get("LOCALAPPDATA", "")
+        common_paths = [
+            # npm global installations
+            Path(appdata) / "npm" / "claude.cmd" if appdata else None,
+            Path(appdata) / "npm" / "claude" if appdata else None,
+            # Local npm installations
+            Path(home) / ".npm-global" / "claude.cmd",
+            Path(home) / ".npm-global" / "claude",
+            # Node.js installations
+            Path(localappdata) / "Programs" / "node" / "claude.cmd" if localappdata else None,
+            # Scoop installations
+            Path(home) / "scoop" / "shims" / "claude.cmd",
+            Path(home) / "scoop" / "shims" / "claude.exe",
+        ]
+        # Filter out None values
+        common_paths = [p for p in common_paths if p is not None]
+    else:
+        # Unix-specific paths
+        common_paths = [
+            Path(home) / ".local" / "bin" / "claude",
+            Path(home) / ".npm-global" / "bin" / "claude",
+            Path("/usr/local/bin/claude"),
+            Path("/usr/bin/claude"),
+        ]
+
+        # Also check SUDO_USER's home if running as sudo
+        sudo_user = os.environ.get("SUDO_USER")
+        if sudo_user:
+            sudo_home = Path("/home") / sudo_user
+            common_paths.insert(0, sudo_home / ".local" / "bin" / "claude")
 
     for path in common_paths:
-        if path.exists() and os.access(path, os.X_OK):
+        if path.exists() and os.access(path, os.X_OK if not is_windows else os.R_OK):
             logger.info(f"Found Claude CLI at: {path}")
             return str(path)
 
@@ -85,9 +112,14 @@ class ClaudeRunnerConfig:
     auto_approve_safe_tools: bool = (
         False  # Only used with toolApproval/mcpApproval mode
     )
-    mcp_socket_path: str = (
-        "/tmp/atlas_mcp_approval.sock"  # Socket for MCP approval communication
-    )
+    # Socket for MCP approval communication (uses TCP on Windows)
+    mcp_socket_path: str = ""  # Will use DEFAULT_SOCKET_PATH from mcp.constants
+
+    def __post_init__(self):
+        """Set default socket path based on platform if not provided."""
+        if not self.mcp_socket_path:
+            from code_map.mcp.constants import DEFAULT_SOCKET_PATH
+            self.mcp_socket_path = DEFAULT_SOCKET_PATH
 
 
 class ClaudeAgentRunner:

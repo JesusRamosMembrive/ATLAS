@@ -2,7 +2,7 @@
   {
     "path": "assess_stage.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.677833+00:00",
+    "modified_at": "2025-12-01T20:01:14.738483+00:00",
     "symbols": [
       {
         "name": "assess_stage",
@@ -45,28 +45,28 @@
   {
     "path": "claude_assess.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.677950+00:00",
+    "modified_at": "2025-12-01T20:01:14.739988+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.677950+00:00",
+    "modified_at": "2025-12-01T20:01:14.740993+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/__main__.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.677950+00:00",
+    "modified_at": "2025-12-01T20:01:14.740993+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/analyzer.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.677950+00:00",
+    "modified_at": "2025-12-01T20:01:14.740993+00:00",
     "symbols": [
       {
         "name": "get_modified_time",
@@ -137,7 +137,7 @@
   {
     "path": "code_map/analyzer_registry.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.677950+00:00",
+    "modified_at": "2025-12-01T20:01:14.741994+00:00",
     "symbols": [
       {
         "name": "AnalyzerCapability",
@@ -250,7 +250,7 @@
   {
     "path": "code_map/api/analysis.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.592315+00:00",
+    "modified_at": "2025-12-01T20:01:14.742998+00:00",
     "symbols": [
       {
         "name": "_get_git_history",
@@ -370,7 +370,7 @@
   {
     "path": "code_map/api/audit.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.592315+00:00",
+    "modified_at": "2025-12-01T20:01:14.742998+00:00",
     "symbols": [
       {
         "name": "_serialize_run",
@@ -448,7 +448,7 @@
   {
     "path": "code_map/api/claude_permissions.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.592315+00:00",
+    "modified_at": "2025-12-01T20:01:14.743994+00:00",
     "symbols": [
       {
         "name": "ClaudePermissions",
@@ -540,7 +540,7 @@
   {
     "path": "code_map/api/deps.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.677950+00:00",
+    "modified_at": "2025-12-01T20:01:14.743994+00:00",
     "symbols": [
       {
         "name": "get_app_state",
@@ -555,7 +555,7 @@
   {
     "path": "code_map/api/graph.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50.327461+00:00",
+    "modified_at": "2025-12-01T20:01:14.743994+00:00",
     "symbols": [
       {
         "name": "get_class_graph",
@@ -591,14 +591,14 @@
   {
     "path": "code_map/api/handlers/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.592315+00:00",
+    "modified_at": "2025-12-01T20:01:14.744993+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/api/handlers/approval.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.592315+00:00",
+    "modified_at": "2025-12-01T20:01:14.744993+00:00",
     "symbols": [
       {
         "name": "ApprovalRequestProtocol",
@@ -627,7 +627,7 @@
   {
     "path": "code_map/api/handlers/base.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.592315+00:00",
+    "modified_at": "2025-12-01T20:01:14.744993+00:00",
     "symbols": [
       {
         "name": "HandlerCallbacks",
@@ -698,7 +698,7 @@
   {
     "path": "code_map/api/handlers/cli_handler.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.592315+00:00",
+    "modified_at": "2025-12-01T20:01:14.746001+00:00",
     "symbols": [
       {
         "name": "CLIModeHandler",
@@ -769,7 +769,7 @@
   {
     "path": "code_map/api/handlers/factory.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.592315+00:00",
+    "modified_at": "2025-12-01T20:01:14.746001+00:00",
     "symbols": [
       {
         "name": "create_handler",
@@ -805,7 +805,7 @@
   {
     "path": "code_map/api/handlers/mcp_proxy_handler.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.592315+00:00",
+    "modified_at": "2025-12-01T20:01:14.746001+00:00",
     "symbols": [
       {
         "name": "MCPProxyModeHandler",
@@ -855,7 +855,7 @@
   {
     "path": "code_map/api/handlers/sdk_handler.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.593315+00:00",
+    "modified_at": "2025-12-01T20:01:14.746994+00:00",
     "symbols": [
       {
         "name": "SDKModeHandler",
@@ -905,7 +905,7 @@
   {
     "path": "code_map/api/integrations.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.593315+00:00",
+    "modified_at": "2025-12-01T20:01:14.746994+00:00",
     "symbols": [
       {
         "name": "get_ollama_status",
@@ -955,7 +955,7 @@
   {
     "path": "code_map/api/linters.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.593315+00:00",
+    "modified_at": "2025-12-01T20:01:14.746994+00:00",
     "symbols": [
       {
         "name": "get_linters_discovery",
@@ -1033,7 +1033,7 @@
   {
     "path": "code_map/api/preview.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.593315+00:00",
+    "modified_at": "2025-12-01T20:01:14.746994+00:00",
     "symbols": [
       {
         "name": "preview_file",
@@ -1069,14 +1069,14 @@
   {
     "path": "code_map/api/routes.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.593315+00:00",
+    "modified_at": "2025-12-01T20:01:14.747993+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/api/schemas.py",
     "relative": true,
-    "modified_at": "2025-12-01T16:14:36.770239+00:00",
+    "modified_at": "2025-12-02T15:24:41.788668+00:00",
     "symbols": [
       {
         "name": "HealthResponse",
@@ -1630,7 +1630,7 @@
   {
     "path": "code_map/api/settings.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50.327461+00:00",
+    "modified_at": "2025-12-02T15:24:41.788668+00:00",
     "symbols": [
       {
         "name": "get_settings",
@@ -1673,7 +1673,7 @@
   {
     "path": "code_map/api/stage.py",
     "relative": true,
-    "modified_at": "2025-12-01T16:14:36.770239+00:00",
+    "modified_at": "2025-12-01T20:01:14.748992+00:00",
     "symbols": [
       {
         "name": "get_stage_status",
@@ -1702,75 +1702,75 @@
   {
     "path": "code_map/api/terminal.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.594315+00:00",
+    "modified_at": "2025-12-02T15:41:37.804406+00:00",
     "symbols": [
       {
         "name": "get_or_create_mcp_socket_server",
         "kind": "function",
-        "lineno": 45,
+        "lineno": 58,
         "parent": null,
         "docstring": "Get or create the global MCP socket server instance.\n\nThe socket server is shared across all WebSocket connections because\nthe MCP Permission Server subprocess needs a single point of communication."
       },
       {
         "name": "stop_mcp_socket_server",
         "kind": "function",
-        "lineno": 69,
+        "lineno": 82,
         "parent": null,
         "docstring": "Stop the global MCP socket server if running."
       },
       {
         "name": "OpenNativeTerminalRequest",
         "kind": "class",
-        "lineno": 88,
+        "lineno": 101,
         "parent": null,
         "docstring": "Request body for opening a native system terminal with an agent."
       },
       {
         "name": "OpenNativeTerminalResponse",
         "kind": "class",
-        "lineno": 94,
+        "lineno": 107,
         "parent": null,
         "docstring": "Response from opening a native terminal."
       },
       {
         "name": "open_native_terminal",
         "kind": "function",
-        "lineno": 102,
+        "lineno": 115,
         "parent": null,
         "docstring": "Open a native system terminal with the specified agent launched.\n\nSupports Linux (gnome-terminal, konsole, xfce4-terminal, xterm),\nmacOS (Terminal.app, iTerm.app), and Windows (cmd, powershell, Windows Terminal).\n\nThe terminal will be opened in the specified working directory (or project root)\nwith the appropriate agent CLI command ready."
       },
       {
         "name": "terminal_websocket",
         "kind": "function",
-        "lineno": 272,
+        "lineno": 285,
         "parent": null,
-        "docstring": "WebSocket endpoint for remote terminal access\n\nSpawns a shell process and provides bidirectional communication using text protocol.\n\nClient can send:\n- Raw text for shell input\n- \"__RESIZE__:cols:rows\" for terminal resize\n- \"__AGENT__:enable\" to enable agent parsing\n- \"__AGENT__:disable\" to disable agent parsing\n\nServer sends:\n- Raw text from shell output\n- \"__AGENT__:event:{json}\" for agent events (when enabled)"
+        "docstring": "WebSocket endpoint for remote terminal access\n\nSpawns a shell process and provides bidirectional communication using text protocol.\n\nNOTE: This endpoint requires PTY support (Unix only).\nOn Windows, use the /ws/agent endpoint instead.\n\nClient can send:\n- Raw text for shell input\n- \"__RESIZE__:cols:rows\" for terminal resize\n- \"__AGENT__:enable\" to enable agent parsing\n- \"__AGENT__:disable\" to disable agent parsing\n\nServer sends:\n- Raw text from shell output\n- \"__AGENT__:event:{json}\" for agent events (when enabled)"
       },
       {
         "name": "agent_websocket",
         "kind": "function",
-        "lineno": 547,
+        "lineno": 573,
         "parent": null,
         "docstring": "WebSocket endpoint for Claude Code JSON streaming mode\n\nUses `claude -p --output-format stream-json --verbose` to get structured\noutput instead of TUI rendering. Supports bidirectional communication for\ninteractive permission handling.\n\nClient sends JSON commands:\n- {\"command\": \"run\", \"prompt\": \"...\", \"continue\": true}\n- {\"command\": \"cancel\"}\n- {\"command\": \"new_session\"}\n- {\"command\": \"permission_response\", \"approved\": true, \"always\": false}\n\nServer sends JSON events:\n- {\"type\": \"system\", \"subtype\": \"init\", ...}\n- {\"type\": \"assistant\", \"subtype\": \"text\", \"content\": \"...\"}\n- {\"type\": \"assistant\", \"subtype\": \"tool_use\", \"content\": {...}}\n- {\"type\": \"user\", \"subtype\": \"tool_result\", \"content\": {...}}\n- {\"type\": \"permission_request\", \"tool\": \"...\", \"input\": {...}, \"request_id\": \"...\"}\n- {\"type\": \"done\"}\n- {\"type\": \"error\", \"content\": \"...\"}"
       },
       {
         "name": "agent_pty_websocket",
         "kind": "function",
-        "lineno": 904,
+        "lineno": 930,
         "parent": null,
-        "docstring": "WebSocket endpoint for Claude Code PTY mode with real terminal interaction.\n\nThis mode spawns Claude in a pseudo-terminal (PTY) for proper Ink UI support,\nparses the terminal output into structured events, and enables real tool approval\nby detecting permission prompts in the output.\n\nClient sends JSON commands:\n- {\"command\": \"start\"} - Start a new PTY session\n- {\"command\": \"run\", \"prompt\": \"...\"} - Send a prompt to Claude\n- {\"command\": \"approve\"} - Approve a pending permission (send 'y')\n- {\"command\": \"deny\"} - Deny a pending permission (send 'n')\n- {\"command\": \"always_allow\"} - Always allow this permission (send 'a')\n- {\"command\": \"cancel\"} - Cancel current operation (send Ctrl+C)\n- {\"command\": \"stop\"} - Stop the PTY session\n\nServer sends JSON events:\n- {\"type\": \"session_started\"}\n- {\"type\": \"thinking\", \"data\": {...}}\n- {\"type\": \"completion\", \"data\": {...}}\n- {\"type\": \"permission_request\", \"data\": {...}}\n- {\"type\": \"message\", \"data\": {...}}\n- {\"type\": \"error\", \"data\": {...}}\n- {\"type\": \"session_ended\"}"
+        "docstring": "WebSocket endpoint for Claude Code PTY mode with real terminal interaction.\n\nNOTE: This endpoint requires PTY support (Unix only).\nOn Windows, use the /ws/agent endpoint instead.\n\nThis mode spawns Claude in a pseudo-terminal (PTY) for proper Ink UI support,\nparses the terminal output into structured events, and enables real tool approval\nby detecting permission prompts in the output.\n\nClient sends JSON commands:\n- {\"command\": \"start\"} - Start a new PTY session\n- {\"command\": \"run\", \"prompt\": \"...\"} - Send a prompt to Claude\n- {\"command\": \"approve\"} - Approve a pending permission (send 'y')\n- {\"command\": \"deny\"} - Deny a pending permission (send 'n')\n- {\"command\": \"always_allow\"} - Always allow this permission (send 'a')\n- {\"command\": \"cancel\"} - Cancel current operation (send Ctrl+C)\n- {\"command\": \"stop\"} - Stop the PTY session\n\nServer sends JSON events:\n- {\"type\": \"session_started\"}\n- {\"type\": \"thinking\", \"data\": {...}}\n- {\"type\": \"completion\", \"data\": {...}}\n- {\"type\": \"permission_request\", \"data\": {...}}\n- {\"type\": \"message\", \"data\": {...}}\n- {\"type\": \"error\", \"data\": {...}}\n- {\"type\": \"session_ended\"}"
       },
       {
         "name": "gemini_agent_websocket",
         "kind": "function",
-        "lineno": 1155,
+        "lineno": 1195,
         "parent": null,
         "docstring": "WebSocket endpoint for Gemini Code JSON streaming mode"
       },
       {
         "name": "codex_agent_websocket",
         "kind": "function",
-        "lineno": 1263,
+        "lineno": 1303,
         "parent": null,
         "docstring": "WebSocket endpoint for OpenAI Codex CLI JSON streaming mode\n\nProvides real-time interaction with Codex CLI using JSON events.\nEvents are normalized to the same format as Claude for frontend compatibility.\n\nClient sends:\n- {\"command\": \"run\", \"prompt\": \"...\", \"permission_mode\": \"...\", \"model\": \"...\"}\n- {\"command\": \"cancel\"}\n- {\"command\": \"tool_approval_response\", \"request_id\": \"...\", \"approved\": bool}\n\nServer sends:\n- {\"type\": \"connected\", \"cwd\": \"...\"}\n- {\"type\": \"system\", \"subtype\": \"init\", \"content\": {...}}\n- {\"type\": \"assistant\", \"subtype\": \"text\", \"content\": \"...\"}\n- {\"type\": \"assistant\", \"subtype\": \"tool_use\", \"content\": {...}}\n- {\"type\": \"user\", \"subtype\": \"tool_result\", \"content\": {...}}\n- {\"type\": \"done\"}\n- {\"type\": \"error\", \"content\": \"...\"}\n- {\"type\": \"tool_approval_request\", ...}"
       }
@@ -1780,7 +1780,7 @@
   {
     "path": "code_map/api/timeline.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50.327461+00:00",
+    "modified_at": "2025-12-01T20:01:14.748992+00:00",
     "symbols": [
       {
         "name": "CommitInfoSchema",
@@ -1865,7 +1865,7 @@
   {
     "path": "code_map/api/tracer.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.594315+00:00",
+    "modified_at": "2025-12-01T20:01:14.750497+00:00",
     "symbols": [
       {
         "name": "_require_tree_sitter",
@@ -1992,7 +1992,7 @@
   {
     "path": "code_map/ast_utils.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.678853+00:00",
+    "modified_at": "2025-12-01T20:01:14.750497+00:00",
     "symbols": [
       {
         "name": "ImportResolver",
@@ -2014,14 +2014,14 @@
   {
     "path": "code_map/audit/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.594315+00:00",
+    "modified_at": "2025-12-01T20:01:14.751050+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/audit/file_watcher_hook.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.595315+00:00",
+    "modified_at": "2025-12-01T20:01:14.751050+00:00",
     "symbols": [
       {
         "name": "AuditFileWatcher",
@@ -2113,7 +2113,7 @@
   {
     "path": "code_map/audit/hooks.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.595315+00:00",
+    "modified_at": "2025-12-01T20:01:14.752055+00:00",
     "symbols": [
       {
         "name": "AuditContext",
@@ -2170,7 +2170,7 @@
   {
     "path": "code_map/audit/storage.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.595315+00:00",
+    "modified_at": "2025-12-01T20:01:14.752055+00:00",
     "symbols": [
       {
         "name": "AuditRun",
@@ -2283,7 +2283,7 @@
   {
     "path": "code_map/cache.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50.327461+00:00",
+    "modified_at": "2025-12-01T20:01:14.752055+00:00",
     "symbols": [
       {
         "name": "SnapshotStore",
@@ -2361,7 +2361,7 @@
   {
     "path": "code_map/call_tracer_v2.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.595315+00:00",
+    "modified_at": "2025-12-01T20:01:14.753055+00:00",
     "symbols": [
       {
         "name": "CrossFileCallGraphExtractor",
@@ -2474,7 +2474,7 @@
   {
     "path": "code_map/class_graph.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.680315+00:00",
+    "modified_at": "2025-12-01T20:01:14.753055+00:00",
     "symbols": [
       {
         "name": "ClassInfo",
@@ -2706,54 +2706,54 @@
   {
     "path": "code_map/cli.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.595315+00:00",
+    "modified_at": "2025-12-02T15:27:26.781477+00:00",
     "symbols": [
       {
         "name": "_validate_root",
         "kind": "function",
-        "lineno": 34,
+        "lineno": 36,
         "parent": null,
         "docstring": "Normaliza y valida que la ruta sea un directorio existente."
       },
       {
         "name": "_persist_root",
         "kind": "function",
-        "lineno": 44,
+        "lineno": 46,
         "parent": null,
         "docstring": "Actualiza la configuraci\u00f3n persistente con la ruta indicada."
       },
       {
         "name": "run",
         "kind": "function",
-        "lineno": 56,
+        "lineno": 58,
         "parent": null,
         "docstring": "Arranca el backend FastAPI usando la configuraci\u00f3n almacenada."
       },
       {
         "name": "config_show",
         "kind": "function",
-        "lineno": 119,
+        "lineno": 121,
         "parent": null,
         "docstring": "Muestra la configuraci\u00f3n almacenada actualmente."
       },
       {
         "name": "config_set_root",
         "kind": "function",
-        "lineno": 128,
+        "lineno": 130,
         "parent": null,
         "docstring": "Actualiza la ra\u00edz analizada por el backend."
       },
       {
         "name": "config_reset",
         "kind": "function",
-        "lineno": 138,
+        "lineno": 140,
         "parent": null,
         "docstring": "Restablece la ra\u00edz al directorio actual."
       },
       {
         "name": "main",
         "kind": "function",
-        "lineno": 145,
+        "lineno": 147,
         "parent": null,
         "docstring": "Punto de entrada para `python -m code_map`."
       }
@@ -2763,14 +2763,14 @@
   {
     "path": "code_map/constants.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.595315+00:00",
+    "modified_at": "2025-12-01T20:01:14.754055+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/dependencies.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.680315+00:00",
+    "modified_at": "2025-12-01T20:01:14.754055+00:00",
     "symbols": [
       {
         "name": "DependencySpec",
@@ -2834,7 +2834,7 @@
   {
     "path": "code_map/events.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.680733+00:00",
+    "modified_at": "2025-12-01T20:01:14.754055+00:00",
     "symbols": [
       {
         "name": "ChangeEventType",
@@ -2891,7 +2891,7 @@
   {
     "path": "code_map/git_history.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.595315+00:00",
+    "modified_at": "2025-12-01T20:01:14.755061+00:00",
     "symbols": [
       {
         "name": "GitHistoryError",
@@ -3067,7 +3067,7 @@
   {
     "path": "code_map/html_analyzer.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.680733+00:00",
+    "modified_at": "2025-12-01T20:01:14.755061+00:00",
     "symbols": [
       {
         "name": "HtmlAnalyzer",
@@ -3096,7 +3096,7 @@
   {
     "path": "code_map/import_resolver.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50.327922+00:00",
+    "modified_at": "2025-12-01T20:01:14.755061+00:00",
     "symbols": [
       {
         "name": "ImportResolver",
@@ -3160,7 +3160,7 @@
   {
     "path": "code_map/index.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.680733+00:00",
+    "modified_at": "2025-12-01T20:01:14.755061+00:00",
     "symbols": [
       {
         "name": "SymbolIndex",
@@ -3252,14 +3252,14 @@
   {
     "path": "code_map/insights/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.680733+00:00",
+    "modified_at": "2025-12-01T20:01:14.756055+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/insights/ollama_service.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.680733+00:00",
+    "modified_at": "2025-12-01T20:01:14.756055+00:00",
     "symbols": [
       {
         "name": "_resolve_focus",
@@ -3295,7 +3295,7 @@
   {
     "path": "code_map/insights/storage.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.680733+00:00",
+    "modified_at": "2025-12-01T20:01:14.757055+00:00",
     "symbols": [
       {
         "name": "StoredInsight",
@@ -3345,14 +3345,14 @@
   {
     "path": "code_map/integrations/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.680733+00:00",
+    "modified_at": "2025-12-01T20:01:14.757055+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/integrations/ollama_service.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.596315+00:00",
+    "modified_at": "2025-12-01T20:01:14.757055+00:00",
     "symbols": [
       {
         "name": "_normalize_endpoint",
@@ -3542,7 +3542,7 @@
   {
     "path": "code_map/js_analyzer.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.596315+00:00",
+    "modified_at": "2025-12-01T20:01:14.758055+00:00",
     "symbols": [
       {
         "name": "_node_get",
@@ -3627,7 +3627,7 @@
   {
     "path": "code_map/linters/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.680853+00:00",
+    "modified_at": "2025-12-01T20:01:14.758055+00:00",
     "symbols": [
       {
         "name": "linters_discovery_payload",
@@ -3642,7 +3642,7 @@
   {
     "path": "code_map/linters/discovery.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.680853+00:00",
+    "modified_at": "2025-12-01T20:01:14.759058+00:00",
     "symbols": [
       {
         "name": "ToolDefinition",
@@ -3720,7 +3720,7 @@
   {
     "path": "code_map/linters/pipeline.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.597315+00:00",
+    "modified_at": "2025-12-01T20:01:14.759058+00:00",
     "symbols": [
       {
         "name": "LinterConfig",
@@ -3868,7 +3868,7 @@
   {
     "path": "code_map/linters/report_schema.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.682154+00:00",
+    "modified_at": "2025-12-01T20:01:14.760056+00:00",
     "symbols": [
       {
         "name": "CheckStatus",
@@ -4023,7 +4023,7 @@
   {
     "path": "code_map/linters/storage.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.682258+00:00",
+    "modified_at": "2025-12-01T20:01:14.761057+00:00",
     "symbols": [
       {
         "name": "_normalize_root",
@@ -4150,14 +4150,14 @@
   {
     "path": "code_map/mcp/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.597315+00:00",
+    "modified_at": "2025-12-01T20:01:14.761568+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/mcp/approval_bridge.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.597315+00:00",
+    "modified_at": "2025-12-01T20:01:14.761568+00:00",
     "symbols": [
       {
         "name": "ApprovalRequest",
@@ -4305,21 +4305,21 @@
   {
     "path": "code_map/mcp/constants.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.597315+00:00",
+    "modified_at": "2025-12-02T15:42:02.633750+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/mcp/permission_server.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.598315+00:00",
+    "modified_at": "2025-12-01T20:01:14.762573+00:00",
     "symbols": [
       {
         "name": "PermissionServer",
         "kind": "class",
         "lineno": 38,
         "parent": null,
-        "docstring": "MCP Permission Server that handles tool approval requests.\n\nThis can run in two modes:\n1. Standalone: Communicates with ATLAS backend via Unix socket\n2. Embedded: Uses ApprovalBridge directly (for testing)"
+        "docstring": "MCP Permission Server that handles tool approval requests.\n\nThis can run in two modes:\n1. Standalone: Communicates with AEGIS backend via Unix socket\n2. Embedded: Uses ApprovalBridge directly (for testing)"
       },
       {
         "name": "__init__",
@@ -4354,7 +4354,7 @@
         "kind": "method",
         "lineno": 138,
         "parent": "PermissionServer",
-        "docstring": "Request approval via Unix socket to ATLAS backend"
+        "docstring": "Request approval via Unix socket to AEGIS backend"
       },
       {
         "name": "get_server",
@@ -4390,82 +4390,82 @@
   {
     "path": "code_map/mcp/socket_server.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.598315+00:00",
+    "modified_at": "2025-12-02T15:42:52.923428+00:00",
     "symbols": [
       {
         "name": "MCPSocketServer",
         "kind": "class",
-        "lineno": 26,
+        "lineno": 36,
         "parent": null,
-        "docstring": "Unix Socket server that receives permission requests from MCP server.\n\nThis runs in the main ATLAS backend process and:\n1. Listens on a Unix socket for requests from MCP Permission Server\n2. Forwards requests to the ApprovalBridge\n3. The bridge notifies the frontend and waits for user response\n4. Returns the response to the MCP server via socket"
+        "docstring": "Socket server that receives permission requests from MCP server.\n\nThis runs in the main AEGIS backend process and:\n1. Listens on a socket for requests from MCP Permission Server\n   - Unix: Unix domain socket\n   - Windows: TCP socket on localhost\n2. Forwards requests to the ApprovalBridge\n3. The bridge notifies the frontend and waits for user response\n4. Returns the response to the MCP server via socket"
       },
       {
         "name": "__init__",
         "kind": "method",
-        "lineno": 37,
+        "lineno": 49,
         "parent": "MCPSocketServer",
         "docstring": null
       },
       {
         "name": "set_frontend_callback",
         "kind": "method",
-        "lineno": 56,
+        "lineno": 82,
         "parent": "MCPSocketServer",
         "docstring": "Set callback to notify frontend of approval requests.\n\nThe callback should send the ApprovalRequest to the frontend\nvia WebSocket."
       },
       {
         "name": "start",
         "kind": "method",
-        "lineno": 67,
+        "lineno": 93,
         "parent": "MCPSocketServer",
-        "docstring": "Start the socket server"
+        "docstring": "Start the socket server (Unix socket or TCP depending on platform)"
       },
       {
         "name": "stop",
         "kind": "method",
-        "lineno": 85,
+        "lineno": 123,
         "parent": "MCPSocketServer",
         "docstring": "Stop the socket server"
       },
       {
         "name": "_handle_client",
         "kind": "method",
-        "lineno": 100,
+        "lineno": 139,
         "parent": "MCPSocketServer",
         "docstring": "Handle a client connection from MCP server"
       },
       {
         "name": "_process_request",
         "kind": "method",
-        "lineno": 151,
+        "lineno": 190,
         "parent": "MCPSocketServer",
         "docstring": "Process a request from MCP server"
       },
       {
         "name": "respond_to_approval",
         "kind": "method",
-        "lineno": 210,
+        "lineno": 249,
         "parent": "MCPSocketServer",
         "docstring": "Respond to a pending approval request.\n\nCalled by the WebSocket handler when user responds via frontend."
       },
       {
         "name": "get_pending_requests",
         "kind": "method",
-        "lineno": 224,
+        "lineno": 263,
         "parent": "MCPSocketServer",
         "docstring": "Get all pending approval requests"
       },
       {
         "name": "get_socket_server",
         "kind": "function",
-        "lineno": 233,
+        "lineno": 272,
         "parent": null,
         "docstring": "Get the global socket server instance"
       },
       {
         "name": "create_socket_server",
         "kind": "function",
-        "lineno": 238,
+        "lineno": 277,
         "parent": null,
         "docstring": "Create and set the global socket server instance"
       }
@@ -4475,7 +4475,7 @@
   {
     "path": "code_map/mcp/tool_proxy_server.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.598315+00:00",
+    "modified_at": "2025-12-01T20:01:14.763573+00:00",
     "symbols": [
       {
         "name": "ToolProxyServer",
@@ -4496,7 +4496,7 @@
         "kind": "method",
         "lineno": 84,
         "parent": "ToolProxyServer",
-        "docstring": "Request approval from ATLAS backend.\n\nReturns (approved, feedback) tuple."
+        "docstring": "Request approval from AEGIS backend.\n\nReturns (approved, feedback) tuple."
       },
       {
         "name": "_generate_write_preview",
@@ -4567,7 +4567,7 @@
   {
     "path": "code_map/models.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.682345+00:00",
+    "modified_at": "2025-12-01T20:01:14.763573+00:00",
     "symbols": [
       {
         "name": "SymbolKind",
@@ -4631,7 +4631,7 @@
   {
     "path": "code_map/scanner.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.598315+00:00",
+    "modified_at": "2025-12-01T20:01:14.763573+00:00",
     "symbols": [
       {
         "name": "ProjectScanner",
@@ -4716,7 +4716,7 @@
   {
     "path": "code_map/scheduler.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.682532+00:00",
+    "modified_at": "2025-12-01T20:01:14.764572+00:00",
     "symbols": [
       {
         "name": "_QueuedEvent",
@@ -4787,7 +4787,7 @@
   {
     "path": "code_map/server.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.598315+00:00",
+    "modified_at": "2025-12-01T20:01:14.764572+00:00",
     "symbols": [
       {
         "name": "_parse_allowed_origins",
@@ -4809,7 +4809,7 @@
   {
     "path": "code_map/services/insights_service.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.598315+00:00",
+    "modified_at": "2025-12-01T20:01:14.765586+00:00",
     "symbols": [
       {
         "name": "InsightsConfig",
@@ -4915,7 +4915,7 @@
   {
     "path": "code_map/services/linters_service.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.598315+00:00",
+    "modified_at": "2025-12-01T20:01:14.765586+00:00",
     "symbols": [
       {
         "name": "LintersConfig",
@@ -4993,7 +4993,7 @@
   {
     "path": "code_map/services/watcher_manager.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.598315+00:00",
+    "modified_at": "2025-12-01T20:01:14.765586+00:00",
     "symbols": [
       {
         "name": "WatcherConfig",
@@ -5057,7 +5057,7 @@
   {
     "path": "code_map/settings.py",
     "relative": true,
-    "modified_at": "2025-12-01T16:14:36.770451+00:00",
+    "modified_at": "2025-12-02T15:24:41.789669+00:00",
     "symbols": [
       {
         "name": "_normalize_exclusions",
@@ -5163,7 +5163,7 @@
   {
     "path": "code_map/stage_toolkit.py",
     "relative": true,
-    "modified_at": "2025-12-01T16:14:36.770451+00:00",
+    "modified_at": "2025-12-01T20:01:14.767103+00:00",
     "symbols": [
       {
         "name": "FileStatus",
@@ -5234,7 +5234,7 @@
   {
     "path": "code_map/state.py",
     "relative": true,
-    "modified_at": "2025-12-01T16:14:36.770451+00:00",
+    "modified_at": "2025-12-01T20:01:14.767103+00:00",
     "symbols": [
       {
         "name": "_parse_enabled_tools_env",
@@ -5438,7 +5438,7 @@
   {
     "path": "code_map/state_reporter.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.599315+00:00",
+    "modified_at": "2025-12-01T20:01:14.767103+00:00",
     "symbols": [
       {
         "name": "_serialize_capability",
@@ -5474,14 +5474,14 @@
   {
     "path": "code_map/terminal/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.599315+00:00",
+    "modified_at": "2025-12-02T15:40:42.255303+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "code_map/terminal/agent_events.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.599315+00:00",
+    "modified_at": "2025-12-01T20:01:14.768118+00:00",
     "symbols": [
       {
         "name": "CommandExecution",
@@ -5636,7 +5636,7 @@
   {
     "path": "code_map/terminal/agent_parser.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.599315+00:00",
+    "modified_at": "2025-12-01T20:01:14.769114+00:00",
     "symbols": [
       {
         "name": "AgentEventType",
@@ -5826,180 +5826,187 @@
   {
     "path": "code_map/terminal/claude_runner.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.599315+00:00",
+    "modified_at": "2025-12-02T15:43:51.176192+00:00",
     "symbols": [
       {
         "name": "find_claude_cli",
         "kind": "function",
         "lineno": 20,
         "parent": null,
-        "docstring": "Find the Claude CLI executable.\n\nChecks multiple locations since running with sudo may have different PATH.\n\nReturns:\n    Full path to claude CLI, or \"claude\" if not found (will fail at runtime)"
+        "docstring": "Find the Claude CLI executable.\n\nChecks multiple locations since running with sudo may have different PATH.\nSupports both Unix and Windows platforms.\n\nReturns:\n    Full path to claude CLI, or \"claude\" if not found (will fail at runtime)"
       },
       {
         "name": "ClaudeRunnerConfig",
         "kind": "class",
-        "lineno": 74,
+        "lineno": 101,
         "parent": null,
         "docstring": "Configuration for Claude Code runner"
       },
       {
+        "name": "__post_init__",
+        "kind": "method",
+        "lineno": 118,
+        "parent": "ClaudeRunnerConfig",
+        "docstring": "Set default socket path based on platform if not provided."
+      },
+      {
         "name": "ClaudeAgentRunner",
         "kind": "class",
-        "lineno": 93,
+        "lineno": 125,
         "parent": null,
         "docstring": "Executes Claude Code in JSON streaming mode with bidirectional communication.\n\nRuns `claude -p --output-format stream-json --input-format stream-json --verbose`\nand streams parsed JSON events line by line. Supports interactive permission handling."
       },
       {
         "name": "__init__",
         "kind": "method",
-        "lineno": 101,
+        "lineno": 133,
         "parent": "ClaudeAgentRunner",
         "docstring": null
       },
       {
         "name": "run_prompt",
         "kind": "method",
-        "lineno": 127,
+        "lineno": 159,
         "parent": "ClaudeAgentRunner",
         "docstring": "Execute a prompt and stream JSON events\n\nArgs:\n    prompt: The prompt to send to Claude Code\n    on_event: Callback for each parsed JSON event\n    on_error: Optional callback for stderr output\n    on_done: Optional callback when process completes\n    on_permission_request: Optional callback for permission requests (returns Future)\n    on_tool_approval_request: Optional callback for tool approval requests (toolApproval mode)\n\nReturns:\n    Exit code from the process"
       },
       {
         "name": "_is_tool_use_event",
         "kind": "method",
-        "lineno": 459,
+        "lineno": 491,
         "parent": "ClaudeAgentRunner",
         "docstring": "Check if event is a tool_use event.\n\nClaude CLI emits tool_use in two formats:\n1. Simplified: {\"type\": \"assistant\", \"subtype\": \"tool_use\", \"content\": {...}}\n2. Full message: {\"type\": \"assistant\", \"message\": {\"content\": [{\"type\": \"tool_use\", ...}]}}"
       },
       {
         "name": "_extract_tool_use_from_event",
         "kind": "method",
-        "lineno": 485,
+        "lineno": 517,
         "parent": "ClaudeAgentRunner",
         "docstring": "Extract tool_use info from event.\n\nReturns (tool_name, tool_input, tool_id) or None if not found."
       },
       {
         "name": "_handle_tool_approval",
         "kind": "method",
-        "lineno": 516,
+        "lineno": 548,
         "parent": "ClaudeAgentRunner",
         "docstring": "Handle tool approval flow for toolApproval mode.\n\nIn plan mode, Claude proposes tool_use but doesn't execute.\nWe intercept, show preview to user, and execute manually if approved."
       },
       {
         "name": "_execute_tool",
         "kind": "method",
-        "lineno": 693,
+        "lineno": 725,
         "parent": "ClaudeAgentRunner",
         "docstring": "Execute a tool manually.\n\nReturns dict with \"content\" and \"is_error\" keys."
       },
       {
         "name": "_execute_write",
         "kind": "method",
-        "lineno": 725,
+        "lineno": 757,
         "parent": "ClaudeAgentRunner",
         "docstring": "Execute Write tool"
       },
       {
         "name": "_execute_edit",
         "kind": "method",
-        "lineno": 748,
+        "lineno": 780,
         "parent": "ClaudeAgentRunner",
         "docstring": "Execute Edit tool"
       },
       {
         "name": "_execute_read",
         "kind": "method",
-        "lineno": 792,
+        "lineno": 824,
         "parent": "ClaudeAgentRunner",
         "docstring": "Execute Read tool"
       },
       {
         "name": "_execute_bash",
         "kind": "method",
-        "lineno": 833,
+        "lineno": 865,
         "parent": "ClaudeAgentRunner",
         "docstring": "Execute Bash tool"
       },
       {
         "name": "_execute_glob",
         "kind": "method",
-        "lineno": 878,
+        "lineno": 910,
         "parent": "ClaudeAgentRunner",
         "docstring": "Execute Glob tool"
       },
       {
         "name": "_execute_grep",
         "kind": "method",
-        "lineno": 906,
+        "lineno": 938,
         "parent": "ClaudeAgentRunner",
         "docstring": "Execute Grep tool"
       },
       {
         "name": "_send_tool_result_to_claude",
         "kind": "method",
-        "lineno": 964,
+        "lineno": 996,
         "parent": "ClaudeAgentRunner",
         "docstring": "Send tool result back to Claude via stdin"
       },
       {
         "name": "_send_tool_rejection_to_claude",
         "kind": "method",
-        "lineno": 1019,
+        "lineno": 1051,
         "parent": "ClaudeAgentRunner",
         "docstring": "Send tool rejection back to Claude"
       },
       {
         "name": "respond_to_tool_approval",
         "kind": "method",
-        "lineno": 1029,
+        "lineno": 1061,
         "parent": "ClaudeAgentRunner",
         "docstring": "Respond to a pending tool approval request.\n\nArgs:\n    request_id: ID of the approval request\n    approved: Whether to approve the tool use\n    feedback: Optional feedback (for rejection)\n\nReturns:\n    True if response was processed, False if request not found"
       },
       {
         "name": "_is_permission_request",
         "kind": "method",
-        "lineno": 1051,
+        "lineno": 1083,
         "parent": "ClaudeAgentRunner",
         "docstring": "Check if an event is a permission request.\n\nClaude sends permission requests in stream-json mode in these ways:\n1. Explicit \"permission_request\" type event\n2. Tool use events may have \"requires_permission\" flag\n3. Events may contain permission prompts in the message"
       },
       {
         "name": "_handle_permission_request",
         "kind": "method",
-        "lineno": 1086,
+        "lineno": 1118,
         "parent": "ClaudeAgentRunner",
         "docstring": "Handle a permission request from Claude"
       },
       {
         "name": "_send_permission_response",
         "kind": "method",
-        "lineno": 1109,
+        "lineno": 1141,
         "parent": "ClaudeAgentRunner",
         "docstring": "Send a permission response to Claude"
       },
       {
         "name": "send_user_input",
         "kind": "method",
-        "lineno": 1131,
+        "lineno": 1163,
         "parent": "ClaudeAgentRunner",
         "docstring": "Send additional user input to the running process"
       },
       {
         "name": "cancel",
         "kind": "method",
-        "lineno": 1157,
+        "lineno": 1189,
         "parent": "ClaudeAgentRunner",
         "docstring": "Cancel the running process"
       },
       {
         "name": "is_running",
         "kind": "method",
-        "lineno": 1197,
+        "lineno": 1229,
         "parent": "ClaudeAgentRunner",
         "docstring": "Check if process is currently running"
       },
       {
         "name": "session_broken",
         "kind": "method",
-        "lineno": 1202,
+        "lineno": 1234,
         "parent": "ClaudeAgentRunner",
         "docstring": "Check if the Claude session is broken and cannot be continued.\n\nThis happens when we execute tools locally (in toolApproval mode with plan)\nafter Claude has already exited. Claude doesn't know about our local execution,\nso continuing the session would cause API errors."
       }
@@ -6009,152 +6016,152 @@
   {
     "path": "code_map/terminal/codex_runner.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.600315+00:00",
+    "modified_at": "2025-12-02T15:44:07.050111+00:00",
     "symbols": [
       {
         "name": "find_codex_cli",
         "kind": "function",
         "lineno": 29,
         "parent": null,
-        "docstring": "Find the Codex CLI executable.\n\nChecks multiple locations since running with sudo may have different PATH.\n\nReturns:\n    Full path to codex CLI, or \"codex\" if not found (will fail at runtime)"
+        "docstring": "Find the Codex CLI executable.\n\nChecks multiple locations since running with sudo may have different PATH.\nSupports both Unix and Windows platforms.\n\nReturns:\n    Full path to codex CLI, or \"codex\" if not found (will fail at runtime)"
       },
       {
         "name": "CodexRunnerConfig",
         "kind": "class",
-        "lineno": 113,
+        "lineno": 138,
         "parent": null,
         "docstring": "Configuration for Codex CLI runner"
       },
       {
         "name": "CodexAgentRunner",
         "kind": "class",
-        "lineno": 126,
+        "lineno": 151,
         "parent": null,
-        "docstring": "Executes Codex CLI in JSON streaming mode with event mapping.\n\nRuns `codex exec \"prompt\" --json` and streams parsed JSON events,\nmapping them to the normalized ATLAS event format for frontend compatibility."
+        "docstring": "Executes Codex CLI in JSON streaming mode with event mapping.\n\nRuns `codex exec \"prompt\" --json` and streams parsed JSON events,\nmapping them to the normalized AEGIS event format for frontend compatibility."
       },
       {
         "name": "__init__",
         "kind": "method",
-        "lineno": 134,
+        "lineno": 159,
         "parent": "CodexAgentRunner",
         "docstring": null
       },
       {
         "name": "_build_command",
         "kind": "method",
-        "lineno": 153,
+        "lineno": 178,
         "parent": "CodexAgentRunner",
         "docstring": "Build Codex CLI command with appropriate flags.\n\nArgs:\n    prompt: The user prompt to execute\n\nReturns:\n    List of command arguments"
       },
       {
         "name": "run_prompt",
         "kind": "method",
-        "lineno": 204,
+        "lineno": 229,
         "parent": "CodexAgentRunner",
         "docstring": "Execute a prompt and stream JSON events.\n\nArgs:\n    prompt: The prompt to send to Codex\n    on_event: Callback for each parsed JSON event (normalized format)\n    on_error: Optional callback for stderr output\n    on_done: Optional callback when process completes\n    on_permission_request: Optional callback for permission requests\n    on_tool_approval_request: Optional callback for tool approval (toolApproval mode)\n\nReturns:\n    Exit code from the process"
       },
       {
         "name": "_map_event",
         "kind": "method",
-        "lineno": 418,
+        "lineno": 443,
         "parent": "CodexAgentRunner",
-        "docstring": "Map Codex event to normalized ATLAS event format.\n\nCodex events are different from Claude events, so we need to translate them.\n\nArgs:\n    event: Raw Codex event from JSONL output\n\nReturns:\n    List of normalized events (can be empty or multiple)"
+        "docstring": "Map Codex event to normalized AEGIS event format.\n\nCodex events are different from Claude events, so we need to translate them.\n\nArgs:\n    event: Raw Codex event from JSONL output\n\nReturns:\n    List of normalized events (can be empty or multiple)"
       },
       {
         "name": "_map_tool_name",
         "kind": "method",
-        "lineno": 569,
+        "lineno": 594,
         "parent": "CodexAgentRunner",
         "docstring": "Map Codex tool names to Claude equivalents for UI consistency."
       },
       {
         "name": "_is_tool_use_event",
         "kind": "method",
-        "lineno": 573,
+        "lineno": 598,
         "parent": "CodexAgentRunner",
         "docstring": "Check if event is a tool_use event."
       },
       {
         "name": "_extract_tool_use_from_event",
         "kind": "method",
-        "lineno": 577,
+        "lineno": 602,
         "parent": "CodexAgentRunner",
         "docstring": "Extract tool_use info from event.\n\nReturns (tool_name, tool_input, tool_id) or None if not found."
       },
       {
         "name": "_handle_tool_approval",
         "kind": "method",
-        "lineno": 593,
+        "lineno": 618,
         "parent": "CodexAgentRunner",
         "docstring": "Handle tool approval flow for toolApproval mode.\n\nIn read-only sandbox mode, Codex doesn't execute commands.\nWe intercept, show preview to user, and execute manually if approved."
       },
       {
         "name": "_execute_tool",
         "kind": "method",
-        "lineno": 688,
+        "lineno": 713,
         "parent": "CodexAgentRunner",
         "docstring": "Execute a tool manually.\n\nReturns dict with \"content\" and \"is_error\" keys."
       },
       {
         "name": "_execute_bash",
         "kind": "method",
-        "lineno": 715,
+        "lineno": 740,
         "parent": "CodexAgentRunner",
         "docstring": "Execute Bash tool"
       },
       {
         "name": "_execute_read",
         "kind": "method",
-        "lineno": 759,
+        "lineno": 784,
         "parent": "CodexAgentRunner",
         "docstring": "Execute Read tool"
       },
       {
         "name": "_execute_write",
         "kind": "method",
-        "lineno": 796,
+        "lineno": 821,
         "parent": "CodexAgentRunner",
         "docstring": "Execute Write tool"
       },
       {
         "name": "_execute_edit",
         "kind": "method",
-        "lineno": 818,
+        "lineno": 843,
         "parent": "CodexAgentRunner",
         "docstring": "Execute Edit tool"
       },
       {
         "name": "cancel",
         "kind": "method",
-        "lineno": 862,
+        "lineno": 887,
         "parent": "CodexAgentRunner",
         "docstring": "Cancel the running process"
       },
       {
         "name": "respond_to_tool_approval",
         "kind": "method",
-        "lineno": 897,
+        "lineno": 922,
         "parent": "CodexAgentRunner",
         "docstring": "Respond to a pending tool approval request.\n\nArgs:\n    request_id: ID of the approval request\n    approved: Whether to approve the tool use\n    feedback: Optional feedback (for rejection)\n\nReturns:\n    True if response was processed, False if request not found"
       },
       {
         "name": "is_running",
         "kind": "method",
-        "lineno": 920,
+        "lineno": 945,
         "parent": "CodexAgentRunner",
         "docstring": "Check if process is currently running"
       },
       {
         "name": "session_broken",
         "kind": "method",
-        "lineno": 925,
+        "lineno": 950,
         "parent": "CodexAgentRunner",
         "docstring": "Check if the session is broken and cannot be continued.\n\nThis happens when we execute tools locally in toolApproval mode."
       },
       {
         "name": "thread_id",
         "kind": "method",
-        "lineno": 934,
+        "lineno": 959,
         "parent": "CodexAgentRunner",
         "docstring": "Get the current Codex thread ID"
       }
@@ -6164,7 +6171,7 @@
   {
     "path": "code_map/terminal/gemini_runner.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.600315+00:00",
+    "modified_at": "2025-12-01T20:01:14.770107+00:00",
     "symbols": [
       {
         "name": "find_gemini_cli",
@@ -6263,7 +6270,7 @@
   {
     "path": "code_map/terminal/json_parser.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.600315+00:00",
+    "modified_at": "2025-12-01T20:01:14.771108+00:00",
     "symbols": [
       {
         "name": "EventType",
@@ -6376,7 +6383,7 @@
   {
     "path": "code_map/terminal/mcp_proxy_runner.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.600315+00:00",
+    "modified_at": "2025-12-01T20:01:14.771108+00:00",
     "symbols": [
       {
         "name": "MCPProxyRunnerConfig",
@@ -6489,7 +6496,7 @@
   {
     "path": "code_map/terminal/pty_parser.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.600315+00:00",
+    "modified_at": "2025-12-01T20:01:14.771612+00:00",
     "symbols": [
       {
         "name": "EventType",
@@ -6616,7 +6623,7 @@
   {
     "path": "code_map/terminal/pty_runner.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.600315+00:00",
+    "modified_at": "2025-12-01T20:01:14.771612+00:00",
     "symbols": [
       {
         "name": "RunnerState",
@@ -6736,7 +6743,7 @@
   {
     "path": "code_map/terminal/pty_shell.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.601315+00:00",
+    "modified_at": "2025-12-02T15:24:41.790667+00:00",
     "symbols": [
       {
         "name": "PTYShell",
@@ -6828,7 +6835,7 @@
   {
     "path": "code_map/terminal/sdk_runner.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.601315+00:00",
+    "modified_at": "2025-12-01T20:01:14.772617+00:00",
     "symbols": [
       {
         "name": "SDKRunnerConfig",
@@ -6990,7 +6997,7 @@
   {
     "path": "code_map/terminal/tool_approval.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.601315+00:00",
+    "modified_at": "2025-12-01T20:01:14.772617+00:00",
     "symbols": [
       {
         "name": "ApprovalStatus",
@@ -7110,7 +7117,7 @@
   {
     "path": "code_map/ts_analyzer.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.601315+00:00",
+    "modified_at": "2025-12-01T20:01:14.773617+00:00",
     "symbols": [
       {
         "name": "_TsParser",
@@ -7188,7 +7195,7 @@
   {
     "path": "code_map/uml_graph.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50.329286+00:00",
+    "modified_at": "2025-12-01T20:01:14.773617+00:00",
     "symbols": [
       {
         "name": "AttributeInfo",
@@ -7497,7 +7504,7 @@
   {
     "path": "code_map/watcher.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.601315+00:00",
+    "modified_at": "2025-12-01T20:01:14.773617+00:00",
     "symbols": [
       {
         "name": "_EventHandler",
@@ -7687,549 +7694,126 @@
   {
     "path": "frontend/index.html",
     "relative": true,
-    "modified_at": "2025-11-10T16:42:39.488675+00:00",
-    "symbols": [
-      {
-        "name": "root",
-        "kind": "element",
-        "lineno": 0,
-        "parent": "div",
-        "docstring": null
-      }
-    ],
+    "modified_at": "2025-12-01T20:01:14.792743+00:00",
+    "symbols": [],
     "errors": []
   },
   {
     "path": "frontend/src/App.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.610676+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.795751+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "App",
-        "kind": "function",
-        "lineno": 23,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "withLayout",
-        "kind": "function",
-        "lineno": 46,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/api/client.ts",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.610676+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.796750+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "sanitizeBaseUrl",
-        "kind": "function",
-        "lineno": 41,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "withApiSuffix",
-        "kind": "function",
-        "lineno": 54,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "resolveBackendBaseUrl",
-        "kind": "function",
-        "lineno": 62,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "buildUrl",
-        "kind": "function",
-        "lineno": 98,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "fetchJson",
-        "kind": "function",
-        "lineno": 133,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "fetchJsonNullable",
-        "kind": "function",
-        "lineno": 152,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "OllamaTestError",
-        "kind": "class",
-        "lineno": 182,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "constructor",
-        "kind": "method",
-        "lineno": 186,
-        "parent": "OllamaTestError",
-        "docstring": null
-      },
-      {
-        "name": "getTree",
-        "kind": "function",
-        "lineno": 204,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getFileSummary",
-        "kind": "function",
-        "lineno": 222,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getWorkingTreeDiff",
-        "kind": "function",
-        "lineno": 227,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getWorkingTreeChanges",
-        "kind": "function",
-        "lineno": 232,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getDocsListing",
-        "kind": "function",
-        "lineno": 236,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "searchSymbols",
-        "kind": "function",
-        "lineno": 254,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "triggerRescan",
-        "kind": "function",
-        "lineno": 270,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getEventsUrl",
-        "kind": "function",
-        "lineno": 287,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getSettings",
-        "kind": "function",
-        "lineno": 304,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "updateSettings",
-        "kind": "function",
-        "lineno": 323,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "browseForRoot",
-        "kind": "function",
-        "lineno": 336,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "listDirectories",
-        "kind": "function",
-        "lineno": 342,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getStageStatus",
-        "kind": "function",
-        "lineno": 352,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getOllamaStatus",
-        "kind": "function",
-        "lineno": 359,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "startOllama",
-        "kind": "function",
-        "lineno": 366,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "testOllamaChat",
-        "kind": "function",
-        "lineno": 398,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getOllamaInsights",
-        "kind": "function",
-        "lineno": 445,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "triggerOllamaInsights",
-        "kind": "function",
-        "lineno": 450,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "clearOllamaInsights",
-        "kind": "function",
-        "lineno": 473,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "initializeStageToolkit",
-        "kind": "function",
-        "lineno": 482,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "installSuperClaudeFramework",
-        "kind": "function",
-        "lineno": 489,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "listAuditRuns",
-        "kind": "function",
-        "lineno": 498,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "createAuditRun",
-        "kind": "function",
-        "lineno": 503,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "closeAuditRun",
-        "kind": "function",
-        "lineno": 510,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getAuditRun",
-        "kind": "function",
-        "lineno": 520,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getAuditEvents",
-        "kind": "function",
-        "lineno": 524,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "appendAuditEvent",
-        "kind": "function",
-        "lineno": 540,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getClassUml",
-        "kind": "function",
-        "lineno": 550,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getClassUmlSvg",
-        "kind": "function",
-        "lineno": 577,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getStatus",
-        "kind": "function",
-        "lineno": 621,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getPreview",
-        "kind": "function",
-        "lineno": 625,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "appendGraphvizParams",
-        "kind": "function",
-        "lineno": 676,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getLintersLatestReport",
-        "kind": "function",
-        "lineno": 692,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getLintersReports",
-        "kind": "function",
-        "lineno": 696,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getLintersNotifications",
-        "kind": "function",
-        "lineno": 707,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "markNotificationAsRead",
-        "kind": "function",
-        "lineno": 720,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/api/queryKeys.ts",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.610676+00:00",
+    "modified_at": "2025-12-01T20:01:14.796750+00:00",
     "symbols": [],
-    "errors": []
+    "errors": [
+      {
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
+      }
+    ]
   },
   {
     "path": "frontend/src/api/types.ts",
     "relative": true,
-    "modified_at": "2025-12-01T16:14:36.770451+00:00",
+    "modified_at": "2025-12-01T20:01:14.797750+00:00",
     "symbols": [],
-    "errors": []
+    "errors": [
+      {
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
+      }
+    ]
   },
   {
     "path": "frontend/src/components/ActivityFeed.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.688792+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.797750+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "formatTimeAgo",
-        "kind": "function",
-        "lineno": 4,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "ActivityFeed",
-        "kind": "function",
-        "lineno": 23,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/AgentSidebar.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.610676+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.798749+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "AgentSidebar",
-        "kind": "function",
-        "lineno": 42,
-        "parent": null,
-        "docstring": "============================================================================="
-      },
-      {
-        "name": "HistoryTab",
-        "kind": "function",
-        "lineno": 137,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatDate",
-        "kind": "function",
-        "lineno": 183,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "FilesTab",
-        "kind": "function",
-        "lineno": 260,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "FileItem",
-        "kind": "function",
-        "lineno": 312,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "StatsTab",
-        "kind": "function",
-        "lineno": 350,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/AppLayout.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.689026+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.798749+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "AppLayout",
-        "kind": "function",
-        "lineno": 9,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/AuditSessionsView.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.610676+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.798749+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "formatRelative",
-        "kind": "function",
-        "lineno": 27,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatDate",
-        "kind": "function",
-        "lineno": 40,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "statusBadge",
-        "kind": "function",
-        "lineno": 45,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "summarizePayload",
-        "kind": "function",
-        "lineno": 54,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "RunCard",
-        "kind": "function",
-        "lineno": 63,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "EventCard",
-        "kind": "function",
-        "lineno": 94,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "AuditSessionsView",
-        "kind": "function",
-        "lineno": 118,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleCreateRun",
-        "kind": "function",
-        "lineno": 214,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleAppendEvent",
-        "kind": "function",
-        "lineno": 222,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/ChangeListPanel.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.610676+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.798749+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "ChangeListPanel",
-        "kind": "function",
-        "lineno": 14,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "ChangeListItem",
-        "kind": "function",
-        "lineno": 62,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/ClassGraphView.tsx",
@@ -8277,1945 +7861,613 @@
   {
     "path": "frontend/src/components/ClassUMLView.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50.329922+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.800307+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "ClassUMLView",
-        "kind": "function",
-        "lineno": 157,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleKeyDown",
-        "kind": "function",
-        "lineno": 243,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "graphvizFormToPayload",
-        "kind": "function",
-        "lineno": 999,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "toNumber",
-        "kind": "function",
-        "lineno": 1041,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "ClassDetailsPanel",
-        "kind": "function",
-        "lineno": 1054,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "clamp",
-        "kind": "function",
-        "lineno": 1160,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleClick",
-        "kind": "function",
-        "lineno": 1313,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handler",
-        "kind": "function",
-        "lineno": 1377,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "parseSvgDimension",
-        "kind": "function",
-        "lineno": 1484,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/ClaudeAgentView.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.611315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.800307+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "extractResultContent",
-        "kind": "function",
-        "lineno": 51,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "ClaudeAgentView",
-        "kind": "function",
-        "lineno": 80,
-        "parent": null,
-        "docstring": "============================================================================"
-      },
-      {
-        "name": "stripApi",
-        "kind": "function",
-        "lineno": 141,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleGlobalKeyDown",
-        "kind": "function",
-        "lineno": 316,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "AgentHeader",
-        "kind": "function",
-        "lineno": 658,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "EmptyState",
-        "kind": "function",
-        "lineno": 793,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "MessageItem",
-        "kind": "function",
-        "lineno": 812,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "PermissionDenialsBanner",
-        "kind": "function",
-        "lineno": 977,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "truncateInput",
-        "kind": "function",
-        "lineno": 1038,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "truncatePath",
-        "kind": "function",
-        "lineno": 1048,
-        "parent": null,
-        "docstring": "============================================================================"
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/CodeMapDashboard.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.611315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.801822+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "CodeMapDashboard",
-        "kind": "function",
-        "lineno": 13,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleShowDiff",
-        "kind": "function",
-        "lineno": 20,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "closeDiff",
-        "kind": "function",
-        "lineno": 24,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/CodeTimelineView.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50.329922+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.801822+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "DiffModal",
-        "kind": "function",
-        "lineno": 30,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatDiffLine",
-        "kind": "function",
-        "lineno": 44,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "CodeTimelineView",
-        "kind": "function",
-        "lineno": 106,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatDate",
-        "kind": "function",
-        "lineno": 139,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatShortHash",
-        "kind": "function",
-        "lineno": 150,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getFileName",
-        "kind": "function",
-        "lineno": 151,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatFilePath",
-        "kind": "function",
-        "lineno": 153,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "syncScroll",
-        "kind": "function",
-        "lineno": 177,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleHeaderScroll",
-        "kind": "function",
-        "lineno": 181,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleBodyScroll",
-        "kind": "function",
-        "lineno": 187,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "updateStickyPositions",
-        "kind": "function",
-        "lineno": 207,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/DetailPanel.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.611315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.802829+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "DetailPanel",
-        "kind": "function",
-        "lineno": 21,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatDocstring",
-        "kind": "function",
-        "lineno": 354,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatChangeStatus",
-        "kind": "function",
-        "lineno": 358,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "shouldShowSymbolPlaceholder",
-        "kind": "function",
-        "lineno": 396,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/DiffViewer.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.611315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.802829+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "DiffViewer",
-        "kind": "function",
-        "lineno": 26,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "DiffList",
-        "kind": "function",
-        "lineno": 125,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "toggleExpanded",
-        "kind": "function",
-        "lineno": 130,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/DocsLibraryView.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.611315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.802829+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "DocsLibraryView",
-        "kind": "function",
-        "lineno": 11,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatFileSize",
-        "kind": "function",
-        "lineno": 147,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatDate",
-        "kind": "function",
-        "lineno": 162,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/FileDiffModal.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.611315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.803828+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "parseDiffToSideBySide",
-        "kind": "function",
-        "lineno": 27,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "flushBuffers",
-        "kind": "function",
-        "lineno": 38,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "FileDiffModal",
-        "kind": "function",
-        "lineno": 113,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getCellClass",
-        "kind": "function",
-        "lineno": 217,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatStatus",
-        "kind": "function",
-        "lineno": 228,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/FileStatusSidebar.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.611315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.803828+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "FileStatusSidebar",
-        "kind": "function",
-        "lineno": 15,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "FileListItem",
-        "kind": "function",
-        "lineno": 75,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/HeaderBar.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.611315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.803828+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "HeaderBar",
-        "kind": "function",
-        "lineno": 12,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/HomeView.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.612315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.804829+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "detectionBadgeLabel",
-        "kind": "function",
-        "lineno": 8,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "HomeView",
-        "kind": "function",
-        "lineno": 20,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/LintersView.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50.329922+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.804829+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "formatDate",
-        "kind": "function",
-        "lineno": 53,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatDuration",
-        "kind": "function",
-        "lineno": 64,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatLine",
-        "kind": "function",
-        "lineno": 75,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatIssuesSample",
-        "kind": "function",
-        "lineno": 82,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "filterHistory",
-        "kind": "function",
-        "lineno": 89,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "firstIssueSample",
-        "kind": "function",
-        "lineno": 99,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "LintersView",
-        "kind": "function",
-        "lineno": 113,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "refetchAll",
-        "kind": "function",
-        "lineno": 143,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/MarkdownRenderer.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.612315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.805833+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "MarkdownRenderer",
-        "kind": "function",
-        "lineno": 18,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "CodeBlock",
-        "kind": "function",
-        "lineno": 41,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "CopyIcon",
-        "kind": "function",
-        "lineno": 93,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "CheckIcon",
-        "kind": "function",
-        "lineno": 102,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/OllamaInsightsView.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.612315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.805833+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "normalizeFocus",
-        "kind": "function",
-        "lineno": 57,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatLatency",
-        "kind": "function",
-        "lineno": 70,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatModelDetails",
-        "kind": "function",
-        "lineno": 77,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "OllamaStatusCard",
-        "kind": "function",
-        "lineno": 88,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "OllamaInsightsView",
-        "kind": "function",
-        "lineno": 199,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleInsightsSave",
-        "kind": "function",
-        "lineno": 433,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleOllamaStart",
-        "kind": "function",
-        "lineno": 441,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleQuickOllamaTest",
-        "kind": "function",
-        "lineno": 458,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleOllamaTestSubmit",
-        "kind": "function",
-        "lineno": 472,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/OpenShellModal.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.612315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.806833+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "OpenShellModal",
-        "kind": "function",
-        "lineno": 24,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/OverviewDashboard.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.613999+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.806833+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "formatDateTime",
-        "kind": "function",
-        "lineno": 32,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatDuration",
-        "kind": "function",
-        "lineno": 43,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "truncatePath",
-        "kind": "function",
-        "lineno": 59,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "parseTimestamp",
-        "kind": "function",
-        "lineno": 63,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatRelativeTime",
-        "kind": "function",
-        "lineno": 71,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "OverviewDashboard",
-        "kind": "function",
-        "lineno": 111,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/PermissionsModal.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.613999+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.806833+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "PermissionsModal",
-        "kind": "function",
-        "lineno": 45,
-        "parent": null,
-        "docstring": "============================================================================="
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/PreviewPane.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.613999+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.807827+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "getFileExtension",
-        "kind": "function",
-        "lineno": 14,
-        "parent": null,
-        "docstring": "Funci\u00f3n para detectar el tipo de archivo por extensi\u00f3n"
-      },
-      {
-        "name": "highlightPython",
-        "kind": "function",
-        "lineno": 20,
-        "parent": null,
-        "docstring": "Syntax highlighter simple para Python"
-      },
-      {
-        "name": "isInDocstring",
-        "kind": "function",
-        "lineno": 34,
-        "parent": null,
-        "docstring": "Funci\u00f3n auxiliar para verificar si una posici\u00f3n est\u00e1 dentro de un docstring"
-      },
-      {
-        "name": "highlightTypeScript",
-        "kind": "function",
-        "lineno": 139,
-        "parent": null,
-        "docstring": "Syntax highlighter simple para TypeScript/JavaScript"
-      },
-      {
-        "name": "PreviewPane",
-        "kind": "function",
-        "lineno": 183,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/PromptLibraryView.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.691058+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.807827+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "parseTagsInput",
-        "kind": "function",
-        "lineno": 9,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatDate",
-        "kind": "function",
-        "lineno": 16,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "PromptLibraryView",
-        "kind": "function",
-        "lineno": 27,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleCreatePrompt",
-        "kind": "function",
-        "lineno": 135,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleSaveChanges",
-        "kind": "function",
-        "lineno": 151,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleDeletePrompt",
-        "kind": "function",
-        "lineno": 164,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleCopyPrompt",
-        "kind": "function",
-        "lineno": 178,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/RemoteTerminalView.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.613999+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.808830+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "RemoteTerminalView",
-        "kind": "function",
-        "lineno": 16,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "stripApi",
-        "kind": "function",
-        "lineno": 40,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "connectToShell",
-        "kind": "function",
-        "lineno": 181,
-        "parent": null,
-        "docstring": "Manual connection function - called by user clicking \"Connect\" button"
-      },
-      {
-        "name": "sendResize",
-        "kind": "function",
-        "lineno": 286,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "disconnectFromShell",
-        "kind": "function",
-        "lineno": 314,
-        "parent": null,
-        "docstring": "Disconnect function"
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/RescanButton.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.691058+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.808830+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "RescanButton",
-        "kind": "function",
-        "lineno": 6,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/SearchPanel.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.691058+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.809828+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "SearchPanel",
-        "kind": "function",
-        "lineno": 7,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/SessionHistorySidebar.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.613999+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.809828+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "SessionHistorySidebar",
-        "kind": "function",
-        "lineno": 19,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatDate",
-        "kind": "function",
-        "lineno": 67,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/SettingsView.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50.329922+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.810842+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "extractCustomExcludes",
-        "kind": "function",
-        "lineno": 24,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "sortExcludes",
-        "kind": "function",
-        "lineno": 31,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "SettingsView",
-        "kind": "function",
-        "lineno": 35,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleSave",
-        "kind": "function",
-        "lineno": 120,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleAddExclude",
-        "kind": "function",
-        "lineno": 154,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleRemoveExclude",
-        "kind": "function",
-        "lineno": 177,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleDirectorySelect",
-        "kind": "function",
-        "lineno": 205,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/Sidebar.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.613999+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.810842+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "Sidebar",
-        "kind": "function",
-        "lineno": 13,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "TreeNodeItem",
-        "kind": "function",
-        "lineno": 89,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleClick",
-        "kind": "function",
-        "lineno": 107,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatChangeLabel",
-        "kind": "function",
-        "lineno": 194,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "filterTree",
-        "kind": "function",
-        "lineno": 214,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "matcher",
-        "kind": "function",
-        "lineno": 215,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "walk",
-        "kind": "function",
-        "lineno": 217,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/SlashCommandMenu.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.613999+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.810842+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "SlashCommandMenu",
-        "kind": "function",
-        "lineno": 27,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleClickOutside",
-        "kind": "function",
-        "lineno": 110,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/StageToolkitView.tsx",
     "relative": true,
-    "modified_at": "2025-12-01T16:14:36.771451+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.810842+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "formatList",
-        "kind": "function",
-        "lineno": 38,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "AgentStatusCard",
-        "kind": "function",
-        "lineno": 52,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "DocsStatusCard",
-        "kind": "function",
-        "lineno": 106,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "StageDetectionCard",
-        "kind": "function",
-        "lineno": 138,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "StageToolkitView",
-        "kind": "function",
-        "lineno": 188,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleStageInit",
-        "kind": "function",
-        "lineno": 222,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleSuperClaudeInstall",
-        "kind": "function",
-        "lineno": 226,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/StatusPanel.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.691058+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.810842+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "formatRelative",
-        "kind": "function",
-        "lineno": 5,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "StatusPanel",
-        "kind": "function",
-        "lineno": 16,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "CapabilitySummary",
-        "kind": "function",
-        "lineno": 82,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/TerminalView.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.613999+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.812344+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "TerminalView",
-        "kind": "function",
-        "lineno": 31,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleResize",
-        "kind": "function",
-        "lineno": 89,
-        "parent": null,
-        "docstring": "Resize on window resize"
-      },
-      {
-        "name": "writeEventToTerminal",
-        "kind": "function",
-        "lineno": 140,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "writeCommand",
-        "kind": "function",
-        "lineno": 181,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "writeCommandResult",
-        "kind": "function",
-        "lineno": 190,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "writePhase",
-        "kind": "function",
-        "lineno": 214,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "writeFileChange",
-        "kind": "function",
-        "lineno": 242,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "writeGitOperation",
-        "kind": "function",
-        "lineno": 260,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "writeThought",
-        "kind": "function",
-        "lineno": 269,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "writeError",
-        "kind": "function",
-        "lineno": 278,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "writeSession",
-        "kind": "function",
-        "lineno": 290,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "writeGeneric",
-        "kind": "function",
-        "lineno": 303,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatTimestamp",
-        "kind": "function",
-        "lineno": 315,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getPhaseColor",
-        "kind": "function",
-        "lineno": 325,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/TiltCard.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.613999+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.812344+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "TiltCard",
-        "kind": "function",
-        "lineno": 10,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleMouseMove",
-        "kind": "function",
-        "lineno": 13,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleMouseLeave",
-        "kind": "function",
-        "lineno": 29,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/TimelineView.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.614315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.812344+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "TimelineView",
-        "kind": "function",
-        "lineno": 29,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "PhaseBar",
-        "kind": "function",
-        "lineno": 92,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "buildPhaseBlocks",
-        "kind": "function",
-        "lineno": 137,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatDuration",
-        "kind": "function",
-        "lineno": 240,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/ToolApprovalModal.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.614315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.813354+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "DiffLine",
-        "kind": "function",
-        "lineno": 34,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "DiffViewer",
-        "kind": "function",
-        "lineno": 64,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "CommandPreview",
-        "kind": "function",
-        "lineno": 118,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "GenericPreview",
-        "kind": "function",
-        "lineno": 174,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "ToolApprovalModal",
-        "kind": "function",
-        "lineno": 192,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleReject",
-        "kind": "function",
-        "lineno": 200,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleRejectWithoutFeedback",
-        "kind": "function",
-        "lineno": 212,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "ConnectedToolApprovalModal",
-        "kind": "function",
-        "lineno": 329,
-        "parent": null,
-        "docstring": "============================================================================"
-      },
-      {
-        "name": "handleApprove",
-        "kind": "function",
-        "lineno": 346,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleReject",
-        "kind": "function",
-        "lineno": 350,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/ToolPermissionModal.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.614315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.814349+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "ToolPermissionModal",
-        "kind": "function",
-        "lineno": 26,
-        "parent": null,
-        "docstring": "============================================================================="
-      },
-      {
-        "name": "getActionDescription",
-        "kind": "function",
-        "lineno": 41,
-        "parent": null,
-        "docstring": "Determine action description"
-      },
-      {
-        "name": "PTYPermissionModal",
-        "kind": "function",
-        "lineno": 416,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/TraceModal.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50.329922+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.814349+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "TraceModal",
-        "kind": "function",
-        "lineno": 23,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/__tests__/PreviewPane.test.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692277+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.815348+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "createWrapper",
-        "kind": "function",
-        "lineno": 14,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/icons/AgentIcons.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.614315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.815348+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "MessageCircleIcon",
-        "kind": "function",
-        "lineno": 19,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "BrainIcon",
-        "kind": "function",
-        "lineno": 40,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "LoaderIcon",
-        "kind": "function",
-        "lineno": 69,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "LockIcon",
-        "kind": "function",
-        "lineno": 97,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "ZapIcon",
-        "kind": "function",
-        "lineno": 119,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "ClipboardListIcon",
-        "kind": "function",
-        "lineno": 140,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "AlertTriangleIcon",
-        "kind": "function",
-        "lineno": 166,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "TerminalIcon",
-        "kind": "function",
-        "lineno": 189,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "PencilIcon",
-        "kind": "function",
-        "lineno": 211,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "FileTextIcon",
-        "kind": "function",
-        "lineno": 233,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "EditIcon",
-        "kind": "function",
-        "lineno": 258,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "SearchIcon",
-        "kind": "function",
-        "lineno": 280,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "GlobeIcon",
-        "kind": "function",
-        "lineno": 302,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "CheckSquareIcon",
-        "kind": "function",
-        "lineno": 325,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "NotebookIcon",
-        "kind": "function",
-        "lineno": 347,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "WrenchIcon",
-        "kind": "function",
-        "lineno": 373,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "SparklesIcon",
-        "kind": "function",
-        "lineno": 394,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "TheaterIcon",
-        "kind": "function",
-        "lineno": 419,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "BookIcon",
-        "kind": "function",
-        "lineno": 448,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "BrainCogIcon",
-        "kind": "function",
-        "lineno": 469,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "RefreshIcon",
-        "kind": "function",
-        "lineno": 500,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "CircleIcon",
-        "kind": "function",
-        "lineno": 524,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "InfoIcon",
-        "kind": "function",
-        "lineno": 545,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "XCircleIcon",
-        "kind": "function",
-        "lineno": 568,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "CheckCircleIcon",
-        "kind": "function",
-        "lineno": 591,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "ChevronRightIcon",
-        "kind": "function",
-        "lineno": 613,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "ChevronDownIcon",
-        "kind": "function",
-        "lineno": 634,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getToolIconComponent",
-        "kind": "function",
-        "lineno": 659,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/settings/BackendUrlSection.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.615315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.816350+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "BackendUrlSection",
-        "kind": "function",
-        "lineno": 9,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleTestConnection",
-        "kind": "function",
-        "lineno": 20,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/settings/DirectoryBrowserModal.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50.330923+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.816350+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "DirectoryBrowserModal",
-        "kind": "function",
-        "lineno": 12,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleDirectoryClick",
-        "kind": "function",
-        "lineno": 36,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleSelectCurrent",
-        "kind": "function",
-        "lineno": 48,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/settings/DocstringsSection.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692434+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.816350+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "DocstringsSection",
-        "kind": "function",
-        "lineno": 7,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/settings/ExcludeDirsSection.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692539+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.817349+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "ExcludeDirsSection",
-        "kind": "function",
-        "lineno": 12,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleSubmit",
-        "kind": "function",
-        "lineno": 32,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/settings/RootPathSection.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692613+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.817852+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "RootPathSection",
-        "kind": "function",
-        "lineno": 10,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/terminal/AgentOverlay.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.616410+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.817852+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "AgentOverlay",
-        "kind": "function",
-        "lineno": 22,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/terminal/AgentStatusBar.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.616410+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.818858+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "AgentStatusBar",
-        "kind": "function",
-        "lineno": 17,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getPhaseIcon",
-        "kind": "function",
-        "lineno": 99,
-        "parent": null,
-        "docstring": "Helper functions"
-      },
-      {
-        "name": "getPhaseName",
-        "kind": "function",
-        "lineno": 113,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/terminal/AgentTimeline.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.616410+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.818858+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "AgentTimeline",
-        "kind": "function",
-        "lineno": 18,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "groupEventsByPhase",
-        "kind": "function",
-        "lineno": 104,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getPhaseName",
-        "kind": "function",
-        "lineno": 129,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatTime",
-        "kind": "function",
-        "lineno": 143,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatPhaseDuration",
-        "kind": "function",
-        "lineno": 153,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/components/terminal/CommandWidget.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.616410+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.818858+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "CommandWidget",
-        "kind": "function",
-        "lineno": 18,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "InstallWidget",
-        "kind": "function",
-        "lineno": 69,
-        "parent": null,
-        "docstring": "Install Widget (npm, pip, yarn)"
-      },
-      {
-        "name": "TestWidget",
-        "kind": "function",
-        "lineno": 122,
-        "parent": null,
-        "docstring": "Test Widget"
-      },
-      {
-        "name": "BuildWidget",
-        "kind": "function",
-        "lineno": 196,
-        "parent": null,
-        "docstring": "Build Widget"
-      },
-      {
-        "name": "GitWidget",
-        "kind": "function",
-        "lineno": 244,
-        "parent": null,
-        "docstring": "Git Widget"
-      },
-      {
-        "name": "GenericCommandWidget",
-        "kind": "function",
-        "lineno": 280,
-        "parent": null,
-        "docstring": "Generic Command Widget"
-      },
-      {
-        "name": "detectCommandType",
-        "kind": "function",
-        "lineno": 328,
-        "parent": null,
-        "docstring": "Helper functions"
-      },
-      {
-        "name": "extractPackages",
-        "kind": "function",
-        "lineno": 344,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getGitIcon",
-        "kind": "function",
-        "lineno": 353,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/config/defaultExcludes.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692695+00:00",
+    "modified_at": "2025-12-01T20:01:14.819858+00:00",
     "symbols": [],
-    "errors": []
+    "errors": [
+      {
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
+      }
+    ]
   },
   {
     "path": "frontend/src/hooks/useAuditEventStream.ts",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.616410+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.819858+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useAuditEventStream",
-        "kind": "function",
-        "lineno": 32,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleOpen",
-        "kind": "function",
-        "lineno": 58,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleAuditEvent",
-        "kind": "function",
-        "lineno": 64,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleError",
-        "kind": "function",
-        "lineno": 85,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/hooks/useClassGraphQuery.ts",
@@ -10235,912 +8487,431 @@
   {
     "path": "frontend/src/hooks/useClassUmlQuery.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692759+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.820858+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useClassUmlQuery",
-        "kind": "function",
-        "lineno": 16,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "buildGraphvizSignature",
-        "kind": "function",
-        "lineno": 71,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/hooks/useEventStream.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692808+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.820858+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useEventStream",
-        "kind": "function",
-        "lineno": 36,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleUpdate",
-        "kind": "function",
-        "lineno": 44,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/hooks/useLintersLatestReport.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692853+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.820858+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useLintersLatestReport",
-        "kind": "function",
-        "lineno": 6,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/hooks/useLintersNotifications.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692853+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.821858+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useLintersNotifications",
-        "kind": "function",
-        "lineno": 6,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/hooks/useLintersReports.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692853+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.821858+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useLintersReports",
-        "kind": "function",
-        "lineno": 6,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/hooks/useMarkNotificationRead.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692853+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.821858+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useMarkNotificationRead",
-        "kind": "function",
-        "lineno": 11,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/hooks/useOllamaInsightsQuery.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692853+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.821858+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useOllamaInsightsQuery",
-        "kind": "function",
-        "lineno": 6,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/hooks/useOllamaStartMutation.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692853+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.821858+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useOllamaStartMutation",
-        "kind": "function",
-        "lineno": 6,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/hooks/useOllamaStatusQuery.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692853+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.822858+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useOllamaStatusQuery",
-        "kind": "function",
-        "lineno": 8,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/hooks/useOllamaTestMutation.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692853+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.822858+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useOllamaTestMutation",
-        "kind": "function",
-        "lineno": 7,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/hooks/useSettingsQuery.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692853+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.823361+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useSettingsQuery",
-        "kind": "function",
-        "lineno": 6,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/hooks/useStageInitMutation.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692853+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.823361+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useStageInitMutation",
-        "kind": "function",
-        "lineno": 7,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/hooks/useStageStatusQuery.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692853+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.823361+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useStageStatusQuery",
-        "kind": "function",
-        "lineno": 6,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/hooks/useStatusQuery.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692853+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.823361+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useStatusQuery",
-        "kind": "function",
-        "lineno": 6,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/hooks/useSuperClaudeInstallMutation.ts",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.616410+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.824366+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useSuperClaudeInstallMutation",
-        "kind": "function",
-        "lineno": 6,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/hooks/useTimelineSummary.ts",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50.330923+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.824366+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "useTimelineSummary",
-        "kind": "function",
-        "lineno": 18,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/main.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.616410+00:00",
+    "modified_at": "2025-12-01T20:01:14.824366+00:00",
     "symbols": [],
-    "errors": []
+    "errors": [
+      {
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
+      }
+    ]
   },
   {
     "path": "frontend/src/setupTests.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.692853+00:00",
+    "modified_at": "2025-12-01T20:01:14.825366+00:00",
     "symbols": [],
-    "errors": []
+    "errors": [
+      {
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
+      }
+    ]
   },
   {
     "path": "frontend/src/state/useActivityStore.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.694396+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.825366+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "push",
-        "kind": "function",
-        "lineno": 89,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "clear",
-        "kind": "function",
-        "lineno": 113,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/state/useBackendStore.ts",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.616410+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.826367+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "setBackendUrl",
-        "kind": "function",
-        "lineno": 54,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/state/usePromptLibrary.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.694531+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.826367+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "normalizeTags",
-        "kind": "function",
-        "lineno": 34,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "generateId",
-        "kind": "function",
-        "lineno": 48,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "addPrompt",
-        "kind": "function",
-        "lineno": 59,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "updatePrompt",
-        "kind": "function",
-        "lineno": 80,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "patchPrompt",
-        "kind": "function",
-        "lineno": 90,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "deletePrompt",
-        "kind": "function",
-        "lineno": 111,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "recordUsage",
-        "kind": "function",
-        "lineno": 117,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "clearAll",
-        "kind": "function",
-        "lineno": 135,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/state/useSelectionStore.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.694531+00:00",
+    "modified_at": "2025-12-01T20:01:14.826367+00:00",
     "symbols": [],
-    "errors": []
+    "errors": [
+      {
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
+      }
+    ]
   },
   {
     "path": "frontend/src/stores/agentStore.ts",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.616410+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.827367+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "getEventDescription",
-        "kind": "function",
-        "lineno": 382,
-        "parent": null,
-        "docstring": "Helper function (duplicated from types for convenience)"
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/stores/claudeSessionStore.ts",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.617079+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.827367+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "selectConnected",
-        "kind": "function",
-        "lineno": 1308,
-        "parent": null,
-        "docstring": "============================================================================"
-      },
-      {
-        "name": "selectRunning",
-        "kind": "function",
-        "lineno": 1309,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectMessages",
-        "kind": "function",
-        "lineno": 1310,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectSessionInfo",
-        "kind": "function",
-        "lineno": 1311,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectLastError",
-        "kind": "function",
-        "lineno": 1313,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectActiveToolCalls",
-        "kind": "function",
-        "lineno": 1314,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPendingPermission",
-        "kind": "function",
-        "lineno": 1316,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPermissionDenials",
-        "kind": "function",
-        "lineno": 1318,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPendingToolApproval",
-        "kind": "function",
-        "lineno": 1320,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPendingMCPApproval",
-        "kind": "function",
-        "lineno": 1322,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPTYSessionActive",
-        "kind": "function",
-        "lineno": 1324,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPendingPTYPermission",
-        "kind": "function",
-        "lineno": 1326,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPTYThinking",
-        "kind": "function",
-        "lineno": 1328,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPermissionMode",
-        "kind": "function",
-        "lineno": 1330,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectAgentType",
-        "kind": "function",
-        "lineno": 1332,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPlanDescriptionOnly",
-        "kind": "function",
-        "lineno": 1334,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectToolUseCountInResponse",
-        "kind": "function",
-        "lineno": 1336,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/stores/sessionHistoryStore.ts",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.617309+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.828367+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "generateSessionId",
-        "kind": "function",
-        "lineno": 77,
-        "parent": null,
-        "docstring": "============================================================================"
-      },
-      {
-        "name": "generateTitle",
-        "kind": "function",
-        "lineno": 81,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "generatePreview",
-        "kind": "function",
-        "lineno": 97,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "serializeMessages",
-        "kind": "function",
-        "lineno": 112,
-        "parent": null,
-        "docstring": "Serialize messages for storage (convert Date to string)"
-      },
-      {
-        "name": "deserializeMessages",
-        "kind": "function",
-        "lineno": 120,
-        "parent": null,
-        "docstring": "Deserialize messages from storage (convert string to Date)"
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/stores/themeStore.ts",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.620315+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.828367+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "getSystemTheme",
-        "kind": "function",
-        "lineno": 20,
-        "parent": null,
-        "docstring": "Get system preference"
-      },
-      {
-        "name": "resolveTheme",
-        "kind": "function",
-        "lineno": 28,
-        "parent": null,
-        "docstring": "Resolve theme based on mode"
-      },
-      {
-        "name": "applyTheme",
-        "kind": "function",
-        "lineno": 36,
-        "parent": null,
-        "docstring": "Apply theme to document"
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/types/agent.ts",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.623985+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.837385+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "parseAgentMessage",
-        "kind": "function",
-        "lineno": 258,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "parseAgentStatus",
-        "kind": "function",
-        "lineno": 275,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "parseAgentSummary",
-        "kind": "function",
-        "lineno": 288,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatDuration",
-        "kind": "function",
-        "lineno": 305,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getPhaseName",
-        "kind": "function",
-        "lineno": 324,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getEventDescription",
-        "kind": "function",
-        "lineno": 338,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/types/approval.ts",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.624125+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.837385+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "isCommandPreviewData",
-        "kind": "function",
-        "lineno": 77,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isDiffPreviewData",
-        "kind": "function",
-        "lineno": 91,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isMultiDiffPreviewData",
-        "kind": "function",
-        "lineno": 104,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getPreviewBoolean",
-        "kind": "function",
-        "lineno": 117,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getPreviewString",
-        "kind": "function",
-        "lineno": 129,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getPreviewNumber",
-        "kind": "function",
-        "lineno": 141,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "extractCommandPreview",
-        "kind": "function",
-        "lineno": 153,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "extractDiffPreview",
-        "kind": "function",
-        "lineno": 170,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "extractMultiDiffEdits",
-        "kind": "function",
-        "lineno": 188,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/types/claude-events.ts",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.624125+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.838385+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "isPTYPermissionRequestEvent",
-        "kind": "function",
-        "lineno": 423,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isSystemInitEvent",
-        "kind": "function",
-        "lineno": 436,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isTextEvent",
-        "kind": "function",
-        "lineno": 445,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isToolUseEvent",
-        "kind": "function",
-        "lineno": 452,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isToolResultEvent",
-        "kind": "function",
-        "lineno": 461,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isDoneEvent",
-        "kind": "function",
-        "lineno": 470,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isErrorEvent",
-        "kind": "function",
-        "lineno": 477,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isPermissionRequestEvent",
-        "kind": "function",
-        "lineno": 484,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isToolApprovalRequestEvent",
-        "kind": "function",
-        "lineno": 493,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isMCPApprovalRequestEvent",
-        "kind": "function",
-        "lineno": 502,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isResultEvent",
-        "kind": "function",
-        "lineno": 511,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "hasPermissionDenials",
-        "kind": "function",
-        "lineno": 520,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getToolIcon",
-        "kind": "function",
-        "lineno": 555,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatToolInput",
-        "kind": "function",
-        "lineno": 575,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "generateMessageId",
-        "kind": "function",
-        "lineno": 587,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/utils/changeStatus.ts",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.624479+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.838385+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "getChangeLabel",
-        "kind": "function",
-        "lineno": 3,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getChangeVariant",
-        "kind": "function",
-        "lineno": 22,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isNewFileStatus",
-        "kind": "function",
-        "lineno": 41,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/utils/logger.ts",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.624535+00:00",
-    "symbols": [
+    "modified_at": "2025-12-01T20:01:14.838385+00:00",
+    "symbols": [],
+    "errors": [
       {
-        "name": "debug",
-        "kind": "function",
-        "lineno": 14,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "info",
-        "kind": "function",
-        "lineno": 23,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "warn",
-        "kind": "function",
-        "lineno": 32,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "error",
-        "kind": "function",
-        "lineno": 41,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "createLogger",
-        "kind": "function",
-        "lineno": 48,
-        "parent": null,
-        "docstring": null
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
       }
-    ],
-    "errors": []
+    ]
   },
   {
     "path": "frontend/src/vite-env.d.ts",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.696021+00:00",
+    "modified_at": "2025-12-01T20:01:14.839384+00:00",
     "symbols": [],
-    "errors": []
+    "errors": [
+      {
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
+      }
+    ]
   },
   {
     "path": "frontend/vite.config.ts",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.624535+00:00",
+    "modified_at": "2025-12-01T20:01:14.839384+00:00",
     "symbols": [],
-    "errors": []
+    "errors": [
+      {
+        "message": "tree_sitter_languages no disponible; an\u00e1lisis TS/TSX degradado.",
+        "lineno": null,
+        "col_offset": null
+      }
+    ]
   },
   {
     "path": "home/jesusramos/WorkSpace/Claude-Prompt-Library/lib/python3.12/site-packages/pip/__init__.py",
@@ -53865,7 +51636,7 @@
   {
     "path": "init_project.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.706854+00:00",
+    "modified_at": "2025-12-01T20:01:14.840384+00:00",
     "symbols": [],
     "errors": []
   },
@@ -53971,7 +51742,7 @@
   {
     "path": "stage_config.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.624535+00:00",
+    "modified_at": "2025-12-01T20:01:14.842387+00:00",
     "symbols": [
       {
         "name": "StageThresholds",
@@ -54098,14 +51869,14 @@
   {
     "path": "stage_init/__init__.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.708105+00:00",
+    "modified_at": "2025-12-01T20:01:14.842387+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "stage_init/cli.py",
     "relative": true,
-    "modified_at": "2025-12-01T16:14:36.772451+00:00",
+    "modified_at": "2025-12-01T20:01:14.842387+00:00",
     "symbols": [
       {
         "name": "build_parser",
@@ -54141,7 +51912,7 @@
   {
     "path": "stage_init/initializer.py",
     "relative": true,
-    "modified_at": "2025-12-01T16:14:36.772451+00:00",
+    "modified_at": "2025-12-01T20:01:14.843894+00:00",
     "symbols": [
       {
         "name": "InitializationConfig",
@@ -54254,7 +52025,7 @@
   {
     "path": "stage_init/stage_update.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.624535+00:00",
+    "modified_at": "2025-12-01T20:01:14.843894+00:00",
     "symbols": [
       {
         "name": "StageUpdateResult",
@@ -54297,7 +52068,7 @@
   {
     "path": "stage_init/templates.py",
     "relative": true,
-    "modified_at": "2025-12-01T16:14:36.772451+00:00",
+    "modified_at": "2025-12-01T20:01:14.843894+00:00",
     "symbols": [
       {
         "name": "TemplateSummary",
@@ -54404,7 +52175,7 @@
   {
     "path": "test_dedup.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.626631+00:00",
+    "modified_at": "2025-12-01T20:01:14.860526+00:00",
     "symbols": [
       {
         "name": "TestPTYShellDeduplication",
@@ -54447,7 +52218,7 @@
   {
     "path": "test_structured.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.626631+00:00",
+    "modified_at": "2025-12-01T20:01:14.860526+00:00",
     "symbols": [
       {
         "name": "TestStructuredOutput",
@@ -54490,14 +52261,14 @@
   {
     "path": "tests/conftest.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.710177+00:00",
+    "modified_at": "2025-12-01T20:01:14.860526+00:00",
     "symbols": [],
     "errors": []
   },
   {
     "path": "tests/test_agent_bridge.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.626631+00:00",
+    "modified_at": "2025-12-01T20:01:14.861525+00:00",
     "symbols": [
       {
         "name": "temp_root",
@@ -54673,7 +52444,7 @@
   {
     "path": "tests/test_agent_controller.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.626631+00:00",
+    "modified_at": "2025-12-01T20:01:14.861525+00:00",
     "symbols": [
       {
         "name": "TestAgentTask",
@@ -54793,7 +52564,7 @@
   {
     "path": "tests/test_agent_parser.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.626631+00:00",
+    "modified_at": "2025-12-01T20:01:14.861525+00:00",
     "symbols": [
       {
         "name": "TestAgentOutputParser",
@@ -54906,7 +52677,7 @@
   {
     "path": "tests/test_analysis_engine.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.710177+00:00",
+    "modified_at": "2025-12-01T20:01:14.862525+00:00",
     "symbols": [
       {
         "name": "write_module",
@@ -55047,7 +52818,7 @@
   {
     "path": "tests/test_api.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.626631+00:00",
+    "modified_at": "2025-12-01T20:01:14.862525+00:00",
     "symbols": [
       {
         "name": "write_file",
@@ -55314,7 +53085,7 @@
   {
     "path": "tests/test_audit_hooks.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.626631+00:00",
+    "modified_at": "2025-12-01T20:01:14.863524+00:00",
     "symbols": [
       {
         "name": "temp_root",
@@ -55511,7 +53282,7 @@
   {
     "path": "tests/test_codex_runner.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.626631+00:00",
+    "modified_at": "2025-12-01T20:01:14.863524+00:00",
     "symbols": [
       {
         "name": "TestCodexRunnerConfig",
@@ -55539,7 +53310,7 @@
         "kind": "class",
         "lineno": 55,
         "parent": null,
-        "docstring": "Test ATLAS to Codex mode mappings"
+        "docstring": "Test AEGIS to Codex mode mappings"
       },
       {
         "name": "test_default_mode",
@@ -55686,7 +53457,7 @@
         "kind": "class",
         "lineno": 218,
         "parent": null,
-        "docstring": "Test event mapping from Codex format to ATLAS format"
+        "docstring": "Test event mapping from Codex format to AEGIS format"
       },
       {
         "name": "setup_method",
@@ -55820,7 +53591,7 @@
   {
     "path": "tests/test_file_watcher_hook.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.626631+00:00",
+    "modified_at": "2025-12-01T20:01:14.863524+00:00",
     "symbols": [
       {
         "name": "temp_root",
@@ -55954,7 +53725,7 @@
   {
     "path": "tests/test_insights_scheduler.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.710177+00:00",
+    "modified_at": "2025-12-01T20:01:14.864525+00:00",
     "symbols": [
       {
         "name": "_DummyWatcher",
@@ -56025,7 +53796,7 @@
   {
     "path": "tests/test_linters_pipeline.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.710177+00:00",
+    "modified_at": "2025-12-01T20:01:14.865028+00:00",
     "symbols": [
       {
         "name": "test_run_linters_pipeline_generates_report",
@@ -56040,7 +53811,7 @@
   {
     "path": "tests/test_linters_pipeline_options.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.710177+00:00",
+    "modified_at": "2025-12-01T20:01:14.865028+00:00",
     "symbols": [
       {
         "name": "write_file",
@@ -56069,7 +53840,7 @@
   {
     "path": "tests/test_services.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.627315+00:00",
+    "modified_at": "2025-12-01T20:01:14.865028+00:00",
     "symbols": [
       {
         "name": "_DummyReport",
@@ -56147,7 +53918,7 @@
   {
     "path": "tests/test_stage_config.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.710177+00:00",
+    "modified_at": "2025-12-01T20:01:14.865028+00:00",
     "symbols": [
       {
         "name": "write_module",
@@ -56190,7 +53961,7 @@
   {
     "path": "tests/test_stage_initializer.py",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50.332673+00:00",
+    "modified_at": "2025-12-01T20:01:14.866034+00:00",
     "symbols": [
       {
         "name": "_silence_logs",
@@ -56219,7 +53990,7 @@
   {
     "path": "tools/debug_ollama.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.710177+00:00",
+    "modified_at": "2025-12-01T20:01:14.866034+00:00",
     "symbols": [
       {
         "name": "HttpResponse",
@@ -56262,7 +54033,7 @@
   {
     "path": "tools/test_backend_ollama.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.627315+00:00",
+    "modified_at": "2025-12-01T20:01:14.867033+00:00",
     "symbols": [
       {
         "name": "parse_args",
