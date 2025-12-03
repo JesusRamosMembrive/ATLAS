@@ -448,113 +448,149 @@ export function StageToolkitView(): JSX.Element {
         )}
         <header className="stage-section-header">
           <div>
-            <h2>SuperClaude Framework</h2>
+            <h2>Frameworks y extensiones</h2>
             <p>
-              Sincroniza los comandos <code>/sc</code>, 16 agentes especializados, 7 modos y 8 servidores
-              MCP recomendados directamente desde la{" "}
-              <a
-                href="https://github.com/SuperClaude-Org/SuperClaude_Framework"
-                target="_blank"
-                rel="noreferrer"
-              >
-                distribución oficial
-              </a>
-              .
+              Instala frameworks y skills para potenciar tus agentes de Claude Code.
             </p>
           </div>
         </header>
 
-        <article className="stage-card">
-          <dl className="stage-metrics">
-            {(Object.keys(SUPERCLAUDE_REFERENCE_COUNTS) as SuperClaudeStatKey[]).map((key) => (
-              <div key={key}>
-                <dt>{SUPERCLAUDE_LABELS[key]}</dt>
-                <dd>{superClaudeCounts[key]}</dd>
-              </div>
-            ))}
-          </dl>
-
-          <div className="stage-actions">
-            <button
-              className="primary-btn"
-              type="button"
-              onClick={handleSuperClaudeInstall}
-              disabled={superClaudeMutation.isPending}
-            >
-              {superClaudeMutation.isPending ? "Instalando…" : "Instalar SuperClaude"}
-            </button>
-            <a
-              className="secondary-btn"
-              href="https://github.com/SuperClaude-Org/SuperClaude_Framework"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Abrir repositorio
-            </a>
-          </div>
-
-          {superClaudeError ? <p className="stage-error">{superClaudeError}</p> : null}
-
-          {superClaudeResult ? (
-            <div>
-              {superClaudeResult.installed_at ? (
-                <p className="stage-meta">
-                  Última ejecución: {new Date(superClaudeResult.installed_at).toLocaleString()}
-                </p>
-              ) : null}
-              {superClaudeResult.source_commit ? (
-                <p className="stage-meta">
-                  Commit: <code>{superClaudeResult.source_commit.slice(0, 12)}</code>
-                </p>
-              ) : null}
-
-              {superClaudeResult.copied_paths.length > 0 ? (
-                <>
-                  <h4>Rutas sincronizadas</h4>
-                  <ul className="stage-list">
-                    {superClaudeResult.copied_paths.map((path) => (
-                      <li key={path}>
-                        <code>{path}</code>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              ) : (
-                <p className="stage-hint">
-                  Los activos ya están disponibles en <code>.claude/</code> y <code>docs/superclaude</code>.
-                </p>
-              )}
-
-              {superClaudeResult.logs.length > 0 ? (
-                <details className="stage-log-details">
-                  <summary>Ver registro ({superClaudeResult.logs.length})</summary>
-                  <div className="stage-log-entries">
-                    {superClaudeResult.logs.map((log, index) => {
-                      const stdout = log.stdout.trim();
-                      const stderr = log.stderr.trim();
-                      return (
-                        <div key={`${log.command.join(" ")}-${index}`} className="stage-log-entry">
-                          <p>
-                            <code>{log.command.join(" ")}</code>{" "}
-                            <span className={`stage-badge ${log.exit_code === 0 ? "success" : "warn"}`}>
-                              {log.exit_code === 0 ? "OK" : `Exit ${log.exit_code}`}
-                            </span>
-                          </p>
-                          {stdout ? <pre className="stage-output">{stdout}</pre> : null}
-                          {stderr ? <pre className="stage-output error">{stderr}</pre> : null}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </details>
-              ) : null}
-            </div>
-          ) : (
-            <p className="stage-hint">
-              Ejecuta el instalador para copiar los agentes, modos y servidores MCP recomendados.
+        <div className="stage-frameworks-grid">
+          <article className="stage-card">
+            <header>
+              <h3>SuperClaude Framework</h3>
+            </header>
+            <p>
+              Comandos <code>/sc</code>, 16 agentes especializados, 7 modos y 8 servidores MCP.
             </p>
-          )}
-        </article>
+            <dl className="stage-metrics">
+              {(Object.keys(SUPERCLAUDE_REFERENCE_COUNTS) as SuperClaudeStatKey[]).map((key) => (
+                <div key={key}>
+                  <dt>{SUPERCLAUDE_LABELS[key]}</dt>
+                  <dd>{superClaudeCounts[key]}</dd>
+                </div>
+              ))}
+            </dl>
+
+            <div className="stage-actions">
+              <button
+                className="primary-btn"
+                type="button"
+                onClick={handleSuperClaudeInstall}
+                disabled={superClaudeMutation.isPending}
+              >
+                {superClaudeMutation.isPending ? "Instalando…" : "Instalar"}
+              </button>
+              <a
+                className="secondary-btn"
+                href="https://github.com/SuperClaude-Org/SuperClaude_Framework"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Repositorio
+              </a>
+            </div>
+
+            {superClaudeError ? <p className="stage-error">{superClaudeError}</p> : null}
+
+            {superClaudeResult ? (
+              <div>
+                {superClaudeResult.installed_at ? (
+                  <p className="stage-meta">
+                    Instalado: {new Date(superClaudeResult.installed_at).toLocaleString()}
+                  </p>
+                ) : null}
+                {superClaudeResult.source_commit ? (
+                  <p className="stage-meta">
+                    Commit: <code>{superClaudeResult.source_commit.slice(0, 12)}</code>
+                  </p>
+                ) : null}
+
+                {superClaudeResult.copied_paths.length > 0 ? (
+                  <details className="stage-log-details">
+                    <summary>Rutas sincronizadas ({superClaudeResult.copied_paths.length})</summary>
+                    <ul className="stage-list">
+                      {superClaudeResult.copied_paths.map((path) => (
+                        <li key={path}>
+                          <code>{path}</code>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                ) : (
+                  <p className="stage-hint">
+                    Activos en <code>.claude/</code> y <code>docs/superclaude</code>.
+                  </p>
+                )}
+
+                {superClaudeResult.logs.length > 0 ? (
+                  <details className="stage-log-details">
+                    <summary>Ver registro ({superClaudeResult.logs.length})</summary>
+                    <div className="stage-log-entries">
+                      {superClaudeResult.logs.map((log, index) => {
+                        const stdout = log.stdout.trim();
+                        const stderr = log.stderr.trim();
+                        return (
+                          <div key={`${log.command.join(" ")}-${index}`} className="stage-log-entry">
+                            <p>
+                              <code>{log.command.join(" ")}</code>{" "}
+                              <span className={`stage-badge ${log.exit_code === 0 ? "success" : "warn"}`}>
+                                {log.exit_code === 0 ? "OK" : `Exit ${log.exit_code}`}
+                              </span>
+                            </p>
+                            {stdout ? <pre className="stage-output">{stdout}</pre> : null}
+                            {stderr ? <pre className="stage-output error">{stderr}</pre> : null}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </details>
+                ) : null}
+              </div>
+            ) : (
+              <p className="stage-hint">
+                Instala agentes, modos y servidores MCP recomendados.
+              </p>
+            )}
+          </article>
+
+          <article className="stage-card">
+            <header>
+              <h3>Awesome Claude Skills</h3>
+            </header>
+            <p>
+              Coleccion de skills de la comunidad para Claude Code por{" "}
+              <a href="https://composio.dev" target="_blank" rel="noreferrer">Composio</a>.
+            </p>
+            <dl className="stage-metrics">
+              <div>
+                <dt>Skills disponibles</dt>
+                <dd>50+</dd>
+              </div>
+              <div>
+                <dt>Categorias</dt>
+                <dd>PDF, Excel, APIs...</dd>
+              </div>
+            </dl>
+
+            <div className="stage-actions">
+              <a
+                className="primary-btn"
+                href="https://github.com/ComposioHQ/awesome-claude-skills"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Ver Skills
+              </a>
+            </div>
+
+            <p className="stage-hint">
+              <strong>Instalacion:</strong><br />
+              Linux/macOS: <code>~/.config/claude-code/skills/</code><br />
+              Windows: <code>%APPDATA%\claude-code\skills\</code>
+            </p>
+          </article>
+        </div>
       </section>
 
       <section className="stage-section">

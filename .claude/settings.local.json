@@ -6,7 +6,16 @@
       "Bash(npm install:*)",
       "Bash(npm run typecheck:*)",
       "Bash(npx tsc:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(.venvScriptspip list)",
+      "Bash(findstr:*)",
+      "Bash(C:/Users/jesus/Documents/Workspace/AEGIS/.venv/Scripts/pip.exe list:*)",
+      "Bash(C:/Users/jesus/Documents/Workspace/AEGIS/.venv/Scripts/pip.exe install:*)",
+      "Bash(C:/Users/jesus/Documents/Workspace/AEGIS/.venv/Scripts/pip.exe show:*)",
+      "Bash(C:/Users/jesus/Documents/Workspace/AEGIS/.venv/Scripts/pip.exe uninstall:*)",
+      "Bash(C:/Users/jesus/Documents/Workspace/AEGIS/.venv/Scripts/python.exe -m code_map.cli run:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

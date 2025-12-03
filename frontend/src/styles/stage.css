@@ -518,6 +518,17 @@
   color: #94a3b8;
 }
 
+/* Two-column grid for frameworks section */
+.stage-frameworks-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.stage-frameworks-grid .stage-card {
+  height: 100%;
+}
+
 @media (max-width: 960px) {
   .stage-toolkit {
     padding: 16px;
@@ -539,5 +550,9 @@
 
   .stage-loading-steps {
     flex-direction: column;
+  }
+
+  .stage-frameworks-grid {
+    grid-template-columns: 1fr;
   }
 }

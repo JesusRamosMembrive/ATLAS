@@ -67,7 +67,7 @@ export function HomeView({
         <div className="home-hero__glow" aria-hidden />
         <div className="home-hero__content">
           <div className="home-hero__badges">
-            <span className="home-version-pill">v2.0.0</span>
+            <span className="home-version-pill">v3.0.0</span>
             <span className={`home-stage-pill ${detectionTone}`}>
               {stageStatusQuery.isLoading ? "Calculating…" : detectionLabel}
             </span>
@@ -244,12 +244,12 @@ export function HomeView({
 
         <TiltCard to="/agent" icon={<CardIcons.Agent />}>
           <div className="home-card-body">
-            <h3>Claude Agent</h3>
+            <h3>Agents</h3>
             <p>
-              Interact with Claude Code through a structured UI. Send prompts, see tool calls and results in real-time without TUI rendering issues.
+              Orchestrate AI coding agents (Claude, Codex, Gemini) through a unified UI. Send prompts, monitor tool calls, and view results in real-time.
             </p>
           </div>
-          <span className="home-card-cta">Open Agent →</span>
+          <span className="home-card-cta">Open Agents →</span>
         </TiltCard>
 
         <TiltCard to="/linters" icon={<CardIcons.Linters />}>

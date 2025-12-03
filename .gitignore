@@ -132,3 +132,5 @@ frontend/.vite/
 
 # Stage Toolkit caches
 .stage-cache/
+
+nul

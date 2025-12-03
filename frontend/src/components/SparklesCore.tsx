@@ -82,7 +82,7 @@ export function SparklesCore({
             direction: "none",
             enable: true,
             outModes: {
-              default: "out",
+              default: "bounce",
             },
             random: true,
             speed: speed,
