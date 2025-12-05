@@ -527,10 +527,29 @@ export const useClaudeSessionStore = create<ClaudeSessionStore>()(
 
       // Disconnect
       disconnect: () => {
-        const { _ws } = get();
-        if (_ws) {
-          _ws.close();
+        const { _ws, _reconnectTimeout } = get();
+
+        // Clear any pending reconnect timeout
+        if (_reconnectTimeout) {
+          clearTimeout(_reconnectTimeout);
         }
+
+        // Clear wsUrl FIRST to prevent auto-reconnect in onclose handler
+        // The onclose handler checks: event.code !== 1000 && currentState.wsUrl
+        // By clearing wsUrl before close, we ensure no reconnection attempt
+        set({
+          wsUrl: null,
+          _reconnectTimeout: null,
+          isReconnecting: false,
+          reconnectAttempts: 0,
+          reconnectDelay: RECONNECT_CONFIG.baseDelay,
+          connectionError: null,
+        });
+
+        if (_ws) {
+          _ws.close(1000, "Intentional disconnect");
+        }
+
         set({
           connected: false,
           connecting: false,

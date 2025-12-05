@@ -32,6 +32,8 @@ export interface TerminalSocketIOProps {
   onConnectionChange?: (connected: boolean) => void;
   className?: string;
   height?: string;
+  /** Command to send automatically after connection (e.g., "gemini" or "codex") */
+  initialCommand?: string;
 }
 
 function TerminalSocketIOInner({
@@ -40,6 +42,7 @@ function TerminalSocketIOInner({
   onConnectionChange,
   className = "",
   height = "500px",
+  initialCommand,
 }: TerminalSocketIOProps) {
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
@@ -256,6 +259,16 @@ function TerminalSocketIOInner({
       // Send initial dimensions (like pyxtermjs fitToscreen on connect)
       requestAnimationFrame(() => {
         fitAndResize();
+
+        // Send initial command after shell is ready (small delay for prompt to appear)
+        if (initialCommand) {
+          setTimeout(() => {
+            if (socket.connected) {
+              console.log(`[TerminalSocketIO] Sending initial command: ${initialCommand}`);
+              socket.emit("pty-input", { input: initialCommand + "\n" });
+            }
+          }, 300); // Wait for shell prompt to be ready
+        }
       });
     });
 

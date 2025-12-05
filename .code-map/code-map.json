@@ -8141,9 +8141,9 @@
     "errors": []
   },
   {
-    "path": "frontend/dist/assets/index-D4f-YsBu.js",
+    "path": "frontend/dist/assets/index-BrWTAkXd.js",
     "relative": true,
-    "modified_at": "2025-12-05T15:14:56.129631+00:00",
+    "modified_at": "2025-12-05T15:29:18.179862+00:00",
     "symbols": [],
     "errors": [
       {
@@ -8169,7 +8169,7 @@
   {
     "path": "frontend/dist/index.html",
     "relative": true,
-    "modified_at": "2025-12-05T15:14:56.128631+00:00",
+    "modified_at": "2025-12-05T15:29:18.177758+00:00",
     "symbols": [
       {
         "name": "root",

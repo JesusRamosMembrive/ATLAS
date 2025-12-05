@@ -489,6 +489,7 @@ export function ClaudeAgentView() {
             height="100%"
             className="agent-terminal-embed"
             onConnectionChange={setTerminalConnected}
+            initialCommand={agentType === "gemini" ? "gemini" : agentType === "codex" ? "codex" : undefined}
           />
         </div>
       ) : (
