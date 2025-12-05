@@ -6,8 +6,8 @@
  */
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useClaudeSessionStore, PERMISSION_MODES, PERMISSION_MODE_LABELS, PERMISSION_MODE_DESCRIPTIONS, type PermissionMode, AGENT_TYPES, AGENT_TYPE_LABELS, AGENT_WS_ENDPOINTS, AGENT_MODELS, AGENT_SLASH_COMMANDS, type AgentType, type SlashCommand, GEMINI_MODES, GEMINI_MODE_LABELS, GEMINI_MODE_DESCRIPTIONS, type GeminiMode } from "../stores/claudeSessionStore";
-import { GeminiTerminalEmbed } from "./GeminiTerminalEmbed";
+import { useClaudeSessionStore, PERMISSION_MODES, PERMISSION_MODE_LABELS, PERMISSION_MODE_DESCRIPTIONS, type PermissionMode, AGENT_TYPES, AGENT_TYPE_LABELS, AGENT_WS_ENDPOINTS, AGENT_MODELS, AGENT_SLASH_COMMANDS, type AgentType, type SlashCommand } from "../stores/claudeSessionStore";
+import { TerminalEmbed, terminalEmbedStyles } from "./TerminalEmbed";
 import { SlashCommandMenu, slashCommandMenuStyles } from "./SlashCommandMenu";
 import { OpenShellModal, openShellModalStyles } from "./OpenShellModal";
 import { useSessionHistoryStore } from "../stores/sessionHistoryStore";
@@ -130,9 +130,6 @@ export function ClaudeAgentView() {
     // Model selection
     selectedModels,
     setSelectedModel,
-    // Gemini mode (stream vs terminal)
-    geminiMode,
-    setGeminiMode,
   } = useClaudeSessionStore();
 
   // Session history
@@ -160,15 +157,18 @@ export function ClaudeAgentView() {
     return `${wsBase}${endpoint}`;
   }, [backendUrl, agentType]);
 
+  // Check if this agent uses embedded terminal (not streaming WebSocket)
+  const usesTerminalEmbed = agentType === "codex" || agentType === "gemini";
+
   // Auto-connect on mount
   useEffect(() => {
     // Only connect if not already connected, connecting, or in the middle of reconnecting
     // The store handles reconnection logic internally via onclose handler
-    // IMPORTANT: Don't connect when Gemini is in terminal mode - the embedded terminal handles its own connection
-    if (agentType === "gemini" && geminiMode === "terminal") {
-      // In terminal mode, disconnect if previously connected (e.g., switching modes)
+    // IMPORTANT: Don't connect for Codex/Gemini - they use embedded terminal
+    if (usesTerminalEmbed) {
+      // Disconnect if previously connected (e.g., switching from Claude)
       if (connected) {
-        console.log("[ClaudeAgent] Gemini terminal mode - disconnecting stream WebSocket");
+        console.log("[ClaudeAgent] Terminal embed mode - disconnecting stream WebSocket");
         disconnect();
       }
       return;
@@ -179,20 +179,22 @@ export function ClaudeAgentView() {
       console.log("[ClaudeAgent] Connecting to:", wsUrl);
       connect(wsUrl);
     }
-  }, [connected, connecting, isReconnecting, connect, getWsUrl, agentType, geminiMode, disconnect]);
+  }, [connected, connecting, isReconnecting, connect, getWsUrl, usesTerminalEmbed, disconnect]);
 
   // Reconnect when agent type changes
   useEffect(() => {
-    // Don't reconnect if switching to Gemini terminal mode - it handles its own connection
-    if (agentType === "gemini" && geminiMode === "terminal") {
+    // Don't reconnect if switching to Codex/Gemini - they use embedded terminal
+    if (usesTerminalEmbed) {
       if (connected) {
-        console.log("[ClaudeAgent] Switching to Gemini terminal mode - disconnecting stream WebSocket");
+        console.log("[ClaudeAgent] Switching to terminal embed mode - disconnecting stream WebSocket");
         disconnect();
       }
+      // Clear messages when switching agents
+      clearMessages();
       return;
     }
 
-    // Only reconnect if we were previously connected
+    // Only reconnect if we were previously connected (switching back to Claude)
     if (connected) {
       console.log("[ClaudeAgent] Agent type changed to:", agentType, "- reconnecting...");
       disconnect();
@@ -206,7 +208,7 @@ export function ClaudeAgentView() {
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [agentType, geminiMode]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [agentType, usesTerminalEmbed]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -444,8 +446,6 @@ export function ClaudeAgentView() {
         onModelChange={(model) => setSelectedModel(agentType, model)}
         permissionMode={permissionMode}
         onPermissionModeChange={setPermissionMode}
-        geminiMode={geminiMode}
-        onGeminiModeChange={setGeminiMode}
         totalInputTokens={totalInputTokens}
         totalOutputTokens={totalOutputTokens}
         isReconnecting={isReconnecting}
@@ -476,13 +476,17 @@ export function ClaudeAgentView() {
         </div>
       )}
 
-      {/* Conditional: Gemini Terminal Mode OR Stream Mode UI */}
-      {agentType === "gemini" && geminiMode === "terminal" ? (
-        /* Gemini Terminal Mode - embedded terminal with native approval prompts */
-        <div className="gemini-terminal-wrapper">
-          <GeminiTerminalEmbed
-            selectedModel={selectedModels[agentType]}
-            cwd={cwd ?? undefined}
+      {/* Conditional: Terminal Embed (Codex/Gemini) OR Claude Stream Mode */}
+      {usesTerminalEmbed ? (
+        /* Terminal Embed Mode - for Codex and Gemini */
+        <div className="agent-terminal-wrapper">
+          <style>{terminalEmbedStyles}</style>
+          <TerminalEmbed
+            autoConnect
+            welcomeMessage={`${AGENT_TYPE_LABELS[agentType]} Terminal`}
+            height="100%"
+            className="agent-terminal-embed"
+            showInputBox={true}
           />
         </div>
       ) : (
@@ -689,8 +693,6 @@ interface AgentHeaderProps {
   onModelChange: (model: string) => void;
   permissionMode: PermissionMode;
   onPermissionModeChange: (mode: PermissionMode) => void;
-  geminiMode: GeminiMode;
-  onGeminiModeChange: (mode: GeminiMode) => void;
   totalInputTokens: number;
   totalOutputTokens: number;
   isReconnecting: boolean;
@@ -713,8 +715,6 @@ function AgentHeader({
   onModelChange,
   permissionMode,
   onPermissionModeChange,
-  geminiMode,
-  onGeminiModeChange,
   totalInputTokens,
   totalOutputTokens,
   isReconnecting,
@@ -807,20 +807,6 @@ function AgentHeader({
             </option>
           ))}
         </select>
-        {agentType === "gemini" && (
-          <select
-            className="gemini-mode-select"
-            value={geminiMode}
-            onChange={(e) => onGeminiModeChange(e.target.value as GeminiMode)}
-            title={`Gemini mode: ${GEMINI_MODE_DESCRIPTIONS[geminiMode]}`}
-          >
-            {GEMINI_MODES.map((mode) => (
-              <option key={mode} value={mode} title={GEMINI_MODE_DESCRIPTIONS[mode]}>
-                {GEMINI_MODE_LABELS[mode]}
-              </option>
-            ))}
-          </select>
-        )}
         {totalTokens > 0 && (
           <span
             className="token-usage"
@@ -2539,43 +2525,11 @@ const styles = `
 }
 
 /* ============================================================================
-   GEMINI TERMINAL MODE STYLES
+   AGENT TERMINAL MODE STYLES (Codex/Gemini)
    ============================================================================ */
 
-/* Gemini mode select - styled to match other selects */
-.gemini-mode-select {
-  padding: 6px 12px;
-  font-size: 12px;
-  background: rgba(66, 133, 244, 0.2);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(66, 133, 244, 0.4);
-  border-radius: 8px;
-  color: #60a5fa;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  outline: none;
-  max-width: 160px;
-}
-
-.gemini-mode-select:hover {
-  background: rgba(66, 133, 244, 0.35);
-  border-color: rgba(66, 133, 244, 0.6);
-  color: #93c5fd;
-}
-
-.gemini-mode-select:focus {
-  border-color: rgba(66, 133, 244, 0.7);
-  box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
-}
-
-.gemini-mode-select option {
-  background: var(--agent-bg-secondary);
-  color: var(--agent-text-primary);
-  padding: 8px;
-}
-
-/* Gemini terminal wrapper - fills available space */
-.gemini-terminal-wrapper {
+/* Agent terminal wrapper - fills available space (Codex/Gemini) */
+.agent-terminal-wrapper {
   flex: 1;
   min-height: 400px;
   display: flex;
@@ -2585,22 +2539,26 @@ const styles = `
   height: 100%;
 }
 
-.gemini-terminal-wrapper .gemini-terminal-embed {
+.agent-terminal-wrapper .agent-terminal-embed {
   flex: 1;
   min-height: 400px;
   height: 100%;
 }
 
-/* Mobile adjustments for Gemini mode */
-@media (max-width: 480px) {
-  .gemini-mode-select {
-    padding: 4px 8px;
-    font-size: 11px;
-    max-width: 120px;
-  }
+.agent-terminal-wrapper .terminal-embed {
+  height: 100%;
+}
 
-  .gemini-terminal-wrapper {
+.agent-terminal-wrapper .terminal-embed-content {
+  flex: 1;
+  min-height: 350px;
+}
+
+/* Mobile adjustments for terminal mode */
+@media (max-width: 480px) {
+  .agent-terminal-wrapper {
     padding: 8px;
+    min-height: 300px;
   }
 }
 `;

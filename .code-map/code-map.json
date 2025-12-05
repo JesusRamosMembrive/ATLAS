@@ -7791,6 +7791,92 @@
     "errors": []
   },
   {
+    "path": "docs/TerminalEmbed_manual_dims.tsx",
+    "relative": true,
+    "modified_at": "2025-12-04T20:45:29.128356+00:00",
+    "symbols": [
+      {
+        "name": "measureCharacterDimensions",
+        "kind": "function",
+        "lineno": 31,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "calculateTerminalDimensions",
+        "kind": "function",
+        "lineno": 61,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "TerminalEmbedInner",
+        "kind": "function",
+        "lineno": 79,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "stripApi",
+        "kind": "function",
+        "lineno": 117,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "checkReady",
+        "kind": "function",
+        "lineno": 130,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "sendResize",
+        "kind": "function",
+        "lineno": 384,
+        "parent": null,
+        "docstring": "Handle resize - use our manual calculation"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "path": "docs/TerminalEmbed_v3_fixed.tsx",
+    "relative": true,
+    "modified_at": "2025-12-04T20:28:23.051011+00:00",
+    "symbols": [
+      {
+        "name": "TerminalEmbedInner",
+        "kind": "function",
+        "lineno": 36,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "stripApi",
+        "kind": "function",
+        "lineno": 77,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "checkDimensions",
+        "kind": "function",
+        "lineno": 95,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "sendResize",
+        "kind": "function",
+        "lineno": 389,
+        "parent": null,
+        "docstring": "Handle resize events"
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "frontend/dist/assets/index-DZPQ17YG.js",
     "relative": true,
     "modified_at": "2025-12-01T10:48:33.705028+00:00",
@@ -8439,7 +8525,7 @@
   {
     "path": "frontend/src/components/ClaudeAgentView.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:22:21.737499+00:00",
+    "modified_at": "2025-12-05T09:50:17.531260+00:00",
     "symbols": [
       {
         "name": "extractResultContent",
@@ -8458,56 +8544,56 @@
       {
         "name": "stripApi",
         "kind": "function",
-        "lineno": 145,
+        "lineno": 142,
         "parent": null,
         "docstring": null
       },
       {
         "name": "handleGlobalKeyDown",
         "kind": "function",
-        "lineno": 341,
+        "lineno": 343,
         "parent": null,
         "docstring": null
       },
       {
         "name": "AgentHeader",
         "kind": "function",
-        "lineno": 704,
+        "lineno": 706,
         "parent": null,
         "docstring": null
       },
       {
         "name": "EmptyState",
         "kind": "function",
-        "lineno": 855,
+        "lineno": 841,
         "parent": null,
         "docstring": null
       },
       {
         "name": "MessageItem",
         "kind": "function",
-        "lineno": 874,
+        "lineno": 860,
         "parent": null,
         "docstring": null
       },
       {
         "name": "PermissionDenialsBanner",
         "kind": "function",
-        "lineno": 1039,
+        "lineno": 1025,
         "parent": null,
         "docstring": null
       },
       {
         "name": "truncateInput",
         "kind": "function",
-        "lineno": 1100,
+        "lineno": 1086,
         "parent": null,
         "docstring": null
       },
       {
         "name": "truncatePath",
         "kind": "function",
-        "lineno": 1110,
+        "lineno": 1096,
         "parent": null,
         "docstring": "============================================================================"
       }
@@ -8797,42 +8883,6 @@
         "lineno": 75,
         "parent": null,
         "docstring": null
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "frontend/src/components/GeminiTerminalEmbed.tsx",
-    "relative": true,
-    "modified_at": "2025-12-04T18:22:21.737499+00:00",
-    "symbols": [
-      {
-        "name": "GeminiTerminalEmbedInner",
-        "kind": "function",
-        "lineno": 36,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "stripApi",
-        "kind": "function",
-        "lineno": 60,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "checkDimensions",
-        "kind": "function",
-        "lineno": 120,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "sendResize",
-        "kind": "function",
-        "lineno": 318,
-        "parent": null,
-        "docstring": "Handle terminal resize events"
       }
     ],
     "errors": []
@@ -9221,42 +9271,14 @@
   {
     "path": "frontend/src/components/RemoteTerminalView.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:22:21.737499+00:00",
+    "modified_at": "2025-12-04T18:32:48.334640+00:00",
     "symbols": [
       {
         "name": "RemoteTerminalView",
         "kind": "function",
-        "lineno": 16,
+        "lineno": 9,
         "parent": null,
         "docstring": null
-      },
-      {
-        "name": "stripApi",
-        "kind": "function",
-        "lineno": 37,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "connectToShell",
-        "kind": "function",
-        "lineno": 178,
-        "parent": null,
-        "docstring": "Manual connection function - called by user clicking \"Connect\" button"
-      },
-      {
-        "name": "sendResize",
-        "kind": "function",
-        "lineno": 259,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "disconnectFromShell",
-        "kind": "function",
-        "lineno": 287,
-        "parent": null,
-        "docstring": "Disconnect function"
       }
     ],
     "errors": []
@@ -9560,6 +9582,56 @@
         "lineno": 82,
         "parent": null,
         "docstring": null
+      }
+    ],
+    "errors": []
+  },
+  {
+    "path": "frontend/src/components/TerminalEmbed.tsx",
+    "relative": true,
+    "modified_at": "2025-12-05T09:50:00.435069+00:00",
+    "symbols": [
+      {
+        "name": "measureCharacterDimensions",
+        "kind": "function",
+        "lineno": 37,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "calculateTerminalDimensions",
+        "kind": "function",
+        "lineno": 77,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "TerminalEmbedInner",
+        "kind": "function",
+        "lineno": 95,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "stripApi",
+        "kind": "function",
+        "lineno": 138,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "checkReady",
+        "kind": "function",
+        "lineno": 151,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "sendResize",
+        "kind": "function",
+        "lineno": 453,
+        "parent": null,
+        "docstring": "Handle resize - use our manual calculation"
       }
     ],
     "errors": []

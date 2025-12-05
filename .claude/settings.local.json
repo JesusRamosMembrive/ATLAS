@@ -32,7 +32,8 @@
       "Bash(timeout 15 gemini:*)",
       "Bash(echo:*)",
       "Bash(timeout 30 gemini:*)",
-      "Bash(timeout 45 gemini:*)"
+      "Bash(timeout 45 gemini:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []
