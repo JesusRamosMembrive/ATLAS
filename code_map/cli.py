@@ -98,9 +98,11 @@ def run(
         fg=typer.colors.GREEN,
     )
 
+    # Use the combined app with Socket.IO PTY support
+    # Falls back to plain FastAPI on Windows or if Socket.IO init fails
     config = uvicorn.Config(
-        "code_map.server:create_app",
-        factory=True,
+        "code_map.server:app_with_socketio",
+        factory=False,
         host=host,
         port=port,
         log_level=log_level.lower(),

@@ -31,6 +31,9 @@ defusedxml>=0.7,<0.8
 # Terminal / Agent runners (cross-platform)
 anthropic>=0.40,<1
 
+# Socket.IO for real-time terminal communication
+python-socketio[asyncio]>=5.11,<6
+
 # Platform-specific PTY shell support
 # Unix: pexpect for PTY-based shell and agent runner
 pexpect>=4.9,<5; sys_platform != "win32"

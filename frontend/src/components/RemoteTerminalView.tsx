@@ -1,19 +1,19 @@
-import { TerminalEmbed, terminalEmbedStyles } from "./TerminalEmbed";
+import { TerminalSocketIO, terminalSocketIOStyles } from "./TerminalSocketIO";
 
 /**
  * Remote Terminal View Page
  *
  * Full-page terminal view with security warning.
- * Uses the reusable TerminalEmbed component.
+ * Uses Socket.IO for reliable PTY communication.
  */
 export function RemoteTerminalView() {
   return (
     <div className="terminal-view">
-      <style>{terminalEmbedStyles}</style>
+      <style>{terminalSocketIOStyles}</style>
 
       {/* Terminal Container */}
       <div className="terminal-page-container">
-        <TerminalEmbed
+        <TerminalSocketIO
           welcomeMessage="AEGIS Remote Terminal"
           height="600px"
           className="terminal-page-embed"

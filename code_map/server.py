@@ -7,8 +7,9 @@ from __future__ import annotations
 
 import logging
 import os
+import sys
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Any
 
 from contextlib import asynccontextmanager
 
@@ -21,6 +22,10 @@ from .scheduler import ChangeScheduler
 from .state import AppState
 from .settings import load_settings, save_settings
 from .api.routes import router as api_router
+
+# Socket.IO PTY server (Unix only for now)
+_IS_WINDOWS = sys.platform == "win32"
+_pty_server: Optional[Any] = None
 
 logger = logging.getLogger(__name__)
 
@@ -103,4 +108,49 @@ def create_app(root: Optional[str | Path] = None) -> FastAPI:
     return app
 
 
+def create_app_with_socketio(root: Optional[str | Path] = None) -> Any:
+    """
+    Create FastAPI app combined with Socket.IO PTY server.
+
+    On Unix: Returns combined ASGI app with Socket.IO at /pty namespace
+    On Windows: Returns plain FastAPI app (Socket.IO PTY not supported)
+
+    Args:
+        root: Project root path
+
+    Returns:
+        Combined ASGI application
+    """
+    global _pty_server
+
+    fastapi_app = create_app(root)
+
+    if _IS_WINDOWS:
+        logger.info("Windows detected - Socket.IO PTY not available, using WebSocket fallback")
+        return fastapi_app
+
+    try:
+        from .terminal.socketio_pty import SocketIOPTYServer
+
+        cors_origins = _parse_allowed_origins()
+        _pty_server = SocketIOPTYServer(cors_allowed_origins=cors_origins)
+
+        # Combine Socket.IO with FastAPI
+        combined_app = _pty_server.get_asgi_app(fastapi_app)
+
+        logger.info("Socket.IO PTY server initialized at /pty namespace")
+        return combined_app
+
+    except ImportError as e:
+        logger.warning(f"Socket.IO PTY not available: {e}. Using WebSocket fallback.")
+        return fastapi_app
+    except Exception as e:
+        logger.error(f"Failed to initialize Socket.IO PTY: {e}. Using WebSocket fallback.")
+        return fastapi_app
+
+
+# Default app without Socket.IO (for backwards compatibility)
 app = create_app()
+
+# Combined app with Socket.IO PTY support
+app_with_socketio = create_app_with_socketio()

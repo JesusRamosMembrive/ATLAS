@@ -1,51 +1,62 @@
 # Estado Actual del Proyecto
 
-**Última actualización**: 2025-12-03
-**Etapa detectada**: [Se actualiza automáticamente]
-**Versión**: 1.0
+**Última actualización**: 2025-12-05
+**Etapa detectada**: Stage 3 (High Confidence)
+**Versión**: 1.2
 
 ---
 
 ## 📍 ESTADO ACTUAL
 
-**En progreso:**
-- [Describe qué estás implementando/investigando AHORA]
+**Completado:**
+- ✅ Migración completa de terminal a Socket.IO (basada en pyxtermjs)
+- ✅ Eliminado código WebSocket legacy del frontend
+- ✅ Simplificado RemoteTerminalView (solo Socket.IO)
+- ✅ Corregido problema de escritura en TerminalSocketIO (listener closure fix)
 
-**Completado recientemente:**
-- [Último cambio importante #1]
-- [Último cambio importante #2]
+**Archivos modificados:**
+- `code_map/terminal/socketio_pty.py`: Servidor PTY con Socket.IO
+- `code_map/server.py`: Integración Socket.IO con FastAPI vía ASGI
+- `frontend/src/components/TerminalSocketIO.tsx`: Componente React con socket.io-client (corregido onData listener)
+- `frontend/src/components/RemoteTerminalView.tsx`: Solo Socket.IO, sin toggle
+- `frontend/src/components/ClaudeAgentView.tsx`: Usa TerminalSocketIO para Codex/Gemini
+- `ELIMINADO: frontend/src/components/TerminalEmbed.tsx` (WebSocket legacy)
 
-**Bloqueado/Pendiente:**
-- [Issues que necesitan resolverse antes de continuar]
+**Pendiente de pruebas:**
+- Probar terminal con `gemini` CLI para validar que no hay saltos de línea
+- Probar terminal con `codex` CLI
 
 ---
 
 ## 🎯 PRÓXIMOS PASOS
 
 1. **Inmediato** (Esta sesión):
-   - [Tarea prioritaria #1]
-   - [Tarea prioritaria #2]
+   - ✅ Migrar terminal a Socket.IO
+   - ✅ Eliminar WebSocket legacy del frontend
+   - Probar con `gemini` CLI para validar funcionamiento
 
 2. **Corto plazo** (Próximas 1-3 sesiones):
-   - [Feature o mejora planificada]
-   - [Refactor o deuda técnica]
+   - Documentar la arquitectura Socket.IO
+   - Considerar eliminar endpoint WebSocket legacy del backend (mantenerlo como fallback por ahora)
 
 3. **Mediano plazo** (Cuando sea necesario):
-   - [Evoluciones futuras basadas en pain points]
+   - Soporte Windows con ConPTY + Socket.IO
 
 ---
 
 ## 📝 DECISIONES RECIENTES
 
-### [Nombre de la decisión] (2025-12-03)
-**Qué**: [Breve descripción]
-**Por qué**: [Razón principal]
-**Impacto**: [Archivos/componentes afectados]
-
-### [Decisión anterior importante]
-**Qué**: [Descripción]
-**Por qué**: [Razón]
-**Impacto**: [Archivos afectados]
+### Migración a Socket.IO (2025-12-05)
+**Qué**: Reemplazar WebSocket nativo por python-socketio + socket.io-client
+**Por qué**: pyxtermjs usa este patrón y funciona perfectamente con agentes TUI. La diferencia clave:
+- Buffer 20KB (vs 1KB) para escape sequences
+- Eventos tipados (pty-input, pty-output, resize)
+- Debounce 50ms (vs 200ms)
+- Reconexión automática
+**Impacto**:
+- Backend: `socketio_pty.py`, `server.py`, `cli.py`
+- Frontend: `TerminalSocketIO.tsx`, `RemoteTerminalView.tsx`
+- Deps: `python-socketio[asyncio]`, `socket.io-client`
 
 ---
 

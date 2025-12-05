@@ -7,7 +7,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useClaudeSessionStore, PERMISSION_MODES, PERMISSION_MODE_LABELS, PERMISSION_MODE_DESCRIPTIONS, type PermissionMode, AGENT_TYPES, AGENT_TYPE_LABELS, AGENT_WS_ENDPOINTS, AGENT_MODELS, AGENT_SLASH_COMMANDS, type AgentType, type SlashCommand } from "../stores/claudeSessionStore";
-import { TerminalEmbed, terminalEmbedStyles } from "./TerminalEmbed";
+import { TerminalSocketIO, terminalSocketIOStyles } from "./TerminalSocketIO";
 import { SlashCommandMenu, slashCommandMenuStyles } from "./SlashCommandMenu";
 import { OpenShellModal, openShellModalStyles } from "./OpenShellModal";
 import { useSessionHistoryStore } from "../stores/sessionHistoryStore";
@@ -158,17 +158,17 @@ export function ClaudeAgentView() {
   }, [backendUrl, agentType]);
 
   // Check if this agent uses embedded terminal (not streaming WebSocket)
-  const usesTerminalEmbed = agentType === "codex" || agentType === "gemini";
+  const usesTerminalSocketIO = agentType === "codex" || agentType === "gemini";
 
   // Auto-connect on mount
   useEffect(() => {
     // Only connect if not already connected, connecting, or in the middle of reconnecting
     // The store handles reconnection logic internally via onclose handler
-    // IMPORTANT: Don't connect for Codex/Gemini - they use embedded terminal
-    if (usesTerminalEmbed) {
+    // IMPORTANT: Don't connect for Codex/Gemini - they use Socket.IO terminal
+    if (usesTerminalSocketIO) {
       // Disconnect if previously connected (e.g., switching from Claude)
       if (connected) {
-        console.log("[ClaudeAgent] Terminal embed mode - disconnecting stream WebSocket");
+        console.log("[ClaudeAgent] Terminal Socket.IO mode - disconnecting stream WebSocket");
         disconnect();
       }
       return;
@@ -179,14 +179,14 @@ export function ClaudeAgentView() {
       console.log("[ClaudeAgent] Connecting to:", wsUrl);
       connect(wsUrl);
     }
-  }, [connected, connecting, isReconnecting, connect, getWsUrl, usesTerminalEmbed, disconnect]);
+  }, [connected, connecting, isReconnecting, connect, getWsUrl, usesTerminalSocketIO, disconnect]);
 
   // Reconnect when agent type changes
   useEffect(() => {
-    // Don't reconnect if switching to Codex/Gemini - they use embedded terminal
-    if (usesTerminalEmbed) {
+    // Don't reconnect if switching to Codex/Gemini - they use Socket.IO terminal
+    if (usesTerminalSocketIO) {
       if (connected) {
-        console.log("[ClaudeAgent] Switching to terminal embed mode - disconnecting stream WebSocket");
+        console.log("[ClaudeAgent] Switching to terminal Socket.IO mode - disconnecting stream WebSocket");
         disconnect();
       }
       // Clear messages when switching agents
@@ -208,7 +208,7 @@ export function ClaudeAgentView() {
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [agentType, usesTerminalEmbed]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [agentType, usesTerminalSocketIO]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -476,17 +476,16 @@ export function ClaudeAgentView() {
         </div>
       )}
 
-      {/* Conditional: Terminal Embed (Codex/Gemini) OR Claude Stream Mode */}
-      {usesTerminalEmbed ? (
-        /* Terminal Embed Mode - for Codex and Gemini */
+      {/* Conditional: Terminal Socket.IO (Codex/Gemini) OR Claude Stream Mode */}
+      {usesTerminalSocketIO ? (
+        /* Terminal Socket.IO Mode - for Codex and Gemini */
         <div className="agent-terminal-wrapper">
-          <style>{terminalEmbedStyles}</style>
-          <TerminalEmbed
+          <style>{terminalSocketIOStyles}</style>
+          <TerminalSocketIO
             autoConnect
             welcomeMessage={`${AGENT_TYPE_LABELS[agentType]} Terminal`}
             height="100%"
             className="agent-terminal-embed"
-            showInputBox={true}
           />
         </div>
       ) : (
