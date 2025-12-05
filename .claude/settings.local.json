@@ -33,7 +33,14 @@
       "Bash(echo:*)",
       "Bash(timeout 30 gemini:*)",
       "Bash(timeout 45 gemini:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(/home/jesusramos/Workspace/AEGIS/.venv/bin/pip install:*)",
+      "Bash(source .venv/bin/activate)",
+      "Bash(pip install:*)",
+      "Bash(npm run build:*)",
+      "Bash(python:*)",
+      "Bash(.venv/bin/pip install:*)",
+      "Bash(timeout 5 .venv/bin/python:*)"
     ],
     "deny": [],
     "ask": []

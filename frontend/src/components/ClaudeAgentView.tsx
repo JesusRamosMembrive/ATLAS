@@ -86,6 +86,7 @@ export function ClaudeAgentView() {
   const [slashMenuVisible, setSlashMenuVisible] = useState(false);
   const [slashFilter, setSlashFilter] = useState("");
   const [openShellModalVisible, setOpenShellModalVisible] = useState(false);
+  const [terminalConnected, setTerminalConnected] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
@@ -434,8 +435,8 @@ export function ClaudeAgentView() {
       <div className="claude-agent-card">
         {/* Header */}
         <AgentHeader
-        connected={connected}
-        connecting={connecting}
+        connected={usesTerminalSocketIO ? terminalConnected : connected}
+        connecting={usesTerminalSocketIO ? false : connecting}
         running={running}
         sessionInfo={sessionInfo}
         cwd={cwd}
@@ -454,6 +455,7 @@ export function ClaudeAgentView() {
         onReconnect={handleReconnect}
         onNewSession={newSession}
         onClearMessages={clearMessages}
+        usesTerminal={usesTerminalSocketIO}
       />
 
       {/* Connection Error Banner */}
@@ -486,6 +488,7 @@ export function ClaudeAgentView() {
             welcomeMessage={`${AGENT_TYPE_LABELS[agentType]} Terminal`}
             height="100%"
             className="agent-terminal-embed"
+            onConnectionChange={setTerminalConnected}
           />
         </div>
       ) : (
@@ -700,6 +703,7 @@ interface AgentHeaderProps {
   onReconnect: () => void;
   onNewSession: () => void;
   onClearMessages: () => void;
+  usesTerminal: boolean;
 }
 
 function AgentHeader({
@@ -722,6 +726,7 @@ function AgentHeader({
   onReconnect,
   onNewSession,
   onClearMessages,
+  usesTerminal,
 }: AgentHeaderProps) {
   const toggleContinueSession = useCallback(() => {
     useClaudeSessionStore.setState((state) => ({
@@ -782,30 +787,34 @@ function AgentHeader({
             </option>
           ))}
         </select>
-        <select
-          className="model-select"
-          value={selectedModel}
-          onChange={(e) => onModelChange(e.target.value)}
-          title={`Select model for ${AGENT_TYPE_LABELS[agentType]}`}
-        >
-          {AGENT_MODELS[agentType].map((model) => (
-            <option key={model} value={model}>
-              {model}
-            </option>
-          ))}
-        </select>
-        <select
-          className="permission-mode-select"
-          value={permissionMode}
-          onChange={(e) => onPermissionModeChange(e.target.value as PermissionMode)}
-          title={`Permission mode: ${PERMISSION_MODE_DESCRIPTIONS[permissionMode]}\n\nNote: Stream mode doesn't support interactive prompts. Use 'Bypass All' for full autonomy or configure allowed tools in .claude/settings.local.json`}
-        >
-          {PERMISSION_MODES.map((mode) => (
-            <option key={mode} value={mode} title={PERMISSION_MODE_DESCRIPTIONS[mode]}>
-              {PERMISSION_MODE_LABELS[mode]}
-            </option>
-          ))}
-        </select>
+        {!usesTerminal && (
+          <>
+            <select
+              className="model-select"
+              value={selectedModel}
+              onChange={(e) => onModelChange(e.target.value)}
+              title={`Select model for ${AGENT_TYPE_LABELS[agentType]}`}
+            >
+              {AGENT_MODELS[agentType].map((model) => (
+                <option key={model} value={model}>
+                  {model}
+                </option>
+              ))}
+            </select>
+            <select
+              className="permission-mode-select"
+              value={permissionMode}
+              onChange={(e) => onPermissionModeChange(e.target.value as PermissionMode)}
+              title={`Permission mode: ${PERMISSION_MODE_DESCRIPTIONS[permissionMode]}\n\nNote: Stream mode doesn't support interactive prompts. Use 'Bypass All' for full autonomy or configure allowed tools in .claude/settings.local.json`}
+            >
+              {PERMISSION_MODES.map((mode) => (
+                <option key={mode} value={mode} title={PERMISSION_MODE_DESCRIPTIONS[mode]}>
+                  {PERMISSION_MODE_LABELS[mode]}
+                </option>
+              ))}
+            </select>
+          </>
+        )}
         {totalTokens > 0 && (
           <span
             className="token-usage"
@@ -819,19 +828,21 @@ function AgentHeader({
       </div>
       <div className="claude-header-right">
         {cwd && <span className="claude-cwd" title={cwd}>{truncatePath(cwd, 40)}</span>}
-        <div className="claude-header-actions">
-          <button onClick={onClearMessages} className="header-btn" title="Clear messages (Ctrl+L)">
-            Clear
-          </button>
-          <button onClick={onNewSession} className="header-btn" title="Start new session (Ctrl+Shift+N)">
-            New Session
-          </button>
-          {!connected && !connecting && (
-            <button onClick={onReconnect} className="header-btn primary" title="Reconnect">
-              Reconnect
+        {!usesTerminal && (
+          <div className="claude-header-actions">
+            <button onClick={onClearMessages} className="header-btn" title="Clear messages (Ctrl+L)">
+              Clear
             </button>
-          )}
-        </div>
+            <button onClick={onNewSession} className="header-btn" title="Start new session (Ctrl+Shift+N)">
+              New Session
+            </button>
+            {!connected && !connecting && (
+              <button onClick={onReconnect} className="header-btn primary" title="Reconnect">
+                Reconnect
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

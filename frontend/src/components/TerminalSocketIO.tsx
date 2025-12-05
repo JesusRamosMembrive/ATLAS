@@ -36,7 +36,7 @@ export interface TerminalSocketIOProps {
 
 function TerminalSocketIOInner({
   autoConnect = false,
-  welcomeMessage = "AEGIS Terminal (Socket.IO)",
+  welcomeMessage = "AEGIS Terminal",
   onConnectionChange,
   className = "",
   height = "500px",
@@ -353,7 +353,7 @@ function TerminalSocketIOInner({
   return (
     <div className={`terminal-socketio ${className}`}>
       <div className="terminal-socketio-header">
-        <span className="terminal-socketio-title">Terminal (Socket.IO)</span>
+        <span className="terminal-socketio-title">Terminal </span>
         <div className="terminal-socketio-controls">
           <span
             className="terminal-socketio-dims"
