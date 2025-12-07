@@ -3,9 +3,8 @@
 
 import json
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
-import pytest
+
 
 from code_map.linters import run_linters_pipeline
 from code_map.linters.pipeline import (

@@ -274,7 +274,7 @@ namespace math {
 
         # Namespace detection may vary - at minimum should find the function inside
         # Namespaces are stored with SymbolKind.CLASS
-        all_symbols = [s for s in result.symbols]
+
         # Should find at least the add function
         functions = [s for s in result.symbols if s.kind == SymbolKind.FUNCTION]
         assert len(functions) >= 1

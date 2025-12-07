@@ -465,7 +465,7 @@ def test_ollama_analyze_endpoint_generates_insight(
     api_client: TestClient, monkeypatch
 ) -> None:
     from code_map.insights import OllamaInsightResult
-    from code_map import services as services_module
+
 
     generated_at = datetime(2024, 1, 1, tzinfo=timezone.utc)
 

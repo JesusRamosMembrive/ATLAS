@@ -15,12 +15,11 @@ from typing import Optional, Literal
 from fastapi import APIRouter, WebSocket, HTTPException
 from pydantic import BaseModel
 
-# Platform detection
-_IS_WINDOWS = sys.platform == "win32"
-
-# Cross-platform imports
 from code_map.terminal import _PTY_AVAILABLE
 from code_map.settings import load_settings
+
+# Platform detection
+_IS_WINDOWS = sys.platform == "win32"
 
 # PTYShell for legacy WebSocket endpoint
 if _PTY_AVAILABLE:

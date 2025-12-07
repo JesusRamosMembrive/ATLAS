@@ -10,7 +10,7 @@ from typing import List, Optional, Set
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 
 from ..class_graph import build_class_graph
-from ..uml_graph import GraphvizStyleOptions, build_uml_model, render_uml_svg
+from ..uml import GraphvizStyleOptions, build_uml_model, render_uml_svg
 from ..state import AppState
 from .deps import get_app_state
 from .schemas import ClassGraphResponse, UMLDiagramResponse

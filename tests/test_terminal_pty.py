@@ -4,7 +4,6 @@
 import os
 import sys
 import asyncio
-from pathlib import Path
 from unittest.mock import patch, MagicMock, AsyncMock
 
 import pytest
@@ -302,7 +301,7 @@ class TestPTYShellSpawn:
 
         shell = PTYShell()
         shell.spawn()
-        pid = shell.pid
+        shell.spawn()
 
         shell.close()
 
@@ -426,7 +425,7 @@ class TestPTYShellAdvanced:
 
         shell = PTYShell()
         shell.spawn()
-        pid = shell.pid
+        shell.spawn()
 
         # Trigger destructor
         del shell
@@ -1113,7 +1112,6 @@ class TestPTYShellCloseErrors:
         shell.spawn()
 
         # Save the FD to close it ourselves
-        fd = shell.master_fd
 
         with patch('os.kill', side_effect=ProcessLookupError("No such process")):
             # Should not raise

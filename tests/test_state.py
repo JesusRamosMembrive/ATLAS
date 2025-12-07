@@ -1,11 +1,10 @@
 # SPDX-License-Identifier: MIT
 """Tests for state module utility functions and components."""
 
-import asyncio
 import os
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import patch
 
 import pytest
 
@@ -323,7 +322,7 @@ class TestAppStateUpdateSettings:
             lambda self: None,
         )
         monkeypatch.setattr(
-            "code_map.settings.save_settings",
+            "code_map.state.save_settings",
             lambda settings: None,
         )
 
