@@ -137,7 +137,7 @@
   {
     "path": "code_map/analyzer_registry.py",
     "relative": true,
-    "modified_at": "2025-12-06T18:12:20.094080+00:00",
+    "modified_at": "2025-12-07T09:19:20.425137+00:00",
     "symbols": [
       {
         "name": "AnalyzerCapability",
@@ -663,7 +663,7 @@
   {
     "path": "code_map/api/routes.py",
     "relative": true,
-    "modified_at": "2025-12-06T07:05:42.017596+00:00",
+    "modified_at": "2025-12-07T09:19:20.425238+00:00",
     "symbols": [],
     "errors": []
   },
@@ -1267,7 +1267,7 @@
   {
     "path": "code_map/api/stage.py",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.901549+00:00",
+    "modified_at": "2025-12-07T09:18:38.907683+00:00",
     "symbols": [
       {
         "name": "get_stage_status",
@@ -1296,7 +1296,7 @@
   {
     "path": "code_map/api/terminal.py",
     "relative": true,
-    "modified_at": "2025-12-06T07:07:40.993716+00:00",
+    "modified_at": "2025-12-07T09:19:20.425238+00:00",
     "symbols": [
       {
         "name": "OpenNativeTerminalRequest",
@@ -1835,7 +1835,7 @@
   {
     "path": "code_map/c_analyzer.py",
     "relative": true,
-    "modified_at": "2025-12-06T18:11:14.977152+00:00",
+    "modified_at": "2025-12-07T09:19:20.425238+00:00",
     "symbols": [
       {
         "name": "_CParser",
@@ -2364,7 +2364,7 @@
   {
     "path": "code_map/cli.py",
     "relative": true,
-    "modified_at": "2025-12-06T06:57:18.654644+00:00",
+    "modified_at": "2025-12-07T09:19:20.425238+00:00",
     "symbols": [
       {
         "name": "_validate_root",
@@ -3010,7 +3010,7 @@
   {
     "path": "code_map/integrations/ollama_service.py",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.901549+00:00",
+    "modified_at": "2025-12-07T09:18:38.908066+00:00",
     "symbols": [
       {
         "name": "_normalize_endpoint",
@@ -3872,7 +3872,7 @@
   {
     "path": "code_map/scanner.py",
     "relative": true,
-    "modified_at": "2025-12-06T18:11:27.600336+00:00",
+    "modified_at": "2025-12-07T09:19:20.425238+00:00",
     "symbols": [
       {
         "name": "ProjectScanner",
@@ -4028,7 +4028,7 @@
   {
     "path": "code_map/server.py",
     "relative": true,
-    "modified_at": "2025-12-06T06:57:18.655088+00:00",
+    "modified_at": "2025-12-07T09:19:20.425238+00:00",
     "symbols": [
       {
         "name": "_parse_allowed_origins",
@@ -4411,7 +4411,7 @@
   {
     "path": "code_map/stage_toolkit.py",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.902550+00:00",
+    "modified_at": "2025-12-07T09:18:38.908066+00:00",
     "symbols": [
       {
         "name": "FileStatus",
@@ -4736,7 +4736,7 @@
   {
     "path": "code_map/terminal/__init__.py",
     "relative": true,
-    "modified_at": "2025-12-06T07:12:55.529204+00:00",
+    "modified_at": "2025-12-07T09:19:20.425238+00:00",
     "symbols": [],
     "errors": []
   },
@@ -5448,7 +5448,7 @@
   {
     "path": "code_map/terminal/pty_shell.py",
     "relative": true,
-    "modified_at": "2025-12-06T06:57:18.655958+00:00",
+    "modified_at": "2025-12-07T09:19:20.425238+00:00",
     "symbols": [
       {
         "name": "PTYShell",
@@ -5540,7 +5540,7 @@
   {
     "path": "code_map/terminal/socketio_pty.py",
     "relative": true,
-    "modified_at": "2025-12-06T06:57:18.656204+00:00",
+    "modified_at": "2025-12-07T09:19:20.425238+00:00",
     "symbols": [
       {
         "name": "PTYSession",
@@ -5639,7 +5639,7 @@
   {
     "path": "code_map/terminal/winpty_shell.py",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.903919+00:00",
+    "modified_at": "2025-12-07T09:18:38.908066+00:00",
     "symbols": [
       {
         "name": "WinPTYShell",
@@ -6280,7 +6280,7 @@
   {
     "path": "docs/TerminalEmbed_manual_dims.tsx",
     "relative": true,
-    "modified_at": "2025-12-06T06:57:18.656532+00:00",
+    "modified_at": "2025-12-07T09:19:20.426238+00:00",
     "symbols": [
       {
         "name": "measureCharacterDimensions",
@@ -6330,7 +6330,7 @@
   {
     "path": "docs/TerminalEmbed_v3_fixed.tsx",
     "relative": true,
-    "modified_at": "2025-12-06T06:57:18.656629+00:00",
+    "modified_at": "2025-12-07T09:19:20.426238+00:00",
     "symbols": [
       {
         "name": "TerminalEmbedInner",
@@ -6954,7 +6954,7 @@
   {
     "path": "frontend/src/components/AgentSidebar.tsx",
     "relative": true,
-    "modified_at": "2025-12-06T08:03:29.790521+00:00",
+    "modified_at": "2025-12-07T09:19:20.428238+00:00",
     "symbols": [
       {
         "name": "AgentSidebar",
@@ -7176,19 +7176,19 @@
   {
     "path": "frontend/src/components/ClaudeAgentView.tsx",
     "relative": true,
-    "modified_at": "2025-12-06T08:03:09.414221+00:00",
+    "modified_at": "2025-12-07T09:19:20.428623+00:00",
     "symbols": [
       {
         "name": "ClaudeAgentView",
         "kind": "function",
-        "lineno": 23,
+        "lineno": 24,
         "parent": null,
         "docstring": "============================================================================"
       },
       {
         "name": "AgentHeader",
         "kind": "function",
-        "lineno": 91,
+        "lineno": 95,
         "parent": null,
         "docstring": null
       }
@@ -7227,7 +7227,7 @@
   {
     "path": "frontend/src/components/CodeTimelineView.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.909868+00:00",
+    "modified_at": "2025-12-07T09:18:38.915187+00:00",
     "symbols": [
       {
         "name": "parseDiffToSideBySide",
@@ -7362,7 +7362,7 @@
   {
     "path": "frontend/src/components/DiffViewer.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.909868+00:00",
+    "modified_at": "2025-12-07T09:18:38.915187+00:00",
     "symbols": [
       {
         "name": "DiffViewer",
@@ -7500,7 +7500,7 @@
   {
     "path": "frontend/src/components/HomeView.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.909868+00:00",
+    "modified_at": "2025-12-07T09:19:20.428623+00:00",
     "symbols": [
       {
         "name": "detectionBadgeLabel",
@@ -7708,7 +7708,7 @@
   {
     "path": "frontend/src/components/OverviewDashboard.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.909868+00:00",
+    "modified_at": "2025-12-07T09:18:38.915503+00:00",
     "symbols": [
       {
         "name": "formatDateTime",
@@ -7851,12 +7851,12 @@
   {
     "path": "frontend/src/components/RemoteTerminalView.tsx",
     "relative": true,
-    "modified_at": "2025-12-06T06:57:18.659034+00:00",
+    "modified_at": "2025-12-07T09:19:20.428623+00:00",
     "symbols": [
       {
         "name": "RemoteTerminalView",
         "kind": "function",
-        "lineno": 9,
+        "lineno": 12,
         "parent": null,
         "docstring": null
       }
@@ -7896,7 +7896,7 @@
   {
     "path": "frontend/src/components/SettingsView.tsx",
     "relative": true,
-    "modified_at": "2025-12-06T18:21:25.900367+00:00",
+    "modified_at": "2025-12-07T09:19:20.428623+00:00",
     "symbols": [
       {
         "name": "extractCustomExcludes",
@@ -8032,7 +8032,7 @@
   {
     "path": "frontend/src/components/SparklesCore.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.909868+00:00",
+    "modified_at": "2025-12-07T09:18:38.915503+00:00",
     "symbols": [
       {
         "name": "SparklesCore",
@@ -8054,7 +8054,7 @@
   {
     "path": "frontend/src/components/StageToolkitView.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.909868+00:00",
+    "modified_at": "2025-12-07T09:18:38.915503+00:00",
     "symbols": [
       {
         "name": "LoadingOverlay",
@@ -8147,7 +8147,7 @@
   {
     "path": "frontend/src/components/TerminalSocketIO.tsx",
     "relative": true,
-    "modified_at": "2025-12-06T06:57:18.659034+00:00",
+    "modified_at": "2025-12-07T09:19:20.428623+00:00",
     "symbols": [
       {
         "name": "TerminalSocketIOInner",
@@ -8275,7 +8275,7 @@
   {
     "path": "frontend/src/components/TiltCard.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.910550+00:00",
+    "modified_at": "2025-12-07T09:18:38.915503+00:00",
     "symbols": [
       {
         "name": "TiltCard",
@@ -8362,7 +8362,7 @@
   {
     "path": "frontend/src/components/Vortex.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.910550+00:00",
+    "modified_at": "2025-12-07T09:18:38.915503+00:00",
     "symbols": [
       {
         "name": "Vortex",
@@ -8434,7 +8434,7 @@
   {
     "path": "frontend/src/components/dashboard/ActivityTimeline.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.911589+00:00",
+    "modified_at": "2025-12-07T09:18:38.916289+00:00",
     "symbols": [
       {
         "name": "formatRelativeTime",
@@ -8456,7 +8456,7 @@
   {
     "path": "frontend/src/components/dashboard/AgentDonutCharts.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.911634+00:00",
+    "modified_at": "2025-12-07T09:18:38.916333+00:00",
     "symbols": [
       {
         "name": "MiniDonut",
@@ -8485,7 +8485,7 @@
   {
     "path": "frontend/src/components/dashboard/AnalyzerHealth.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.911634+00:00",
+    "modified_at": "2025-12-07T09:18:38.916385+00:00",
     "symbols": [
       {
         "name": "getAnalyzerLabel",
@@ -8507,7 +8507,7 @@
   {
     "path": "frontend/src/components/dashboard/CodeMapStats.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.911634+00:00",
+    "modified_at": "2025-12-07T09:18:38.916385+00:00",
     "symbols": [
       {
         "name": "formatRelativeTime",
@@ -8529,7 +8529,7 @@
   {
     "path": "frontend/src/components/dashboard/CommandStatusBar.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.911806+00:00",
+    "modified_at": "2025-12-07T09:18:38.916506+00:00",
     "symbols": [
       {
         "name": "CommandStatusBar",
@@ -8544,7 +8544,7 @@
   {
     "path": "frontend/src/components/dashboard/CompactCard.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.911806+00:00",
+    "modified_at": "2025-12-07T09:18:38.916506+00:00",
     "symbols": [
       {
         "name": "CompactCard",
@@ -8559,7 +8559,7 @@
   {
     "path": "frontend/src/components/dashboard/CoverageGauge.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.911806+00:00",
+    "modified_at": "2025-12-07T09:18:38.916506+00:00",
     "symbols": [
       {
         "name": "getColorForCoverage",
@@ -8581,7 +8581,7 @@
   {
     "path": "frontend/src/components/dashboard/IssueSeverityBar.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.911806+00:00",
+    "modified_at": "2025-12-07T09:18:38.916506+00:00",
     "symbols": [
       {
         "name": "IssueSeverityBar",
@@ -8596,7 +8596,7 @@
   {
     "path": "frontend/src/components/dashboard/MetricsStrip.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.911806+00:00",
+    "modified_at": "2025-12-07T09:18:38.916506+00:00",
     "symbols": [
       {
         "name": "formatNumber",
@@ -8625,7 +8625,7 @@
   {
     "path": "frontend/src/components/dashboard/OllamaModelList.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.911806+00:00",
+    "modified_at": "2025-12-07T09:18:38.916506+00:00",
     "symbols": [
       {
         "name": "formatRelativeTime",
@@ -8654,7 +8654,7 @@
   {
     "path": "frontend/src/components/dashboard/PendingChangesList.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.911806+00:00",
+    "modified_at": "2025-12-07T09:18:38.916506+00:00",
     "symbols": [
       {
         "name": "getFileName",
@@ -8690,7 +8690,7 @@
   {
     "path": "frontend/src/components/dashboard/QuickActions.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.911806+00:00",
+    "modified_at": "2025-12-07T09:18:38.916506+00:00",
     "symbols": [
       {
         "name": "QuickActions",
@@ -8726,7 +8726,7 @@
   {
     "path": "frontend/src/components/dashboard/RecentCommits.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.911806+00:00",
+    "modified_at": "2025-12-07T09:18:38.916506+00:00",
     "symbols": [
       {
         "name": "formatRelativeTime",
@@ -8762,7 +8762,7 @@
   {
     "path": "frontend/src/components/dashboard/TopOffenders.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.911806+00:00",
+    "modified_at": "2025-12-07T09:18:38.916506+00:00",
     "symbols": [
       {
         "name": "getFileName",
@@ -8791,7 +8791,7 @@
   {
     "path": "frontend/src/components/dashboard/index.ts",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.911806+00:00",
+    "modified_at": "2025-12-07T09:18:38.916506+00:00",
     "symbols": [],
     "errors": []
   },
@@ -9105,7 +9105,7 @@
   {
     "path": "frontend/src/components/settings/SupportedExtensionsSection.tsx",
     "relative": true,
-    "modified_at": "2025-12-06T18:20:16.112667+00:00",
+    "modified_at": "2025-12-07T09:19:20.428623+00:00",
     "symbols": [
       {
         "name": "SupportedExtensionsSection",
@@ -9341,6 +9341,35 @@
     "errors": []
   },
   {
+    "path": "frontend/src/hooks/useConnectionWarning.ts",
+    "relative": true,
+    "modified_at": "2025-12-07T09:19:20.429238+00:00",
+    "symbols": [
+      {
+        "name": "useConnectionWarning",
+        "kind": "function",
+        "lineno": 36,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "handleClick",
+        "kind": "function",
+        "lineno": 47,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "handleBeforeUnload",
+        "kind": "function",
+        "lineno": 92,
+        "parent": null,
+        "docstring": null
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "frontend/src/hooks/useEventStream.ts",
     "relative": true,
     "modified_at": "2025-11-10T11:33:54.692808+00:00",
@@ -9485,7 +9514,7 @@
   {
     "path": "frontend/src/hooks/useRecentCommits.ts",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.911806+00:00",
+    "modified_at": "2025-12-07T09:18:38.916506+00:00",
     "symbols": [
       {
         "name": "useRecentCommits",
@@ -9727,7 +9756,7 @@
   {
     "path": "frontend/src/stores/claudeSessionStore.ts",
     "relative": true,
-    "modified_at": "2025-12-06T07:41:41.727690+00:00",
+    "modified_at": "2025-12-07T09:19:20.429238+00:00",
     "symbols": [
       {
         "name": "selectAgentType",
@@ -9892,7 +9921,7 @@
   {
     "path": "frontend/src/types/claude-events.ts",
     "relative": true,
-    "modified_at": "2025-12-06T07:12:03.559471+00:00",
+    "modified_at": "2025-12-07T09:19:20.429238+00:00",
     "symbols": [
       {
         "name": "getToolIcon",
@@ -10297,7 +10326,7 @@
   {
     "path": "stage_init/stage_update.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.624535+00:00",
+    "modified_at": "2025-12-07T09:19:20.429238+00:00",
     "symbols": [
       {
         "name": "StageUpdateResult",
@@ -12233,7 +12262,7 @@
   {
     "path": "tmp_test/custom_math.py",
     "relative": true,
-    "modified_at": "2025-12-06T06:57:18.659456+00:00",
+    "modified_at": "2025-12-07T09:19:20.430238+00:00",
     "symbols": [
       {
         "name": "divide",

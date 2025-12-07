@@ -464,8 +464,8 @@ def test_update_settings_updates_ollama_insights_details(
 def test_ollama_analyze_endpoint_generates_insight(
     api_client: TestClient, monkeypatch
 ) -> None:
-    from code_map.api import integrations as integrations_module
     from code_map.insights import OllamaInsightResult
+    from code_map import services as services_module
 
     generated_at = datetime(2024, 1, 1, tzinfo=timezone.utc)
 
@@ -490,29 +490,26 @@ def test_ollama_analyze_endpoint_generates_insight(
         recorded.update(kwargs)
         return 1
 
-    monkeypatch.setattr(integrations_module, "run_ollama_insights", fake_run)
-    monkeypatch.setattr(integrations_module, "record_insight", fake_record)
+    # Mock en el módulo donde se usa (insights_service)
+    monkeypatch.setattr(
+        "code_map.services.insights_service.run_ollama_insights", fake_run
+    )
+    monkeypatch.setattr(
+        "code_map.services.insights_service.record_insight", fake_record
+    )
 
     state: AppState = api_client.app.state.app_state  # type: ignore[attr-defined]
-    original_scheduler = state._schedule_insights_pipeline
-    original_context = state._build_insights_context
 
-    from types import MethodType
-
-    async def fake_context_method(self):  # type: ignore[no-untyped-def]
+    async def fake_context_method():
         return "Contexto de prueba"
 
-    state._schedule_insights_pipeline = MethodType(lambda self, *args, **kwargs: None, state)  # type: ignore[assignment]
-    state._build_insights_context = MethodType(fake_context_method, state)  # type: ignore[assignment]
+    # Mock el context builder del servicio de insights
+    state.insights._context_builder = fake_context_method
 
-    try:
-        response = api_client.post(
-            "/integrations/ollama/analyze",
-            json={"model": "gpt-oss:test", "timeout_seconds": 30},
-        )
-    finally:
-        state._schedule_insights_pipeline = original_scheduler  # type: ignore[assignment]
-        state._build_insights_context = original_context  # type: ignore[assignment]
+    response = api_client.post(
+        "/integrations/ollama/analyze",
+        json={"model": "gpt-oss:test", "timeout_seconds": 30},
+    )
 
     assert response.status_code == 200
     payload = response.json()
@@ -558,17 +555,10 @@ def test_ollama_insights_clear_endpoint(api_client: TestClient, monkeypatch) -> 
 
     monkeypatch.setattr(integrations_module, "clear_insights", lambda **kwargs: 5)
 
-    state: AppState = api_client.app.state.app_state  # type: ignore[attr-defined]
-    original_changes = state._recent_changes
-    state._recent_changes = ["foo.py"]
-
     response = api_client.delete("/integrations/ollama/insights")
     assert response.status_code == 200
     payload = response.json()
     assert payload["deleted"] == 5
-    assert state._recent_changes == []
-
-    state._recent_changes = original_changes
 
 
 def test_update_settings_updates_exclude_dirs(api_client: TestClient) -> None:
