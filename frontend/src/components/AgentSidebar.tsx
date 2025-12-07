@@ -1,20 +1,19 @@
 /**
  * Agent Sidebar
  *
- * Unified tabbed sidebar for Claude Agent with History, Files, and Statistics tabs.
+ * Sidebar for Agent view with Files (git changes) and Project Stats tabs.
  * Fixed position on the left side with toggle visibility.
  */
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
-  useSessionHistoryStore,
-  SessionSnapshot,
-} from "../stores/sessionHistoryStore";
-import { type AgentType } from "../stores/claudeSessionStore";
-import { getWorkingTreeChanges } from "../api/client";
+  getWorkingTreeChanges,
+  getStatus,
+  getLintersLatestReport,
+  getStageStatus,
+} from "../api/client";
 import { queryKeys } from "../api/queryKeys";
-import { useSelectionStore } from "../state/useSelectionStore";
 import type { WorkingTreeChange } from "../api/types";
 import { getChangeLabel, getChangeVariant } from "../utils/changeStatus";
 
@@ -22,17 +21,12 @@ import { getChangeLabel, getChangeVariant } from "../utils/changeStatus";
 // Types
 // =============================================================================
 
-type TabType = "history" | "files" | "stats";
+type TabType = "files" | "stats";
 
 interface AgentSidebarProps {
   isOpen: boolean;
   onToggle: () => void;
-  onLoadSession: (messages: SessionSnapshot["messages"]) => void;
-  onNewSession: () => void;
   onShowDiff: (path: string) => void;
-  totalInputTokens: number;
-  totalOutputTokens: number;
-  agentType: AgentType;
 }
 
 // =============================================================================
@@ -42,14 +36,9 @@ interface AgentSidebarProps {
 export function AgentSidebar({
   isOpen,
   onToggle,
-  onLoadSession,
-  onNewSession,
   onShowDiff,
-  totalInputTokens,
-  totalOutputTokens,
-  agentType,
 }: AgentSidebarProps) {
-  const [activeTab, setActiveTab] = useState<TabType>("history");
+  const [activeTab, setActiveTab] = useState<TabType>("files");
 
   return (
     <>
@@ -74,14 +63,6 @@ export function AgentSidebar({
         <div className="sidebar-tabs" role="tablist">
           <button
             role="tab"
-            aria-selected={activeTab === "history"}
-            className={`tab-btn ${activeTab === "history" ? "active" : ""}`}
-            onClick={() => setActiveTab("history")}
-          >
-            History
-          </button>
-          <button
-            role="tab"
             aria-selected={activeTab === "files"}
             className={`tab-btn ${activeTab === "files" ? "active" : ""}`}
             onClick={() => setActiveTab("files")}
@@ -100,152 +81,13 @@ export function AgentSidebar({
 
         {/* Tab content */}
         <div className="sidebar-content">
-          {activeTab === "history" && (
-            <HistoryTab
-              onLoadSession={onLoadSession}
-              onNewSession={onNewSession}
-              agentType={agentType}
-            />
-          )}
-          {activeTab === "files" && (
-            <FilesTab onShowDiff={onShowDiff} />
-          )}
-          {activeTab === "stats" && (
-            <StatsTab
-              totalInputTokens={totalInputTokens}
-              totalOutputTokens={totalOutputTokens}
-            />
-          )}
+          {activeTab === "files" && <FilesTab onShowDiff={onShowDiff} />}
+          {activeTab === "stats" && <StatsTab />}
         </div>
       </aside>
 
       <style>{sidebarStyles}</style>
     </>
-  );
-}
-
-// =============================================================================
-// History Tab
-// =============================================================================
-
-interface HistoryTabProps {
-  onLoadSession: (messages: SessionSnapshot["messages"]) => void;
-  onNewSession: () => void;
-  agentType: AgentType;
-}
-
-function HistoryTab({ onLoadSession, onNewSession, agentType }: HistoryTabProps) {
-  const {
-    currentSessionId,
-    loadSession,
-    deleteSession,
-    clearSessionsByAgent,
-    setCurrentSessionId,
-    getSessionsByAgent,
-  } = useSessionHistoryStore();
-
-  // Get sessions filtered by current agent type
-  const sessions = getSessionsByAgent(agentType);
-
-  const handleLoadSession = useCallback(
-    (id: string) => {
-      const session = loadSession(id);
-      if (session) {
-        setCurrentSessionId(id);
-        onLoadSession(session.messages);
-      }
-    },
-    [loadSession, setCurrentSessionId, onLoadSession]
-  );
-
-  const handleNewSession = useCallback(() => {
-    setCurrentSessionId(null);
-    onNewSession();
-  }, [setCurrentSessionId, onNewSession]);
-
-  const handleDeleteSession = useCallback(
-    (e: React.MouseEvent, id: string) => {
-      e.stopPropagation();
-      if (confirm("Delete this session?")) {
-        deleteSession(id);
-      }
-    },
-    [deleteSession]
-  );
-
-  const handleClearAll = useCallback(() => {
-    if (confirm("Delete all sessions for this agent? This cannot be undone.")) {
-      clearSessionsByAgent(agentType);
-      onNewSession();
-    }
-  }, [clearSessionsByAgent, agentType, onNewSession]);
-
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-    if (days === 0) {
-      return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    } else if (days === 1) {
-      return "Yesterday";
-    } else if (days < 7) {
-      return date.toLocaleDateString([], { weekday: "short" });
-    } else {
-      return date.toLocaleDateString([], { month: "short", day: "numeric" });
-    }
-  };
-
-  return (
-    <div className="tab-panel">
-      <div className="tab-header">
-        <button className="action-btn primary" onClick={handleNewSession}>
-          + New Session
-        </button>
-        {sessions.length > 0 && (
-          <button className="action-btn danger" onClick={handleClearAll}>
-            Clear All
-          </button>
-        )}
-      </div>
-
-      <div className="tab-list">
-        {sessions.length === 0 ? (
-          <div className="empty-state">
-            <p>No saved sessions</p>
-            <p className="hint">Conversations are auto-saved</p>
-          </div>
-        ) : (
-          <ul>
-            {sessions.map((session) => (
-              <li key={session.id}>
-                <button
-                  className={`list-item ${session.id === currentSessionId ? "active" : ""}`}
-                  onClick={() => handleLoadSession(session.id)}
-                >
-                  <div className="item-header">
-                    <span className="item-title">{session.title}</span>
-                    <button
-                      className="delete-btn"
-                      onClick={(e) => handleDeleteSession(e, session.id)}
-                      title="Delete"
-                    >
-                      ×
-                    </button>
-                  </div>
-                  <div className="item-preview">{session.preview}</div>
-                  <div className="item-meta">
-                    <span>{formatDate(session.updatedAt)}</span>
-                    <span>{session.messageCount} msgs</span>
-                  </div>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
   );
 }
 
@@ -258,8 +100,6 @@ interface FilesTabProps {
 }
 
 function FilesTab({ onShowDiff }: FilesTabProps) {
-  const selectPath = useSelectionStore((state) => state.selectPath);
-
   const { data, isPending, isError, error, refetch } = useQuery({
     queryKey: queryKeys.changes,
     queryFn: getWorkingTreeChanges,
@@ -339,52 +179,182 @@ function FileItem({
 }
 
 // =============================================================================
-// Stats Tab
+// Stats Tab - Project Overview
 // =============================================================================
 
-interface StatsTabProps {
-  totalInputTokens: number;
-  totalOutputTokens: number;
+const LINTER_STATUS_LABEL: Record<string, string> = {
+  pass: "Passing",
+  warn: "Warnings",
+  fail: "Failing",
+  skipped: "Skipped",
+  error: "Error",
+  default: "No data",
+};
+
+const LINTER_STATUS_VARIANT: Record<string, string> = {
+  pass: "success",
+  warn: "warning",
+  fail: "danger",
+  error: "danger",
+  skipped: "neutral",
+  default: "neutral",
+};
+
+function formatNumber(value: number): string {
+  if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+  if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
+  return value.toLocaleString("en-US");
 }
 
-function StatsTab({ totalInputTokens, totalOutputTokens }: StatsTabProps) {
-  const totalTokens = totalInputTokens + totalOutputTokens;
-  const estimatedCost = ((totalInputTokens * 3 + totalOutputTokens * 15) / 1_000_000).toFixed(4);
+function StatsTab() {
+  // Fetch project status
+  const statusQuery = useQuery({
+    queryKey: queryKeys.status,
+    queryFn: getStatus,
+    refetchInterval: 30000,
+  });
+
+  // Fetch linters report
+  const lintersQuery = useQuery({
+    queryKey: queryKeys.lintersLatest,
+    queryFn: getLintersLatestReport,
+    refetchInterval: 60000,
+  });
+
+  // Fetch stage detection
+  const stageQuery = useQuery({
+    queryKey: queryKeys.stageStatus,
+    queryFn: getStageStatus,
+    refetchInterval: 60000,
+  });
+
+  // Fetch pending changes count
+  const changesQuery = useQuery({
+    queryKey: queryKeys.changes,
+    queryFn: getWorkingTreeChanges,
+    refetchInterval: 30000,
+  });
+
+  // Extract data
+  const status = statusQuery.data;
+  const filesIndexed = status?.files_indexed ?? 0;
+  const symbolsIndexed = status?.symbols_indexed ?? 0;
+  const pendingEvents = status?.pending_events ?? 0;
+
+  const lintersReport = lintersQuery.data;
+  const lintersStatusKey = lintersReport?.report?.summary?.overall_status ?? "default";
+  const lintersLabel = LINTER_STATUS_LABEL[lintersStatusKey] ?? "No data";
+  const lintersVariant = LINTER_STATUS_VARIANT[lintersStatusKey] ?? "neutral";
+  const lintersIssues = lintersReport?.report?.summary?.issues_total ?? 0;
+
+  const detection = stageQuery.data?.detection;
+  const stageNumber = detection?.recommended_stage;
+  const stageConfidence = detection?.confidence;
+  const linesOfCode = detection?.metrics?.lines_of_code as number | undefined;
+
+  const pendingChanges = changesQuery.data?.changes?.length ?? 0;
+
+  const isLoading = statusQuery.isPending || lintersQuery.isPending;
 
   return (
     <div className="tab-panel">
       <div className="tab-header">
-        <span className="tab-title">Session Statistics</span>
+        <span className="tab-title">Project Overview</span>
+        <button
+          className="action-btn"
+          onClick={() => {
+            statusQuery.refetch();
+            lintersQuery.refetch();
+            stageQuery.refetch();
+          }}
+          title="Refresh"
+        >
+          ↻
+        </button>
       </div>
 
       <div className="stats-content">
-        <div className="stat-card">
-          <div className="stat-label">Total Tokens</div>
-          <div className="stat-value">{totalTokens.toLocaleString()}</div>
-        </div>
+        {isLoading ? (
+          <p className="loading">Loading project stats…</p>
+        ) : (
+          <>
+            {/* Code Metrics */}
+            <div className="stat-card">
+              <div className="stat-card-title">Code Index</div>
+              <div className="stat-grid">
+                <div className="stat-item">
+                  <span className="stat-value">{formatNumber(filesIndexed)}</span>
+                  <span className="stat-label">Files</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-value">{formatNumber(symbolsIndexed)}</span>
+                  <span className="stat-label">Symbols</span>
+                </div>
+                {linesOfCode !== undefined && (
+                  <div className="stat-item">
+                    <span className="stat-value">{formatNumber(linesOfCode)}</span>
+                    <span className="stat-label">LOC</span>
+                  </div>
+                )}
+              </div>
+            </div>
 
-        <div className="stat-card">
-          <div className="stat-label">Input Tokens</div>
-          <div className="stat-value">{totalInputTokens.toLocaleString()}</div>
-        </div>
+            {/* Linters Status */}
+            <div className="stat-card">
+              <div className="stat-card-title">Linters</div>
+              <div className="stat-row">
+                <span className={`status-badge status-${lintersVariant}`}>
+                  {lintersLabel}
+                </span>
+                {lintersIssues > 0 && (
+                  <span className="stat-detail">{lintersIssues} issues</span>
+                )}
+              </div>
+            </div>
 
-        <div className="stat-card">
-          <div className="stat-label">Output Tokens</div>
-          <div className="stat-value">{totalOutputTokens.toLocaleString()}</div>
-        </div>
+            {/* Changes & Events */}
+            <div className="stat-card">
+              <div className="stat-card-title">Activity</div>
+              <div className="stat-grid">
+                <div className="stat-item">
+                  <span className={`stat-value ${pendingChanges > 0 ? "text-modified" : ""}`}>
+                    {pendingChanges}
+                  </span>
+                  <span className="stat-label">Changes</span>
+                </div>
+                <div className="stat-item">
+                  <span className={`stat-value ${pendingEvents > 0 ? "text-warning" : ""}`}>
+                    {pendingEvents}
+                  </span>
+                  <span className="stat-label">Pending</span>
+                </div>
+              </div>
+            </div>
 
-        <div className="stat-card highlight">
-          <div className="stat-label">Estimated Cost</div>
-          <div className="stat-value">${estimatedCost}</div>
-        </div>
+            {/* Stage Detection */}
+            {detection?.available && stageNumber && (
+              <div className="stat-card">
+                <div className="stat-card-title">Stage Detection</div>
+                <div className="stat-row">
+                  <span className="stage-badge">Stage {stageNumber}</span>
+                  {stageConfidence && (
+                    <span className="stat-detail">{stageConfidence} confidence</span>
+                  )}
+                </div>
+                {detection.reasons && detection.reasons.length > 0 && (
+                  <p className="stage-reason">{detection.reasons[0]}</p>
+                )}
+              </div>
+            )}
 
-        <div className="stat-info">
-          <p>Pricing based on Claude API rates:</p>
-          <ul>
-            <li>Input: $3/M tokens</li>
-            <li>Output: $15/M tokens</li>
-          </ul>
-        </div>
+            {/* CLI Tip */}
+            <div className="stat-info">
+              <p className="hint">
+                💡 Use <code>/cost</code> in terminal to see token usage
+              </p>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -399,7 +369,7 @@ const sidebarStyles = `
 .agent-sidebar-toggle {
   position: fixed;
   left: 0;
-  top: calc(50% + 25px); /* Offset to account for header */
+  top: calc(50% + 25px);
   transform: translateY(-50%);
   width: 20px;
   height: 60px;
@@ -427,16 +397,18 @@ const sidebarStyles = `
 .agent-sidebar {
   position: fixed;
   left: 0;
-  top: 180px; /* Start below the header */
-  bottom: 0;
+  top: 180px;
+  bottom: 36px;
   width: 280px;
   background: var(--agent-bg-secondary);
   border-right: 1px solid var(--agent-border-primary);
+  border-radius: 0 0 12px 0;
   transform: translateX(-100%);
   transition: transform 0.25s ease;
   z-index: 150;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .agent-sidebar.open {
@@ -519,25 +491,6 @@ const sidebarStyles = `
   color: var(--agent-text-primary);
 }
 
-.action-btn.primary {
-  background: var(--agent-accent-blue);
-  border-color: var(--agent-accent-blue);
-  color: white;
-}
-
-.action-btn.primary:hover {
-  background: var(--agent-accent-blue-hover);
-}
-
-.action-btn.danger {
-  color: var(--agent-accent-red);
-  border-color: var(--agent-accent-red);
-}
-
-.action-btn.danger:hover {
-  background: rgba(239, 68, 68, 0.1);
-}
-
 /* List */
 .tab-list {
   flex: 1;
@@ -573,36 +526,10 @@ const sidebarStyles = `
   background: var(--agent-bg-tertiary);
 }
 
-.list-item.active {
-  background: var(--agent-info-bg);
-  border-color: var(--agent-accent-blue);
-}
-
 .item-header {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.item-title {
-  flex: 1;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--agent-text-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.item-preview {
-  font-size: 11px;
-  color: var(--agent-text-muted);
-  margin-top: 4px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
 }
 
 .item-meta {
@@ -611,31 +538,6 @@ const sidebarStyles = `
   margin-top: 4px;
   font-size: 10px;
   color: var(--agent-text-disabled);
-}
-
-.delete-btn {
-  width: 18px;
-  height: 18px;
-  background: transparent;
-  border: none;
-  color: var(--agent-text-muted);
-  font-size: 14px;
-  cursor: pointer;
-  border-radius: 4px;
-  opacity: 0;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.list-item:hover .delete-btn {
-  opacity: 1;
-}
-
-.delete-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
-  color: var(--agent-accent-red);
 }
 
 /* File item specifics */
@@ -675,60 +577,142 @@ const sidebarStyles = `
 
 /* Stats */
 .stats-content {
+  flex: 1;
   padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .stat-card {
-  padding: 12px;
   background: var(--agent-bg-tertiary);
-  border-radius: 8px;
   border: 1px solid var(--agent-border-primary);
+  border-radius: 8px;
+  padding: 10px 12px;
 }
 
-.stat-card.highlight {
-  background: var(--agent-info-bg);
-  border-color: var(--agent-accent-blue);
-}
-
-.stat-label {
-  font-size: 11px;
+.stat-card-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: var(--agent-text-muted);
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  gap: 8px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .stat-value {
   font-size: 18px;
   font-weight: 600;
   color: var(--agent-text-primary);
+  line-height: 1.2;
 }
 
-.stat-card.highlight .stat-value {
+.stat-label {
+  font-size: 10px;
+  color: var(--agent-text-muted);
+  margin-top: 2px;
+}
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.stat-detail {
+  font-size: 11px;
+  color: var(--agent-text-secondary);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+.status-success {
+  background: rgba(16, 185, 129, 0.15);
   color: var(--agent-accent-green);
 }
 
-.stat-info {
-  margin-top: 8px;
-  padding: 10px;
-  background: var(--agent-bg-tertiary);
-  border-radius: 6px;
-  font-size: 11px;
+.status-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.status-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--agent-accent-red);
+}
+
+.status-neutral {
+  background: rgba(148, 163, 184, 0.15);
   color: var(--agent-text-muted);
 }
 
+.stage-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 4px;
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--agent-accent-blue);
+}
+
+.stage-reason {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--agent-text-secondary);
+  line-height: 1.4;
+}
+
+.text-warning {
+  color: #f59e0b;
+}
+
+.stat-info {
+  padding: 10px 12px;
+  background: var(--agent-bg-tertiary);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--agent-text-secondary);
+}
+
 .stat-info p {
-  margin: 0 0 6px;
-}
-
-.stat-info ul {
   margin: 0;
-  padding-left: 16px;
 }
 
-.stat-info li {
-  margin-bottom: 2px;
+.stat-info .hint {
+  font-size: 11px;
+  color: var(--agent-text-muted);
+  margin: 0;
+}
+
+.stat-info code {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
 }
 
 /* Empty state */

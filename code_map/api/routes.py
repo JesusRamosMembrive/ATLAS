@@ -18,7 +18,6 @@ from .timeline import router as timeline_router
 from .tracer import router as tracer_router
 from .audit import router as audit_router
 from .terminal import router as terminal_router
-from .claude_permissions import router as claude_permissions_router
 
 router = APIRouter()
 router.include_router(analysis_router)
@@ -32,4 +31,3 @@ router.include_router(timeline_router)
 router.include_router(tracer_router)
 router.include_router(audit_router)
 router.include_router(terminal_router)
-router.include_router(claude_permissions_router)

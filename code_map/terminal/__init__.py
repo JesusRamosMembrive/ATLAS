@@ -2,23 +2,19 @@
 Terminal module for web-based shell access
 
 Provides:
-- PTY-based shell execution accessible via WebSocket
+- PTY-based shell execution accessible via Socket.IO
   - Unix: Uses native pty module
   - Windows: Uses pywinpty (ConPTY wrapper) or subprocess fallback
-- Claude Code JSON streaming runner (cross-platform)
-- Codex CLI JSON streaming runner (cross-platform)
-- JSON event parser for Claude Code output
-- PTY-based Claude runner with output parsing (Unix only)
+- Socket.IO PTY server for real-time terminal communication
 """
 
 import sys
 
-# Cross-platform imports (always available)
-from .claude_runner import ClaudeAgentRunner, ClaudeRunnerConfig
-from .codex_runner import CodexAgentRunner, CodexRunnerConfig
+# Cross-platform imports
 from .json_parser import JSONStreamParser, ClaudeEvent, EventType, EventSubtype
 from .pty_parser import PTYParser, EventAggregator, ParsedEvent
 from .pty_parser import EventType as PTYEventType
+from .socketio_pty import get_pty_server, create_combined_app
 
 # Platform detection
 _IS_WINDOWS = sys.platform == "win32"
@@ -63,12 +59,9 @@ __all__ = [
     "_PTY_AVAILABLE",
     # PTY Shell (cross-platform with platform-specific implementation)
     "PTYShell",
-    # Claude runner (cross-platform)
-    "ClaudeAgentRunner",
-    "ClaudeRunnerConfig",
-    # Codex runner (cross-platform)
-    "CodexAgentRunner",
-    "CodexRunnerConfig",
+    # Socket.IO PTY server
+    "get_pty_server",
+    "create_combined_app",
     # JSON parsing (cross-platform)
     "JSONStreamParser",
     "ClaudeEvent",

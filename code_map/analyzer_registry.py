@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, Optional, Protocol, Set
 
 from .analyzer import FileAnalyzer, get_modified_time
+from .c_analyzer import CAnalyzer
 from .dependencies import OptionalDependencyRegistry, optional_dependencies
 from .html_analyzer import HtmlAnalyzer
 from .js_analyzer import JsAnalyzer
@@ -52,6 +53,8 @@ class AnalyzerRegistry:
     """Agrupa los analizadores disponibles y proporciona sus capacidades."""
 
     JS_EXTENSIONS = {".js", ".jsx"}
+    C_EXTENSIONS = {".c", ".h"}
+    CPP_EXTENSIONS = {".cpp", ".hpp", ".cc", ".cxx", ".hxx"}
 
     def __init__(
         self,
@@ -73,6 +76,10 @@ class AnalyzerRegistry:
         self._ts_analyzer = TsAnalyzer(include_docstrings=include_docstrings)
         self._tsx_analyzer = TsAnalyzer(
             include_docstrings=include_docstrings, is_tsx=True
+        )
+        self._c_analyzer = CAnalyzer(include_docstrings=include_docstrings)
+        self._cpp_analyzer = CAnalyzer(
+            include_docstrings=include_docstrings, is_cpp=True
         )
         self._html_analyzer = HtmlAnalyzer()
         self._plain_text_analyzer = PlainTextAnalyzer()
@@ -124,6 +131,10 @@ class AnalyzerRegistry:
             return self._ts_analyzer
         if extension == ".tsx":
             return self._tsx_analyzer
+        if extension in self.C_EXTENSIONS:
+            return self._c_analyzer
+        if extension in self.CPP_EXTENSIONS:
+            return self._cpp_analyzer
         if extension == ".html":
             return self._html_analyzer
         return self._plain_text_analyzer
@@ -225,6 +236,52 @@ class AnalyzerRegistry:
                     extensions=html_extensions,
                     available=available,
                     dependency="beautifulsoup4",
+                    error=status.error,
+                    degraded_extensions=degraded,
+                )
+            )
+
+        c_extensions = sorted(
+            ext
+            for ext in self._extensions
+            if ext in self.C_EXTENSIONS and ext not in overrides
+        )
+        if c_extensions:
+            status = self._dependency_registry.status("tree_sitter_languages")[0]
+            available = bool(
+                status.available and getattr(self._c_analyzer, "available", False)
+            )
+            degraded = [] if available else c_extensions
+            capabilities.append(
+                AnalyzerCapability(
+                    key="c",
+                    description="Análisis de símbolos C",
+                    extensions=c_extensions,
+                    available=available,
+                    dependency="tree_sitter_languages",
+                    error=status.error,
+                    degraded_extensions=degraded,
+                )
+            )
+
+        cpp_extensions = sorted(
+            ext
+            for ext in self._extensions
+            if ext in self.CPP_EXTENSIONS and ext not in overrides
+        )
+        if cpp_extensions:
+            status = self._dependency_registry.status("tree_sitter_languages")[0]
+            available = bool(
+                status.available and getattr(self._cpp_analyzer, "available", False)
+            )
+            degraded = [] if available else cpp_extensions
+            capabilities.append(
+                AnalyzerCapability(
+                    key="cpp",
+                    description="Análisis de símbolos C++",
+                    extensions=cpp_extensions,
+                    available=available,
+                    dependency="tree_sitter_languages",
                     error=status.error,
                     degraded_extensions=degraded,
                 )

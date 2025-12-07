@@ -1,12 +1,20 @@
+import { useState } from "react";
 import { TerminalSocketIO, terminalSocketIOStyles } from "./TerminalSocketIO";
+import { useConnectionWarning } from "../hooks/useConnectionWarning";
 
 /**
  * Remote Terminal View Page
  *
  * Full-page terminal view with security warning.
  * Uses Socket.IO for reliable PTY communication.
+ * Warns user before navigating away with active connection.
  */
 export function RemoteTerminalView() {
+  const [connected, setConnected] = useState(false);
+
+  // Warn user if they try to navigate away with active connection
+  useConnectionWarning({ isConnected: connected });
+
   return (
     <div className="terminal-view">
       <style>{terminalSocketIOStyles}</style>
@@ -17,6 +25,7 @@ export function RemoteTerminalView() {
           welcomeMessage="AEGIS Remote Terminal"
           height="600px"
           className="terminal-page-embed"
+          onConnectionChange={setConnected}
         />
       </div>
 

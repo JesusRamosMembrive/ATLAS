@@ -37,6 +37,13 @@ DEFAULT_EXTENSIONS: Set[str] = {
     ".ts",
     ".tsx",
     ".html",
+    ".c",
+    ".h",
+    ".cpp",
+    ".hpp",
+    ".cc",
+    ".cxx",
+    ".hxx",
 }
 
 

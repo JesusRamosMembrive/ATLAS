@@ -108,7 +108,7 @@ def append_custom_instructions(
         log.warning("Cannot read CLAUDE.md: %s", exc)
         return False
 
-    if "## Custom Workflow Instructions" in current_content:
+    if "# Custom Workflow Instructions" in current_content:
         log.debug("Custom instructions already present in CLAUDE.md")
         return False
 

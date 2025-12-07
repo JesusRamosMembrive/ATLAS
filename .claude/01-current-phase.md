@@ -110,16 +110,16 @@
 
 ## 🎯 Detected Stage: Stage 3 (High Confidence)
 
-**Auto-detected on:** 2025-12-03 17:47
+**Auto-detected on:** 2025-12-06 19:48
 
 **Detection reasoning:**
-- Large or complex codebase (221 files, ~57384 LOC)
-- Multiple patterns detected: Factory Pattern, Repository, Service Layer
+- Large or complex codebase (204 files, ~45702 LOC)
+- Multiple patterns detected: Repository, Service Layer
 
 **Metrics:**
-- Files: 221
-- LOC: ~57384
-- Patterns: Factory Pattern, Repository, Service Layer
+- Files: 204
+- LOC: ~45702
+- Patterns: Repository, Service Layer
 
 **Recommended actions:**
 - Follow rules in `.claude/02-stage3-rules.md`

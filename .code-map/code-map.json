@@ -137,110 +137,110 @@
   {
     "path": "code_map/analyzer_registry.py",
     "relative": true,
-    "modified_at": "2025-11-10T11:33:54.677950+00:00",
+    "modified_at": "2025-12-06T18:12:20.094080+00:00",
     "symbols": [
       {
         "name": "AnalyzerCapability",
         "kind": "class",
-        "lineno": 21,
+        "lineno": 22,
         "parent": null,
         "docstring": "Descripci\u00f3n de la disponibilidad de un analizador por dominio."
       },
       {
         "name": "PlainTextAnalyzer",
         "kind": "class",
-        "lineno": 33,
+        "lineno": 34,
         "parent": null,
         "docstring": "Analizador de reserva cuando no existe soporte espec\u00edfico."
       },
       {
         "name": "parse",
         "kind": "method",
-        "lineno": 36,
+        "lineno": 37,
         "parent": "PlainTextAnalyzer",
         "docstring": "Genera un resumen vac\u00edo para un archivo de texto plano."
       },
       {
         "name": "AnalyzerProtocol",
         "kind": "class",
-        "lineno": 47,
+        "lineno": 48,
         "parent": null,
         "docstring": null
       },
       {
         "name": "parse",
         "kind": "method",
-        "lineno": 48,
+        "lineno": 49,
         "parent": "AnalyzerProtocol",
         "docstring": null
       },
       {
         "name": "AnalyzerRegistry",
         "kind": "class",
-        "lineno": 51,
+        "lineno": 52,
         "parent": null,
         "docstring": "Agrupa los analizadores disponibles y proporciona sus capacidades."
       },
       {
         "name": "__init__",
         "kind": "method",
-        "lineno": 56,
+        "lineno": 59,
         "parent": "AnalyzerRegistry",
         "docstring": "Inicializa el registro de analizadores."
       },
       {
         "name": "get",
         "kind": "method",
-        "lineno": 90,
+        "lineno": 97,
         "parent": "AnalyzerRegistry",
         "docstring": "Obtiene el analizador para una extensi\u00f3n de archivo."
       },
       {
         "name": "items",
         "kind": "method",
-        "lineno": 94,
+        "lineno": 101,
         "parent": "AnalyzerRegistry",
         "docstring": "Itera sobre los pares (extensi\u00f3n, analizador) registrados."
       },
       {
         "name": "analyzers",
         "kind": "method",
-        "lineno": 99,
+        "lineno": 106,
         "parent": "AnalyzerRegistry",
         "docstring": "Diccionario de los analizadores registrados."
       },
       {
         "name": "capabilities",
         "kind": "method",
-        "lineno": 104,
+        "lineno": 111,
         "parent": "AnalyzerRegistry",
         "docstring": "Lista de las capacidades de los analizadores."
       },
       {
         "name": "_build_override_map",
         "kind": "method",
-        "lineno": 108,
+        "lineno": 115,
         "parent": "AnalyzerRegistry",
         "docstring": "Construye un mapa de analizadores personalizados."
       },
       {
         "name": "_default_analyzer_for",
         "kind": "method",
-        "lineno": 117,
+        "lineno": 124,
         "parent": "AnalyzerRegistry",
         "docstring": "Obtiene el analizador por defecto para una extensi\u00f3n de archivo."
       },
       {
         "name": "_build_capabilities",
         "kind": "method",
-        "lineno": 131,
+        "lineno": 142,
         "parent": "AnalyzerRegistry",
         "docstring": "Construye la lista de capacidades de los analizadores."
       },
       {
         "name": "_normalize_extension",
         "kind": "method",
-        "lineno": 236,
+        "lineno": 293,
         "parent": "AnalyzerRegistry",
         "docstring": "Normaliza una extensi\u00f3n de archivo."
       }
@@ -446,98 +446,6 @@
     "errors": []
   },
   {
-    "path": "code_map/api/claude_permissions.py",
-    "relative": true,
-    "modified_at": "2025-11-30T21:26:14.592315+00:00",
-    "symbols": [
-      {
-        "name": "ClaudePermissions",
-        "kind": "class",
-        "lineno": 30,
-        "parent": null,
-        "docstring": "Claude Code permissions structure"
-      },
-      {
-        "name": "ClaudeSettings",
-        "kind": "class",
-        "lineno": 38,
-        "parent": null,
-        "docstring": "Claude Code settings.local.json structure"
-      },
-      {
-        "name": "PermissionsResponse",
-        "kind": "class",
-        "lineno": 44,
-        "parent": null,
-        "docstring": "Response for permissions endpoint"
-      },
-      {
-        "name": "AddPermissionsRequest",
-        "kind": "class",
-        "lineno": 53,
-        "parent": null,
-        "docstring": "Request to add permissions"
-      },
-      {
-        "name": "AddPermissionsResponse",
-        "kind": "class",
-        "lineno": 59,
-        "parent": null,
-        "docstring": "Response after adding permissions"
-      },
-      {
-        "name": "get_settings_path",
-        "kind": "function",
-        "lineno": 91,
-        "parent": null,
-        "docstring": "Get path to .claude/settings.local.json"
-      },
-      {
-        "name": "read_settings",
-        "kind": "function",
-        "lineno": 96,
-        "parent": null,
-        "docstring": "Read Claude settings from file"
-      },
-      {
-        "name": "write_settings",
-        "kind": "function",
-        "lineno": 110,
-        "parent": null,
-        "docstring": "Write Claude settings to file"
-      },
-      {
-        "name": "get_permissions",
-        "kind": "function",
-        "lineno": 125,
-        "parent": null,
-        "docstring": "Get current Claude Code permissions for the project.\n\nReturns the current permissions from .claude/settings.local.json\nalong with recommended permissions for the Agent UI."
-      },
-      {
-        "name": "add_permissions",
-        "kind": "function",
-        "lineno": 151,
-        "parent": null,
-        "docstring": "Add permissions to Claude Code settings.\n\nAdds the specified permissions to the allow list in\n.claude/settings.local.json. Creates the file if it doesn't exist."
-      },
-      {
-        "name": "add_recommended_permissions",
-        "kind": "function",
-        "lineno": 194,
-        "parent": null,
-        "docstring": "Add all recommended permissions for Agent UI.\n\nConvenience endpoint that adds all permissions needed for\nthe Claude Agent UI to work properly."
-      },
-      {
-        "name": "remove_permission",
-        "kind": "function",
-        "lineno": 207,
-        "parent": null,
-        "docstring": "Remove a specific permission."
-      }
-    ],
-    "errors": []
-  },
-  {
     "path": "code_map/api/deps.py",
     "relative": true,
     "modified_at": "2025-11-10T11:33:54.677950+00:00",
@@ -584,320 +492,6 @@
         "lineno": 210,
         "parent": null,
         "docstring": null
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "code_map/api/handlers/__init__.py",
-    "relative": true,
-    "modified_at": "2025-11-30T21:26:14.592315+00:00",
-    "symbols": [],
-    "errors": []
-  },
-  {
-    "path": "code_map/api/handlers/approval.py",
-    "relative": true,
-    "modified_at": "2025-11-30T21:26:14.592315+00:00",
-    "symbols": [
-      {
-        "name": "ApprovalRequestProtocol",
-        "kind": "class",
-        "lineno": 19,
-        "parent": null,
-        "docstring": "Protocol for approval request objects."
-      },
-      {
-        "name": "send_tool_approval_event",
-        "kind": "function",
-        "lineno": 33,
-        "parent": null,
-        "docstring": "Send a tool approval request event to the frontend.\n\nArgs:\n    websocket: WebSocket connection to frontend\n    request: Approval request object with tool details\n    tool_use_id: Optional tool use ID (for SDK/CLI modes)\n    context: Optional context string (for MCP modes)\n    event_type: Event type name (default: \"tool_approval_request\")"
-      },
-      {
-        "name": "create_approval_event_sender",
-        "kind": "function",
-        "lineno": 78,
-        "parent": null,
-        "docstring": "Factory to create an approval event sender callback.\n\nArgs:\n    websocket: WebSocket connection to frontend\n    event_type: Event type name\n    include_tool_use_id: Whether to include tool_use_id field\n    include_context: Whether to include context field\n\nReturns:\n    Async callback function for sending approval events"
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "code_map/api/handlers/base.py",
-    "relative": true,
-    "modified_at": "2025-11-30T21:26:14.592315+00:00",
-    "symbols": [
-      {
-        "name": "HandlerCallbacks",
-        "kind": "class",
-        "lineno": 23,
-        "parent": null,
-        "docstring": "Container for handler callbacks to frontend via WebSocket."
-      },
-      {
-        "name": "HandlerConfig",
-        "kind": "class",
-        "lineno": 36,
-        "parent": null,
-        "docstring": "Base configuration for all handlers."
-      },
-      {
-        "name": "BaseAgentHandler",
-        "kind": "class",
-        "lineno": 50,
-        "parent": null,
-        "docstring": "Abstract base class for Claude agent execution modes.\n\nEach handler encapsulates the logic for a specific execution mode:\n- SDK Mode: Direct Anthropic SDK with tool interception\n- MCP Proxy Mode: Claude CLI with MCP tool proxy\n- CLI Mode: Standard Claude CLI subprocess\n\nHandlers manage their own runner lifecycle and provide\nconsistent interfaces for the WebSocket endpoint."
-      },
-      {
-        "name": "__init__",
-        "kind": "method",
-        "lineno": 63,
-        "parent": "BaseAgentHandler",
-        "docstring": null
-      },
-      {
-        "name": "is_running",
-        "kind": "method",
-        "lineno": 71,
-        "parent": "BaseAgentHandler",
-        "docstring": "Check if handler has an active runner."
-      },
-      {
-        "name": "handle_run",
-        "kind": "method",
-        "lineno": 76,
-        "parent": "BaseAgentHandler",
-        "docstring": "Handle a 'run' command by starting prompt execution.\n\nArgs:\n    prompt: The user prompt to execute\n    message: Full message dict with additional options\n\nReturns:\n    The asyncio Task running the prompt"
-      },
-      {
-        "name": "handle_cancel",
-        "kind": "method",
-        "lineno": 90,
-        "parent": "BaseAgentHandler",
-        "docstring": "Cancel the currently running operation."
-      },
-      {
-        "name": "handle_tool_approval_response",
-        "kind": "method",
-        "lineno": 94,
-        "parent": "BaseAgentHandler",
-        "docstring": "Handle tool approval response from frontend.\n\nArgs:\n    request_id: The approval request ID\n    approved: Whether the tool was approved\n    feedback: Optional feedback message\n\nReturns:\n    True if response was processed, False otherwise"
-      },
-      {
-        "name": "cleanup",
-        "kind": "method",
-        "lineno": 116,
-        "parent": "BaseAgentHandler",
-        "docstring": "Cleanup handler resources."
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "code_map/api/handlers/cli_handler.py",
-    "relative": true,
-    "modified_at": "2025-11-30T21:26:14.592315+00:00",
-    "symbols": [
-      {
-        "name": "CLIModeHandler",
-        "kind": "class",
-        "lineno": 26,
-        "parent": null,
-        "docstring": "Handler for CLI mode execution.\n\nUses Claude CLI subprocess with configurable permission modes\nand optional MCP approval integration."
-      },
-      {
-        "name": "__init__",
-        "kind": "method",
-        "lineno": 34,
-        "parent": "CLIModeHandler",
-        "docstring": null
-      },
-      {
-        "name": "session_broken",
-        "kind": "method",
-        "lineno": 52,
-        "parent": "CLIModeHandler",
-        "docstring": "Check if session is broken due to local tool execution."
-      },
-      {
-        "name": "handle_run",
-        "kind": "method",
-        "lineno": 56,
-        "parent": "CLIModeHandler",
-        "docstring": "Start CLI mode prompt execution.\n\nArgs:\n    prompt: The user prompt\n    message: Full message dict with options\n\nReturns:\n    The asyncio Task running the prompt"
-      },
-      {
-        "name": "_handle_tool_approval_request",
-        "kind": "method",
-        "lineno": 149,
-        "parent": "CLIModeHandler",
-        "docstring": "Forward tool approval request to frontend via callback."
-      },
-      {
-        "name": "_send_mcp_approval_request",
-        "kind": "method",
-        "lineno": 156,
-        "parent": "CLIModeHandler",
-        "docstring": "Forward MCP approval request to frontend via WebSocket (mcpApproval mode).\n\nThis is used when permission_mode is 'mcpApproval' with the CLI runner."
-      },
-      {
-        "name": "handle_cancel",
-        "kind": "method",
-        "lineno": 184,
-        "parent": "CLIModeHandler",
-        "docstring": "Cancel CLI runner."
-      },
-      {
-        "name": "handle_tool_approval_response",
-        "kind": "method",
-        "lineno": 191,
-        "parent": "CLIModeHandler",
-        "docstring": "Handle tool approval response for CLI mode.\n\nRoutes to either MCP socket server (mcpApproval) or runner (toolApproval)."
-      },
-      {
-        "name": "handle_mcp_approval_response",
-        "kind": "method",
-        "lineno": 222,
-        "parent": "CLIModeHandler",
-        "docstring": "Handle MCP approval response (mcpApproval mode only).\n\nThis is a separate method for the specific mcp_approval_response command."
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "code_map/api/handlers/factory.py",
-    "relative": true,
-    "modified_at": "2025-11-30T21:26:14.592315+00:00",
-    "symbols": [
-      {
-        "name": "create_handler",
-        "kind": "function",
-        "lineno": 39,
-        "parent": null,
-        "docstring": "Create appropriate handler based on permission mode.\n\nArgs:\n    permission_mode: Execution mode (sdk, mcpProxy, or CLI modes)\n    websocket: WebSocket connection to frontend\n    cwd: Working directory for operations\n    continue_session: Whether to continue previous session (CLI modes)\n    auto_approve_safe: Whether to auto-approve safe tools\n    socket_server: MCP socket server instance (for mcpProxy/mcpApproval)\n    parser: JSON stream parser (for CLI modes)\n    on_permission_request: Callback for permission requests (CLI modes)\n\nReturns:\n    Configured handler instance"
-      },
-      {
-        "name": "_placeholder_send_event",
-        "kind": "function",
-        "lineno": 120,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "_placeholder_send_error",
-        "kind": "function",
-        "lineno": 124,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "_placeholder_send_done",
-        "kind": "function",
-        "lineno": 128,
-        "parent": null,
-        "docstring": null
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "code_map/api/handlers/mcp_proxy_handler.py",
-    "relative": true,
-    "modified_at": "2025-12-04T18:22:21.734127+00:00",
-    "symbols": [
-      {
-        "name": "MCPProxyModeHandler",
-        "kind": "class",
-        "lineno": 21,
-        "parent": null,
-        "docstring": "Handler for MCP Proxy mode execution.\n\nUses Claude CLI with MCP tool proxy for approval-based execution.\nThe proxy tools (aegis_write, aegis_edit, aegis_bash) request\nuser approval via socket before executing operations."
-      },
-      {
-        "name": "__init__",
-        "kind": "method",
-        "lineno": 30,
-        "parent": "MCPProxyModeHandler",
-        "docstring": null
-      },
-      {
-        "name": "handle_run",
-        "kind": "method",
-        "lineno": 40,
-        "parent": "MCPProxyModeHandler",
-        "docstring": "Start MCP proxy mode prompt execution.\n\nArgs:\n    prompt: The user prompt\n    message: Full message dict with options\n\nReturns:\n    The asyncio Task running the prompt"
-      },
-      {
-        "name": "_send_approval_request",
-        "kind": "method",
-        "lineno": 89,
-        "parent": "MCPProxyModeHandler",
-        "docstring": "Forward MCP proxy approval request to frontend via WebSocket.\n\nArgs:\n    request: ApprovalRequest from the MCP socket server"
-      },
-      {
-        "name": "handle_cancel",
-        "kind": "method",
-        "lineno": 103,
-        "parent": "MCPProxyModeHandler",
-        "docstring": "Cancel MCP proxy runner."
-      },
-      {
-        "name": "handle_tool_approval_response",
-        "kind": "method",
-        "lineno": 110,
-        "parent": "MCPProxyModeHandler",
-        "docstring": "Handle tool approval response for MCP proxy mode.\n\nRoutes response through the socket server to the waiting MCP proxy."
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "code_map/api/handlers/sdk_handler.py",
-    "relative": true,
-    "modified_at": "2025-11-30T21:26:14.593315+00:00",
-    "symbols": [
-      {
-        "name": "SDKModeHandler",
-        "kind": "class",
-        "lineno": 20,
-        "parent": null,
-        "docstring": "Handler for SDK mode execution.\n\nUses Anthropic SDK directly (requires API key) with tool interception\nfor frontend approval before executing dangerous operations."
-      },
-      {
-        "name": "__init__",
-        "kind": "method",
-        "lineno": 28,
-        "parent": "SDKModeHandler",
-        "docstring": null
-      },
-      {
-        "name": "handle_run",
-        "kind": "method",
-        "lineno": 32,
-        "parent": "SDKModeHandler",
-        "docstring": "Start SDK mode prompt execution.\n\nArgs:\n    prompt: The user prompt\n    message: Full message dict with options\n\nReturns:\n    The asyncio Task running the prompt"
-      },
-      {
-        "name": "_handle_sdk_tool_approval",
-        "kind": "method",
-        "lineno": 73,
-        "parent": "SDKModeHandler",
-        "docstring": "Forward SDK tool approval request to frontend via callback."
-      },
-      {
-        "name": "handle_cancel",
-        "kind": "method",
-        "lineno": 80,
-        "parent": "SDKModeHandler",
-        "docstring": "Cancel SDK runner."
-      },
-      {
-        "name": "handle_tool_approval_response",
-        "kind": "method",
-        "lineno": 89,
-        "parent": "SDKModeHandler",
-        "docstring": "Handle tool approval response for SDK mode."
       }
     ],
     "errors": []
@@ -1069,7 +663,7 @@
   {
     "path": "code_map/api/routes.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.593315+00:00",
+    "modified_at": "2025-12-06T07:05:42.017596+00:00",
     "symbols": [],
     "errors": []
   },
@@ -1702,77 +1296,35 @@
   {
     "path": "code_map/api/terminal.py",
     "relative": true,
-    "modified_at": "2025-12-04T18:22:21.734127+00:00",
+    "modified_at": "2025-12-06T07:07:40.993716+00:00",
     "symbols": [
-      {
-        "name": "get_or_create_mcp_socket_server",
-        "kind": "function",
-        "lineno": 65,
-        "parent": null,
-        "docstring": "Get or create the global MCP socket server instance.\n\nThe socket server is shared across all WebSocket connections because\nthe MCP Permission Server subprocess needs a single point of communication."
-      },
-      {
-        "name": "stop_mcp_socket_server",
-        "kind": "function",
-        "lineno": 89,
-        "parent": null,
-        "docstring": "Stop the global MCP socket server if running."
-      },
       {
         "name": "OpenNativeTerminalRequest",
         "kind": "class",
-        "lineno": 108,
+        "lineno": 41,
         "parent": null,
         "docstring": "Request body for opening a native system terminal with an agent."
       },
       {
         "name": "OpenNativeTerminalResponse",
         "kind": "class",
-        "lineno": 114,
+        "lineno": 47,
         "parent": null,
         "docstring": "Response from opening a native terminal."
       },
       {
         "name": "open_native_terminal",
         "kind": "function",
-        "lineno": 122,
+        "lineno": 55,
         "parent": null,
         "docstring": "Open a native system terminal with the specified agent launched.\n\nSupports Linux (gnome-terminal, konsole, xfce4-terminal, xterm),\nmacOS (Terminal.app, iTerm.app), and Windows (cmd, powershell, Windows Terminal).\n\nThe terminal will be opened in the specified working directory (or project root)\nwith the appropriate agent CLI command ready."
       },
       {
         "name": "terminal_websocket",
         "kind": "function",
-        "lineno": 292,
+        "lineno": 230,
         "parent": null,
-        "docstring": "WebSocket endpoint for remote terminal access\n\nSpawns a shell process and provides bidirectional communication using text protocol.\n\nCross-platform support:\n- Unix: Uses native pty module\n- Windows: Uses pywinpty (ConPTY) or subprocess fallback\n\nClient can send:\n- Raw text for shell input\n- \"__RESIZE__:cols:rows\" for terminal resize\n- \"__AGENT__:enable\" to enable agent parsing\n- \"__AGENT__:disable\" to disable agent parsing\n\nServer sends:\n- Raw text from shell output\n- \"__AGENT__:event:{json}\" for agent events (when enabled)"
-      },
-      {
-        "name": "agent_websocket",
-        "kind": "function",
-        "lineno": 582,
-        "parent": null,
-        "docstring": "WebSocket endpoint for Claude Code JSON streaming mode\n\nUses `claude -p --output-format stream-json --verbose` to get structured\noutput instead of TUI rendering. Supports bidirectional communication for\ninteractive permission handling.\n\nClient sends JSON commands:\n- {\"command\": \"run\", \"prompt\": \"...\", \"continue\": true}\n- {\"command\": \"cancel\"}\n- {\"command\": \"new_session\"}\n- {\"command\": \"permission_response\", \"approved\": true, \"always\": false}\n\nServer sends JSON events:\n- {\"type\": \"system\", \"subtype\": \"init\", ...}\n- {\"type\": \"assistant\", \"subtype\": \"text\", \"content\": \"...\"}\n- {\"type\": \"assistant\", \"subtype\": \"tool_use\", \"content\": {...}}\n- {\"type\": \"user\", \"subtype\": \"tool_result\", \"content\": {...}}\n- {\"type\": \"permission_request\", \"tool\": \"...\", \"input\": {...}, \"request_id\": \"...\"}\n- {\"type\": \"done\"}\n- {\"type\": \"error\", \"content\": \"...\"}"
-      },
-      {
-        "name": "agent_pty_websocket",
-        "kind": "function",
-        "lineno": 944,
-        "parent": null,
-        "docstring": "WebSocket endpoint for Claude Code PTY mode with real terminal interaction.\n\nNOTE: This endpoint requires PTY support (Unix only).\nOn Windows, use the /ws/agent endpoint instead.\n\nThis mode spawns Claude in a pseudo-terminal (PTY) for proper Ink UI support,\nparses the terminal output into structured events, and enables real tool approval\nby detecting permission prompts in the output.\n\nClient sends JSON commands:\n- {\"command\": \"start\"} - Start a new PTY session\n- {\"command\": \"run\", \"prompt\": \"...\"} - Send a prompt to Claude\n- {\"command\": \"approve\"} - Approve a pending permission (send 'y')\n- {\"command\": \"deny\"} - Deny a pending permission (send 'n')\n- {\"command\": \"always_allow\"} - Always allow this permission (send 'a')\n- {\"command\": \"cancel\"} - Cancel current operation (send Ctrl+C)\n- {\"command\": \"stop\"} - Stop the PTY session\n\nServer sends JSON events:\n- {\"type\": \"session_started\"}\n- {\"type\": \"thinking\", \"data\": {...}}\n- {\"type\": \"completion\", \"data\": {...}}\n- {\"type\": \"permission_request\", \"data\": {...}}\n- {\"type\": \"message\", \"data\": {...}}\n- {\"type\": \"error\", \"data\": {...}}\n- {\"type\": \"session_ended\"}"
-      },
-      {
-        "name": "gemini_agent_websocket",
-        "kind": "function",
-        "lineno": 1209,
-        "parent": null,
-        "docstring": "WebSocket endpoint for Gemini Code JSON streaming mode"
-      },
-      {
-        "name": "codex_agent_websocket",
-        "kind": "function",
-        "lineno": 1325,
-        "parent": null,
-        "docstring": "WebSocket endpoint for OpenAI Codex CLI JSON streaming mode\n\nProvides real-time interaction with Codex CLI using JSON events.\nEvents are normalized to the same format as Claude for frontend compatibility.\n\nClient sends:\n- {\"command\": \"run\", \"prompt\": \"...\", \"permission_mode\": \"...\", \"model\": \"...\"}\n- {\"command\": \"cancel\"}\n- {\"command\": \"tool_approval_response\", \"request_id\": \"...\", \"approved\": bool}\n\nServer sends:\n- {\"type\": \"connected\", \"cwd\": \"...\"}\n- {\"type\": \"system\", \"subtype\": \"init\", \"content\": {...}}\n- {\"type\": \"assistant\", \"subtype\": \"text\", \"content\": \"...\"}\n- {\"type\": \"assistant\", \"subtype\": \"tool_use\", \"content\": {...}}\n- {\"type\": \"user\", \"subtype\": \"tool_result\", \"content\": {...}}\n- {\"type\": \"done\"}\n- {\"type\": \"error\", \"content\": \"...\"}\n- {\"type\": \"tool_approval_request\", ...}"
+        "docstring": "Legacy WebSocket endpoint for remote terminal access.\n\nNOTE: For new implementations, use Socket.IO with the /pty namespace instead.\nThis endpoint is maintained for backwards compatibility.\n\nSpawns a shell process and provides bidirectional communication using text protocol."
       }
     ],
     "errors": []
@@ -2281,6 +1833,112 @@
     "errors": []
   },
   {
+    "path": "code_map/c_analyzer.py",
+    "relative": true,
+    "modified_at": "2025-12-06T18:11:14.977152+00:00",
+    "symbols": [
+      {
+        "name": "_CParser",
+        "kind": "class",
+        "lineno": 18,
+        "parent": null,
+        "docstring": "Wrapper ligero sobre el parser de tree-sitter para C/C++."
+      },
+      {
+        "name": "for_language",
+        "kind": "method",
+        "lineno": 24,
+        "parent": "_CParser",
+        "docstring": "Construye un parser configurado para el lenguaje indicado (c o cpp)."
+      },
+      {
+        "name": "CAnalyzer",
+        "kind": "class",
+        "lineno": 38,
+        "parent": null,
+        "docstring": "Analizador basado en tree-sitter para archivos C/C++."
+      },
+      {
+        "name": "__init__",
+        "kind": "method",
+        "lineno": 41,
+        "parent": "CAnalyzer",
+        "docstring": "Inicializa el parser adecuado y comprueba la disponibilidad de dependencias."
+      },
+      {
+        "name": "parse",
+        "kind": "method",
+        "lineno": 60,
+        "parent": "CAnalyzer",
+        "docstring": "Analiza un archivo C/C++ y devuelve los s\u00edmbolos detectados.\n\nArgs:\n    path: Ruta del archivo a analizar."
+      },
+      {
+        "name": "_collect_from_children",
+        "kind": "method",
+        "lineno": 100,
+        "parent": "CAnalyzer",
+        "docstring": "Recorre recursivamente el \u00e1rbol sint\u00e1ctico para extraer s\u00edmbolos."
+      },
+      {
+        "name": "_extract_function_name",
+        "kind": "method",
+        "lineno": 258,
+        "parent": "CAnalyzer",
+        "docstring": "Extrae el nombre de una definici\u00f3n de funci\u00f3n."
+      },
+      {
+        "name": "_find_declarator_name",
+        "kind": "method",
+        "lineno": 267,
+        "parent": "CAnalyzer",
+        "docstring": "Busca recursivamente el nombre en un declarador."
+      },
+      {
+        "name": "_extract_function_declaration_name",
+        "kind": "method",
+        "lineno": 303,
+        "parent": "CAnalyzer",
+        "docstring": "Extrae el nombre de una declaraci\u00f3n de funci\u00f3n (prototipo)."
+      },
+      {
+        "name": "_extract_type_name",
+        "kind": "method",
+        "lineno": 320,
+        "parent": "CAnalyzer",
+        "docstring": "Extrae el nombre de un struct, class o enum."
+      },
+      {
+        "name": "_extract_typedef_name",
+        "kind": "method",
+        "lineno": 333,
+        "parent": "CAnalyzer",
+        "docstring": "Extrae el nombre del tipo definido por typedef."
+      },
+      {
+        "name": "_extract_identifier",
+        "kind": "method",
+        "lineno": 342,
+        "parent": "CAnalyzer",
+        "docstring": "Obtiene el identificador asociado a un nodo, si existe."
+      },
+      {
+        "name": "_find_child",
+        "kind": "method",
+        "lineno": 354,
+        "parent": "CAnalyzer",
+        "docstring": "Busca el primer hijo del tipo indicado dentro de un nodo."
+      },
+      {
+        "name": "_find_leading_comment",
+        "kind": "method",
+        "lineno": 361,
+        "parent": "CAnalyzer",
+        "docstring": "Localiza comentarios inmediatamente anteriores a un nodo."
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "code_map/cache.py",
     "relative": true,
     "modified_at": "2025-11-10T16:44:50.327461+00:00",
@@ -2706,7 +2364,7 @@
   {
     "path": "code_map/cli.py",
     "relative": true,
-    "modified_at": "2025-12-05T13:00:09.208468+00:00",
+    "modified_at": "2025-12-06T06:57:18.654644+00:00",
     "symbols": [
       {
         "name": "_validate_root",
@@ -4148,423 +3806,6 @@
     "errors": []
   },
   {
-    "path": "code_map/mcp/__init__.py",
-    "relative": true,
-    "modified_at": "2025-12-01T17:07:49.294373+00:00",
-    "symbols": [],
-    "errors": []
-  },
-  {
-    "path": "code_map/mcp/approval_bridge.py",
-    "relative": true,
-    "modified_at": "2025-11-30T21:26:14.597315+00:00",
-    "symbols": [
-      {
-        "name": "ApprovalRequest",
-        "kind": "class",
-        "lineno": 33,
-        "parent": null,
-        "docstring": "Represents a pending tool approval request.\n\nContains all information needed for the frontend to display\na meaningful approval dialog."
-      },
-      {
-        "name": "to_dict",
-        "kind": "method",
-        "lineno": 56,
-        "parent": "ApprovalRequest",
-        "docstring": "Convert to dictionary for JSON serialization"
-      },
-      {
-        "name": "ApprovalBridge",
-        "kind": "class",
-        "lineno": 72,
-        "parent": null,
-        "docstring": "Bridge between MCP Permission Server and the main backend.\n\nManages pending approval requests and notifies the frontend\nwhen user input is needed.\n\nCommunication flow:\n1. MCP Server calls request_approval()\n2. Bridge generates preview and notifies frontend\n3. Frontend shows modal and user responds\n4. Backend calls respond() with user's decision\n5. Bridge resolves the future, MCP Server gets result"
-      },
-      {
-        "name": "__init__",
-        "kind": "method",
-        "lineno": 87,
-        "parent": "ApprovalBridge",
-        "docstring": null
-      },
-      {
-        "name": "set_notify_callback",
-        "kind": "method",
-        "lineno": 109,
-        "parent": "ApprovalBridge",
-        "docstring": "Set callback to notify frontend of new approval requests.\n\nThe callback receives an ApprovalRequest and should send it\nto the frontend via WebSocket."
-      },
-      {
-        "name": "_create_approval_request",
-        "kind": "method",
-        "lineno": 125,
-        "parent": "ApprovalBridge",
-        "docstring": "Create an ApprovalRequest with a unique ID."
-      },
-      {
-        "name": "_auto_approve_response",
-        "kind": "method",
-        "lineno": 136,
-        "parent": "ApprovalBridge",
-        "docstring": "Create auto-approve response for safe tools."
-      },
-      {
-        "name": "_denial_response",
-        "kind": "method",
-        "lineno": 140,
-        "parent": "ApprovalBridge",
-        "docstring": "Create denial response."
-      },
-      {
-        "name": "_notify_and_wait",
-        "kind": "method",
-        "lineno": 150,
-        "parent": "ApprovalBridge",
-        "docstring": "Notify frontend and wait for response."
-      },
-      {
-        "name": "request_approval",
-        "kind": "method",
-        "lineno": 188,
-        "parent": "ApprovalBridge",
-        "docstring": "Request approval from the user for a tool execution.\n\nThis method blocks until the user responds or timeout occurs.\n\nArgs:\n    tool_name: Name of the tool (e.g., \"Edit\", \"Bash\")\n    tool_input: Input parameters for the tool\n    context: Additional context about the operation\n\nReturns:\n    dict with keys:\n        - approved: bool\n        - message: str (reason if denied)\n        - updated_input: dict (possibly modified input)"
-      },
-      {
-        "name": "respond",
-        "kind": "method",
-        "lineno": 234,
-        "parent": "ApprovalBridge",
-        "docstring": "Respond to a pending approval request.\n\nCalled by the backend when the user responds via frontend.\n\nArgs:\n    request_id: ID of the approval request\n    approved: Whether to approve the tool execution\n    message: Optional message (reason for denial)\n    updated_input: Optional modified input parameters\n\nReturns:\n    True if response was processed, False if request not found"
-      },
-      {
-        "name": "get_pending_requests",
-        "kind": "method",
-        "lineno": 276,
-        "parent": "ApprovalBridge",
-        "docstring": "Get all pending approval requests"
-      },
-      {
-        "name": "has_pending",
-        "kind": "method",
-        "lineno": 280,
-        "parent": "ApprovalBridge",
-        "docstring": "Check if there are pending approval requests"
-      },
-      {
-        "name": "_generate_preview",
-        "kind": "method",
-        "lineno": 284,
-        "parent": "ApprovalBridge",
-        "docstring": "Generate preview data based on tool type"
-      },
-      {
-        "name": "_generate_file_preview",
-        "kind": "method",
-        "lineno": 296,
-        "parent": "ApprovalBridge",
-        "docstring": "Generate diff preview for file modification tools"
-      },
-      {
-        "name": "_generate_command_preview",
-        "kind": "method",
-        "lineno": 378,
-        "parent": "ApprovalBridge",
-        "docstring": "Generate preview for command execution"
-      },
-      {
-        "name": "_generate_generic_preview",
-        "kind": "method",
-        "lineno": 400,
-        "parent": "ApprovalBridge",
-        "docstring": "Generate generic preview for other tools"
-      },
-      {
-        "name": "_generate_diff",
-        "kind": "method",
-        "lineno": 408,
-        "parent": "ApprovalBridge",
-        "docstring": "Generate unified diff"
-      },
-      {
-        "name": "_resolve_path",
-        "kind": "method",
-        "lineno": 425,
-        "parent": "ApprovalBridge",
-        "docstring": "Resolve file path relative to cwd"
-      },
-      {
-        "name": "_summarize_input",
-        "kind": "method",
-        "lineno": 432,
-        "parent": "ApprovalBridge",
-        "docstring": "Create summary of tool input"
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "code_map/mcp/constants.py",
-    "relative": true,
-    "modified_at": "2025-12-04T18:21:43.901549+00:00",
-    "symbols": [],
-    "errors": []
-  },
-  {
-    "path": "code_map/mcp/permission_server.py",
-    "relative": true,
-    "modified_at": "2025-12-04T18:22:21.734127+00:00",
-    "symbols": [
-      {
-        "name": "PermissionServer",
-        "kind": "class",
-        "lineno": 38,
-        "parent": null,
-        "docstring": "MCP Permission Server that handles tool approval requests.\n\nThis can run in two modes:\n1. Standalone: Communicates with AEGIS backend via Unix socket\n2. Embedded: Uses ApprovalBridge directly (for testing)"
-      },
-      {
-        "name": "__init__",
-        "kind": "method",
-        "lineno": 47,
-        "parent": "PermissionServer",
-        "docstring": null
-      },
-      {
-        "name": "set_bridge",
-        "kind": "method",
-        "lineno": 71,
-        "parent": "PermissionServer",
-        "docstring": "Set ApprovalBridge for embedded mode"
-      },
-      {
-        "name": "check_permission",
-        "kind": "method",
-        "lineno": 76,
-        "parent": "PermissionServer",
-        "docstring": "Check if a tool execution should be allowed.\n\nThis is the main entry point called by Claude Code via MCP.\n\nArgs:\n    tool_name: Name of the tool (e.g., \"Edit\", \"Bash\")\n    tool_input: Input parameters for the tool\n    context: Additional context\n\nReturns:\n    {\"behavior\": \"allow\", \"updatedInput\": {...}} or\n    {\"behavior\": \"deny\", \"message\": \"...\"}"
-      },
-      {
-        "name": "_request_via_bridge",
-        "kind": "method",
-        "lineno": 129,
-        "parent": "PermissionServer",
-        "docstring": "Request approval via embedded ApprovalBridge"
-      },
-      {
-        "name": "_request_via_socket",
-        "kind": "method",
-        "lineno": 138,
-        "parent": "PermissionServer",
-        "docstring": "Request approval via Unix socket to AEGIS backend"
-      },
-      {
-        "name": "get_server",
-        "kind": "function",
-        "lineno": 203,
-        "parent": null,
-        "docstring": "Get or create the global PermissionServer instance"
-      },
-      {
-        "name": "set_server",
-        "kind": "function",
-        "lineno": 215,
-        "parent": null,
-        "docstring": "Set the global PermissionServer instance"
-      },
-      {
-        "name": "create_mcp_server",
-        "kind": "function",
-        "lineno": 226,
-        "parent": null,
-        "docstring": "Create FastMCP server with the check_permission tool.\n\nThis is used when running as a standalone MCP server."
-      },
-      {
-        "name": "main",
-        "kind": "function",
-        "lineno": 270,
-        "parent": null,
-        "docstring": "Run the MCP server in standalone mode"
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "code_map/mcp/socket_server.py",
-    "relative": true,
-    "modified_at": "2025-12-04T18:21:43.901549+00:00",
-    "symbols": [
-      {
-        "name": "MCPSocketServer",
-        "kind": "class",
-        "lineno": 36,
-        "parent": null,
-        "docstring": "Socket server that receives permission requests from MCP server.\n\nThis runs in the main AEGIS backend process and:\n1. Listens on a socket for requests from MCP Permission Server\n   - Unix: Unix domain socket\n   - Windows: TCP socket on localhost\n2. Forwards requests to the ApprovalBridge\n3. The bridge notifies the frontend and waits for user response\n4. Returns the response to the MCP server via socket"
-      },
-      {
-        "name": "__init__",
-        "kind": "method",
-        "lineno": 49,
-        "parent": "MCPSocketServer",
-        "docstring": null
-      },
-      {
-        "name": "set_frontend_callback",
-        "kind": "method",
-        "lineno": 82,
-        "parent": "MCPSocketServer",
-        "docstring": "Set callback to notify frontend of approval requests.\n\nThe callback should send the ApprovalRequest to the frontend\nvia WebSocket."
-      },
-      {
-        "name": "start",
-        "kind": "method",
-        "lineno": 93,
-        "parent": "MCPSocketServer",
-        "docstring": "Start the socket server (Unix socket or TCP depending on platform)"
-      },
-      {
-        "name": "stop",
-        "kind": "method",
-        "lineno": 123,
-        "parent": "MCPSocketServer",
-        "docstring": "Stop the socket server"
-      },
-      {
-        "name": "_handle_client",
-        "kind": "method",
-        "lineno": 139,
-        "parent": "MCPSocketServer",
-        "docstring": "Handle a client connection from MCP server"
-      },
-      {
-        "name": "_process_request",
-        "kind": "method",
-        "lineno": 190,
-        "parent": "MCPSocketServer",
-        "docstring": "Process a request from MCP server"
-      },
-      {
-        "name": "respond_to_approval",
-        "kind": "method",
-        "lineno": 249,
-        "parent": "MCPSocketServer",
-        "docstring": "Respond to a pending approval request.\n\nCalled by the WebSocket handler when user responds via frontend."
-      },
-      {
-        "name": "get_pending_requests",
-        "kind": "method",
-        "lineno": 263,
-        "parent": "MCPSocketServer",
-        "docstring": "Get all pending approval requests"
-      },
-      {
-        "name": "get_socket_server",
-        "kind": "function",
-        "lineno": 272,
-        "parent": null,
-        "docstring": "Get the global socket server instance"
-      },
-      {
-        "name": "create_socket_server",
-        "kind": "function",
-        "lineno": 277,
-        "parent": null,
-        "docstring": "Create and set the global socket server instance"
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "code_map/mcp/tool_proxy_server.py",
-    "relative": true,
-    "modified_at": "2025-12-04T18:22:21.734127+00:00",
-    "symbols": [
-      {
-        "name": "ToolProxyServer",
-        "kind": "class",
-        "lineno": 64,
-        "parent": null,
-        "docstring": "MCP Tool Proxy Server that requires approval for dangerous operations.\n\nProvides proxy implementations of Write, Edit, and Bash that:\n1. Generate diff previews for file operations\n2. Request user approval via socket\n3. Execute only if approved"
-      },
-      {
-        "name": "__init__",
-        "kind": "method",
-        "lineno": 74,
-        "parent": "ToolProxyServer",
-        "docstring": null
-      },
-      {
-        "name": "_request_approval",
-        "kind": "method",
-        "lineno": 84,
-        "parent": "ToolProxyServer",
-        "docstring": "Request approval from AEGIS backend.\n\nReturns (approved, feedback) tuple."
-      },
-      {
-        "name": "_generate_write_preview",
-        "kind": "method",
-        "lineno": 148,
-        "parent": "ToolProxyServer",
-        "docstring": "Generate preview for Write operation"
-      },
-      {
-        "name": "_generate_edit_preview",
-        "kind": "method",
-        "lineno": 168,
-        "parent": "ToolProxyServer",
-        "docstring": "Generate diff preview for Edit operation"
-      },
-      {
-        "name": "_generate_bash_preview",
-        "kind": "method",
-        "lineno": 209,
-        "parent": "ToolProxyServer",
-        "docstring": "Generate preview for Bash command"
-      },
-      {
-        "name": "aegis_write",
-        "kind": "method",
-        "lineno": 213,
-        "parent": "ToolProxyServer",
-        "docstring": "Write content to a file (requires approval).\n\nArgs:\n    file_path: Absolute or relative path to the file\n    content: Content to write to the file\n\nReturns:\n    Success message or error description"
-      },
-      {
-        "name": "aegis_edit",
-        "kind": "method",
-        "lineno": 249,
-        "parent": "ToolProxyServer",
-        "docstring": "Edit a file by replacing text (requires approval).\n\nArgs:\n    file_path: Path to the file to edit\n    old_string: Text to find and replace\n    new_string: Replacement text\n    replace_all: If True, replace all occurrences\n\nReturns:\n    Success message or error description"
-      },
-      {
-        "name": "aegis_bash",
-        "kind": "method",
-        "lineno": 311,
-        "parent": "ToolProxyServer",
-        "docstring": "Execute a bash command (requires approval).\n\nArgs:\n    command: The bash command to execute\n    timeout: Timeout in milliseconds (default 2 minutes)\n    description: Optional description of what the command does\n\nReturns:\n    Command output or error description"
-      },
-      {
-        "name": "get_server",
-        "kind": "function",
-        "lineno": 377,
-        "parent": null,
-        "docstring": "Get or create the global ToolProxyServer instance"
-      },
-      {
-        "name": "create_mcp_server",
-        "kind": "function",
-        "lineno": 387,
-        "parent": null,
-        "docstring": "Create FastMCP server with proxy tools"
-      },
-      {
-        "name": "main",
-        "kind": "function",
-        "lineno": 482,
-        "parent": null,
-        "docstring": "Run the MCP Tool Proxy Server"
-      }
-    ],
-    "errors": []
-  },
-  {
     "path": "code_map/models.py",
     "relative": true,
     "modified_at": "2025-11-10T11:33:54.682345+00:00",
@@ -4631,82 +3872,82 @@
   {
     "path": "code_map/scanner.py",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.598315+00:00",
+    "modified_at": "2025-12-06T18:11:27.600336+00:00",
     "symbols": [
       {
         "name": "ProjectScanner",
         "kind": "class",
-        "lineno": 43,
+        "lineno": 50,
         "parent": null,
         "docstring": "Coordina los escaneos completos de una ruta ra\u00edz."
       },
       {
         "name": "__init__",
         "kind": "method",
-        "lineno": 46,
+        "lineno": 53,
         "parent": "ProjectScanner",
         "docstring": "Inicializa el scanner.\n\nArgs:\n    root: La ruta ra\u00edz del proyecto a escanear.\n    analyzer: (Opcional) Un analizador de archivos personalizado para archivos .py.\n    analyzers: (Opcional) Un mapeo de extensiones de archivo a analizadores personalizados.\n    exclude_dirs: (Opcional) Una secuencia de nombres de directorios a excluir.\n    include_docstrings: (Opcional) Si es True, se incluir\u00e1n los docstrings en el an\u00e1lisis.\n    extensions: (Opcional) Una secuencia de extensiones de archivo a incluir en el escaneo."
       },
       {
         "name": "scan",
         "kind": "method",
-        "lineno": 100,
+        "lineno": 107,
         "parent": "ProjectScanner",
         "docstring": "Ejecuta un recorrido completo del \u00e1rbol y devuelve res\u00famenes por archivo."
       },
       {
         "name": "scan_and_update_index",
         "kind": "method",
-        "lineno": 110,
+        "lineno": 117,
         "parent": "ProjectScanner",
         "docstring": "Ejecuta un escaneo, actualiza el \u00edndice y opcionalmente persiste un snapshot.\n\nArgs:\n    index: El \u00edndice de s\u00edmbolos a actualizar.\n    persist: Si es True, se guardar\u00e1 un snapshot del \u00edndice.\n    store: (Opcional) El almac\u00e9n de snapshots a utilizar.\n\nReturns:\n    Una lista de res\u00famenes de archivos."
       },
       {
         "name": "hydrate_index_from_snapshot",
         "kind": "method",
-        "lineno": 136,
+        "lineno": 143,
         "parent": "ProjectScanner",
         "docstring": "Carga un snapshot (si existe) y lo aplica al \u00edndice antes de escanear.\n\nArgs:\n    index: El \u00edndice de s\u00edmbolos a hidratar.\n    store: (Opcional) El almac\u00e9n de snapshots a utilizar.\n\nReturns:\n    Una lista de res\u00famenes de archivos del snapshot."
       },
       {
         "name": "apply_change_batch",
         "kind": "method",
-        "lineno": 156,
+        "lineno": 163,
         "parent": "ProjectScanner",
         "docstring": "Reprocesa los archivos afectados por un lote de cambios y actualiza el \u00edndice.\n\nArgs:\n    batch: El lote de cambios a aplicar.\n    index: El \u00edndice de s\u00edmbolos a actualizar.\n    persist: Si es True, se guardar\u00e1 un snapshot del \u00edndice.\n    store: (Opcional) El almac\u00e9n de snapshots a utilizar.\n\nReturns:\n    Un diccionario con las rutas de los archivos actualizados y eliminados."
       },
       {
         "name": "_iter_supported_files",
         "kind": "method",
-        "lineno": 209,
+        "lineno": 216,
         "parent": "ProjectScanner",
         "docstring": "Genera rutas absolutas a cada archivo con extensi\u00f3n soportada."
       },
       {
         "name": "_should_exclude",
         "kind": "method",
-        "lineno": 223,
+        "lineno": 230,
         "parent": "ProjectScanner",
         "docstring": "Determina si una ruta debe ser excluida del escaneo."
       },
       {
         "name": "_default_store",
         "kind": "method",
-        "lineno": 233,
+        "lineno": 240,
         "parent": "ProjectScanner",
         "docstring": "Crea una instancia por defecto de SnapshotStore."
       },
       {
         "name": "_within_root",
         "kind": "method",
-        "lineno": 239,
+        "lineno": 246,
         "parent": "ProjectScanner",
         "docstring": "Comprueba si una ruta est\u00e1 dentro de la ra\u00edz del proyecto."
       },
       {
         "name": "_dedupe_paths",
         "kind": "method",
-        "lineno": 247,
+        "lineno": 254,
         "parent": "ProjectScanner",
         "docstring": "Elimina duplicados y rutas fuera de la ra\u00edz de una lista de rutas."
       }
@@ -4787,7 +4028,7 @@
   {
     "path": "code_map/server.py",
     "relative": true,
-    "modified_at": "2025-12-05T12:59:57.206560+00:00",
+    "modified_at": "2025-12-06T06:57:18.655088+00:00",
     "symbols": [
       {
         "name": "_parse_allowed_origins",
@@ -5495,7 +4736,7 @@
   {
     "path": "code_map/terminal/__init__.py",
     "relative": true,
-    "modified_at": "2025-12-04T18:21:43.902550+00:00",
+    "modified_at": "2025-12-06T07:12:55.529204+00:00",
     "symbols": [],
     "errors": []
   },
@@ -5845,471 +5086,6 @@
     "errors": []
   },
   {
-    "path": "code_map/terminal/claude_runner.py",
-    "relative": true,
-    "modified_at": "2025-12-04T18:22:21.735126+00:00",
-    "symbols": [
-      {
-        "name": "ClaudeCLINotFoundError",
-        "kind": "class",
-        "lineno": 20,
-        "parent": null,
-        "docstring": "Raised when Claude CLI cannot be found."
-      },
-      {
-        "name": "find_claude_cli",
-        "kind": "function",
-        "lineno": 25,
-        "parent": null,
-        "docstring": "Find the Claude CLI executable.\n\nChecks multiple locations since running with sudo may have different PATH.\nSupports both Unix and Windows platforms.\n\nReturns:\n    Full path to claude CLI\n\nRaises:\n    ClaudeCLINotFoundError: If Claude CLI cannot be found"
-      },
-      {
-        "name": "ClaudeRunnerConfig",
-        "kind": "class",
-        "lineno": 113,
-        "parent": null,
-        "docstring": "Configuration for Claude Code runner"
-      },
-      {
-        "name": "__post_init__",
-        "kind": "method",
-        "lineno": 130,
-        "parent": "ClaudeRunnerConfig",
-        "docstring": "Set default socket path based on platform if not provided."
-      },
-      {
-        "name": "ClaudeAgentRunner",
-        "kind": "class",
-        "lineno": 137,
-        "parent": null,
-        "docstring": "Executes Claude Code in JSON streaming mode with bidirectional communication.\n\nRuns `claude -p --output-format stream-json --input-format stream-json --verbose`\nand streams parsed JSON events line by line. Supports interactive permission handling."
-      },
-      {
-        "name": "__init__",
-        "kind": "method",
-        "lineno": 145,
-        "parent": "ClaudeAgentRunner",
-        "docstring": null
-      },
-      {
-        "name": "run_prompt",
-        "kind": "method",
-        "lineno": 171,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Execute a prompt and stream JSON events\n\nArgs:\n    prompt: The prompt to send to Claude Code\n    on_event: Callback for each parsed JSON event\n    on_error: Optional callback for stderr output\n    on_done: Optional callback when process completes\n    on_permission_request: Optional callback for permission requests (returns Future)\n    on_tool_approval_request: Optional callback for tool approval requests (toolApproval mode)\n\nReturns:\n    Exit code from the process"
-      },
-      {
-        "name": "_is_tool_use_event",
-        "kind": "method",
-        "lineno": 503,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Check if event is a tool_use event.\n\nClaude CLI emits tool_use in two formats:\n1. Simplified: {\"type\": \"assistant\", \"subtype\": \"tool_use\", \"content\": {...}}\n2. Full message: {\"type\": \"assistant\", \"message\": {\"content\": [{\"type\": \"tool_use\", ...}]}}"
-      },
-      {
-        "name": "_extract_tool_use_from_event",
-        "kind": "method",
-        "lineno": 529,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Extract tool_use info from event.\n\nReturns (tool_name, tool_input, tool_id) or None if not found."
-      },
-      {
-        "name": "_handle_tool_approval",
-        "kind": "method",
-        "lineno": 560,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Handle tool approval flow for toolApproval mode.\n\nIn plan mode, Claude proposes tool_use but doesn't execute.\nWe intercept, show preview to user, and execute manually if approved."
-      },
-      {
-        "name": "_execute_tool",
-        "kind": "method",
-        "lineno": 737,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Execute a tool manually.\n\nReturns dict with \"content\" and \"is_error\" keys."
-      },
-      {
-        "name": "_execute_write",
-        "kind": "method",
-        "lineno": 769,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Execute Write tool"
-      },
-      {
-        "name": "_execute_edit",
-        "kind": "method",
-        "lineno": 792,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Execute Edit tool"
-      },
-      {
-        "name": "_execute_read",
-        "kind": "method",
-        "lineno": 836,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Execute Read tool"
-      },
-      {
-        "name": "_execute_bash",
-        "kind": "method",
-        "lineno": 877,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Execute Bash tool"
-      },
-      {
-        "name": "_execute_glob",
-        "kind": "method",
-        "lineno": 922,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Execute Glob tool"
-      },
-      {
-        "name": "_execute_grep",
-        "kind": "method",
-        "lineno": 950,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Execute Grep tool"
-      },
-      {
-        "name": "_send_tool_result_to_claude",
-        "kind": "method",
-        "lineno": 1008,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Send tool result back to Claude via stdin"
-      },
-      {
-        "name": "_send_tool_rejection_to_claude",
-        "kind": "method",
-        "lineno": 1063,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Send tool rejection back to Claude"
-      },
-      {
-        "name": "respond_to_tool_approval",
-        "kind": "method",
-        "lineno": 1073,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Respond to a pending tool approval request.\n\nArgs:\n    request_id: ID of the approval request\n    approved: Whether to approve the tool use\n    feedback: Optional feedback (for rejection)\n\nReturns:\n    True if response was processed, False if request not found"
-      },
-      {
-        "name": "_is_permission_request",
-        "kind": "method",
-        "lineno": 1095,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Check if an event is a permission request.\n\nClaude sends permission requests in stream-json mode in these ways:\n1. Explicit \"permission_request\" type event\n2. Tool use events may have \"requires_permission\" flag\n3. Events may contain permission prompts in the message"
-      },
-      {
-        "name": "_handle_permission_request",
-        "kind": "method",
-        "lineno": 1130,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Handle a permission request from Claude"
-      },
-      {
-        "name": "_send_permission_response",
-        "kind": "method",
-        "lineno": 1153,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Send a permission response to Claude"
-      },
-      {
-        "name": "send_user_input",
-        "kind": "method",
-        "lineno": 1175,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Send additional user input to the running process"
-      },
-      {
-        "name": "cancel",
-        "kind": "method",
-        "lineno": 1201,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Cancel the running process"
-      },
-      {
-        "name": "is_running",
-        "kind": "method",
-        "lineno": 1241,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Check if process is currently running"
-      },
-      {
-        "name": "session_broken",
-        "kind": "method",
-        "lineno": 1246,
-        "parent": "ClaudeAgentRunner",
-        "docstring": "Check if the Claude session is broken and cannot be continued.\n\nThis happens when we execute tools locally (in toolApproval mode with plan)\nafter Claude has already exited. Claude doesn't know about our local execution,\nso continuing the session would cause API errors."
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "code_map/terminal/codex_runner.py",
-    "relative": true,
-    "modified_at": "2025-12-04T18:21:43.903919+00:00",
-    "symbols": [
-      {
-        "name": "find_codex_cli",
-        "kind": "function",
-        "lineno": 29,
-        "parent": null,
-        "docstring": "Find the Codex CLI executable.\n\nChecks multiple locations since running with sudo may have different PATH.\nSupports both Unix and Windows platforms.\n\nReturns:\n    Full path to codex CLI, or \"codex\" if not found (will fail at runtime)"
-      },
-      {
-        "name": "CodexRunnerConfig",
-        "kind": "class",
-        "lineno": 138,
-        "parent": null,
-        "docstring": "Configuration for Codex CLI runner"
-      },
-      {
-        "name": "CodexAgentRunner",
-        "kind": "class",
-        "lineno": 151,
-        "parent": null,
-        "docstring": "Executes Codex CLI in JSON streaming mode with event mapping.\n\nRuns `codex exec \"prompt\" --json` and streams parsed JSON events,\nmapping them to the normalized AEGIS event format for frontend compatibility."
-      },
-      {
-        "name": "__init__",
-        "kind": "method",
-        "lineno": 159,
-        "parent": "CodexAgentRunner",
-        "docstring": null
-      },
-      {
-        "name": "_build_command",
-        "kind": "method",
-        "lineno": 178,
-        "parent": "CodexAgentRunner",
-        "docstring": "Build Codex CLI command with appropriate flags.\n\nArgs:\n    prompt: The user prompt to execute\n\nReturns:\n    List of command arguments"
-      },
-      {
-        "name": "run_prompt",
-        "kind": "method",
-        "lineno": 229,
-        "parent": "CodexAgentRunner",
-        "docstring": "Execute a prompt and stream JSON events.\n\nArgs:\n    prompt: The prompt to send to Codex\n    on_event: Callback for each parsed JSON event (normalized format)\n    on_error: Optional callback for stderr output\n    on_done: Optional callback when process completes\n    on_permission_request: Optional callback for permission requests\n    on_tool_approval_request: Optional callback for tool approval (toolApproval mode)\n\nReturns:\n    Exit code from the process"
-      },
-      {
-        "name": "_map_event",
-        "kind": "method",
-        "lineno": 443,
-        "parent": "CodexAgentRunner",
-        "docstring": "Map Codex event to normalized AEGIS event format.\n\nCodex events are different from Claude events, so we need to translate them.\n\nArgs:\n    event: Raw Codex event from JSONL output\n\nReturns:\n    List of normalized events (can be empty or multiple)"
-      },
-      {
-        "name": "_map_tool_name",
-        "kind": "method",
-        "lineno": 594,
-        "parent": "CodexAgentRunner",
-        "docstring": "Map Codex tool names to Claude equivalents for UI consistency."
-      },
-      {
-        "name": "_is_tool_use_event",
-        "kind": "method",
-        "lineno": 598,
-        "parent": "CodexAgentRunner",
-        "docstring": "Check if event is a tool_use event."
-      },
-      {
-        "name": "_extract_tool_use_from_event",
-        "kind": "method",
-        "lineno": 602,
-        "parent": "CodexAgentRunner",
-        "docstring": "Extract tool_use info from event.\n\nReturns (tool_name, tool_input, tool_id) or None if not found."
-      },
-      {
-        "name": "_handle_tool_approval",
-        "kind": "method",
-        "lineno": 618,
-        "parent": "CodexAgentRunner",
-        "docstring": "Handle tool approval flow for toolApproval mode.\n\nIn read-only sandbox mode, Codex doesn't execute commands.\nWe intercept, show preview to user, and execute manually if approved."
-      },
-      {
-        "name": "_execute_tool",
-        "kind": "method",
-        "lineno": 713,
-        "parent": "CodexAgentRunner",
-        "docstring": "Execute a tool manually.\n\nReturns dict with \"content\" and \"is_error\" keys."
-      },
-      {
-        "name": "_execute_bash",
-        "kind": "method",
-        "lineno": 740,
-        "parent": "CodexAgentRunner",
-        "docstring": "Execute Bash tool"
-      },
-      {
-        "name": "_execute_read",
-        "kind": "method",
-        "lineno": 784,
-        "parent": "CodexAgentRunner",
-        "docstring": "Execute Read tool"
-      },
-      {
-        "name": "_execute_write",
-        "kind": "method",
-        "lineno": 821,
-        "parent": "CodexAgentRunner",
-        "docstring": "Execute Write tool"
-      },
-      {
-        "name": "_execute_edit",
-        "kind": "method",
-        "lineno": 843,
-        "parent": "CodexAgentRunner",
-        "docstring": "Execute Edit tool"
-      },
-      {
-        "name": "cancel",
-        "kind": "method",
-        "lineno": 887,
-        "parent": "CodexAgentRunner",
-        "docstring": "Cancel the running process"
-      },
-      {
-        "name": "respond_to_tool_approval",
-        "kind": "method",
-        "lineno": 922,
-        "parent": "CodexAgentRunner",
-        "docstring": "Respond to a pending tool approval request.\n\nArgs:\n    request_id: ID of the approval request\n    approved: Whether to approve the tool use\n    feedback: Optional feedback (for rejection)\n\nReturns:\n    True if response was processed, False if request not found"
-      },
-      {
-        "name": "is_running",
-        "kind": "method",
-        "lineno": 945,
-        "parent": "CodexAgentRunner",
-        "docstring": "Check if process is currently running"
-      },
-      {
-        "name": "session_broken",
-        "kind": "method",
-        "lineno": 950,
-        "parent": "CodexAgentRunner",
-        "docstring": "Check if the session is broken and cannot be continued.\n\nThis happens when we execute tools locally in toolApproval mode."
-      },
-      {
-        "name": "thread_id",
-        "kind": "method",
-        "lineno": 959,
-        "parent": "CodexAgentRunner",
-        "docstring": "Get the current Codex thread ID"
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "code_map/terminal/gemini_runner.py",
-    "relative": true,
-    "modified_at": "2025-12-04T18:22:21.735126+00:00",
-    "symbols": [
-      {
-        "name": "find_gemini_cli",
-        "kind": "function",
-        "lineno": 20,
-        "parent": null,
-        "docstring": "Find the Gemini CLI executable."
-      },
-      {
-        "name": "GeminiRunnerConfig",
-        "kind": "class",
-        "lineno": 51,
-        "parent": null,
-        "docstring": "Configuration for Gemini Code runner"
-      },
-      {
-        "name": "GeminiAgentRunner",
-        "kind": "class",
-        "lineno": 67,
-        "parent": null,
-        "docstring": "Executes Gemini CLI in JSON streaming mode with bidirectional communication."
-      },
-      {
-        "name": "__init__",
-        "kind": "method",
-        "lineno": 72,
-        "parent": "GeminiAgentRunner",
-        "docstring": null
-      },
-      {
-        "name": "run_prompt",
-        "kind": "method",
-        "lineno": 90,
-        "parent": "GeminiAgentRunner",
-        "docstring": "Execute a prompt and stream JSON events"
-      },
-      {
-        "name": "_map_event",
-        "kind": "method",
-        "lineno": 299,
-        "parent": "GeminiAgentRunner",
-        "docstring": "Map Gemini event to Claude event format"
-      },
-      {
-        "name": "_is_tool_use_event",
-        "kind": "method",
-        "lineno": 366,
-        "parent": "GeminiAgentRunner",
-        "docstring": null
-      },
-      {
-        "name": "_extract_tool_use_from_event",
-        "kind": "method",
-        "lineno": 369,
-        "parent": "GeminiAgentRunner",
-        "docstring": null
-      },
-      {
-        "name": "_handle_tool_approval",
-        "kind": "method",
-        "lineno": 379,
-        "parent": "GeminiAgentRunner",
-        "docstring": null
-      },
-      {
-        "name": "_execute_tool",
-        "kind": "method",
-        "lineno": 454,
-        "parent": "GeminiAgentRunner",
-        "docstring": "Execute a tool locally after approval.\nThis is only called in toolApproval mode when we intercept tool calls."
-      },
-      {
-        "name": "_execute_bash",
-        "kind": "method",
-        "lineno": 475,
-        "parent": "GeminiAgentRunner",
-        "docstring": "Execute a shell command."
-      },
-      {
-        "name": "_execute_write_file",
-        "kind": "method",
-        "lineno": 493,
-        "parent": "GeminiAgentRunner",
-        "docstring": "Write content to a file."
-      },
-      {
-        "name": "_execute_replace",
-        "kind": "method",
-        "lineno": 508,
-        "parent": "GeminiAgentRunner",
-        "docstring": "Replace text in a file."
-      },
-      {
-        "name": "cancel",
-        "kind": "method",
-        "lineno": 533,
-        "parent": "GeminiAgentRunner",
-        "docstring": null
-      },
-      {
-        "name": "respond_to_tool_approval",
-        "kind": "method",
-        "lineno": 538,
-        "parent": "GeminiAgentRunner",
-        "docstring": "Respond to a pending tool approval request."
-      }
-    ],
-    "errors": []
-  },
-  {
     "path": "code_map/terminal/json_parser.py",
     "relative": true,
     "modified_at": "2025-11-30T21:26:14.600315+00:00",
@@ -6418,119 +5194,6 @@
         "lineno": 281,
         "parent": "JSONStreamParser",
         "docstring": "Reset parser state for new session"
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "code_map/terminal/mcp_proxy_runner.py",
-    "relative": true,
-    "modified_at": "2025-12-04T18:22:21.735126+00:00",
-    "symbols": [
-      {
-        "name": "MCPProxyRunnerConfig",
-        "kind": "class",
-        "lineno": 57,
-        "parent": null,
-        "docstring": "Configuration for MCP Proxy Runner"
-      },
-      {
-        "name": "MCPProxyRunner",
-        "kind": "class",
-        "lineno": 72,
-        "parent": null,
-        "docstring": "Runs Claude CLI with MCP tool proxy for approval-based execution.\n\nUses the user's Claude CLI subscription while providing full control\nover Write, Edit, and Bash operations."
-      },
-      {
-        "name": "__init__",
-        "kind": "method",
-        "lineno": 83,
-        "parent": "MCPProxyRunner",
-        "docstring": null
-      },
-      {
-        "name": "_build_command",
-        "kind": "method",
-        "lineno": 94,
-        "parent": "MCPProxyRunner",
-        "docstring": "Build the Claude CLI command with all necessary flags."
-      },
-      {
-        "name": "_start_process",
-        "kind": "method",
-        "lineno": 133,
-        "parent": "MCPProxyRunner",
-        "docstring": "Start the Claude subprocess."
-      },
-      {
-        "name": "_send_initial_prompt",
-        "kind": "method",
-        "lineno": 145,
-        "parent": "MCPProxyRunner",
-        "docstring": "Send the initial prompt to Claude."
-      },
-      {
-        "name": "_create_stdout_reader",
-        "kind": "method",
-        "lineno": 166,
-        "parent": "MCPProxyRunner",
-        "docstring": "Create coroutine for reading stdout."
-      },
-      {
-        "name": "_create_stderr_reader",
-        "kind": "method",
-        "lineno": 205,
-        "parent": "MCPProxyRunner",
-        "docstring": "Create coroutine for reading stderr."
-      },
-      {
-        "name": "_create_mcp_config",
-        "kind": "method",
-        "lineno": 238,
-        "parent": "MCPProxyRunner",
-        "docstring": "Create temporary MCP config file for the tool proxy server"
-      },
-      {
-        "name": "_cleanup_mcp_config",
-        "kind": "method",
-        "lineno": 278,
-        "parent": "MCPProxyRunner",
-        "docstring": "Remove temporary MCP config file"
-      },
-      {
-        "name": "run_prompt",
-        "kind": "method",
-        "lineno": 288,
-        "parent": "MCPProxyRunner",
-        "docstring": "Execute a prompt with MCP proxy tool approval.\n\nArgs:\n    prompt: The prompt to send to Claude\n    on_event: Callback for each JSON event from Claude\n    on_error: Callback for stderr output\n    on_done: Callback when process completes\n\nReturns:\n    Exit code from the process"
-      },
-      {
-        "name": "_wait_for_process",
-        "kind": "method",
-        "lineno": 373,
-        "parent": "MCPProxyRunner",
-        "docstring": "Wait for process to complete, handling timeout."
-      },
-      {
-        "name": "send_user_input",
-        "kind": "method",
-        "lineno": 387,
-        "parent": "MCPProxyRunner",
-        "docstring": "Send additional user input to the running process"
-      },
-      {
-        "name": "cancel",
-        "kind": "method",
-        "lineno": 412,
-        "parent": "MCPProxyRunner",
-        "docstring": "Cancel the running process"
-      },
-      {
-        "name": "is_running",
-        "kind": "method",
-        "lineno": 442,
-        "parent": "MCPProxyRunner",
-        "docstring": "Check if process is running"
       }
     ],
     "errors": []
@@ -6785,7 +5448,7 @@
   {
     "path": "code_map/terminal/pty_shell.py",
     "relative": true,
-    "modified_at": "2025-12-04T18:22:21.735126+00:00",
+    "modified_at": "2025-12-06T06:57:18.655958+00:00",
     "symbols": [
       {
         "name": "PTYShell",
@@ -6875,171 +5538,9 @@
     "errors": []
   },
   {
-    "path": "code_map/terminal/sdk_runner.py",
-    "relative": true,
-    "modified_at": "2025-11-30T21:26:14.601315+00:00",
-    "symbols": [
-      {
-        "name": "SDKRunnerConfig",
-        "kind": "class",
-        "lineno": 162,
-        "parent": null,
-        "docstring": "Configuration for SDK-based Claude runner"
-      },
-      {
-        "name": "ConversationMessage",
-        "kind": "class",
-        "lineno": 174,
-        "parent": null,
-        "docstring": "A message in the conversation"
-      },
-      {
-        "name": "SDKAgentRunner",
-        "kind": "class",
-        "lineno": 181,
-        "parent": null,
-        "docstring": "Claude Agent using Anthropic SDK with tool approval workflow.\n\nFlow:\n1. Send user prompt to Claude API\n2. If Claude returns tool_use, intercept and request approval\n3. If approved, execute tool and send result back\n4. Repeat until Claude returns text-only response (end_turn)"
-      },
-      {
-        "name": "__init__",
-        "kind": "method",
-        "lineno": 198,
-        "parent": "SDKAgentRunner",
-        "docstring": null
-      },
-      {
-        "name": "_build_system_prompt",
-        "kind": "method",
-        "lineno": 214,
-        "parent": "SDKAgentRunner",
-        "docstring": "Build the system prompt with working directory context"
-      },
-      {
-        "name": "run_prompt",
-        "kind": "method",
-        "lineno": 236,
-        "parent": "SDKAgentRunner",
-        "docstring": "Execute a prompt with tool approval workflow.\n\nArgs:\n    prompt: User prompt\n    on_event: Callback for streaming events to frontend\n    on_error: Callback for errors\n    on_done: Callback when complete\n    on_tool_approval_request: Callback to request tool approval from user\n\nReturns:\n    0 on success, -1 on error"
-      },
-      {
-        "name": "_call_claude_api",
-        "kind": "method",
-        "lineno": 401,
-        "parent": "SDKAgentRunner",
-        "docstring": "Call Claude API with current conversation"
-      },
-      {
-        "name": "_process_response_content",
-        "kind": "method",
-        "lineno": 416,
-        "parent": "SDKAgentRunner",
-        "docstring": "Process and emit events for response content blocks"
-      },
-      {
-        "name": "_handle_tool_use",
-        "kind": "method",
-        "lineno": 446,
-        "parent": "SDKAgentRunner",
-        "docstring": "Handle a tool use block - request approval and execute if approved.\n\nReturns tool_result dict for the API."
-      },
-      {
-        "name": "_execute_tool",
-        "kind": "method",
-        "lineno": 581,
-        "parent": "SDKAgentRunner",
-        "docstring": "Execute a tool and return result"
-      },
-      {
-        "name": "_execute_read",
-        "kind": "method",
-        "lineno": 605,
-        "parent": "SDKAgentRunner",
-        "docstring": "Execute Read tool"
-      },
-      {
-        "name": "_execute_write",
-        "kind": "method",
-        "lineno": 637,
-        "parent": "SDKAgentRunner",
-        "docstring": "Execute Write tool"
-      },
-      {
-        "name": "_execute_edit",
-        "kind": "method",
-        "lineno": 656,
-        "parent": "SDKAgentRunner",
-        "docstring": "Execute Edit tool"
-      },
-      {
-        "name": "_execute_bash",
-        "kind": "method",
-        "lineno": 694,
-        "parent": "SDKAgentRunner",
-        "docstring": "Execute Bash tool"
-      },
-      {
-        "name": "_execute_glob",
-        "kind": "method",
-        "lineno": 732,
-        "parent": "SDKAgentRunner",
-        "docstring": "Execute Glob tool"
-      },
-      {
-        "name": "_execute_grep",
-        "kind": "method",
-        "lineno": 749,
-        "parent": "SDKAgentRunner",
-        "docstring": "Execute Grep tool"
-      },
-      {
-        "name": "_content_block_to_dict",
-        "kind": "method",
-        "lineno": 791,
-        "parent": "SDKAgentRunner",
-        "docstring": "Convert a content block to a dict for the API"
-      },
-      {
-        "name": "_emit_event",
-        "kind": "method",
-        "lineno": 806,
-        "parent": "SDKAgentRunner",
-        "docstring": "Emit an event to the callback"
-      },
-      {
-        "name": "respond_to_tool_approval",
-        "kind": "method",
-        "lineno": 815,
-        "parent": "SDKAgentRunner",
-        "docstring": "Respond to a pending tool approval request.\n\nThis is called by the API when the user approves/rejects in the frontend."
-      },
-      {
-        "name": "cancel",
-        "kind": "method",
-        "lineno": 827,
-        "parent": "SDKAgentRunner",
-        "docstring": "Cancel the running conversation"
-      },
-      {
-        "name": "is_running",
-        "kind": "method",
-        "lineno": 833,
-        "parent": "SDKAgentRunner",
-        "docstring": "Check if conversation is running"
-      },
-      {
-        "name": "clear_conversation",
-        "kind": "method",
-        "lineno": 837,
-        "parent": "SDKAgentRunner",
-        "docstring": "Clear the conversation history"
-      }
-    ],
-    "errors": []
-  },
-  {
     "path": "code_map/terminal/socketio_pty.py",
     "relative": true,
-    "modified_at": "2025-12-05T14:50:24.272917+00:00",
+    "modified_at": "2025-12-06T06:57:18.656204+00:00",
     "symbols": [
       {
         "name": "PTYSession",
@@ -7131,126 +5632,6 @@
         "lineno": 357,
         "parent": null,
         "docstring": "Create a combined ASGI app with Socket.IO PTY server and FastAPI.\n\nArgs:\n    fastapi_app: The FastAPI application\n    cors_allowed_origins: CORS origins for Socket.IO\n\nReturns:\n    Combined ASGI application"
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "code_map/terminal/tool_approval.py",
-    "relative": true,
-    "modified_at": "2025-11-30T21:26:14.601315+00:00",
-    "symbols": [
-      {
-        "name": "ApprovalStatus",
-        "kind": "class",
-        "lineno": 24,
-        "parent": null,
-        "docstring": "Status of a tool approval request"
-      },
-      {
-        "name": "ToolApprovalRequest",
-        "kind": "class",
-        "lineno": 34,
-        "parent": null,
-        "docstring": "Represents a pending tool approval request with preview data."
-      },
-      {
-        "name": "to_dict",
-        "kind": "method",
-        "lineno": 58,
-        "parent": "ToolApprovalRequest",
-        "docstring": "Convert to dictionary for JSON serialization"
-      },
-      {
-        "name": "ToolApprovalManager",
-        "kind": "class",
-        "lineno": 75,
-        "parent": null,
-        "docstring": "Manages tool approval workflow with preview generation.\n\nIntercepts tool_use events, generates previews/diffs, and waits\nfor user approval before allowing execution."
-      },
-      {
-        "name": "__init__",
-        "kind": "method",
-        "lineno": 92,
-        "parent": "ToolApprovalManager",
-        "docstring": null
-      },
-      {
-        "name": "process_tool_use",
-        "kind": "method",
-        "lineno": 109,
-        "parent": "ToolApprovalManager",
-        "docstring": "Process a tool_use event and wait for approval.\n\nArgs:\n    tool_name: Name of the tool being invoked\n    tool_input: Input parameters for the tool\n    tool_use_id: Unique ID for this tool use\n    on_approval_request: Callback to send approval request to frontend\n\nReturns:\n    Tuple of (approved: bool, user_feedback: Optional[str])"
-      },
-      {
-        "name": "respond_to_approval",
-        "kind": "method",
-        "lineno": 210,
-        "parent": "ToolApprovalManager",
-        "docstring": "Respond to a pending approval request.\n\nArgs:\n    request_id: ID of the approval request\n    approved: Whether to approve the tool use\n    feedback: Optional feedback from user (for rejection)\n\nReturns:\n    True if response was processed, False if request not found"
-      },
-      {
-        "name": "_create_approval_request",
-        "kind": "method",
-        "lineno": 245,
-        "parent": "ToolApprovalManager",
-        "docstring": "Create an approval request with preview data"
-      },
-      {
-        "name": "_generate_file_preview",
-        "kind": "method",
-        "lineno": 270,
-        "parent": "ToolApprovalManager",
-        "docstring": "Generate diff preview for file modification tools"
-      },
-      {
-        "name": "_generate_command_preview",
-        "kind": "method",
-        "lineno": 414,
-        "parent": "ToolApprovalManager",
-        "docstring": "Generate preview for command execution tools"
-      },
-      {
-        "name": "_generate_generic_preview",
-        "kind": "method",
-        "lineno": 434,
-        "parent": "ToolApprovalManager",
-        "docstring": "Generate generic preview for other tools"
-      },
-      {
-        "name": "_generate_diff",
-        "kind": "method",
-        "lineno": 443,
-        "parent": "ToolApprovalManager",
-        "docstring": "Generate unified diff between two strings"
-      },
-      {
-        "name": "_resolve_path",
-        "kind": "method",
-        "lineno": 466,
-        "parent": "ToolApprovalManager",
-        "docstring": "Resolve file path relative to cwd"
-      },
-      {
-        "name": "_summarize_input",
-        "kind": "method",
-        "lineno": 473,
-        "parent": "ToolApprovalManager",
-        "docstring": "Create a summary of tool input for display"
-      },
-      {
-        "name": "get_pending_requests",
-        "kind": "method",
-        "lineno": 485,
-        "parent": "ToolApprovalManager",
-        "docstring": "Get all pending approval requests"
-      },
-      {
-        "name": "has_pending_requests",
-        "kind": "method",
-        "lineno": 489,
-        "parent": "ToolApprovalManager",
-        "docstring": "Check if there are pending approval requests"
       }
     ],
     "errors": []
@@ -7899,7 +6280,7 @@
   {
     "path": "docs/TerminalEmbed_manual_dims.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T20:45:29.128356+00:00",
+    "modified_at": "2025-12-06T06:57:18.656532+00:00",
     "symbols": [
       {
         "name": "measureCharacterDimensions",
@@ -7949,7 +6330,7 @@
   {
     "path": "docs/TerminalEmbed_v3_fixed.tsx",
     "relative": true,
-    "modified_at": "2025-12-04T20:28:23.051011+00:00",
+    "modified_at": "2025-12-06T06:57:18.656629+00:00",
     "symbols": [
       {
         "name": "TerminalEmbedInner",
@@ -8141,9 +6522,9 @@
     "errors": []
   },
   {
-    "path": "frontend/dist/assets/index-BrWTAkXd.js",
+    "path": "frontend/dist/assets/index-CBwTXOe-.js",
     "relative": true,
-    "modified_at": "2025-12-05T15:29:18.179862+00:00",
+    "modified_at": "2025-12-06T18:21:57.801680+00:00",
     "symbols": [],
     "errors": [
       {
@@ -8169,7 +6550,7 @@
   {
     "path": "frontend/dist/index.html",
     "relative": true,
-    "modified_at": "2025-12-05T15:29:18.177758+00:00",
+    "modified_at": "2025-12-06T18:21:57.799680+00:00",
     "symbols": [
       {
         "name": "root",
@@ -8573,47 +6954,40 @@
   {
     "path": "frontend/src/components/AgentSidebar.tsx",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.610676+00:00",
+    "modified_at": "2025-12-06T08:03:29.790521+00:00",
     "symbols": [
       {
         "name": "AgentSidebar",
         "kind": "function",
-        "lineno": 42,
+        "lineno": 36,
         "parent": null,
         "docstring": "============================================================================="
       },
       {
-        "name": "HistoryTab",
-        "kind": "function",
-        "lineno": 137,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatDate",
-        "kind": "function",
-        "lineno": 183,
-        "parent": null,
-        "docstring": null
-      },
-      {
         "name": "FilesTab",
         "kind": "function",
-        "lineno": 260,
+        "lineno": 102,
         "parent": null,
         "docstring": null
       },
       {
         "name": "FileItem",
         "kind": "function",
-        "lineno": 312,
+        "lineno": 152,
+        "parent": null,
+        "docstring": null
+      },
+      {
+        "name": "formatNumber",
+        "kind": "function",
+        "lineno": 203,
         "parent": null,
         "docstring": null
       },
       {
         "name": "StatsTab",
         "kind": "function",
-        "lineno": 350,
+        "lineno": 209,
         "parent": null,
         "docstring": null
       }
@@ -8802,77 +7176,21 @@
   {
     "path": "frontend/src/components/ClaudeAgentView.tsx",
     "relative": true,
-    "modified_at": "2025-12-06T06:21:31.809045+00:00",
+    "modified_at": "2025-12-06T08:03:09.414221+00:00",
     "symbols": [
-      {
-        "name": "extractResultContent",
-        "kind": "function",
-        "lineno": 52,
-        "parent": null,
-        "docstring": null
-      },
       {
         "name": "ClaudeAgentView",
         "kind": "function",
-        "lineno": 81,
+        "lineno": 23,
         "parent": null,
         "docstring": "============================================================================"
-      },
-      {
-        "name": "stripApi",
-        "kind": "function",
-        "lineno": 143,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleGlobalKeyDown",
-        "kind": "function",
-        "lineno": 344,
-        "parent": null,
-        "docstring": null
       },
       {
         "name": "AgentHeader",
         "kind": "function",
-        "lineno": 710,
+        "lineno": 91,
         "parent": null,
         "docstring": null
-      },
-      {
-        "name": "EmptyState",
-        "kind": "function",
-        "lineno": 852,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "MessageItem",
-        "kind": "function",
-        "lineno": 871,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "PermissionDenialsBanner",
-        "kind": "function",
-        "lineno": 1036,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "truncateInput",
-        "kind": "function",
-        "lineno": 1097,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "truncatePath",
-        "kind": "function",
-        "lineno": 1107,
-        "parent": null,
-        "docstring": "============================================================================"
       }
     ],
     "errors": []
@@ -9431,21 +7749,6 @@
     "errors": []
   },
   {
-    "path": "frontend/src/components/PermissionsModal.tsx",
-    "relative": true,
-    "modified_at": "2025-11-30T21:26:14.613999+00:00",
-    "symbols": [
-      {
-        "name": "PermissionsModal",
-        "kind": "function",
-        "lineno": 45,
-        "parent": null,
-        "docstring": "============================================================================="
-      }
-    ],
-    "errors": []
-  },
-  {
     "path": "frontend/src/components/PreviewPane.tsx",
     "relative": true,
     "modified_at": "2025-11-30T21:26:14.613999+00:00",
@@ -9548,7 +7851,7 @@
   {
     "path": "frontend/src/components/RemoteTerminalView.tsx",
     "relative": true,
-    "modified_at": "2025-12-05T14:26:02.207000+00:00",
+    "modified_at": "2025-12-06T06:57:18.659034+00:00",
     "symbols": [
       {
         "name": "RemoteTerminalView",
@@ -9591,78 +7894,56 @@
     "errors": []
   },
   {
-    "path": "frontend/src/components/SessionHistorySidebar.tsx",
-    "relative": true,
-    "modified_at": "2025-11-30T21:26:14.613999+00:00",
-    "symbols": [
-      {
-        "name": "SessionHistorySidebar",
-        "kind": "function",
-        "lineno": 19,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "formatDate",
-        "kind": "function",
-        "lineno": 67,
-        "parent": null,
-        "docstring": null
-      }
-    ],
-    "errors": []
-  },
-  {
     "path": "frontend/src/components/SettingsView.tsx",
     "relative": true,
-    "modified_at": "2025-11-10T16:44:50.329922+00:00",
+    "modified_at": "2025-12-06T18:21:25.900367+00:00",
     "symbols": [
       {
         "name": "extractCustomExcludes",
         "kind": "function",
-        "lineno": 24,
+        "lineno": 26,
         "parent": null,
         "docstring": null
       },
       {
         "name": "sortExcludes",
         "kind": "function",
-        "lineno": 31,
+        "lineno": 33,
         "parent": null,
         "docstring": null
       },
       {
         "name": "SettingsView",
         "kind": "function",
-        "lineno": 35,
+        "lineno": 37,
         "parent": null,
         "docstring": null
       },
       {
         "name": "handleSave",
         "kind": "function",
-        "lineno": 120,
+        "lineno": 123,
         "parent": null,
         "docstring": null
       },
       {
         "name": "handleAddExclude",
         "kind": "function",
-        "lineno": 154,
+        "lineno": 157,
         "parent": null,
         "docstring": null
       },
       {
         "name": "handleRemoveExclude",
         "kind": "function",
-        "lineno": 177,
+        "lineno": 180,
         "parent": null,
         "docstring": null
       },
       {
         "name": "handleDirectorySelect",
         "kind": "function",
-        "lineno": 205,
+        "lineno": 208,
         "parent": null,
         "docstring": null
       }
@@ -9866,7 +8147,7 @@
   {
     "path": "frontend/src/components/TerminalSocketIO.tsx",
     "relative": true,
-    "modified_at": "2025-12-05T15:28:54.566783+00:00",
+    "modified_at": "2025-12-06T06:57:18.659034+00:00",
     "symbols": [
       {
         "name": "TerminalSocketIOInner",
@@ -10057,127 +8338,6 @@
         "name": "formatDuration",
         "kind": "function",
         "lineno": 240,
-        "parent": null,
-        "docstring": null
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "frontend/src/components/ToolApprovalModal.tsx",
-    "relative": true,
-    "modified_at": "2025-12-04T18:21:43.910550+00:00",
-    "symbols": [
-      {
-        "name": "parseDiffLinesToSideBySide",
-        "kind": "function",
-        "lineno": 46,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "flushBuffers",
-        "kind": "function",
-        "lineno": 56,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "getCellClass",
-        "kind": "function",
-        "lineno": 129,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "DiffViewer",
-        "kind": "function",
-        "lineno": 146,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "CommandPreview",
-        "kind": "function",
-        "lineno": 245,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "GenericPreview",
-        "kind": "function",
-        "lineno": 301,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "ToolApprovalModal",
-        "kind": "function",
-        "lineno": 319,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleReject",
-        "kind": "function",
-        "lineno": 327,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleRejectWithoutFeedback",
-        "kind": "function",
-        "lineno": 339,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "ConnectedToolApprovalModal",
-        "kind": "function",
-        "lineno": 456,
-        "parent": null,
-        "docstring": "============================================================================"
-      },
-      {
-        "name": "handleApprove",
-        "kind": "function",
-        "lineno": 473,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "handleReject",
-        "kind": "function",
-        "lineno": 477,
-        "parent": null,
-        "docstring": null
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "frontend/src/components/ToolPermissionModal.tsx",
-    "relative": true,
-    "modified_at": "2025-11-30T21:26:14.614315+00:00",
-    "symbols": [
-      {
-        "name": "ToolPermissionModal",
-        "kind": "function",
-        "lineno": 26,
-        "parent": null,
-        "docstring": "============================================================================="
-      },
-      {
-        "name": "getActionDescription",
-        "kind": "function",
-        "lineno": 41,
-        "parent": null,
-        "docstring": "Determine action description"
-      },
-      {
-        "name": "PTYPermissionModal",
-        "kind": "function",
-        "lineno": 416,
         "parent": null,
         "docstring": null
       }
@@ -10943,6 +9103,21 @@
     "errors": []
   },
   {
+    "path": "frontend/src/components/settings/SupportedExtensionsSection.tsx",
+    "relative": true,
+    "modified_at": "2025-12-06T18:20:16.112667+00:00",
+    "symbols": [
+      {
+        "name": "SupportedExtensionsSection",
+        "kind": "function",
+        "lineno": 8,
+        "parent": null,
+        "docstring": null
+      }
+    ],
+    "errors": []
+  },
+  {
     "path": "frontend/src/components/terminal/AgentOverlay.tsx",
     "relative": true,
     "modified_at": "2025-11-30T21:26:14.616410+00:00",
@@ -11552,176 +9727,14 @@
   {
     "path": "frontend/src/stores/claudeSessionStore.ts",
     "relative": true,
-    "modified_at": "2025-12-05T15:21:53.532674+00:00",
+    "modified_at": "2025-12-06T07:41:41.727690+00:00",
     "symbols": [
-      {
-        "name": "selectConnected",
-        "kind": "function",
-        "lineno": 1353,
-        "parent": null,
-        "docstring": "============================================================================"
-      },
-      {
-        "name": "selectRunning",
-        "kind": "function",
-        "lineno": 1354,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectMessages",
-        "kind": "function",
-        "lineno": 1355,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectSessionInfo",
-        "kind": "function",
-        "lineno": 1356,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectLastError",
-        "kind": "function",
-        "lineno": 1358,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectActiveToolCalls",
-        "kind": "function",
-        "lineno": 1359,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPendingPermission",
-        "kind": "function",
-        "lineno": 1361,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPermissionDenials",
-        "kind": "function",
-        "lineno": 1363,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPendingToolApproval",
-        "kind": "function",
-        "lineno": 1365,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPendingMCPApproval",
-        "kind": "function",
-        "lineno": 1367,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPTYSessionActive",
-        "kind": "function",
-        "lineno": 1369,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPendingPTYPermission",
-        "kind": "function",
-        "lineno": 1371,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPTYThinking",
-        "kind": "function",
-        "lineno": 1373,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPermissionMode",
-        "kind": "function",
-        "lineno": 1375,
-        "parent": null,
-        "docstring": null
-      },
       {
         "name": "selectAgentType",
         "kind": "function",
-        "lineno": 1377,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectPlanDescriptionOnly",
-        "kind": "function",
-        "lineno": 1379,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectToolUseCountInResponse",
-        "kind": "function",
-        "lineno": 1381,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "selectGeminiMode",
-        "kind": "function",
-        "lineno": 1383,
-        "parent": null,
-        "docstring": null
-      }
-    ],
-    "errors": []
-  },
-  {
-    "path": "frontend/src/stores/sessionHistoryStore.ts",
-    "relative": true,
-    "modified_at": "2025-11-30T21:26:14.617309+00:00",
-    "symbols": [
-      {
-        "name": "generateSessionId",
-        "kind": "function",
-        "lineno": 77,
+        "lineno": 126,
         "parent": null,
         "docstring": "============================================================================"
-      },
-      {
-        "name": "generateTitle",
-        "kind": "function",
-        "lineno": 81,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "generatePreview",
-        "kind": "function",
-        "lineno": 97,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "serializeMessages",
-        "kind": "function",
-        "lineno": 112,
-        "parent": null,
-        "docstring": "Serialize messages for storage (convert Date to string)"
-      },
-      {
-        "name": "deserializeMessages",
-        "kind": "function",
-        "lineno": 120,
-        "parent": null,
-        "docstring": "Deserialize messages from storage (convert string to Date)"
       }
     ],
     "errors": []
@@ -11879,110 +9892,26 @@
   {
     "path": "frontend/src/types/claude-events.ts",
     "relative": true,
-    "modified_at": "2025-11-30T21:26:14.624125+00:00",
+    "modified_at": "2025-12-06T07:12:03.559471+00:00",
     "symbols": [
-      {
-        "name": "isPTYPermissionRequestEvent",
-        "kind": "function",
-        "lineno": 423,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isSystemInitEvent",
-        "kind": "function",
-        "lineno": 436,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isTextEvent",
-        "kind": "function",
-        "lineno": 445,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isToolUseEvent",
-        "kind": "function",
-        "lineno": 452,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isToolResultEvent",
-        "kind": "function",
-        "lineno": 461,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isDoneEvent",
-        "kind": "function",
-        "lineno": 470,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isErrorEvent",
-        "kind": "function",
-        "lineno": 477,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isPermissionRequestEvent",
-        "kind": "function",
-        "lineno": 484,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isToolApprovalRequestEvent",
-        "kind": "function",
-        "lineno": 493,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isMCPApprovalRequestEvent",
-        "kind": "function",
-        "lineno": 502,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "isResultEvent",
-        "kind": "function",
-        "lineno": 511,
-        "parent": null,
-        "docstring": null
-      },
-      {
-        "name": "hasPermissionDenials",
-        "kind": "function",
-        "lineno": 520,
-        "parent": null,
-        "docstring": null
-      },
       {
         "name": "getToolIcon",
         "kind": "function",
-        "lineno": 555,
+        "lineno": 73,
         "parent": null,
         "docstring": null
       },
       {
         "name": "formatToolInput",
         "kind": "function",
-        "lineno": 575,
+        "lineno": 84,
         "parent": null,
         "docstring": null
       },
       {
         "name": "generateMessageId",
         "kind": "function",
-        "lineno": 587,
+        "lineno": 96,
         "parent": null,
         "docstring": null
       }
@@ -14304,7 +12233,7 @@
   {
     "path": "tmp_test/custom_math.py",
     "relative": true,
-    "modified_at": "2025-12-06T06:32:09.495559+00:00",
+    "modified_at": "2025-12-06T06:57:18.659456+00:00",
     "symbols": [
       {
         "name": "divide",

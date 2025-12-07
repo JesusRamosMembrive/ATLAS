@@ -9,11 +9,13 @@ import { DEFAULT_EXCLUDED_DIRS } from "../config/defaultExcludes";
 import { useActivityStore } from "../state/useActivityStore";
 import { useSelectionStore } from "../state/useSelectionStore";
 import { useBackendStore } from "../state/useBackendStore";
+import { useStatusQuery } from "../hooks/useStatusQuery";
 import { DocstringsSection } from "./settings/DocstringsSection";
 import { ExcludeDirsSection } from "./settings/ExcludeDirsSection";
 import { RootPathSection } from "./settings/RootPathSection";
 import { BackendUrlSection } from "./settings/BackendUrlSection";
 import { DirectoryBrowserModal } from "./settings/DirectoryBrowserModal";
+import { SupportedExtensionsSection } from "./settings/SupportedExtensionsSection";
 
 interface SettingsViewProps {
   settingsQuery: UseQueryResult<SettingsPayload>;
@@ -35,6 +37,7 @@ function sortExcludes(list: string[]): string[] {
 export function SettingsView({ settingsQuery }: SettingsViewProps): JSX.Element {
   const activityClear = useActivityStore((state) => state.clear);
   const queryClient = useQueryClient();
+  const statusQuery = useStatusQuery();
 
   const settings = settingsQuery.data;
   const originalRoot = settings?.root_path ?? "";
@@ -304,6 +307,11 @@ export function SettingsView({ settingsQuery }: SettingsViewProps): JSX.Element 
           includeDocstrings={formDocstrings}
           disabled={isLoading}
           onToggleDocstrings={setFormDocstrings}
+        />
+
+        <SupportedExtensionsSection
+          capabilities={statusQuery.data?.capabilities ?? []}
+          isLoading={statusQuery.isLoading}
         />
 
         <section className="settings-card">
