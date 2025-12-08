@@ -23,13 +23,19 @@ class _CParser:
     @classmethod
     def for_language(cls, modules: Dict[str, Any], name: str) -> "_CParser":
         """Construye un parser configurado para el lenguaje indicado (c o cpp)."""
+        import warnings
+
         parser_cls = getattr(modules.get("tree_sitter"), "Parser", None)
         get_language = getattr(
             modules.get("tree_sitter_languages"), "get_language", None
         )
         if parser_cls is None or get_language is None:
             raise RuntimeError("tree_sitter_languages no disponible")
-        language = get_language(name)
+            
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=FutureWarning)
+            language = get_language(name)
+            
         parser = parser_cls()
         parser.set_language(language)
         return cls(parser=parser)
@@ -97,6 +103,25 @@ class CAnalyzer:
             modified_at=get_modified_time(abs_path),
         )
 
+
+    def _calculate_complexity(self, node: Any) -> int:
+        """Calcula la complejidad ciclomática de un nodo (función)."""
+        count = 0
+        to_visit = [node]
+        while to_visit:
+            curr = to_visit.pop()
+            if curr.type in {
+                "if_statement",
+                "while_statement",
+                "for_statement",
+                "case_statement",
+                "catch_clause",
+                "conditional_expression",
+            }:
+                count += 1
+            to_visit.extend(curr.children)
+        return 1 + count
+
     def _collect_from_children(
         self,
         node: Any,
@@ -126,6 +151,10 @@ class CAnalyzer:
                             path=file_path,
                             lineno=lineno,
                             docstring=doc,
+                            metrics={
+                                "loc": child.end_point[0] - child.start_point[0] + 1,
+                                "complexity": self._calculate_complexity(child),
+                            },
                         )
                     )
                     continue

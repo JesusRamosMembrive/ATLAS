@@ -242,6 +242,20 @@ export function DetailPanel({
                         }}>
                           (line {method.lineno})
                         </span>
+                        {method.metrics && (
+                          <span style={{ marginLeft: "8px", display: "inline-flex", gap: "6px" }}>
+                            {method.metrics.loc && (
+                              <span style={{ fontSize: "11px", background: "#333", padding: "2px 6px", borderRadius: "3px", color: "#bbb" }}>
+                                {method.metrics.loc} LOC
+                              </span>
+                            )}
+                            {method.metrics.complexity && (
+                              <span style={{ fontSize: "11px", background: "#333", padding: "2px 6px", borderRadius: "3px", color: method.metrics.complexity > 10 ? "#f87171" : "#bbb" }}>
+                                CCN {method.metrics.complexity}
+                              </span>
+                            )}
+                          </span>
+                        )}
                       </div>
                       {method.docstring && (
                         <p style={{
@@ -304,6 +318,12 @@ export function DetailPanel({
             </div>
             <span className="symbol-meta">
               <span>line {fn.lineno}</span>
+              {fn.metrics?.loc && <span>{fn.metrics.loc} LOC</span>}
+              {fn.metrics?.complexity && (
+                <span style={{ color: fn.metrics.complexity > 10 ? "#f87171" : "inherit" }}>
+                  CCN {fn.metrics.complexity}
+                </span>
+              )}
               <span>function</span>
             </span>
           </div>

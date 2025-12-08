@@ -8,6 +8,8 @@ import { SearchPanel } from "./SearchPanel";
 import { ActivityFeed } from "./ActivityFeed";
 import { StatusPanel } from "./StatusPanel";
 import { FileDiffModal } from "./FileDiffModal";
+import { useStageStatusQuery } from "../hooks/useStageStatusQuery";
+import { ComplexityCard } from "./dashboard/ComplexityCard";
 import { ChangeListPanel } from "./ChangeListPanel";
 
 export function CodeMapDashboard({
@@ -20,6 +22,8 @@ export function CodeMapDashboard({
   const handleShowDiff = (path: string) => {
     setDiffTarget(path);
   };
+
+  const stageStatusQuery = useStageStatusQuery();
 
   const closeDiff = () => setDiffTarget(null);
 
@@ -35,6 +39,11 @@ export function CodeMapDashboard({
           <h2>Actividad reciente</h2>
           <ActivityFeed />
         </div>
+        {stageStatusQuery.data?.detection && (
+          <div style={{ marginTop: "16px" }}>
+            <ComplexityCard detection={stageStatusQuery.data.detection} variant="sidebar" />
+          </div>
+        )}
       </aside>
       {diffTarget && <FileDiffModal path={diffTarget} onClose={closeDiff} />}
     </div>

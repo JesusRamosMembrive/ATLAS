@@ -104,6 +104,19 @@ function TreeNodeItem({
   const symbolCount = node.symbols?.length ?? 0;
   const hasChange = Boolean(node.change_status);
 
+  // Complexity check
+  const maxComplexity = useMemo(() => {
+    if (isDirectory || !node.symbols) return 0;
+    return node.symbols.reduce((max, sym) => {
+      const c = sym.metrics?.complexity;
+      if (typeof c === "number" && c > max) return c;
+      return max;
+    }, 0);
+  }, [node.symbols, isDirectory]);
+
+  const complexityLevel = maxComplexity > 25 ? "extreme" : maxComplexity > 10 ? "high" : maxComplexity > 5 ? "medium" : "low";
+  const showComplexityWarning = maxComplexity > 5;
+
   const handleClick = () => {
     if (isDirectory) {
       setExpanded((value) => !value);
@@ -170,7 +183,23 @@ function TreeNodeItem({
             {isDirectory ? (
               <span className="badge">{node.children?.length ?? 0}</span>
             ) : symbolCount > 0 ? (
-              <span className="badge">{symbolCount} symbols</span>
+              <>
+                {showComplexityWarning && (
+                  <span
+                    className="badge"
+                    style={{
+                      background: complexityLevel === "extreme" ? "#f87171" : complexityLevel === "high" ? "#fb923c" : "#facc15",
+                      color: "#1e293b",
+                      fontWeight: 700,
+                      cursor: "help"
+                    }}
+                    title={`Max Complexity: ${maxComplexity}`}
+                  >
+                    !
+                  </span>
+                )}
+                <span className="badge">{symbolCount} symbols</span>
+              </>
             ) : null}
           </div>
         )}
@@ -178,13 +207,13 @@ function TreeNodeItem({
       {isDirectory && expanded && node.children?.length ? (
         <ul className="tree-children">
           {node.children.map((child) => (
-              <TreeNodeItem
-                key={`${child.path}-${child.name}`}
-                node={child}
-                depth={depth + 1}
-                onShowDiff={onShowDiff}
-              />
-            ))}
+            <TreeNodeItem
+              key={`${child.path}-${child.name}`}
+              node={child}
+              depth={depth + 1}
+              onShowDiff={onShowDiff}
+            />
+          ))}
         </ul>
       ) : null}
     </li>
