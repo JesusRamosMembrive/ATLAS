@@ -233,6 +233,9 @@ export function DetailPanel({
                         marginBottom: "6px",
                         fontFamily: "monospace"
                       }}>
+                        {method.metrics?.complexity && method.metrics.complexity > 10 && (
+                          <span title={`High complexity: CCN ${method.metrics.complexity}`} style={{ marginRight: "6px", color: "#facc15" }}>⚠</span>
+                        )}
                         {method.name}
                         <span style={{
                           fontSize: "12px",
@@ -299,6 +302,9 @@ export function DetailPanel({
         <article key={fn.name} className="symbol-card">
           <div className="symbol-title">
             <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
+              {fn.metrics?.complexity && fn.metrics.complexity > 10 && (
+                <span title={`High complexity: CCN ${fn.metrics.complexity}`} style={{ color: "#facc15" }}>⚠</span>
+              )}
               {fn.name}
               <button
                 onClick={() => setTraceTarget(`${selectedPath}::${fn.name}`)}
