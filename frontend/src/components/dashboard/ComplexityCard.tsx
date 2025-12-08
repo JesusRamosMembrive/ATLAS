@@ -187,12 +187,8 @@ export function ComplexityCard({ detection, variant = "full" }: ComplexityCardPr
           onClose={() => setShowModal(false)}
           onNavigate={(path) => {
             setShowModal(false);
-            // Navigate to code-map and select file
-            // path might be absolute, we need to handle that or let existing logic work
-            navigate(`/code-map`);
-            // Ideally we trigger selection, but simple nav first
-            // CodeMapDashboard would need to know to select it.
-            // For now we just go to code-map.
+            // Navigate to code-map with the file path as state
+            navigate("/code-map", { state: { selectPath: path } });
           }}
         />
       )}

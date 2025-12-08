@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import type { UseQueryResult } from "@tanstack/react-query";
 
 import type { StatusPayload } from "../api/types";
@@ -11,6 +12,7 @@ import { FileDiffModal } from "./FileDiffModal";
 import { useStageStatusQuery } from "../hooks/useStageStatusQuery";
 import { ComplexityCard } from "./dashboard/ComplexityCard";
 import { ChangeListPanel } from "./ChangeListPanel";
+import { useSelectionStore } from "../state/useSelectionStore";
 
 export function CodeMapDashboard({
   statusQuery,
@@ -18,6 +20,18 @@ export function CodeMapDashboard({
   statusQuery: UseQueryResult<StatusPayload>;
 }): JSX.Element {
   const [diffTarget, setDiffTarget] = useState<string | null>(null);
+  const location = useLocation();
+  const selectPath = useSelectionStore((state) => state.selectPath);
+
+  // Handle navigation from complexity modal with file path in state
+  useEffect(() => {
+    const state = location.state as { selectPath?: string } | null;
+    if (state?.selectPath) {
+      selectPath(state.selectPath);
+      // Clear the state to prevent re-selection on re-render
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state, selectPath]);
 
   const handleShowDiff = (path: string) => {
     setDiffTarget(path);

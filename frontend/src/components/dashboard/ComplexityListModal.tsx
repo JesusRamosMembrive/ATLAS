@@ -57,14 +57,14 @@ export function ComplexityListModal({ functions, onClose, onNavigate }: Complexi
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal" style={{ width: "800px", maxWidth: "90vw", maxHeight: "85vh", display: "flex", flexDirection: "column" }} onClick={e => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h3>Complexity Hotspots ({functions.length})</h3>
-                    <button type="button" className="close-button" onClick={onClose}>×</button>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0, 0, 0, 0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }} onClick={onClose}>
+            <div style={{ width: "1100px", maxWidth: "95vw", maxHeight: "85vh", display: "flex", flexDirection: "column", background: "#1e293b", borderRadius: "8px", border: "1px solid #334155", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }} onClick={e => e.stopPropagation()}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px", borderBottom: "1px solid #334155", background: "#1e293b" }}>
+                    <h3 style={{ margin: 0, color: "#e2e8f0" }}>Complexity Hotspots ({functions.length})</h3>
+                    <button type="button" onClick={onClose} style={{ background: "none", border: "none", color: "#94a3b8", fontSize: "24px", cursor: "pointer", padding: "0 4px" }}>×</button>
                 </div>
 
-                <div style={{ padding: "16px", borderBottom: "1px solid #1e293b" }}>
+                <div style={{ padding: "16px", borderBottom: "1px solid #334155", background: "#1e293b" }}>
                     <input
                         type="search"
                         placeholder="Filter functions..."
@@ -81,17 +81,17 @@ export function ComplexityListModal({ functions, onClose, onNavigate }: Complexi
                     />
                 </div>
 
-                <div className="modal-content" style={{ overflow: "auto", flex: 1, padding: 0 }}>
-                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <div style={{ overflow: "auto", flex: 1, padding: 0, background: "#1e293b" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", background: "#1e293b" }}>
                         <thead style={{ position: "sticky", top: 0, background: "#1e293b", zIndex: 1 }}>
                             <tr>
-                                <th style={{ padding: "12px", textAlign: "left", cursor: "pointer" }} onClick={() => handleSort("complexity")}>
+                                <th style={{ padding: "12px", textAlign: "left", cursor: "pointer", width: "10%" }} onClick={() => handleSort("complexity")}>
                                     Level {sortField === "complexity" && (sortDesc ? "↓" : "↑")}
                                 </th>
-                                <th style={{ padding: "12px", textAlign: "left", cursor: "pointer" }} onClick={() => handleSort("name")}>
+                                <th style={{ padding: "12px", textAlign: "left", cursor: "pointer", width: "25%" }} onClick={() => handleSort("name")}>
                                     Function {sortField === "name" && (sortDesc ? "↓" : "↑")}
                                 </th>
-                                <th style={{ padding: "12px", textAlign: "left", cursor: "pointer" }} onClick={() => handleSort("path")}>
+                                <th style={{ padding: "12px", textAlign: "left", cursor: "pointer", width: "65%" }} onClick={() => handleSort("path")}>
                                     Location {sortField === "path" && (sortDesc ? "↓" : "↑")}
                                 </th>
                             </tr>
@@ -112,7 +112,7 @@ export function ComplexityListModal({ functions, onClose, onNavigate }: Complexi
                                             CCN {fn.complexity}
                                         </span>
                                     </td>
-                                    <td style={{ padding: "10px 12px", fontSize: "14px", fontWeight: 500, color: "#e2e8f0" }}>
+                                    <td style={{ padding: "10px 12px", fontSize: "14px", fontWeight: 500, color: "#e2e8f0", wordBreak: "break-word" }}>
                                         {fn.name}
                                     </td>
                                     <td style={{ padding: "10px 12px" }}>
@@ -130,7 +130,7 @@ export function ComplexityListModal({ functions, onClose, onNavigate }: Complexi
                                         >
                                             {fn.path.split("/").pop()}:{fn.lineno}
                                         </button>
-                                        <div style={{ fontSize: "11px", color: "#64748b" }}>{fn.path}</div>
+                                        <div style={{ fontSize: "11px", color: "#64748b", wordBreak: "break-all" }}>{fn.path}</div>
                                     </td>
                                 </tr>
                             ))}
