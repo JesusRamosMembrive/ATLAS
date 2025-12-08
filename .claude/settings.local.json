@@ -76,7 +76,8 @@
       "Bash(ninja:*)",
       "Bash(cmake:*)",
       "Bash(./static_analysis_motor:*)",
-      "Bash(ctest:*)"
+      "Bash(ctest:*)",
+      "Bash(chmod:*)"
     ],
     "deny": [],
     "ask": []
