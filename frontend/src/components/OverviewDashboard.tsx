@@ -26,6 +26,7 @@ import {
   AnalyzerHealth,
   CodeMapStats,
   AgentDonutCharts,
+  ComplexityCard,
   OllamaModelList,
   type ActivityItem,
   type CardTone,
@@ -303,6 +304,7 @@ export function OverviewDashboard({ statusQuery }: OverviewDashboardProps): JSX.
           />
         </CompactCard>
 
+
         {/* Agents Card */}
         <CompactCard
           title="Agents"
@@ -418,6 +420,13 @@ export function OverviewDashboard({ statusQuery }: OverviewDashboardProps): JSX.
           </div>
         </div>
       ) : null}
+
+      {/* Complexity Card (Full Width at bottom) */}
+      {stageStatusQuery.data?.detection && (
+        <div style={{ marginTop: "32px" }}>
+          <ComplexityCard detection={stageStatusQuery.data.detection} />
+        </div>
+      )}
     </div>
   );
 }

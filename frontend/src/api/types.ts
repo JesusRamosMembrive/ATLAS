@@ -7,6 +7,7 @@ export interface SymbolInfo {
   parent?: string | null;
   path?: string | null;
   docstring?: string | null;
+  metrics?: Record<string, any> | null;
 }
 
 export interface AnalysisError {
@@ -159,7 +160,7 @@ export interface StageDetectionStatus {
   recommended_stage?: number | null;
   confidence?: string | null;
   reasons: string[];
-  metrics?: Record<string, unknown> | null;
+  metrics?: Record<string, any> | null;
   error?: string | null;
   checked_at?: string | null;
 }

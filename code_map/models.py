@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 
 class SymbolKind(str, Enum):
@@ -74,6 +74,7 @@ class SymbolInfo:
     lineno: int
     parent: Optional[str] = None
     docstring: Optional[str] = None
+    metrics: Dict[str, Union[int, float]] = field(default_factory=dict)
 
 
 @dataclass(slots=True)

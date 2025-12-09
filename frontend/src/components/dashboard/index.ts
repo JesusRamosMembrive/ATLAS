@@ -12,3 +12,4 @@ export { AnalyzerHealth } from "./AnalyzerHealth";
 export { CodeMapStats } from "./CodeMapStats";
 export { AgentDonutCharts } from "./AgentDonutCharts";
 export { OllamaModelList } from "./OllamaModelList";
+export { ComplexityCard } from "./ComplexityCard";
