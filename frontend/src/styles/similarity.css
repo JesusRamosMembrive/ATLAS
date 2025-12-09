@@ -1,0 +1,503 @@
+/* =============================================================================
+   Similarity Dashboard Styles
+   ============================================================================= */
+
+.similarity-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+/* Controls Section */
+.similarity-controls {
+  background: var(--glass-bg, rgba(30, 30, 30, 0.8));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+}
+
+.similarity-controls__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1.5rem;
+}
+
+.similarity-controls__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.similarity-controls__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary, #aaa);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.similarity-controls__extensions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.similarity-ext-btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  font-family: var(--font-mono, monospace);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  color: var(--text-secondary, #aaa);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.similarity-ext-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.similarity-ext-btn.active {
+  background: var(--accent-color, #6366f1);
+  border-color: var(--accent-color, #6366f1);
+  color: white;
+}
+
+.similarity-controls__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-primary, #fff);
+  cursor: pointer;
+}
+
+.similarity-controls__checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent-color, #6366f1);
+}
+
+.similarity-controls__hint {
+  font-size: 0.75rem;
+  color: var(--text-tertiary, #666);
+}
+
+.similarity-analyze-btn {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: var(--accent-color, #6366f1);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: auto;
+}
+
+.similarity-analyze-btn:hover:not(:disabled) {
+  background: var(--accent-hover, #5558e3);
+  transform: translateY(-1px);
+}
+
+.similarity-analyze-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Error Messages */
+.similarity-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  color: #f87171;
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+}
+
+/* Grid Layout */
+.similarity-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.similarity-grid__row {
+  display: grid;
+  gap: 1rem;
+}
+
+.similarity-grid__row--top {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Card Base Styles */
+.similarity-card {
+  background: var(--glass-bg, rgba(30, 30, 30, 0.8));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.similarity-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+}
+
+.similarity-card__title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary, #fff);
+}
+
+.similarity-card__badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: var(--text-secondary, #aaa);
+}
+
+.similarity-card__badge--success {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.similarity-card__filters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.similarity-filter-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  color: var(--text-secondary, #aaa);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.similarity-filter-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.similarity-filter-btn.active {
+  background: var(--accent-color, #6366f1);
+  border-color: var(--accent-color, #6366f1);
+  color: white;
+}
+
+.similarity-card__toggle {
+  display: block;
+  width: 100%;
+  padding: 0.625rem;
+  font-size: 0.8125rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: none;
+  border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  color: var(--accent-color, #6366f1);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.similarity-card__toggle:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Loading & Empty States */
+.similarity-loading,
+.similarity-empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-tertiary, #666);
+  font-size: 0.875rem;
+}
+
+.similarity-loading {
+  color: var(--accent-color, #6366f1);
+}
+
+/* Hotspots List */
+.similarity-hotspots-list {
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.similarity-hotspot-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.similarity-hotspot-item__info {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.similarity-hotspot-item__name {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8125rem;
+  color: var(--text-primary, #fff);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60%;
+}
+
+.similarity-hotspot-item__stats {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #aaa);
+  display: flex;
+  gap: 0.75rem;
+}
+
+.similarity-hotspot-item__score {
+  font-weight: 600;
+}
+
+.similarity-hotspot-item__bar-container {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.similarity-hotspot-item__bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Clones List */
+.similarity-clones-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.similarity-clone-item {
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.05));
+}
+
+.similarity-clone-item:last-child {
+  border-bottom: none;
+}
+
+.similarity-clone-item__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.similarity-clone-item__header:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.similarity-clone-item__expand {
+  font-size: 0.625rem;
+  color: var(--text-tertiary, #666);
+  width: 1rem;
+}
+
+.similarity-clone-badge {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.similarity-clone-badge--exact {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.similarity-clone-badge--renamed {
+  background: rgba(234, 179, 8, 0.15);
+  color: #fbbf24;
+}
+
+.similarity-clone-badge--modified {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+.similarity-clone-item__similarity {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary, #aaa);
+  min-width: 3rem;
+}
+
+.similarity-clone-item__locations {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  overflow: hidden;
+}
+
+.similarity-clone-item__file {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  color: var(--text-primary, #fff);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.similarity-clone-item__separator {
+  color: var(--text-tertiary, #666);
+  font-size: 0.75rem;
+}
+
+.similarity-clone-item__details {
+  padding: 0.75rem 1rem 1rem 2.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.05));
+}
+
+.similarity-clone-item__recommendation {
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #aaa);
+  margin-bottom: 1rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--accent-color, #6366f1);
+}
+
+.similarity-clone-item__location {
+  margin-bottom: 0.75rem;
+}
+
+.similarity-clone-item__location:last-child {
+  margin-bottom: 0;
+}
+
+.similarity-clone-item__location-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.375rem;
+}
+
+.similarity-clone-item__location-file {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  color: var(--accent-color, #6366f1);
+}
+
+.similarity-clone-item__location-lines {
+  font-size: 0.6875rem;
+  color: var(--text-tertiary, #666);
+}
+
+.similarity-clone-item__snippet {
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  color: var(--text-secondary, #aaa);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* Metrics Summary */
+.similarity-metrics-summary {
+  background: var(--glass-bg, rgba(30, 30, 30, 0.8));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+}
+
+.similarity-metrics-summary__title {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary, #fff);
+}
+
+.similarity-metrics-summary__content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.similarity-metrics-group h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary, #aaa);
+  text-transform: uppercase;
+}
+
+.similarity-metrics-list {
+  display: flex;
+  gap: 1rem;
+}
+
+.similarity-metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.similarity-metric-item__label {
+  font-size: 0.6875rem;
+  color: var(--text-tertiary, #666);
+}
+
+.similarity-metric-item__value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #fff);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .similarity-controls__row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .similarity-analyze-btn {
+    margin-left: 0;
+  }
+
+  .similarity-card__header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .similarity-card__filters {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .similarity-clone-item__locations {
+    flex-wrap: wrap;
+  }
+}

@@ -1,0 +1,182 @@
+# SPDX-License-Identifier: MIT
+"""
+API routes for code similarity analysis.
+"""
+
+from __future__ import annotations
+
+import logging
+from typing import Any, List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, Field
+
+from ..similarity_service import (
+    SimilarityServiceError,
+    analyze_similarity,
+    is_available,
+    report_to_dict,
+)
+from ..state import AppState
+from .deps import get_app_state
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter(prefix="/similarity", tags=["similarity"])
+
+# In-memory cache for the latest report
+_latest_report: Optional[dict[str, Any]] = None
+
+
+# Request/Response schemas
+class SimilarityAnalyzeRequest(BaseModel):
+    """Request body for similarity analysis."""
+
+    extensions: List[str] = Field(default=[".py"], description="File extensions to analyze")
+    min_tokens: int = Field(default=30, ge=5, le=500, description="Minimum tokens for a clone")
+    min_similarity: float = Field(
+        default=0.7, ge=0.5, le=1.0, description="Minimum similarity threshold"
+    )
+    type3: bool = Field(default=False, description="Enable Type-3 detection")
+    max_gap: int = Field(default=5, ge=1, le=20, description="Maximum gap for Type-3")
+    threads: Optional[int] = Field(default=None, ge=1, le=32, description="Number of threads")
+
+
+class SimilarityStatusResponse(BaseModel):
+    """Status of the similarity service."""
+
+    available: bool
+    message: str
+
+
+class HotspotsResponse(BaseModel):
+    """Response for hotspots endpoint."""
+
+    hotspots: List[dict[str, Any]]
+    count: int
+
+
+@router.get("/status", response_model=SimilarityStatusResponse)
+async def get_similarity_status() -> SimilarityStatusResponse:
+    """Check if the C++ similarity motor is available."""
+    available = is_available()
+    message = (
+        "C++ similarity motor is available"
+        if available
+        else "C++ similarity motor not found. Build with: cd cpp && cmake -B build && cmake --build build"
+    )
+    return SimilarityStatusResponse(available=available, message=message)
+
+
+@router.get("/latest")
+async def get_latest_report() -> Optional[dict[str, Any]]:
+    """Get the latest similarity analysis report."""
+    return _latest_report
+
+
+@router.post("/analyze")
+async def run_analysis(
+    request: SimilarityAnalyzeRequest,
+    state: AppState = Depends(get_app_state),
+) -> dict[str, Any]:
+    """
+    Run similarity analysis on the project.
+
+    This endpoint triggers a new similarity analysis using the C++ motor.
+    Results are cached and returned.
+    """
+    global _latest_report
+
+    if not state.settings.root_path:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No root path configured",
+        )
+
+    if not is_available():
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="C++ similarity motor not available. Build with: cd cpp && cmake -B build && cmake --build build",
+        )
+
+    try:
+        logger.info(
+            f"Running similarity analysis on {state.settings.root_path} "
+            f"with extensions={request.extensions}, type3={request.type3}"
+        )
+
+        report = analyze_similarity(
+            root=state.settings.root_path,
+            extensions=request.extensions,
+            min_tokens=request.min_tokens,
+            min_similarity=request.min_similarity,
+            type3=request.type3,
+            max_gap=request.max_gap,
+            threads=request.threads,
+        )
+
+        _latest_report = report_to_dict(report)
+
+        logger.info(
+            f"Similarity analysis complete: {report.summary.clone_pairs_found} clones found, "
+            f"duplication={report.summary.estimated_duplication}"
+        )
+
+        return _latest_report
+
+    except SimilarityServiceError as e:
+        logger.error(f"Similarity analysis failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        )
+
+
+@router.get("/hotspots", response_model=HotspotsResponse)
+async def get_hotspots(
+    limit: int = Query(default=10, ge=1, le=100, description="Maximum hotspots to return"),
+    extensions: Optional[str] = Query(
+        default=None, description="Comma-separated extensions (e.g., '.py,.js')"
+    ),
+    state: AppState = Depends(get_app_state),
+) -> HotspotsResponse:
+    """
+    Get files with highest duplication scores.
+
+    Returns the top N files sorted by duplication score.
+    """
+    global _latest_report
+
+    # If we have a cached report, use it
+    if _latest_report:
+        hotspots = _latest_report.get("hotspots", [])
+        sorted_hotspots = sorted(hotspots, key=lambda h: h.get("duplication_score", 0), reverse=True)
+        return HotspotsResponse(hotspots=sorted_hotspots[:limit], count=len(hotspots))
+
+    # Otherwise, run a fresh analysis
+    if not state.settings.root_path:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No root path configured",
+        )
+
+    if not is_available():
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="C++ similarity motor not available",
+        )
+
+    try:
+        ext_list = extensions.split(",") if extensions else [".py"]
+        report = analyze_similarity(root=state.settings.root_path, extensions=ext_list)
+        _latest_report = report_to_dict(report)
+
+        hotspots = _latest_report.get("hotspots", [])
+        sorted_hotspots = sorted(hotspots, key=lambda h: h.get("duplication_score", 0), reverse=True)
+        return HotspotsResponse(hotspots=sorted_hotspots[:limit], count=len(hotspots))
+
+    except SimilarityServiceError as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        )

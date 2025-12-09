@@ -36,6 +36,11 @@ import type {
   AuditEventListResponse,
   AuditEventCreatePayload,
 } from "./types";
+import type {
+  SimilarityReport,
+  SimilarityAnalyzePayload,
+  DuplicationHotspot,
+} from "./similarityTypes";
 import { useBackendStore } from "../state/useBackendStore";
 
 const sanitizeBaseUrl = (value?: string | null): string | null => {
@@ -726,4 +731,62 @@ export async function markNotificationAsRead(
     `/linters/notifications/${notificationId}/read${query}`,
     { method: "POST" }
   );
+}
+
+// =============================================================================
+// Similarity Analysis API (C++ Module)
+// =============================================================================
+
+/**
+ * Run similarity analysis on the current project.
+ *
+ * Args:
+ *     payload: Analysis options (extensions, type3 detection, etc.)
+ *
+ * Returns:
+ *     Promise with full similarity report including clones, hotspots, metrics
+ *
+ * Notes:
+ *     - Endpoint: POST /api/similarity/analyze
+ *     - Calls the C++ similarity detector via UDS server
+ *     - Can be slow for large codebases (progress shown in UI)
+ */
+export function analyzeSimilarity(
+  payload: SimilarityAnalyzePayload = {}
+): Promise<SimilarityReport> {
+  return fetchJson<SimilarityReport>("/similarity/analyze", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * Get duplication hotspots (files with highest duplication scores).
+ *
+ * Args:
+ *     limit: Maximum number of hotspots to return (default 10)
+ *     extensions: File extensions to include (default [".py"])
+ *
+ * Returns:
+ *     Promise with list of hotspot files sorted by duplication score
+ */
+export function getSimilarityHotspots(
+  limit = 10,
+  extensions?: string[]
+): Promise<{ hotspots: DuplicationHotspot[]; count: number }> {
+  const params = new URLSearchParams({ limit: String(limit) });
+  if (extensions && extensions.length > 0) {
+    extensions.forEach((ext) => params.append("extension", ext));
+  }
+  return fetchJson(`/similarity/hotspots?${params.toString()}`);
+}
+
+/**
+ * Get the latest cached similarity report if available.
+ *
+ * Returns:
+ *     Promise with cached report or null if not available
+ */
+export function getSimilarityLatest(): Promise<SimilarityReport | null> {
+  return fetchJsonNullable<SimilarityReport>("/similarity/latest");
 }

@@ -149,4 +149,12 @@ export const CardIcons = {
       <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
     </svg>
   ),
+  Similarity: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="8" height="8" rx="1" />
+      <rect x="13" y="13" width="8" height="8" rx="1" />
+      <path d="M11 7h2M7 11v2M17 11v2M11 17h2" opacity="0.5" />
+      <path d="M8 8l8 8" strokeDasharray="2 2" opacity="0.6" />
+    </svg>
+  ),
 };

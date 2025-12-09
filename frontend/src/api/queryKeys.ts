@@ -11,6 +11,7 @@ export const queryKeys = {
   preview: (path: string) => ["preview", path] as const,
   stageStatus: ["stage-status"] as const,
   ollamaInsights: (limit: number) => ["ollama", "insights", limit] as const,
+  ollamaStatus: ["ollama", "status"] as const,
   classUml: (
     includeExternal: boolean,
     prefixes?: string[],
@@ -33,4 +34,10 @@ export const queryKeys = {
   auditRun: (runId: number) => ["audit", "runs", runId] as const,
   auditEvents: (runId: number, limit?: number) =>
     ["audit", "runs", runId, "events", limit ?? "all"] as const,
+  // Similarity analysis (C++ module)
+  similarityLatest: ["similarity", "latest"] as const,
+  similarityAnalyze: (extensions: string[], type3: boolean) =>
+    ["similarity", "analyze", extensions.sort().join(","), type3] as const,
+  similarityHotspots: (limit: number, extensions?: string[]) =>
+    ["similarity", "hotspots", limit, extensions?.sort().join(",") ?? ""] as const,
 };
