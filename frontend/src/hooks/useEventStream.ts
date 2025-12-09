@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { getEventsUrl } from "../api/client";
 import { queryKeys } from "../api/queryKeys";
 import type { ChangeNotification } from "../api/types";
 import { useActivityStore } from "../state/useActivityStore";
+import { useConnectionStore } from "../state/useConnectionStore";
 
 /**
  * Hook para manejar el stream de eventos SSE del servidor.
@@ -36,10 +37,27 @@ import { useActivityStore } from "../state/useActivityStore";
 export function useEventStream(): void {
   const queryClient = useQueryClient();
   const pushActivity = useActivityStore((state) => state.push);
+  const setConnected = useConnectionStore((state) => state.setConnected);
+  const wasConnectedRef = useRef(false);
 
   useEffect(() => {
     const url = getEventsUrl();
     const eventSource = new EventSource(url);
+
+    const handleOpen = () => {
+      const wasConnected = wasConnectedRef.current;
+      wasConnectedRef.current = true;
+      setConnected(true);
+
+      // If this is a reconnection (was previously connected and lost),
+      // or first successful connection, invalidate all queries
+      if (!wasConnected) {
+        // Small delay to allow backend to be fully ready
+        setTimeout(() => {
+          queryClient.invalidateQueries();
+        }, 100);
+      }
+    };
 
     const handleUpdate = (event: MessageEvent<string>) => {
       try {
@@ -75,14 +93,18 @@ export function useEventStream(): void {
       }
     };
 
+    eventSource.addEventListener("open", handleOpen);
     eventSource.addEventListener("update", handleUpdate as EventListener);
     eventSource.onerror = () => {
       console.warn("EventSource connection lost, retrying…");
+      setConnected(false);
     };
 
     return () => {
+      eventSource.removeEventListener("open", handleOpen);
       eventSource.removeEventListener("update", handleUpdate as EventListener);
       eventSource.close();
+      setConnected(false);
     };
-  }, [pushActivity, queryClient]);
+  }, [pushActivity, queryClient, setConnected]);
 }
