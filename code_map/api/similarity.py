@@ -12,6 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
 from ..similarity_service import (
+    DEFAULT_EXCLUDE_PATTERNS,
     SimilarityServiceError,
     analyze_similarity,
     is_available,
@@ -33,6 +34,10 @@ class SimilarityAnalyzeRequest(BaseModel):
     """Request body for similarity analysis."""
 
     extensions: List[str] = Field(default=[".py"], description="File extensions to analyze")
+    exclude_patterns: Optional[List[str]] = Field(
+        default=None,
+        description="Glob patterns to exclude (e.g., '**/tests/**', '**/venv/**'). If null, uses defaults.",
+    )
     min_tokens: int = Field(default=30, ge=5, le=500, description="Minimum tokens for a clone")
     min_similarity: float = Field(
         default=0.7, ge=0.5, le=1.0, description="Minimum similarity threshold"
@@ -54,6 +59,18 @@ class HotspotsResponse(BaseModel):
 
     hotspots: List[dict[str, Any]]
     count: int
+
+
+class DefaultPatternsResponse(BaseModel):
+    """Response with default exclude patterns."""
+
+    patterns: List[str]
+
+
+@router.get("/default-exclude-patterns", response_model=DefaultPatternsResponse)
+async def get_default_exclude_patterns() -> DefaultPatternsResponse:
+    """Get the default exclude patterns used for similarity analysis."""
+    return DefaultPatternsResponse(patterns=list(DEFAULT_EXCLUDE_PATTERNS))
 
 
 @router.get("/status", response_model=SimilarityStatusResponse)
@@ -108,6 +125,7 @@ async def run_analysis(
         report = analyze_similarity(
             root=state.settings.root_path,
             extensions=request.extensions,
+            exclude_patterns=request.exclude_patterns,
             min_tokens=request.min_tokens,
             min_similarity=request.min_similarity,
             type3=request.type3,

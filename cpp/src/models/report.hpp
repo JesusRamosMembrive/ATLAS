@@ -6,8 +6,76 @@
 #include <vector>
 #include <chrono>
 #include <map>
+#include <set>
 
 namespace aegis::similarity {
+
+/**
+ * Sanitize a string to ensure valid UTF-8 for JSON serialization.
+ * Replaces invalid UTF-8 sequences with '?'.
+ */
+inline std::string sanitize_utf8(const std::string& input) {
+    std::string result;
+    result.reserve(input.size());
+
+    for (size_t i = 0; i < input.size(); ) {
+        unsigned char c = static_cast<unsigned char>(input[i]);
+
+        // ASCII (valid single byte)
+        if (c < 0x80) {
+            // Control characters except tab/newline become spaces
+            if (c < 0x20 && c != '\t' && c != '\n' && c != '\r') {
+                result += ' ';
+            } else {
+                result += static_cast<char>(c);
+            }
+            ++i;
+        }
+        // Start of 2-byte sequence
+        else if ((c & 0xE0) == 0xC0 && i + 1 < input.size()) {
+            unsigned char c2 = static_cast<unsigned char>(input[i + 1]);
+            if ((c2 & 0xC0) == 0x80) {
+                result += input.substr(i, 2);
+                i += 2;
+            } else {
+                result += "?";  // Invalid sequence
+                ++i;
+            }
+        }
+        // Start of 3-byte sequence
+        else if ((c & 0xF0) == 0xE0 && i + 2 < input.size()) {
+            unsigned char c2 = static_cast<unsigned char>(input[i + 1]);
+            unsigned char c3 = static_cast<unsigned char>(input[i + 2]);
+            if ((c2 & 0xC0) == 0x80 && (c3 & 0xC0) == 0x80) {
+                result += input.substr(i, 3);
+                i += 3;
+            } else {
+                result += "?";
+                ++i;
+            }
+        }
+        // Start of 4-byte sequence
+        else if ((c & 0xF8) == 0xF0 && i + 3 < input.size()) {
+            unsigned char c2 = static_cast<unsigned char>(input[i + 1]);
+            unsigned char c3 = static_cast<unsigned char>(input[i + 2]);
+            unsigned char c4 = static_cast<unsigned char>(input[i + 3]);
+            if ((c2 & 0xC0) == 0x80 && (c3 & 0xC0) == 0x80 && (c4 & 0xC0) == 0x80) {
+                result += input.substr(i, 4);
+                i += 4;
+            } else {
+                result += "?";
+                ++i;
+            }
+        }
+        // Invalid byte
+        else {
+            result += "?";
+            ++i;
+        }
+    }
+
+    return result;
+}
 
 /**
  * Detailed information about a clone location for the report.
@@ -20,10 +88,10 @@ struct CloneLocationInfo {
 
     nlohmann::json to_json() const {
         return {
-            {"file", file},
+            {"file", sanitize_utf8(file)},
             {"start_line", start_line},
             {"end_line", end_line},
-            {"snippet_preview", snippet_preview}
+            {"snippet_preview", sanitize_utf8(snippet_preview)}
         };
     }
 };
@@ -163,7 +231,7 @@ public:
         j["hotspots"] = nlohmann::json::array();
         for (const auto& hotspot : hotspots) {
             j["hotspots"].push_back({
-                {"file", hotspot.file_path},
+                {"file", sanitize_utf8(hotspot.file_path)},
                 {"duplication_score", hotspot.duplication_score},
                 {"clone_count", hotspot.clone_count},
                 {"recommendation",
@@ -243,14 +311,18 @@ public:
 
     /**
      * Calculate hotspots from clone data.
+     *
+     * A "hotspot" is a file with duplicated code. The duplication_score
+     * represents what percentage of the file's lines are involved in clones.
      */
     void calculate_hotspots(
         const std::vector<std::string>& file_paths,
         const std::map<uint32_t, size_t>& file_line_counts
     ) {
-        // Count clones per file
+        // Track clone counts and unique duplicated line ranges per file
         std::map<uint32_t, size_t> clone_counts;
-        std::map<uint32_t, size_t> duplicated_lines;
+        // Use a set of line numbers to avoid counting overlapping clones multiple times
+        std::map<uint32_t, std::set<uint32_t>> duplicated_line_sets;
 
         for (const auto& clone : clones) {
             for (const auto& loc : clone.locations) {
@@ -258,7 +330,10 @@ public:
                 for (size_t i = 0; i < file_paths.size(); ++i) {
                     if (file_paths[i] == loc.file) {
                         clone_counts[i]++;
-                        duplicated_lines[i] += loc.end_line - loc.start_line + 1;
+                        // Add each line in the range to the set (deduplicates overlaps)
+                        for (uint32_t line = loc.start_line; line <= loc.end_line; ++line) {
+                            duplicated_line_sets[i].insert(line);
+                        }
                         break;
                     }
                 }
@@ -273,13 +348,19 @@ public:
                 ? file_paths[file_id]
                 : "unknown";
             hotspot.clone_count = static_cast<uint32_t>(count);
-            hotspot.duplicated_lines = static_cast<uint32_t>(duplicated_lines[file_id]);
+
+            // Count unique duplicated lines (no double-counting)
+            auto it_lines = duplicated_line_sets.find(file_id);
+            hotspot.duplicated_lines = it_lines != duplicated_line_sets.end()
+                ? static_cast<uint32_t>(it_lines->second.size())
+                : 0;
 
             auto it = file_line_counts.find(file_id);
             hotspot.total_lines = it != file_line_counts.end()
                 ? static_cast<uint32_t>(it->second)
                 : 0;
 
+            // Score is now guaranteed to be 0.0 - 1.0 (0% - 100%)
             hotspot.duplication_score = hotspot.total_lines > 0
                 ? static_cast<float>(hotspot.duplicated_lines) / hotspot.total_lines
                 : 0.0f;
@@ -403,7 +484,9 @@ private:
             if (i > 0) result += "\n";
             result += lines[i];
         }
-        return result;
+
+        // Sanitize to ensure valid UTF-8 for JSON
+        return sanitize_utf8(result);
     }
 
     std::string generate_recommendation(const ClonePair& pair) {

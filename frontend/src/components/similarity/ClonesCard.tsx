@@ -7,16 +7,34 @@ interface ClonesCardProps {
   maxVisible?: number;
 }
 
-function getCloneTypeBadge(type: CloneType): { label: string; className: string } {
+interface CloneTypeBadgeInfo {
+  label: string;
+  className: string;
+  tooltip: string;
+}
+
+function getCloneTypeBadge(type: CloneType): CloneTypeBadgeInfo {
   switch (type) {
     case "Type-1":
-      return { label: "Exact", className: "similarity-clone-badge--exact" };
+      return {
+        label: "Exact",
+        className: "similarity-clone-badge--exact",
+        tooltip: "Exact duplicate: identical code (ignoring whitespace and comments)",
+      };
     case "Type-2":
-      return { label: "Renamed", className: "similarity-clone-badge--renamed" };
+      return {
+        label: "Renamed",
+        className: "similarity-clone-badge--renamed",
+        tooltip: "Renamed clone: same structure but with different variable/function names",
+      };
     case "Type-3":
-      return { label: "Modified", className: "similarity-clone-badge--modified" };
+      return {
+        label: "Modified",
+        className: "similarity-clone-badge--modified",
+        tooltip: "Modified clone: similar code with some statements added, removed, or changed",
+      };
     default:
-      return { label: type, className: "" };
+      return { label: type, className: "", tooltip: "" };
   }
 }
 
@@ -49,7 +67,7 @@ function CloneItem({ clone }: CloneItemProps): JSX.Element {
         <span className="similarity-clone-item__expand">
           {expanded ? "▼" : "▶"}
         </span>
-        <span className={`similarity-clone-badge ${badge.className}`}>
+        <span className={`similarity-clone-badge ${badge.className}`} title={badge.tooltip}>
           {badge.label}
         </span>
         <span className="similarity-clone-item__similarity">
@@ -148,15 +166,19 @@ export function ClonesCard({
           >
             All ({clones.length})
           </button>
-          {Object.entries(typeCounts).map(([type, count]) => (
-            <button
-              key={type}
-              className={`similarity-filter-btn ${filterType === type ? "active" : ""}`}
-              onClick={() => setFilterType(type as CloneType)}
-            >
-              {type} ({count})
-            </button>
-          ))}
+          {Object.entries(typeCounts).map(([type, count]) => {
+            const badge = getCloneTypeBadge(type as CloneType);
+            return (
+              <button
+                key={type}
+                className={`similarity-filter-btn ${filterType === type ? "active" : ""}`}
+                onClick={() => setFilterType(type as CloneType)}
+                title={badge.tooltip}
+              >
+                {badge.label} ({count})
+              </button>
+            );
+          })}
         </div>
       </header>
 

@@ -790,3 +790,15 @@ export function getSimilarityHotspots(
 export function getSimilarityLatest(): Promise<SimilarityReport | null> {
   return fetchJsonNullable<SimilarityReport>("/similarity/latest");
 }
+
+/**
+ * Get the default exclude patterns for similarity analysis.
+ *
+ * Returns:
+ *     Promise with array of default glob patterns (e.g., "**\/tests\/**", "**\/venv\/**")
+ */
+export function getSimilarityDefaultPatterns(): Promise<string[]> {
+  return fetchJson<{ patterns: string[] }>("/similarity/default-exclude-patterns").then(
+    (res) => res.patterns
+  );
+}

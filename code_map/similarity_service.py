@@ -125,9 +125,31 @@ def is_available() -> bool:
     return exe_path.exists() and exe_path.is_file()
 
 
+# Default patterns to exclude from analysis
+DEFAULT_EXCLUDE_PATTERNS = [
+    "**/node_modules/**",
+    "**/__pycache__/**",
+    "**/venv/**",
+    "**/.venv/**",
+    "**/env/**",
+    "**/.git/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/*.min.js",
+    "**/*.min.css",
+    "**/tests/**",
+    "**/test/**",
+    "**/*_test.py",
+    "**/*_test.js",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+]
+
+
 def analyze_similarity(
     root: str | Path,
     extensions: Optional[list[str]] = None,
+    exclude_patterns: Optional[list[str]] = None,
     min_tokens: int = 30,
     min_similarity: float = 0.7,
     type3: bool = False,
@@ -141,6 +163,7 @@ def analyze_similarity(
     Args:
         root: Root directory to analyze
         extensions: File extensions to include (e.g., [".py", ".js"])
+        exclude_patterns: Glob patterns to exclude (e.g., ["**/tests/**", "**/venv/**"])
         min_tokens: Minimum tokens for a clone (default 30)
         min_similarity: Minimum similarity threshold (default 0.7)
         type3: Enable Type-3 detection (default False)
@@ -179,6 +202,11 @@ def analyze_similarity(
             cmd.extend(["--ext", ext])
     else:
         cmd.extend(["--ext", ".py"])
+
+    # Add exclude patterns
+    patterns = exclude_patterns if exclude_patterns is not None else DEFAULT_EXCLUDE_PATTERNS
+    for pattern in patterns:
+        cmd.extend(["--exclude", pattern])
 
     # Type-3 detection
     if type3:

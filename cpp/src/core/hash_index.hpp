@@ -157,6 +157,15 @@ public:
     explicit HashIndexBuilder(size_t window_size = 10);
 
     /**
+     * Construct a builder that uses an existing index.
+     * This preserves file_id mappings from the existing index.
+     *
+     * @param existing_index Reference to existing index to build upon
+     * @param window_size Rolling hash window size
+     */
+    HashIndexBuilder(HashIndex& existing_index, size_t window_size);
+
+    /**
      * Add a tokenized file to the index.
      *
      * @param file The tokenized file
@@ -167,12 +176,14 @@ public:
     /**
      * Get the built index.
      */
-    HashIndex& index() { return index_; }
-    const HashIndex& index() const { return index_; }
+    HashIndex& index() { return use_external_ ? *external_index_ : index_; }
+    const HashIndex& index() const { return use_external_ ? *external_index_ : index_; }
 
 private:
     size_t window_size_;
-    HashIndex index_;
+    HashIndex index_;               // Internal index (when not using external)
+    HashIndex* external_index_ = nullptr;  // External index (when provided)
+    bool use_external_ = false;
 };
 
 }  // namespace aegis::similarity

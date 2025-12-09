@@ -59,8 +59,16 @@ export function HotspotsCard({
   return (
     <section className="similarity-card similarity-hotspots-card">
       <header className="similarity-card__header">
-        <h3 className="similarity-card__title">Duplication Hotspots</h3>
-        <span className="similarity-card__badge">
+        <h3
+          className="similarity-card__title"
+          title="Files ranked by percentage of duplicated lines. Higher % = more code shared with other files."
+        >
+          Duplication Hotspots
+        </h3>
+        <span
+          className="similarity-card__badge"
+          title="Number of files containing duplicated code"
+        >
           {hotspots.length} files
         </span>
       </header>
@@ -69,6 +77,8 @@ export function HotspotsCard({
         {displayHotspots.map((hotspot, index) => {
           const barWidth = (hotspot.duplication_score / maxScore) * 100;
           const scoreColor = getScoreColor(hotspot.duplication_score);
+          const cloneTooltip = `${hotspot.clone_count} code clone${hotspot.clone_count !== 1 ? "s" : ""} found in this file`;
+          const scoreTooltip = `${(hotspot.duplication_score * 100).toFixed(1)}% of this file's lines are duplicated elsewhere`;
 
           return (
             <div key={hotspot.file || index} className="similarity-hotspot-item">
@@ -77,8 +87,12 @@ export function HotspotsCard({
                   {getFilename(hotspot.file)}
                 </span>
                 <span className="similarity-hotspot-item__stats">
-                  {hotspot.clone_count} clones
-                  <span className="similarity-hotspot-item__score" style={{ color: scoreColor }}>
+                  <span title={cloneTooltip}>{hotspot.clone_count} clones</span>
+                  <span
+                    className="similarity-hotspot-item__score"
+                    style={{ color: scoreColor }}
+                    title={scoreTooltip}
+                  >
                     {(hotspot.duplication_score * 100).toFixed(1)}%
                   </span>
                 </span>

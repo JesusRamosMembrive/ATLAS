@@ -55,9 +55,20 @@ size_t HashIndex::location_count() const {
 std::vector<ClonePair> HashIndex::find_clone_pairs(size_t min_matches) const {
     std::vector<ClonePair> results;
 
+    // Limit to prevent combinatorial explosion (N locations = N*(N-1)/2 pairs)
+    // 500 locations = 124,750 pairs which is manageable
+    // 5000 locations = 12.5M pairs which causes OOM
+    constexpr size_t MAX_LOCATIONS_PER_HASH = 500;
+
     for (const auto& [hash, locations] : index_) {
         // Skip hashes that don't appear multiple times
         if (locations.size() < 2) {
+            continue;
+        }
+
+        // Skip overly common hashes (likely trivial patterns like 'return', 'if', etc.)
+        // These cause O(N^2) explosion and aren't useful for clone detection
+        if (locations.size() > MAX_LOCATIONS_PER_HASH) {
             continue;
         }
 
@@ -91,12 +102,17 @@ std::vector<ClonePair> HashIndex::find_clone_pairs_parallel(
     ThreadPool& pool,
     size_t min_matches
 ) const {
+    // Limit to prevent combinatorial explosion (same as sequential version)
+    constexpr size_t MAX_LOCATIONS_PER_HASH = 500;
+
     // Collect all hashes with multiple locations into a vector for partitioning
+    // Filter out overly common hashes that would cause memory explosion
     std::vector<std::pair<uint64_t, const std::vector<HashLocation>*>> work_items;
     work_items.reserve(index_.size());
 
     for (const auto& [hash, locations] : index_) {
-        if (locations.size() >= 2) {
+        // Only include hashes with 2+ locations but not too many
+        if (locations.size() >= 2 && locations.size() <= MAX_LOCATIONS_PER_HASH) {
             work_items.emplace_back(hash, &locations);
         }
     }
@@ -294,6 +310,15 @@ HashIndex::Stats HashIndex::get_stats() const {
 
 HashIndexBuilder::HashIndexBuilder(size_t window_size)
     : window_size_(window_size)
+    , external_index_(nullptr)
+    , use_external_(false)
+{
+}
+
+HashIndexBuilder::HashIndexBuilder(HashIndex& existing_index, size_t window_size)
+    : window_size_(window_size)
+    , external_index_(&existing_index)
+    , use_external_(true)
 {
 }
 
@@ -302,7 +327,8 @@ void HashIndexBuilder::add_file(const TokenizedFile& file, bool use_normalized) 
         return;
     }
 
-    uint32_t file_id = index_.register_file(file.path);
+    HashIndex& target_index = use_external_ ? *external_index_ : index_;
+    uint32_t file_id = target_index.register_file(file.path);
 
     // Extract hash values from tokens
     std::vector<uint64_t> token_hashes;
@@ -354,7 +380,7 @@ void HashIndexBuilder::add_file(const TokenizedFile& file, bool use_normalized) 
         loc.token_start = static_cast<uint32_t>(pos);
         loc.token_count = static_cast<uint32_t>(window_size_);
 
-        index_.add_hash(hash, loc);
+        target_index.add_hash(hash, loc);
     }
 }
 

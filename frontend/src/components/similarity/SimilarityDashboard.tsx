@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSimilarityDashboard } from "../../hooks/useSimilarityData";
 import type { SimilarityAnalyzePayload } from "../../api/similarityTypes";
 import { SummaryCard } from "./SummaryCard";
@@ -16,16 +16,28 @@ export function SimilarityDashboard(): JSX.Element {
     analyze,
     isAnalyzing,
     analyzeError,
+    defaultPatterns,
   } = useSimilarityDashboard();
 
   // Analysis options state
   const [extensions, setExtensions] = useState<string[]>([".py"]);
   const [type3Enabled, setType3Enabled] = useState(false);
+  const [excludePatterns, setExcludePatterns] = useState<string[]>([]);
+  const [showExcludePatterns, setShowExcludePatterns] = useState(false);
+  const [newPattern, setNewPattern] = useState("");
+
+  // Initialize exclude patterns from defaults when loaded
+  useEffect(() => {
+    if (defaultPatterns.length > 0 && excludePatterns.length === 0) {
+      setExcludePatterns(defaultPatterns);
+    }
+  }, [defaultPatterns, excludePatterns.length]);
 
   const handleAnalyze = () => {
     const payload: SimilarityAnalyzePayload = {
       extensions,
       type3: type3Enabled,
+      exclude_patterns: excludePatterns.length > 0 ? excludePatterns : null,
     };
     analyze(payload);
   };
@@ -34,6 +46,22 @@ export function SimilarityDashboard(): JSX.Element {
     setExtensions((prev) =>
       prev.includes(ext) ? prev.filter((e) => e !== ext) : [...prev, ext]
     );
+  };
+
+  const removePattern = (pattern: string) => {
+    setExcludePatterns((prev) => prev.filter((p) => p !== pattern));
+  };
+
+  const addPattern = () => {
+    const trimmed = newPattern.trim();
+    if (trimmed && !excludePatterns.includes(trimmed)) {
+      setExcludePatterns((prev) => [...prev, trimmed]);
+      setNewPattern("");
+    }
+  };
+
+  const resetPatterns = () => {
+    setExcludePatterns(defaultPatterns);
   };
 
   const availableExtensions = [".py", ".js", ".ts", ".jsx", ".tsx"];
@@ -86,6 +114,72 @@ export function SimilarityDashboard(): JSX.Element {
             Analysis failed: {String(analyzeError)}
           </div>
         )}
+
+        {/* Exclude Patterns Section */}
+        <div className="similarity-exclude-section">
+          <button
+            className="similarity-exclude-toggle"
+            onClick={() => setShowExcludePatterns(!showExcludePatterns)}
+            title="Configure which folders/files to exclude from analysis"
+          >
+            {showExcludePatterns ? "▼" : "▶"} Exclude Patterns ({excludePatterns.length})
+          </button>
+
+          {showExcludePatterns && (
+            <div className="similarity-exclude-content">
+              <div className="similarity-exclude-header">
+                <span className="similarity-exclude-hint">
+                  Glob patterns to exclude from analysis (e.g., **/tests/**, **/venv/**)
+                </span>
+                <button
+                  className="similarity-exclude-reset"
+                  onClick={resetPatterns}
+                  title="Reset to default patterns"
+                >
+                  Reset to Defaults
+                </button>
+              </div>
+
+              <div className="similarity-exclude-add">
+                <input
+                  type="text"
+                  value={newPattern}
+                  onChange={(e) => setNewPattern(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && addPattern()}
+                  placeholder="Add pattern (e.g., **/docs/**)"
+                  className="similarity-exclude-input"
+                />
+                <button
+                  className="similarity-exclude-add-btn"
+                  onClick={addPattern}
+                  disabled={!newPattern.trim()}
+                >
+                  Add
+                </button>
+              </div>
+
+              <div className="similarity-exclude-list">
+                {excludePatterns.map((pattern) => (
+                  <div key={pattern} className="similarity-exclude-item">
+                    <span className="similarity-exclude-pattern">{pattern}</span>
+                    <button
+                      className="similarity-exclude-remove"
+                      onClick={() => removePattern(pattern)}
+                      title="Remove this pattern"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                {excludePatterns.length === 0 && (
+                  <div className="similarity-exclude-empty">
+                    No exclude patterns configured. All files will be analyzed.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </section>
 
       {/* Error State */}

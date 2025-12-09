@@ -230,13 +230,15 @@ void SimilarityDetector::tokenize_files(
 void SimilarityDetector::build_index(AnalysisState& state) {
     auto start = std::chrono::high_resolution_clock::now();
 
-    HashIndexBuilder builder(config_.window_size);
+    // Use existing state.index to preserve file_id mappings from tokenize_files
+    // This ensures line_counts keys match file_paths indices
+    HashIndexBuilder builder(state.index, config_.window_size);
 
     for (const auto& file : state.tokenized_files) {
         builder.add_file(file, config_.detect_type2);
     }
 
-    state.index = std::move(builder.index());
+    // Note: builder uses state.index directly, no need to move
 
     auto end = std::chrono::high_resolution_clock::now();
     state.hash_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(

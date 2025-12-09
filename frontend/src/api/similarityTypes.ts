@@ -69,6 +69,7 @@ export interface SimilarityReport {
 
 export interface SimilarityAnalyzePayload {
   extensions?: string[];
+  exclude_patterns?: string[] | null;
   type3?: boolean;
   min_tokens?: number;
   min_similarity?: number;

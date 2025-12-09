@@ -50,12 +50,29 @@ export function SummaryCard({ summary, isLoading }: SummaryCardProps): JSX.Eleme
       title="Analysis Summary"
       status={tone}
       statusLabel={summary.estimated_duplication}
+      statusTooltip="Estimated code duplication: percentage of lines involved in at least one clone"
       className="similarity-summary-card"
       metrics={[
-        { label: "Files", value: summary.files_analyzed.toLocaleString() },
-        { label: "Lines", value: summary.total_lines.toLocaleString() },
-        { label: "Clones", value: summary.clone_pairs_found.toLocaleString() },
-        { label: "Time", value: `${(summary.analysis_time_ms / 1000).toFixed(2)}s` },
+        {
+          label: "Files",
+          value: summary.files_analyzed.toLocaleString(),
+          tooltip: "Number of source files analyzed",
+        },
+        {
+          label: "Lines",
+          value: summary.total_lines.toLocaleString(),
+          tooltip: "Total lines of code across all files",
+        },
+        {
+          label: "Clones",
+          value: summary.clone_pairs_found.toLocaleString(),
+          tooltip: "Number of duplicate code pairs detected",
+        },
+        {
+          label: "Time",
+          value: `${(summary.analysis_time_ms / 1000).toFixed(2)}s`,
+          tooltip: "Total analysis time",
+        },
       ]}
     />
   );

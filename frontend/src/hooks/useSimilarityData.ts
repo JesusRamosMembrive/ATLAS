@@ -4,6 +4,7 @@ import {
   analyzeSimilarity,
   getSimilarityLatest,
   getSimilarityHotspots,
+  getSimilarityDefaultPatterns,
 } from "../api/client";
 import type {
   SimilarityReport,
@@ -35,6 +36,18 @@ export function useSimilarityHotspots(limit = 10, extensions?: string[]) {
 }
 
 /**
+ * Hook to fetch default exclude patterns.
+ */
+export function useSimilarityDefaultPatterns() {
+  return useQuery({
+    queryKey: ["similarity", "defaultPatterns"],
+    queryFn: () => getSimilarityDefaultPatterns(),
+    staleTime: Infinity, // Never refetch, these don't change
+    refetchOnWindowFocus: false,
+  });
+}
+
+/**
  * Hook to run similarity analysis (mutation).
  * Returns a mutation object that can be triggered with analyzeSimilarity.mutate()
  */
@@ -57,11 +70,12 @@ export function useSimilarityAnalyze() {
 
 /**
  * Combined hook for similarity dashboard.
- * Provides latest report and analyze mutation.
+ * Provides latest report, analyze mutation, and default patterns.
  */
 export function useSimilarityDashboard() {
   const latestQuery = useSimilarityLatest();
   const analyzeMutation = useSimilarityAnalyze();
+  const patternsQuery = useSimilarityDefaultPatterns();
 
   return {
     // Latest report data
@@ -76,5 +90,9 @@ export function useSimilarityDashboard() {
     isAnalyzing: analyzeMutation.isPending,
     analyzeError: analyzeMutation.error,
     lastAnalysis: analyzeMutation.data ?? null,
+
+    // Default exclude patterns
+    defaultPatterns: patternsQuery.data ?? [],
+    isPatternsLoading: patternsQuery.isLoading,
   };
 }
