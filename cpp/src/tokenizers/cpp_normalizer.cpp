@@ -97,10 +97,11 @@ TokenizedFile CppNormalizer::normalize(std::string_view source) {
             continue;
         }
 
-        // Preprocessor directive
+        // Preprocessor directive - skip entirely (structural, not logic)
+        // This prevents false positives from common #include, #define patterns
         if (c == '#' && state.at_line_start) {
-            line_has_code = true;
-            result.tokens.push_back(parse_preprocessor(state));
+            skip_preprocessor(state);
+            line_has_code = true;  // Count as code line but don't emit tokens
             continue;
         }
 
@@ -514,49 +515,31 @@ NormalizedToken CppNormalizer::parse_operator(TokenizerState& state) {
     return tok;
 }
 
-NormalizedToken CppNormalizer::parse_preprocessor(TokenizerState& state) const
-{
-    NormalizedToken tok{};
-    tok.type = TokenType::KEYWORD;  // Treat preprocessor as keyword
-    tok.line = state.line;
-    tok.column = state.column;
+void CppNormalizer::skip_preprocessor(TokenizerState& state) {
+    // Skip the # character
+    state.advance();
 
-    size_t start_pos = state.pos;
-    std::string value;
-
-    value += state.advance();  // #
-
-    // Skip whitespace
-    while (!state.eof() && (state.peek() == ' ' || state.peek() == '\t')) {
-        state.advance();
-    }
-
-    // Get directive name
-    std::string directive;
-    while (!state.eof() && is_identifier_char(state.peek())) {
-        directive += state.advance();
-    }
-
-    value += directive;
-
-    // Skip rest of line (handling line continuations)
+    // Skip rest of line (handling line continuations with backslash)
     while (!state.eof()) {
-        if (state.peek() == '\n') {
-            break;
+        char c = state.peek();
+
+        if (c == '\n') {
+            // Don't consume the newline - let the main loop handle it
+            return;
         }
-        if (state.peek() == '\\' && state.peek_next() == '\n') {
-            state.advance();  // Skip backslash
-            state.advance();  // Skip newline
+
+        // Handle line continuation
+        if (c == '\\') {
+            state.advance();
+            if (!state.eof() && state.peek() == '\n') {
+                state.advance();  // Skip the newline after backslash
+                continue;  // Continue reading the next line
+            }
             continue;
         }
+
         state.advance();
     }
-
-    tok.length = static_cast<uint16_t>(state.pos - start_pos);
-    tok.original_hash = hash_string(value);
-    tok.normalized_hash = tok.original_hash;  // Preserve preprocessor
-
-    return tok;
 }
 
 void CppNormalizer::skip_single_line_comment(TokenizerState& state) {

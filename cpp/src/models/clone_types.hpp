@@ -178,7 +178,14 @@ struct DetectorConfig {
         "**/node_modules/**",
         "**/__pycache__/**",
         "**/venv/**",
-        "**/.git/**"
+        "**/.git/**",
+        "**/_deps/**",           // CMake FetchContent dependencies
+        "**/build/**",           // Build directories
+        "**/cmake-build-*/**",   // CLion build directories
+        "**/vcpkg_installed/**", // vcpkg dependencies
+        "**/third_party/**",     // Third-party code
+        "**/vendor/**",          // Vendor directories
+        "**/external/**"         // External dependencies
     };
 };
 

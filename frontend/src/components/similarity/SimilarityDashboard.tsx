@@ -49,6 +49,14 @@ export function SimilarityDashboard(): JSX.Element {
     );
   };
 
+  const toggleAllExtensions = () => {
+    if (extensions.length === availableExtensions.length) {
+      setExtensions([]);
+    } else {
+      setExtensions([...availableExtensions]);
+    }
+  };
+
   const removePattern = (pattern: string) => {
     setExcludePatterns((prev) => prev.filter((p) => p !== pattern));
   };
@@ -65,7 +73,7 @@ export function SimilarityDashboard(): JSX.Element {
     setExcludePatterns(defaultPatterns);
   };
 
-  const availableExtensions = [".py", ".js", ".ts", ".jsx", ".tsx"];
+  const availableExtensions = [".py", ".js", ".ts", ".jsx", ".tsx", ".c", ".cpp", ".h", ".hpp"];
 
   return (
     <div className="similarity-dashboard">
@@ -73,7 +81,16 @@ export function SimilarityDashboard(): JSX.Element {
       <section className="similarity-controls">
         <div className="similarity-controls__row">
           <div className="similarity-controls__group">
-            <label className="similarity-controls__label">File Extensions</label>
+            <div className="similarity-controls__label-row">
+              <label className="similarity-controls__label">File Extensions</label>
+              <button
+                className="similarity-select-all-btn"
+                onClick={toggleAllExtensions}
+                title={extensions.length === availableExtensions.length ? "Deselect all" : "Select all"}
+              >
+                {extensions.length === availableExtensions.length ? "None" : "All"}
+              </button>
+            </div>
             <div className="similarity-controls__extensions">
               {availableExtensions.map((ext) => (
                 <button

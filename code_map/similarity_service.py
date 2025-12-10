@@ -127,6 +127,7 @@ def is_available() -> bool:
 
 # Default patterns to exclude from analysis
 DEFAULT_EXCLUDE_PATTERNS = [
+    # Package managers and caches
     "**/node_modules/**",
     "**/__pycache__/**",
     "**/venv/**",
@@ -134,9 +135,19 @@ DEFAULT_EXCLUDE_PATTERNS = [
     "**/env/**",
     "**/.git/**",
     "**/dist/**",
+    # Build directories
     "**/build/**",
+    "**/cmake-build-*/**",    # CLion build directories
+    "**/_deps/**",            # CMake FetchContent dependencies
+    "**/vcpkg_installed/**",  # vcpkg dependencies
+    # Third-party code
+    "**/third_party/**",
+    "**/vendor/**",
+    "**/external/**",
+    # Minified files
     "**/*.min.js",
     "**/*.min.css",
+    # Test files (often have similar boilerplate)
     "**/tests/**",
     "**/test/**",
     "**/*_test.py",

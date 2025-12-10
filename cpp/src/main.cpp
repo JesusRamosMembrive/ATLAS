@@ -29,7 +29,8 @@ void print_usage(const char* program) {
               << "  --ext <extension>    File extension to include (can be repeated)\n"
               << "                       Default: .py\n"
               << "  --exclude <pattern>  Glob pattern to exclude (can be repeated)\n"
-              << "                       Default: **/node_modules/**, **/__pycache__/**\n"
+              << "                       Default: node_modules, __pycache__, venv, .git,\n"
+              << "                                _deps, build, cmake-build-*, vendor, etc.\n"
               << "  --window <size>      Rolling hash window size (default: 10)\n"
               << "  --min-tokens <n>     Minimum tokens for clone (default: 30)\n"
               << "  --threshold <f>      Similarity threshold 0.0-1.0 (default: 0.7)\n"
@@ -147,7 +148,14 @@ CliArgs parse_args(int argc, char* argv[]) {
             "**/node_modules/**",
             "**/__pycache__/**",
             "**/venv/**",
-            "**/.git/**"
+            "**/.git/**",
+            "**/_deps/**",
+            "**/build/**",
+            "**/cmake-build-*/**",
+            "**/vcpkg_installed/**",
+            "**/third_party/**",
+            "**/vendor/**",
+            "**/external/**"
         };
     }
 

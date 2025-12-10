@@ -94,7 +94,7 @@ private:
     NormalizedToken parse_number(TokenizerState& state) const;
     NormalizedToken parse_identifier_or_keyword(TokenizerState& state) const;
     static NormalizedToken parse_operator(TokenizerState& state);
-    NormalizedToken parse_preprocessor(TokenizerState& state) const;
+    static void skip_preprocessor(TokenizerState& state);
     static void skip_single_line_comment(TokenizerState& state);
     static void skip_multi_line_comment(TokenizerState& state);
 
