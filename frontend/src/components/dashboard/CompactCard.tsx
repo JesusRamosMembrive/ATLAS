@@ -5,12 +5,14 @@ export type CardTone = "success" | "warn" | "danger" | "neutral";
 export interface CardMetric {
   label: string;
   value: string | number;
+  tooltip?: string;
 }
 
 interface CompactCardProps {
   title: string;
   status: CardTone;
   statusLabel: string;
+  statusTooltip?: string;
   metrics?: CardMetric[];
   link?: { to: string; label: string };
   children?: React.ReactNode;
@@ -21,6 +23,7 @@ export function CompactCard({
   title,
   status,
   statusLabel,
+  statusTooltip,
   metrics,
   link,
   children,
@@ -30,7 +33,12 @@ export function CompactCard({
     <article className={`compact-card ${className}`}>
       <header className="compact-card__header">
         <div className="compact-card__title-row">
-          <span className={`command-pill command-pill--${status}`}>{statusLabel}</span>
+          <span
+            className={`command-pill command-pill--${status}`}
+            title={statusTooltip}
+          >
+            {statusLabel}
+          </span>
           <h4 className="compact-card__title">{title}</h4>
         </div>
         {link ? (
@@ -43,7 +51,7 @@ export function CompactCard({
       {metrics && metrics.length > 0 ? (
         <div className="compact-card__metrics">
           {metrics.map((metric) => (
-            <div key={metric.label} className="compact-metric">
+            <div key={metric.label} className="compact-metric" title={metric.tooltip}>
               <span className="compact-metric__label">{metric.label}</span>
               <span className="compact-metric__value">{metric.value}</span>
             </div>

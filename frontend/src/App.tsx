@@ -14,6 +14,7 @@ import { RemoteTerminalView } from "./components/RemoteTerminalView";
 import { ClaudeAgentView } from "./components/ClaudeAgentView";
 import CodeTimelineView from "./components/CodeTimelineView";
 import { DocsLibraryView } from "./components/DocsLibraryView";
+import { SimilarityDashboard } from "./components/similarity";
 import { useEventStream } from "./hooks/useEventStream";
 import { useSettingsQuery } from "./hooks/useSettingsQuery";
 import { useStatusQuery } from "./hooks/useStatusQuery";
@@ -86,6 +87,10 @@ export function App(): JSX.Element {
           <Route
             path="/linters"
             element={withLayout("Linters & Quality", <LintersView />)}
+          />
+          <Route
+            path="/similarity"
+            element={withLayout("Code Similarity", <SimilarityDashboard />)}
           />
           <Route
             path="/timeline"

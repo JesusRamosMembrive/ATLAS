@@ -264,6 +264,16 @@ export function HomeView({
           <span className="home-card-cta">View linters →</span>
         </TiltCard>
 
+        <TiltCard to="/similarity" icon={<CardIcons.Similarity />}>
+          <div className="home-card-body">
+            <h3>Code Similarity</h3>
+            <p>
+              Detect duplicate code across your codebase. Find exact clones, renamed variants, and modified copies.
+            </p>
+          </div>
+          <span className="home-card-cta">Analyze clones →</span>
+        </TiltCard>
+
         <TiltCard to="/ollama" icon={<CardIcons.Ollama />}>
           <div className="home-card-body">
             <h3>Ollama Insights</h3>

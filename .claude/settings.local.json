@@ -77,7 +77,22 @@
       "Bash(cmake:*)",
       "Bash(./static_analysis_motor:*)",
       "Bash(ctest:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(mkdir:*)",
+      "Bash(git -C /home/jesusramos/Workspace/AEGIS log --oneline --all)",
+      "Bash(git -C /home/jesusramos/Workspace/AEGIS show b674fad --stat)",
+      "Bash(git -C /home/jesusramos/Workspace/AEGIS log --all --grep=\"cpp\" --oneline)",
+      "Bash(git -C /home/jesusramos/Workspace/AEGIS log --all --oneline -- \"cpp/\")",
+      "Bash(./similarity_tests:*)",
+      "Bash(time ./static_analysis_motor:*)",
+      "Bash(make:*)",
+      "Bash(./build/similarity_tests:*)",
+      "Bash(/home/jesusramos/WorkSpace/AEGIS/cpp/build/static_analysis_motor:*)",
+      "Bash(time /home/jesusramos/WorkSpace/AEGIS/cpp/build/static_analysis_motor:*)",
+      "Bash(./cpp/build/static_analysis_motor:*)",
+      "Bash(./test_tokenizer:*)",
+      "Bash(./test_hotspots:*)",
+      "Bash(./cpp/build/similarity_tests:*)"
     ],
     "deny": [],
     "ask": []

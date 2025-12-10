@@ -15,15 +15,20 @@ export function DirectoryBrowserModal({
   onClose,
   onSelect,
 }: DirectoryBrowserModalProps): JSX.Element | null {
-  // Always start from /work (Docker mount point) or current path if it starts with /work
-  const initialPath = currentPath?.startsWith("/work") ? currentPath : "/work";
+  // Use current path if valid, otherwise fallback to /home (works on Linux/Mac/Docker)
+  const getInitialPath = (path: string | undefined): string => {
+    if (path && path.length > 1) return path;
+    // Fallbacks: /work (Docker), /home (Linux/Mac), / (root)
+    return "/home";
+  };
+
+  const initialPath = getInitialPath(currentPath);
   const [browsePath, setBrowsePath] = useState(initialPath);
 
-  // Reset to /work when modal opens
+  // Reset to initial path when modal opens
   useEffect(() => {
     if (isOpen) {
-      const startPath = currentPath?.startsWith("/work") ? currentPath : "/work";
-      setBrowsePath(startPath);
+      setBrowsePath(getInitialPath(currentPath));
     }
   }, [isOpen, currentPath]);
 
