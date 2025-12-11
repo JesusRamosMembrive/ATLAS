@@ -13,8 +13,7 @@ from typing import Optional, Any
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -22,6 +21,7 @@ from .scheduler import ChangeScheduler
 from .state import AppState
 from .settings import load_settings, save_settings
 from .api.routes import router as api_router
+from .api.error_handlers import register_exception_handlers
 
 # Socket.IO PTY server (Unix only for now)
 _IS_WINDOWS = sys.platform == "win32"
@@ -83,14 +83,8 @@ def create_app(root: Optional[str | Path] = None) -> FastAPI:
         allow_headers=["*"],
     )
 
-    @app.exception_handler(Exception)
-    async def global_exception_handler(request: Request, exc: Exception):
-        """Global exception handler to ensure all errors return proper JSON responses."""
-        logger.exception("Unhandled exception: %s", exc)
-        return JSONResponse(
-            status_code=500,
-            content={"detail": f"Internal server error: {exc}"},
-        )
+    # Register centralized exception handlers
+    register_exception_handlers(app)
 
     app.include_router(api_router, prefix="/api")
     app.state.app_state = state  # type: ignore[attr-defined]
