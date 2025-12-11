@@ -143,7 +143,6 @@ export function LintersView(): JSX.Element {
   const refetchAll = async () => {
     setIsRunning(true);
     try {
-      // Ejecutar los linters manualmente
       const response = await fetch("/api/linters/run", {
         method: "POST",
         headers: {
@@ -152,10 +151,10 @@ export function LintersView(): JSX.Element {
       });
 
       if (!response.ok) {
-        console.error("Failed to run linters:", await response.text());
+        const errorText = await response.text();
+        throw new Error(`Failed to run linters: ${errorText}`);
       }
 
-      // Actualizar todas las queries
       await Promise.all([
         latestReportQuery.refetch(),
         historyQuery.refetch(),
@@ -250,25 +249,12 @@ export function LintersView(): JSX.Element {
             className="secondary-btn"
             onClick={refetchAll}
             disabled={isRunning || latestReportQuery.isFetching || historyQuery.isFetching}
+            aria-busy={isRunning}
           >
             {isRunning || latestReportQuery.isFetching || historyQuery.isFetching ? (
               <>
-                <span
-                  className="spinner"
-                  style={{
-                    display: "inline-block",
-                    width: "14px",
-                    height: "14px",
-                    border: "2px solid currentColor",
-                    borderTopColor: "transparent",
-                    borderRadius: "50%",
-                    animation: "spin 0.8s linear infinite",
-                    marginRight: "8px",
-                    verticalAlign: "middle",
-                  }}
-                  aria-hidden="true"
-                />
-                {isRunning ? "Running linters…" : "Refreshing…"}
+                <span className="linters-btn-spinner" aria-hidden="true" />
+                {isRunning ? "Running…" : "Refreshing…"}
               </>
             ) : (
               "Run Linters"
