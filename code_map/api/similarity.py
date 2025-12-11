@@ -8,9 +8,14 @@ from __future__ import annotations
 import logging
 from typing import Any, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query, status
 from pydantic import BaseModel, Field
 
+from ..exceptions import (
+    InvalidConfigError,
+    ServiceUnavailableError,
+    SimilarityServiceError as SimilarityException,
+)
 from ..similarity_service import (
     DEFAULT_EXCLUDE_PATTERNS,
     SimilarityServiceError,
@@ -105,15 +110,11 @@ async def run_analysis(
     global _latest_report
 
     if not state.settings.root_path:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No root path configured",
-        )
+        raise InvalidConfigError(field="root_path", reason="No root path configured")
 
     if not is_available():
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="C++ similarity motor not available. Build with: cd cpp && cmake -B build && cmake --build build",
+        raise ServiceUnavailableError(
+            "C++ similarity motor not available. Build with: cd cpp && cmake -B build && cmake --build build"
         )
 
     try:
@@ -144,10 +145,7 @@ async def run_analysis(
 
     except SimilarityServiceError as e:
         logger.error(f"Similarity analysis failed: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e),
-        )
+        raise SimilarityException(str(e)) from e
 
 
 @router.get("/hotspots", response_model=HotspotsResponse)
@@ -173,16 +171,10 @@ async def get_hotspots(
 
     # Otherwise, run a fresh analysis
     if not state.settings.root_path:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No root path configured",
-        )
+        raise InvalidConfigError(field="root_path", reason="No root path configured")
 
     if not is_available():
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="C++ similarity motor not available",
-        )
+        raise ServiceUnavailableError("C++ similarity motor not available")
 
     try:
         ext_list = extensions.split(",") if extensions else [".py"]
@@ -194,7 +186,4 @@ async def get_hotspots(
         return HotspotsResponse(hotspots=sorted_hotspots[:limit], count=len(hotspots))
 
     except SimilarityServiceError as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e),
-        )
+        raise SimilarityException(str(e)) from e

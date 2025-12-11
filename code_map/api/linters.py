@@ -7,16 +7,17 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query, status
 
+from ..exceptions import ReportNotFoundError, NotificationNotFoundError, InternalError
 from ..linters import (
-    get_latest_linters_report,
-    get_linters_report,
-    get_notification,
+    get_latest_linters_report_async,
+    get_linters_report_async,
+    get_notification_async,
     linters_discovery_payload,
-    list_linters_reports,
-    list_notifications,
-    mark_notification_read,
+    list_linters_reports_async,
+    list_notifications_async,
+    mark_notification_read_async,
     report_to_dict,
 )
 from ..state import AppState
@@ -85,7 +86,7 @@ async def list_reports(
     offset: int = Query(0, ge=0),
     state: AppState = Depends(get_app_state),
 ) -> List[LintersReportListItemSchema]:
-    reports = list_linters_reports(
+    reports = await list_linters_reports_async(
         limit=limit,
         offset=offset,
         root_path=state.settings.root_path,
@@ -97,9 +98,9 @@ async def list_reports(
 async def get_latest_report(
     state: AppState = Depends(get_app_state),
 ) -> LintersReportRecordSchema:
-    stored = get_latest_linters_report(root_path=state.settings.root_path)
+    stored = await get_latest_linters_report_async(root_path=state.settings.root_path)
     if stored is None:
-        raise HTTPException(status_code=404, detail="No hay reportes disponibles")
+        raise ReportNotFoundError("No hay reportes disponibles")
     return _to_report_record(stored)
 
 
@@ -107,9 +108,9 @@ async def get_latest_report(
 async def get_report(
     report_id: int, state: AppState = Depends(get_app_state)
 ) -> LintersReportRecordSchema:
-    stored = get_linters_report(report_id)
+    stored = await get_linters_report_async(report_id)
     if stored is None or stored.root_path != str(state.settings.root_path.resolve()):
-        raise HTTPException(status_code=404, detail="Reporte no encontrado")
+        raise ReportNotFoundError(report_id=report_id)
     return _to_report_record(stored)
 
 
@@ -119,7 +120,7 @@ async def list_linters_notifications(
     unread_only: bool = Query(False),
     state: AppState = Depends(get_app_state),
 ) -> List[NotificationEntrySchema]:
-    notifications = list_notifications(
+    notifications = await list_notifications_async(
         limit=limit,
         unread_only=unread_only,
         root_path=state.settings.root_path,
@@ -135,16 +136,16 @@ async def mark_notification_as_read(
     read: bool = True,
     state: AppState = Depends(get_app_state),
 ) -> None:
-    notification = get_notification(notification_id)
+    notification = await get_notification_async(notification_id)
     normalized_root = str(state.settings.root_path.resolve())
     if notification is None or (
         notification.root_path and notification.root_path != normalized_root
     ):
-        raise HTTPException(status_code=404, detail="Notificación no encontrada")
+        raise NotificationNotFoundError(notification_id=notification_id)
 
-    updated = mark_notification_read(notification_id, read=read)
+    updated = await mark_notification_read_async(notification_id, read=read)
     if not updated:
-        raise HTTPException(status_code=404, detail="Notificación no encontrada")
+        raise NotificationNotFoundError(notification_id=notification_id)
 
 
 @router.post("/run", response_model=LintersReportRecordSchema)
@@ -155,10 +156,10 @@ async def run_linters(
     try:
         report_id = await state.run_linters_now()
     except RuntimeError as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise InternalError(str(exc)) from exc
 
-    stored = get_linters_report(report_id)
+    stored = await get_linters_report_async(report_id)
     if stored is None or stored.root_path != str(state.settings.root_path.resolve()):
-        raise HTTPException(status_code=500, detail="No se pudo generar el reporte")
+        raise InternalError("No se pudo generar el reporte")
 
     return _to_report_record(stored)

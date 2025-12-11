@@ -9,9 +9,17 @@ import mimetypes
 from pathlib import Path
 from typing import Iterator
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
 
+from ..exceptions import (
+    FileNotFoundError,
+    InvalidPathError,
+    FileTooLargeError,
+    BinaryFileError,
+    EncodingError,
+    InternalError,
+)
 from ..state import AppState
 from .deps import get_app_state
 
@@ -53,39 +61,33 @@ async def preview_file(
     try:
         target_path = state.resolve_path(path)
     except ValueError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+        raise InvalidPathError(path=path, reason=str(exc)) from exc
 
     if not target_path.exists() or not target_path.is_file():
-        raise HTTPException(status_code=404, detail="Archivo no encontrado.")
+        raise FileNotFoundError(path=path)
 
     try:
         file_stat = target_path.stat()
     except OSError as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise InternalError() from exc
 
     if file_stat.st_size > MAX_PREVIEW_BYTES:
-        limit_kib = MAX_PREVIEW_BYTES // 1024
-        detail = (
-            f"Archivo demasiado grande para previsualizar (limite {limit_kib} KiB)."
+        raise FileTooLargeError(
+            path=path,
+            size=file_stat.st_size,
+            max_size=MAX_PREVIEW_BYTES,
         )
-        raise HTTPException(status_code=413, detail=detail)
 
     media_type = _guess_media_type(target_path)
     if not _is_previewable_media(media_type):
-        raise HTTPException(
-            status_code=415,
-            detail=f"Tipo de archivo no compatible para previsualización ({media_type}).",
-        )
+        raise BinaryFileError(path=path)
 
     try:
         stream = _stream_text_file(target_path)
     except UnicodeDecodeError as exc:
-        raise HTTPException(
-            status_code=415,
-            detail="El archivo no contiene texto UTF-8 válido.",
-        ) from exc
+        raise EncodingError("El archivo no contiene texto UTF-8 válido.") from exc
     except OSError as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise InternalError() from exc
 
     media_type_with_charset = f"{media_type}; charset=utf-8"
     return StreamingResponse(stream, media_type=media_type_with_charset)

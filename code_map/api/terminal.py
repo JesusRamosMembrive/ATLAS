@@ -12,9 +12,10 @@ import asyncio
 import logging
 import sys
 from typing import Optional, Literal
-from fastapi import APIRouter, WebSocket, HTTPException
+from fastapi import APIRouter, WebSocket
 from pydantic import BaseModel
 
+from code_map.exceptions import ValidationError, ServiceUnavailableError, InternalError
 from code_map.terminal import _PTY_AVAILABLE
 from code_map.settings import load_settings
 
@@ -80,9 +81,8 @@ async def open_native_terminal(request: OpenNativeTerminalRequest):
     # Check if agent CLI is available
     agent_path = shutil.which(agent_cmd)
     if not agent_path:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Agent CLI '{agent_cmd}' not found in PATH. Please install it first."
+        raise ValidationError(
+            f"Agent CLI '{agent_cmd}' not found in PATH. Please install it first."
         )
 
     system = platform.system()
@@ -115,9 +115,8 @@ async def open_native_terminal(request: OpenNativeTerminalRequest):
                     break
 
             if not terminal_found:
-                raise HTTPException(
-                    status_code=500,
-                    detail="No supported terminal emulator found on Linux. Install gnome-terminal, konsole, or xterm."
+                raise ServiceUnavailableError(
+                    "No supported terminal emulator found on Linux. Install gnome-terminal, konsole, or xterm."
                 )
 
         elif system == "Darwin":
@@ -199,10 +198,7 @@ async def open_native_terminal(request: OpenNativeTerminalRequest):
                     stderr=subprocess.DEVNULL,
                 )
         else:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Unsupported operating system: {system}"
-            )
+            raise ServiceUnavailableError(f"Unsupported operating system: {system}")
 
         return OpenNativeTerminalResponse(
             success=True,
@@ -210,14 +206,11 @@ async def open_native_terminal(request: OpenNativeTerminalRequest):
             terminal=terminal_found,
         )
 
-    except HTTPException:
+    except (ValidationError, ServiceUnavailableError, InternalError):
         raise
     except Exception as e:
         logger.error(f"Error opening native terminal: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to open terminal: {str(e)}"
-        )
+        raise InternalError(f"Failed to open terminal: {str(e)}") from e
 
 
 # ============================================================================
