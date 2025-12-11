@@ -69,7 +69,7 @@ export function HomeView({
         <div className="home-hero__glow" aria-hidden />
         <div className="home-hero__content">
           <div className="home-hero__badges">
-            <span className="home-version-pill">v4.0.0</span>
+            <span className="home-version-pill">v5.0.0</span>
             <span className={`home-stage-pill ${detectionTone}`}>
               {stageStatusQuery.isLoading ? "Calculating…" : detectionLabel}
             </span>
