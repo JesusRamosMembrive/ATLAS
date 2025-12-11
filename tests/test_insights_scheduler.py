@@ -64,9 +64,16 @@ async def test_insights_scheduler_runs_when_enabled(
             ),
         )
 
-    monkeypatch.setattr("code_map.services.insights_service.run_ollama_insights", fake_run_ollama_insights)
-    monkeypatch.setattr("code_map.services.insights_service.record_insight", lambda **kwargs: 1)
-    monkeypatch.setattr("code_map.services.watcher_manager.WatcherService", _DummyWatcher)
+    monkeypatch.setattr(
+        "code_map.services.insights_service.run_ollama_insights",
+        fake_run_ollama_insights,
+    )
+    monkeypatch.setattr(
+        "code_map.services.insights_service.record_insight", lambda **kwargs: 1
+    )
+    monkeypatch.setattr(
+        "code_map.services.watcher_manager.WatcherService", _DummyWatcher
+    )
 
     async def fake_context(self):
         return "context"
@@ -100,9 +107,16 @@ async def test_insights_scheduler_skips_when_disabled(
             "Insights no deberían ejecutarse cuando están deshabilitados"
         )
 
-    monkeypatch.setattr("code_map.services.insights_service.run_ollama_insights", fake_run_ollama_insights)
-    monkeypatch.setattr("code_map.services.insights_service.record_insight", lambda **kwargs: 1)
-    monkeypatch.setattr("code_map.services.watcher_manager.WatcherService", _DummyWatcher)
+    monkeypatch.setattr(
+        "code_map.services.insights_service.run_ollama_insights",
+        fake_run_ollama_insights,
+    )
+    monkeypatch.setattr(
+        "code_map.services.insights_service.record_insight", lambda **kwargs: 1
+    )
+    monkeypatch.setattr(
+        "code_map.services.watcher_manager.WatcherService", _DummyWatcher
+    )
 
     async def fake_context(self):
         return "context"
@@ -143,11 +157,20 @@ async def test_insights_scheduler_records_error_notification(
         notifications.append(kwargs)
         return 1
 
-    monkeypatch.setattr("code_map.services.insights_service.run_ollama_insights", fake_run)
-    monkeypatch.setattr("code_map.services.insights_service.record_insight", lambda **kwargs: 1)
-    monkeypatch.setattr("code_map.services.watcher_manager.WatcherService", _DummyWatcher)
+    monkeypatch.setattr(
+        "code_map.services.insights_service.run_ollama_insights", fake_run
+    )
+    monkeypatch.setattr(
+        "code_map.services.insights_service.record_insight", lambda **kwargs: 1
+    )
+    monkeypatch.setattr(
+        "code_map.services.watcher_manager.WatcherService", _DummyWatcher
+    )
     monkeypatch.setattr(AppState, "_build_insights_context", fake_context)
-    monkeypatch.setattr("code_map.services.insights_service.record_notification", fake_record_notification)
+    monkeypatch.setattr(
+        "code_map.services.insights_service.record_notification",
+        fake_record_notification,
+    )
 
     settings = AppSettings(
         root_path=tmp_path,

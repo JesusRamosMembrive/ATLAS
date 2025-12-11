@@ -18,6 +18,7 @@ import subprocess
 if sys.platform == "win32":
     try:
         from winpty import PtyProcess  # type: ignore
+
         WINPTY_AVAILABLE = True
     except ImportError:
         WINPTY_AVAILABLE = False
@@ -197,12 +198,17 @@ class WinPTYShell:
                         data = self._process.read(1024)
 
                         if data:
-                            text = data if isinstance(data, str) else data.decode("utf-8", errors="replace")
+                            text = (
+                                data
+                                if isinstance(data, str)
+                                else data.decode("utf-8", errors="replace")
+                            )
                             data_queue.put(text)
                         else:
                             # Empty read might mean EOF or just no data yet
                             # Small sleep to prevent busy loop
                             import time
+
                             time.sleep(0.01)
 
                     except EOFError:
@@ -343,7 +349,9 @@ class SubprocessShell:
             stderr=subprocess.STDOUT,
             text=True,
             bufsize=1,
-            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == "win32" else 0,
+            creationflags=(
+                subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == "win32" else 0
+            ),
         )
 
         self.pid = self._process.pid

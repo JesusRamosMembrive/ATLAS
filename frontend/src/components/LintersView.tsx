@@ -250,24 +250,28 @@ export function LintersView(): JSX.Element {
             className="secondary-btn"
             onClick={refetchAll}
             disabled={isRunning || latestReportQuery.isFetching || historyQuery.isFetching}
-            style={{ position: "relative", overflow: "hidden" }}
           >
-            <span style={{ position: "relative", zIndex: 1 }}>
-              {isRunning ? "Running linters…" : latestReportQuery.isFetching || historyQuery.isFetching ? "Refreshing…" : "Refresh"}
-            </span>
-            {isRunning && (
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  height: "3px",
-                  width: "100%",
-                  background: "linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.6), transparent)",
-                  backgroundSize: "200% 100%",
-                  animation: "shimmer 1.5s infinite",
-                }}
-              />
+            {isRunning || latestReportQuery.isFetching || historyQuery.isFetching ? (
+              <>
+                <span
+                  className="spinner"
+                  style={{
+                    display: "inline-block",
+                    width: "14px",
+                    height: "14px",
+                    border: "2px solid currentColor",
+                    borderTopColor: "transparent",
+                    borderRadius: "50%",
+                    animation: "spin 0.8s linear infinite",
+                    marginRight: "8px",
+                    verticalAlign: "middle",
+                  }}
+                  aria-hidden="true"
+                />
+                {isRunning ? "Running linters…" : "Refreshing…"}
+              </>
+            ) : (
+              "Run Linters"
             )}
           </button>
         </div>

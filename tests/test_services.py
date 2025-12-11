@@ -47,9 +47,15 @@ async def test_linters_service_run_now(monkeypatch, tmp_path: Path):
     def _fake_notify(**kwargs):
         calls.setdefault("notify", []).append(kwargs)
 
-    monkeypatch.setattr("code_map.services.linters_service.run_linters_pipeline", _fake_run)
-    monkeypatch.setattr("code_map.services.linters_service.record_linters_report", _fake_record)
-    monkeypatch.setattr("code_map.services.linters_service.record_notification", _fake_notify)
+    monkeypatch.setattr(
+        "code_map.services.linters_service.run_linters_pipeline", _fake_run
+    )
+    monkeypatch.setattr(
+        "code_map.services.linters_service.record_linters_report", _fake_record
+    )
+    monkeypatch.setattr(
+        "code_map.services.linters_service.record_notification", _fake_notify
+    )
 
     svc = LintersService(
         LintersConfig(
@@ -91,9 +97,16 @@ async def test_insights_service_run_now(monkeypatch, tmp_path: Path):
     def _fake_record_notification(**kwargs):
         notifications.append(kwargs)
 
-    monkeypatch.setattr("code_map.services.insights_service.run_ollama_insights", _fake_run_ollama)
-    monkeypatch.setattr("code_map.services.insights_service.record_insight", _fake_record_insight)
-    monkeypatch.setattr("code_map.services.insights_service.record_notification", _fake_record_notification)
+    monkeypatch.setattr(
+        "code_map.services.insights_service.run_ollama_insights", _fake_run_ollama
+    )
+    monkeypatch.setattr(
+        "code_map.services.insights_service.record_insight", _fake_record_insight
+    )
+    monkeypatch.setattr(
+        "code_map.services.insights_service.record_notification",
+        _fake_record_notification,
+    )
 
     async def _ctx():
         return "ctx"
@@ -145,7 +158,9 @@ def test_watcher_manager_start_stop_rebuild(monkeypatch, tmp_path: Path):
         dummy_instances.append(watcher)
         return watcher
 
-    monkeypatch.setattr("code_map.services.watcher_manager.WatcherService", _fake_watcher)
+    monkeypatch.setattr(
+        "code_map.services.watcher_manager.WatcherService", _fake_watcher
+    )
 
     cfg = WatcherConfig(
         root_path=tmp_path,

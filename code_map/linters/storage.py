@@ -35,6 +35,7 @@ def _normalize_path_map(env: Optional[Mapping[str, str]]) -> Optional[Path]:
     if not env:
         return None
     from ..database import ENV_DB_PATH
+
     p = env.get(ENV_DB_PATH)
     return Path(p) if p else None
 
@@ -125,7 +126,7 @@ def record_linters_report(
             overall_status=overall_status,
             issues_total=issues_total,
             critical_issues=critical_issues,
-            payload=json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+            payload=json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
         )
         session.add(db_report)
         session.commit()
@@ -166,14 +167,16 @@ def get_latest_linters_report(
     """Obtiene el reporte más reciente, opcionalmente filtrado por root."""
     engine = get_engine(_normalize_path_map(env))
     normalized_root = _normalize_root(root_path)
-    
+
     with Session(engine) as session:
-        statement = select(LinterReportDB).order_by(desc(LinterReportDB.generated_at)).limit(1)
+        statement = (
+            select(LinterReportDB).order_by(desc(LinterReportDB.generated_at)).limit(1)
+        )
         if normalized_root:
             statement = statement.where(LinterReportDB.root_path == normalized_root)
-        
+
         result = session.exec(statement).first()
-        
+
         if not result:
             return None
         return _db_to_report(result)
@@ -194,10 +197,14 @@ def list_linters_reports(
         statement = select(LinterReportDB)
         if normalized_root:
             statement = statement.where(LinterReportDB.root_path == normalized_root)
-        
-        statement = statement.order_by(desc(LinterReportDB.generated_at)).offset(offset).limit(limit)
+
+        statement = (
+            statement.order_by(desc(LinterReportDB.generated_at))
+            .offset(offset)
+            .limit(limit)
+        )
         results = session.exec(statement).all()
-        
+
         return [_db_to_report(item) for item in results]
 
 
@@ -231,7 +238,7 @@ def record_notification(
             message=message,
             payload=serialized_payload,
             root_path=normalized_root,
-            read=False
+            read=False,
         )
         session.add(notif)
         session.commit()
@@ -282,10 +289,15 @@ def list_notifications(
     with Session(engine) as session:
         statement = select(NotificationDB)
         if unread_only:
-            statement = statement.where(NotificationDB.read == False)
+            statement = statement.where(NotificationDB.read.is_(False))  # type: ignore[union-attr]
         if normalized_root:
-            statement = statement.where(or_(NotificationDB.root_path == None, NotificationDB.root_path == normalized_root))  # type: ignore
-        
+            statement = statement.where(
+                or_(
+                    NotificationDB.root_path.is_(None),  # type: ignore[union-attr]
+                    NotificationDB.root_path == normalized_root,
+                )
+            )
+
         statement = statement.order_by(desc(NotificationDB.created_at)).limit(limit)
         results = session.exec(statement).all()
         return [_db_to_notification(item) for item in results]
@@ -363,9 +375,11 @@ async def get_latest_linters_report_async(
     normalized_root = _normalize_root(root_path)
 
     async with get_async_session() as session:
-        statement = sa_select(LinterReportDB).order_by(
-            desc(LinterReportDB.generated_at)
-        ).limit(1)
+        statement = (
+            sa_select(LinterReportDB)
+            .order_by(desc(LinterReportDB.generated_at))
+            .limit(1)
+        )
         if normalized_root:
             statement = statement.where(LinterReportDB.root_path == normalized_root)
 
@@ -392,9 +406,11 @@ async def list_linters_reports_async(
         if normalized_root:
             statement = statement.where(LinterReportDB.root_path == normalized_root)
 
-        statement = statement.order_by(desc(LinterReportDB.generated_at)).offset(
-            offset
-        ).limit(limit)
+        statement = (
+            statement.order_by(desc(LinterReportDB.generated_at))
+            .offset(offset)
+            .limit(limit)
+        )
 
         result = await session.execute(statement)
         items = result.scalars().all()
@@ -463,11 +479,11 @@ async def list_notifications_async(
     async with get_async_session() as session:
         statement = sa_select(NotificationDB)
         if unread_only:
-            statement = statement.where(NotificationDB.read == False)  # type: ignore
+            statement = statement.where(NotificationDB.read.is_(False))  # type: ignore[union-attr]
         if normalized_root:
             statement = statement.where(
                 or_(
-                    NotificationDB.root_path == None,  # type: ignore
+                    NotificationDB.root_path.is_(None),  # type: ignore[union-attr]
                     NotificationDB.root_path == normalized_root,
                 )
             )

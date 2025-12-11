@@ -9,10 +9,9 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional, Union, Any
+from typing import Dict, List, Optional, Union
 
-from pydantic import Field as PydanticField
-from sqlmodel import Field, SQLModel, JSON, Column
+from sqlmodel import Field, SQLModel, JSON
 
 
 class SymbolKind(str, Enum):
@@ -217,8 +216,8 @@ class ProjectTreeNode:
         return child
 
 
-
 # --- Database Models (SQLModel) ---
+
 
 class AppSettingsDB(SQLModel, table=True):
     """
@@ -348,5 +347,3 @@ class AuditEventDB(SQLModel, table=True):
     ref: Optional[str] = Field(default=None)
     payload: Optional[str] = Field(default=None)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
-

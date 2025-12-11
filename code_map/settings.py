@@ -5,8 +5,8 @@ Persistencia y modelo de configuración de la aplicación.
 
 from __future__ import annotations
 
-import json
 import os
+import sqlite3
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable, Mapping, Optional, Tuple
@@ -14,7 +14,6 @@ import logging
 
 from sqlmodel import Session
 
-from .constants import META_DIR_NAME
 from .scanner import DEFAULT_EXCLUDED_DIRS
 from .database import get_engine, init_db, get_db_path
 from .models import AppSettingsDB
@@ -161,12 +160,6 @@ def _coerce_path(value: Optional[str | Path]) -> Optional[Path]:
     return Path(value).expanduser().resolve()
 
 
-
-
-
-
-
-
 def _load_settings_from_db(
     db_path: Path,
     default_root: Path,
@@ -214,7 +207,9 @@ def _save_settings_to_db(db_path: Path, settings: AppSettings) -> None:
         db_settings.include_docstrings = settings.include_docstrings
         db_settings.ollama_insights_enabled = settings.ollama_insights_enabled
         db_settings.ollama_insights_model = settings.ollama_insights_model
-        db_settings.ollama_insights_frequency_minutes = settings.ollama_insights_frequency_minutes
+        db_settings.ollama_insights_frequency_minutes = (
+            settings.ollama_insights_frequency_minutes
+        )
         db_settings.ollama_insights_focus = settings.ollama_insights_focus
         db_settings.backend_url = settings.backend_url
 

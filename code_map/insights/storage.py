@@ -40,6 +40,7 @@ def _normalize_path_map(env: Optional[Mapping[str, str]]) -> Optional[Path]:
     if not env:
         return None
     from ..database import ENV_DB_PATH
+
     p = env.get(ENV_DB_PATH)
     return Path(p) if p else None
 
@@ -55,7 +56,7 @@ def record_insight(
     """Persiste un insight generado automáticamente."""
     engine = get_engine(_normalize_path_map(env))
     init_db(engine)
-    
+
     normalized_root = _normalize_root(root_path)
     payload = (
         json.dumps(raw, ensure_ascii=False, separators=(",", ":")) if raw else None
@@ -67,7 +68,7 @@ def record_insight(
             message=message,
             raw_payload=payload,
             generated_at=datetime.now(timezone.utc),
-            root_path=normalized_root
+            root_path=normalized_root,
         )
         session.add(insight)
         session.commit()
@@ -84,19 +85,22 @@ def list_insights(
     """Recupera insights ordenados por fecha descendente."""
     engine = get_engine(_normalize_path_map(env))
     init_db(engine)
-    
+
     normalized_root = _normalize_root(root_path)
 
     with Session(engine) as session:
         statement = select(OllamaInsightDB)
         if normalized_root:
             statement = statement.where(
-                or_(OllamaInsightDB.root_path == None, OllamaInsightDB.root_path == normalized_root)  # type: ignore
+                or_(
+                    OllamaInsightDB.root_path.is_(None),  # type: ignore[union-attr]
+                    OllamaInsightDB.root_path == normalized_root,
+                )
             )
-        
+
         statement = statement.order_by(desc(OllamaInsightDB.generated_at)).limit(limit)
         results = session.exec(statement).all()
-        
+
         return [
             StoredInsight(
                 id=item.id or 0,
@@ -123,7 +127,10 @@ def clear_insights(
     with Session(engine) as session:
         if normalized_root:
             statement = select(OllamaInsightDB).where(
-                or_(OllamaInsightDB.root_path == None, OllamaInsightDB.root_path == normalized_root)  # type: ignore
+                or_(
+                    OllamaInsightDB.root_path.is_(None),  # type: ignore[union-attr]
+                    OllamaInsightDB.root_path == normalized_root,
+                )
             )
         else:
             statement = select(OllamaInsightDB)
@@ -185,7 +192,7 @@ async def list_insights_async(
         if normalized_root:
             statement = statement.where(
                 or_(
-                    OllamaInsightDB.root_path == None,  # type: ignore
+                    OllamaInsightDB.root_path.is_(None),  # type: ignore[union-attr]
                     OllamaInsightDB.root_path == normalized_root,
                 )
             )
@@ -219,7 +226,7 @@ async def clear_insights_async(
         if normalized_root:
             statement = sa_select(OllamaInsightDB).where(
                 or_(
-                    OllamaInsightDB.root_path == None,  # type: ignore
+                    OllamaInsightDB.root_path.is_(None),  # type: ignore[union-attr]
                     OllamaInsightDB.root_path == normalized_root,
                 )
             )

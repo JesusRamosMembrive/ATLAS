@@ -42,6 +42,7 @@ class AEGISException(Exception):
 # Resource Errors (4xx)
 # =============================================================================
 
+
 class ResourceNotFoundError(AEGISException):
     """Base class for resource not found errors (404)."""
 
@@ -78,7 +79,7 @@ class ReportNotFoundError(ResourceNotFoundError):
     code = "REPORT_NOT_FOUND"
     message = "Report not found"
 
-    def __init__(self, report_id: int | None = None, **context: Any) -> None:
+    def __init__(self, report_id: int | str | None = None, **context: Any) -> None:
         message = f"Report not found: {report_id}" if report_id else None
         super().__init__(message, report_id=report_id, **context)
 
@@ -90,7 +91,9 @@ class NotificationNotFoundError(ResourceNotFoundError):
     message = "Notification not found"
 
     def __init__(self, notification_id: int | None = None, **context: Any) -> None:
-        message = f"Notification not found: {notification_id}" if notification_id else None
+        message = (
+            f"Notification not found: {notification_id}" if notification_id else None
+        )
         super().__init__(message, notification_id=notification_id, **context)
 
 
@@ -104,6 +107,7 @@ class EventNotFoundError(ResourceNotFoundError):
 # =============================================================================
 # Validation Errors (400)
 # =============================================================================
+
 
 class ValidationError(AEGISException):
     """Base class for validation errors (400)."""
@@ -119,13 +123,15 @@ class InvalidPathError(ValidationError):
     code = "INVALID_PATH"
     message = "Invalid path"
 
-    def __init__(self, path: str | None = None, reason: str | None = None, **context: Any) -> None:
+    def __init__(
+        self, path: str | None = None, reason: str | None = None, **context: Any
+    ) -> None:
         if path and reason:
             message = f"Invalid path '{path}': {reason}"
         elif path:
             message = f"Invalid path: {path}"
         else:
-            message = reason
+            message = reason or "Invalid path"
         super().__init__(message, path=path, reason=reason, **context)
 
 
@@ -135,13 +141,15 @@ class InvalidConfigError(ValidationError):
     code = "INVALID_CONFIG"
     message = "Invalid configuration"
 
-    def __init__(self, field: str | None = None, reason: str | None = None, **context: Any) -> None:
+    def __init__(
+        self, field: str | None = None, reason: str | None = None, **context: Any
+    ) -> None:
         if field and reason:
             message = f"Invalid configuration for '{field}': {reason}"
         elif field:
             message = f"Invalid configuration: {field}"
         else:
-            message = reason
+            message = reason or "Invalid configuration"
         super().__init__(message, field=field, reason=reason, **context)
 
 
@@ -167,6 +175,7 @@ class ModelNotConfiguredError(ValidationError):
 # Permission Errors (403)
 # =============================================================================
 
+
 class PermissionDeniedError(AEGISException):
     """Permission denied for the requested operation (403)."""
 
@@ -174,7 +183,9 @@ class PermissionDeniedError(AEGISException):
     status_code = 403
     message = "Permission denied"
 
-    def __init__(self, path: str | None = None, operation: str | None = None, **context: Any) -> None:
+    def __init__(
+        self, path: str | None = None, operation: str | None = None, **context: Any
+    ) -> None:
         if path and operation:
             message = f"Permission denied: cannot {operation} '{path}'"
         elif path:
@@ -187,6 +198,7 @@ class PermissionDeniedError(AEGISException):
 # =============================================================================
 # Content Errors (4xx)
 # =============================================================================
+
 
 class ContentError(AEGISException):
     """Base class for content-related errors."""
@@ -243,6 +255,7 @@ class EncodingError(ContentError):
 # External Service Errors (5xx)
 # =============================================================================
 
+
 class ExternalServiceError(AEGISException):
     """Base class for external service errors (502)."""
 
@@ -264,7 +277,9 @@ class OllamaError(ExternalServiceError):
         original_error: str | None = None,
         **context: Any,
     ) -> None:
-        super().__init__(message, endpoint=endpoint, original_error=original_error, **context)
+        super().__init__(
+            message, endpoint=endpoint, original_error=original_error, **context
+        )
 
 
 class OllamaStartError(OllamaError):
@@ -287,7 +302,7 @@ class OllamaChatError(OllamaError):
         original_error: str | None = None,
         status_code_response: int | None = None,
         reason_code: str | None = None,
-        retry_after_seconds: int | None = None,
+        retry_after_seconds: float | None = None,
         loading_since: str | None = None,
         **context: Any,
     ) -> None:
@@ -331,6 +346,7 @@ class CppBridgeError(ExternalServiceError):
 # Service Availability Errors (503)
 # =============================================================================
 
+
 class ServiceUnavailableError(AEGISException):
     """Service temporarily unavailable (503)."""
 
@@ -350,6 +366,7 @@ class AnalysisInProgressError(ServiceUnavailableError):
 # Database Errors (500)
 # =============================================================================
 
+
 class DatabaseError(AEGISException):
     """Database operation error."""
 
@@ -361,6 +378,7 @@ class DatabaseError(AEGISException):
 # =============================================================================
 # Internal Errors (500)
 # =============================================================================
+
 
 class InternalError(AEGISException):
     """Internal server error - details hidden from client."""

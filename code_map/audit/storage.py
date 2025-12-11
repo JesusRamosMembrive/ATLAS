@@ -80,7 +80,7 @@ def create_run(
     """Creates a new audit run entry."""
     engine = get_engine()
     init_db(engine)
-    
+
     normalized_root = _normalize_root(root_path)
 
     with Session(engine) as session:
@@ -89,12 +89,12 @@ def create_run(
             status="open",
             root_path=normalized_root,
             created_at=datetime.now(timezone.utc),
-            notes=notes
+            notes=notes,
         )
         session.add(run)
         session.commit()
         session.refresh(run)
-        
+
         result = get_run(run.id or 0)
         if result is None:
             raise RuntimeError("Failed to create audit run")
@@ -110,20 +110,20 @@ def close_run(
     """Marks a run as finished."""
     engine = get_engine()
     init_db(engine)
-    
+
     with Session(engine) as session:
         run = session.get(AuditRunDB, run_id)
         if not run:
             return None
-        
+
         run.status = status
         run.closed_at = datetime.now(timezone.utc)
         if notes:
             run.notes = notes
-        
+
         session.add(run)
         session.commit()
-    
+
     return get_run(run_id)
 
 
@@ -131,17 +131,17 @@ def get_run(run_id: int) -> Optional[AuditRun]:
     """Fetches a single run including event count."""
     engine = get_engine()
     init_db(engine)
-    
+
     with Session(engine) as session:
         run = session.get(AuditRunDB, run_id)
         if not run:
             return None
-        
+
         # Count events
         event_count = session.exec(
             select(func.count(AuditEventDB.id)).where(AuditEventDB.run_id == run_id)
         ).one()
-        
+
         return AuditRun(
             id=run.id or 0,
             name=run.name,
@@ -162,37 +162,42 @@ def list_runs(
     """Lists recent runs, optionally filtered by root."""
     engine = get_engine()
     init_db(engine)
-    
+
     normalized_root = _normalize_root(root_path)
 
     with Session(engine) as session:
         statement = select(AuditRunDB)
-        
+
         if normalized_root:
             statement = statement.where(
-                or_(AuditRunDB.root_path == None, AuditRunDB.root_path == normalized_root)  # type: ignore
+                or_(
+                    AuditRunDB.root_path.is_(None),  # type: ignore[union-attr]
+                    AuditRunDB.root_path == normalized_root,
+                )
             )
-        
+
         statement = statement.order_by(desc(AuditRunDB.created_at)).limit(max(1, limit))
         runs = session.exec(statement).all()
-        
+
         results = []
         for run in runs:
             event_count = session.exec(
                 select(func.count(AuditEventDB.id)).where(AuditEventDB.run_id == run.id)
             ).one()
-            
-            results.append(AuditRun(
-                id=run.id or 0,
-                name=run.name,
-                status=run.status,
-                root_path=run.root_path,
-                created_at=run.created_at,
-                closed_at=run.closed_at,
-                notes=run.notes,
-                event_count=event_count or 0,
-            ))
-        
+
+            results.append(
+                AuditRun(
+                    id=run.id or 0,
+                    name=run.name,
+                    status=run.status,
+                    root_path=run.root_path,
+                    created_at=run.created_at,
+                    closed_at=run.closed_at,
+                    notes=run.notes,
+                    event_count=event_count or 0,
+                )
+            )
+
         return results
 
 
@@ -211,7 +216,7 @@ def append_event(
     """Adds a new event to a run."""
     engine = get_engine()
     init_db(engine)
-    
+
     if get_run(run_id) is None:
         raise LookupError(f"Run {run_id} not found")
 
@@ -232,12 +237,12 @@ def append_event(
             status=status,
             ref=ref,
             payload=payload_json,
-            created_at=datetime.now(timezone.utc)
+            created_at=datetime.now(timezone.utc),
         )
         session.add(event)
         session.commit()
         session.refresh(event)
-        
+
         result = get_event(run_id, event.id or 0)
         if result is None:
             raise RuntimeError("Failed to persist audit event")
@@ -248,18 +253,17 @@ def get_event(run_id: int, event_id: int) -> Optional[AuditEvent]:
     """Fetches a single event by id."""
     engine = get_engine()
     init_db(engine)
-    
+
     with Session(engine) as session:
         event = session.exec(
             select(AuditEventDB).where(
-                AuditEventDB.id == event_id,
-                AuditEventDB.run_id == run_id
+                AuditEventDB.id == event_id, AuditEventDB.run_id == run_id
             )
         ).first()
-        
+
         if not event:
             return None
-        
+
         return AuditEvent(
             id=event.id or 0,
             run_id=event.run_id,
@@ -287,13 +291,15 @@ def list_events(
 
     with Session(engine) as session:
         statement = select(AuditEventDB).where(AuditEventDB.run_id == run_id)
-        
+
         if after_id is not None:
             statement = statement.where(AuditEventDB.id > after_id)
-        
-        statement = statement.order_by(AuditEventDB.created_at, AuditEventDB.id).limit(max(1, limit))
+
+        statement = statement.order_by(AuditEventDB.created_at, AuditEventDB.id).limit(
+            max(1, limit)
+        )
         events = session.exec(statement).all()
-        
+
         return [
             AuditEvent(
                 id=event.id or 0,
@@ -383,9 +389,7 @@ async def get_run_async(run_id: int) -> Optional[AuditRun]:
 
         # Count events using SQLAlchemy select
         result = await session.execute(
-            sa_select(func.count(AuditEventDB.id)).where(
-                AuditEventDB.run_id == run_id
-            )
+            sa_select(func.count(AuditEventDB.id)).where(AuditEventDB.run_id == run_id)
         )
         event_count = result.scalar() or 0
 
@@ -416,14 +420,12 @@ async def list_runs_async(
         if normalized_root:
             statement = statement.where(
                 or_(
-                    AuditRunDB.root_path == None,  # type: ignore
+                    AuditRunDB.root_path.is_(None),  # type: ignore[union-attr]
                     AuditRunDB.root_path == normalized_root,
                 )
             )
 
-        statement = statement.order_by(desc(AuditRunDB.created_at)).limit(
-            max(1, limit)
-        )
+        statement = statement.order_by(desc(AuditRunDB.created_at)).limit(max(1, limit))
         result = await session.execute(statement)
         runs = result.scalars().all()
 
@@ -550,9 +552,9 @@ async def list_events_async(
         if after_id is not None:
             statement = statement.where(AuditEventDB.id > after_id)
 
-        statement = statement.order_by(
-            AuditEventDB.created_at, AuditEventDB.id
-        ).limit(max(1, limit))
+        statement = statement.order_by(AuditEventDB.created_at, AuditEventDB.id).limit(
+            max(1, limit)
+        )
 
         result = await session.execute(statement)
         events = result.scalars().all()

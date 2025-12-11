@@ -137,7 +137,7 @@ Analyze this project and determine the appropriate development stage:
 - Good for this stage: keep patterns simple
 
 **Stage 3 (Early):**
-- 15-25 files, 3000-6000 LOC  
+- 15-25 files, 3000-6000 LOC
 - 3-4 architectural layers
 - Multiple patterns emerging
 - Might benefit from more splitting

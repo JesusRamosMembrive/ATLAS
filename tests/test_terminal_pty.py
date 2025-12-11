@@ -10,8 +10,7 @@ import pytest
 
 # Skip entire module on Windows
 pytestmark = pytest.mark.skipif(
-    sys.platform == "win32",
-    reason="PTY tests require Unix-like system"
+    sys.platform == "win32", reason="PTY tests require Unix-like system"
 )
 
 
@@ -20,7 +19,11 @@ class TestPTYSession:
 
     def test_pty_session_creation(self) -> None:
         """Test creating a PTYSession."""
-        from code_map.terminal.socketio_pty import PTYSession, DEFAULT_COLS, DEFAULT_ROWS
+        from code_map.terminal.socketio_pty import (
+            PTYSession,
+            DEFAULT_COLS,
+            DEFAULT_ROWS,
+        )
 
         session = PTYSession(pid=12345, fd=10)
         assert session.pid == 12345
@@ -271,10 +274,7 @@ class TestPTYShellBasics:
 class TestPTYShellSpawn:
     """Test PTYShell spawning (requires actual PTY)."""
 
-    @pytest.mark.skipif(
-        not hasattr(os, "fork"),
-        reason="Requires fork support"
-    )
+    @pytest.mark.skipif(not hasattr(os, "fork"), reason="Requires fork support")
     def test_spawn_creates_process(self) -> None:
         """Test that spawn creates a shell process."""
         from code_map.terminal.pty_shell import PTYShell
@@ -291,10 +291,7 @@ class TestPTYShellSpawn:
         finally:
             shell.close()
 
-    @pytest.mark.skipif(
-        not hasattr(os, "fork"),
-        reason="Requires fork support"
-    )
+    @pytest.mark.skipif(not hasattr(os, "fork"), reason="Requires fork support")
     def test_spawn_and_close(self) -> None:
         """Test spawn followed by close."""
         from code_map.terminal.pty_shell import PTYShell
@@ -309,10 +306,7 @@ class TestPTYShellSpawn:
         assert shell.pid is None
         assert shell.master_fd is None
 
-    @pytest.mark.skipif(
-        not hasattr(os, "fork"),
-        reason="Requires fork support"
-    )
+    @pytest.mark.skipif(not hasattr(os, "fork"), reason="Requires fork support")
     def test_write_to_running_shell(self) -> None:
         """Test writing to a running shell."""
         from code_map.terminal.pty_shell import PTYShell
@@ -368,10 +362,7 @@ class TestPTYShellAdvanced:
         # Should not raise when master_fd is None
         shell._set_winsize(80, 24)
 
-    @pytest.mark.skipif(
-        not hasattr(os, "fork"),
-        reason="Requires fork support"
-    )
+    @pytest.mark.skipif(not hasattr(os, "fork"), reason="Requires fork support")
     def test_write_error_stops_running(self) -> None:
         """Test that write error sets running to False."""
         from code_map.terminal.pty_shell import PTYShell
@@ -406,6 +397,7 @@ class TestPTYShellAdvanced:
         # Simulate a read thread that exits quickly
         def dummy_thread():
             import time
+
             time.sleep(0.05)
 
         shell.read_thread = threading.Thread(target=dummy_thread)
@@ -415,10 +407,7 @@ class TestPTYShellAdvanced:
         shell.close()
         assert shell.running is False
 
-    @pytest.mark.skipif(
-        not hasattr(os, "fork"),
-        reason="Requires fork support"
-    )
+    @pytest.mark.skipif(not hasattr(os, "fork"), reason="Requires fork support")
     def test_destructor_calls_close(self) -> None:
         """Test __del__ calls close."""
         from code_map.terminal.pty_shell import PTYShell
@@ -443,7 +432,7 @@ class TestSocketIOPTYServerSetWinsize:
         server = SocketIOPTYServer()
 
         # Mock ioctl to avoid needing real fd
-        with patch('code_map.terminal.socketio_pty.fcntl.ioctl') as mock_ioctl:
+        with patch("code_map.terminal.socketio_pty.fcntl.ioctl") as mock_ioctl:
             server._set_winsize(10, 24, 80)
             mock_ioctl.assert_called_once()
 
@@ -451,10 +440,7 @@ class TestSocketIOPTYServerSetWinsize:
 class TestSocketIOPTYServerSpawn:
     """Test PTY spawning in SocketIOPTYServer."""
 
-    @pytest.mark.skipif(
-        not hasattr(os, "fork"),
-        reason="Requires fork support"
-    )
+    @pytest.mark.skipif(not hasattr(os, "fork"), reason="Requires fork support")
     def test_spawn_pty_creates_session(self) -> None:
         """Test _spawn_pty creates a valid PTYSession."""
         from code_map.terminal.socketio_pty import SocketIOPTYServer, PTYSession
@@ -472,6 +458,7 @@ class TestSocketIOPTYServerSpawn:
             # Cleanup
             try:
                 import signal
+
                 os.kill(session.pid, signal.SIGTERM)
                 os.waitpid(session.pid, 0)
             except (OSError, ChildProcessError):
@@ -486,13 +473,13 @@ class TestSocketIOPTYServerSpawn:
         from code_map.terminal.socketio_pty import SocketIOPTYServer
 
         # Mock pty.fork to avoid actually forking
-        with patch('code_map.terminal.socketio_pty.pty.fork') as mock_fork:
+        with patch("code_map.terminal.socketio_pty.pty.fork") as mock_fork:
             # Return parent process scenario
             mock_fork.return_value = (12345, 10)
 
             # Mock fcntl operations
-            with patch('code_map.terminal.socketio_pty.fcntl.fcntl'):
-                with patch('code_map.terminal.socketio_pty.fcntl.ioctl'):
+            with patch("code_map.terminal.socketio_pty.fcntl.fcntl"):
+                with patch("code_map.terminal.socketio_pty.fcntl.ioctl"):
                     server = SocketIOPTYServer()
                     session = server._spawn_pty()
 
@@ -523,9 +510,9 @@ class TestSocketIOPTYServerSessions:
         server._background_tasks["test-sid"] = task
 
         # Mock os operations
-        with patch('os.kill'):
-            with patch('os.waitpid'):
-                with patch('os.close'):
+        with patch("os.kill"):
+            with patch("os.waitpid"):
+                with patch("os.close"):
                     await server._cleanup_session("test-sid")
 
         assert "test-sid" not in server.sessions
@@ -547,7 +534,9 @@ class TestSocketIOPTYServerSessions:
             server.sessions[f"sid-{i}"] = mock_session
 
         # Mock cleanup
-        with patch.object(server, '_cleanup_session', new_callable=AsyncMock) as mock_cleanup:
+        with patch.object(
+            server, "_cleanup_session", new_callable=AsyncMock
+        ) as mock_cleanup:
             await server.shutdown()
             assert mock_cleanup.call_count == 3
 
@@ -586,8 +575,8 @@ class TestSocketIOPTYReadOutput:
                 del server.sessions["test-sid"]
             await asyncio.sleep(0.001)
 
-        with patch('asyncio.sleep', side_effect=mock_sleep):
-            with patch('select.select', return_value=([], [], [])):
+        with patch("asyncio.sleep", side_effect=mock_sleep):
+            with patch("select.select", return_value=([], [], [])):
                 await server._read_pty_output("test-sid")
 
     @pytest.mark.asyncio
@@ -601,10 +590,10 @@ class TestSocketIOPTYReadOutput:
         mock_session.fd = 10
         server.sessions["test-sid"] = mock_session
 
-        with patch('asyncio.sleep', new_callable=AsyncMock):
-            with patch('select.select', return_value=([mock_session.fd], [], [])):
-                with patch('os.read', return_value=b''):  # EOF
-                    with patch.object(server.sio, 'emit', new_callable=AsyncMock):
+        with patch("asyncio.sleep", new_callable=AsyncMock):
+            with patch("select.select", return_value=([mock_session.fd], [], [])):
+                with patch("os.read", return_value=b""):  # EOF
+                    with patch.object(server.sio, "emit", new_callable=AsyncMock):
                         await server._read_pty_output("test-sid")
 
     @pytest.mark.asyncio
@@ -627,15 +616,20 @@ class TestSocketIOPTYReadOutput:
                 return b"Hello, World!"
             return b""  # EOF on second call
 
-        with patch('asyncio.sleep', new_callable=AsyncMock):
-            with patch('select.select', return_value=([mock_session.fd], [], [])):
-                with patch('os.read', side_effect=mock_read):
-                    with patch.object(server.sio, 'emit', new_callable=AsyncMock) as mock_emit:
+        with patch("asyncio.sleep", new_callable=AsyncMock):
+            with patch("select.select", return_value=([mock_session.fd], [], [])):
+                with patch("os.read", side_effect=mock_read):
+                    with patch.object(
+                        server.sio, "emit", new_callable=AsyncMock
+                    ) as mock_emit:
                         await server._read_pty_output("test-sid")
 
                         # Should emit pty-output at least once
-                        output_calls = [c for c in mock_emit.call_args_list
-                                        if c[0][0] == 'pty-output']
+                        output_calls = [
+                            c
+                            for c in mock_emit.call_args_list
+                            if c[0][0] == "pty-output"
+                        ]
                         assert len(output_calls) >= 1
 
     @pytest.mark.asyncio
@@ -651,10 +645,10 @@ class TestSocketIOPTYReadOutput:
 
         eio_error = OSError(5, "Input/output error")  # EIO
 
-        with patch('asyncio.sleep', new_callable=AsyncMock):
-            with patch('select.select', return_value=([mock_session.fd], [], [])):
-                with patch('os.read', side_effect=eio_error):
-                    with patch.object(server.sio, 'emit', new_callable=AsyncMock):
+        with patch("asyncio.sleep", new_callable=AsyncMock):
+            with patch("select.select", return_value=([mock_session.fd], [], [])):
+                with patch("os.read", side_effect=eio_error):
+                    with patch.object(server.sio, "emit", new_callable=AsyncMock):
                         # Should handle EIO gracefully
                         await server._read_pty_output("test-sid")
 
@@ -680,10 +674,10 @@ class TestSocketIOPTYReadOutput:
 
         eagain_error = OSError(11, "Resource temporarily unavailable")  # EAGAIN
 
-        with patch('asyncio.sleep', new_callable=AsyncMock):
-            with patch('select.select', side_effect=mock_select):
-                with patch('os.read', side_effect=eagain_error):
-                    with patch.object(server.sio, 'emit', new_callable=AsyncMock):
+        with patch("asyncio.sleep", new_callable=AsyncMock):
+            with patch("select.select", side_effect=mock_select):
+                with patch("os.read", side_effect=eagain_error):
+                    with patch.object(server.sio, "emit", new_callable=AsyncMock):
                         await server._read_pty_output("test-sid")
 
     @pytest.mark.asyncio
@@ -700,8 +694,8 @@ class TestSocketIOPTYReadOutput:
         async def cancel_after_sleep(t):
             raise asyncio.CancelledError()
 
-        with patch('asyncio.sleep', side_effect=cancel_after_sleep):
-            with patch.object(server.sio, 'emit', new_callable=AsyncMock):
+        with patch("asyncio.sleep", side_effect=cancel_after_sleep):
+            with patch.object(server.sio, "emit", new_callable=AsyncMock):
                 await server._read_pty_output("test-sid")
 
 
@@ -722,10 +716,7 @@ class TestPTYShellRead:
 
         asyncio.run(test())
 
-    @pytest.mark.skipif(
-        not hasattr(os, "fork"),
-        reason="Requires fork support"
-    )
+    @pytest.mark.skipif(not hasattr(os, "fork"), reason="Requires fork support")
     def test_read_with_agent_parsing(self) -> None:
         """Test read with agent parsing enabled."""
         from code_map.terminal.pty_shell import PTYShell
@@ -750,8 +741,8 @@ class TestSocketIOPTYServerCleanupAdvanced:
         mock_session.fd = 10
         server.sessions["test-sid"] = mock_session
 
-        with patch('os.kill', side_effect=ProcessLookupError("No such process")):
-            with patch('os.close'):
+        with patch("os.kill", side_effect=ProcessLookupError("No such process")):
+            with patch("os.close"):
                 await server._cleanup_session("test-sid")
 
         assert "test-sid" not in server.sessions
@@ -768,9 +759,9 @@ class TestSocketIOPTYServerCleanupAdvanced:
         mock_session.fd = 10
         server.sessions["test-sid"] = mock_session
 
-        with patch('os.kill'):
-            with patch('os.waitpid'):
-                with patch('os.close', side_effect=OSError("Bad file descriptor")):
+        with patch("os.kill"):
+            with patch("os.waitpid"):
+                with patch("os.close", side_effect=OSError("Bad file descriptor")):
                     await server._cleanup_session("test-sid")
 
         assert "test-sid" not in server.sessions
@@ -788,8 +779,8 @@ class TestSocketIOEventHandlers:
 
         # Find the connect handler
         connect_handler = None
-        for key, handler in server.sio.handlers.get('/pty', {}).items():
-            if key == 'connect':
+        for key, handler in server.sio.handlers.get("/pty", {}).items():
+            if key == "connect":
                 connect_handler = handler
                 break
 
@@ -799,8 +790,8 @@ class TestSocketIOEventHandlers:
             mock_session.pid = 12345
             mock_session.fd = 10
 
-            with patch.object(server, '_spawn_pty', return_value=mock_session):
-                with patch.object(server, '_read_pty_output', new_callable=AsyncMock):
+            with patch.object(server, "_spawn_pty", return_value=mock_session):
+                with patch.object(server, "_read_pty_output", new_callable=AsyncMock):
                     result = await connect_handler("test-sid", {})
                     assert result is True
                     assert "test-sid" in server.sessions
@@ -818,8 +809,8 @@ class TestSocketIOEventHandlers:
 
         # Find the connect handler
         connect_handler = None
-        for key, handler in server.sio.handlers.get('/pty', {}).items():
-            if key == 'connect':
+        for key, handler in server.sio.handlers.get("/pty", {}).items():
+            if key == "connect":
                 connect_handler = handler
                 break
 
@@ -835,13 +826,13 @@ class TestSocketIOEventHandlers:
         server = SocketIOPTYServer()
 
         connect_handler = None
-        for key, handler in server.sio.handlers.get('/pty', {}).items():
-            if key == 'connect':
+        for key, handler in server.sio.handlers.get("/pty", {}).items():
+            if key == "connect":
                 connect_handler = handler
                 break
 
         if connect_handler:
-            with patch.object(server, '_spawn_pty', side_effect=OSError("Fork failed")):
+            with patch.object(server, "_spawn_pty", side_effect=OSError("Fork failed")):
                 result = await connect_handler("test-sid", {})
                 assert result is False
 
@@ -859,15 +850,15 @@ class TestSocketIOEventHandlers:
         server.sessions["test-sid"] = mock_session
 
         disconnect_handler = None
-        for key, handler in server.sio.handlers.get('/pty', {}).items():
-            if key == 'disconnect':
+        for key, handler in server.sio.handlers.get("/pty", {}).items():
+            if key == "disconnect":
                 disconnect_handler = handler
                 break
 
         if disconnect_handler:
-            with patch('os.kill'):
-                with patch('os.waitpid'):
-                    with patch('os.close'):
+            with patch("os.kill"):
+                with patch("os.waitpid"):
+                    with patch("os.close"):
                         await disconnect_handler("test-sid")
                         assert "test-sid" not in server.sessions
 
@@ -883,13 +874,13 @@ class TestSocketIOEventHandlers:
         server.sessions["test-sid"] = mock_session
 
         input_handler = None
-        for key, handler in server.sio.handlers.get('/pty', {}).items():
-            if key == 'pty-input':
+        for key, handler in server.sio.handlers.get("/pty", {}).items():
+            if key == "pty-input":
                 input_handler = handler
                 break
 
         if input_handler:
-            with patch('os.write') as mock_write:
+            with patch("os.write") as mock_write:
                 await input_handler("test-sid", {"input": "hello"})
                 mock_write.assert_called_once_with(10, b"hello")
 
@@ -901,8 +892,8 @@ class TestSocketIOEventHandlers:
         server = SocketIOPTYServer()
 
         input_handler = None
-        for key, handler in server.sio.handlers.get('/pty', {}).items():
-            if key == 'pty-input':
+        for key, handler in server.sio.handlers.get("/pty", {}).items():
+            if key == "pty-input":
                 input_handler = handler
                 break
 
@@ -923,16 +914,16 @@ class TestSocketIOEventHandlers:
         server.sessions["test-sid"] = mock_session
 
         input_handler = None
-        for key, handler in server.sio.handlers.get('/pty', {}).items():
-            if key == 'pty-input':
+        for key, handler in server.sio.handlers.get("/pty", {}).items():
+            if key == "pty-input":
                 input_handler = handler
                 break
 
         if input_handler:
-            with patch('os.write', side_effect=OSError("Broken pipe")):
-                with patch('os.kill'):
-                    with patch('os.waitpid'):
-                        with patch('os.close'):
+            with patch("os.write", side_effect=OSError("Broken pipe")):
+                with patch("os.kill"):
+                    with patch("os.waitpid"):
+                        with patch("os.close"):
                             await input_handler("test-sid", {"input": "hello"})
                             assert "test-sid" not in server.sessions
 
@@ -950,13 +941,13 @@ class TestSocketIOEventHandlers:
         server.sessions["test-sid"] = mock_session
 
         resize_handler = None
-        for key, handler in server.sio.handlers.get('/pty', {}).items():
-            if key == 'resize':
+        for key, handler in server.sio.handlers.get("/pty", {}).items():
+            if key == "resize":
                 resize_handler = handler
                 break
 
         if resize_handler:
-            with patch.object(server, '_set_winsize') as mock_setwin:
+            with patch.object(server, "_set_winsize") as mock_setwin:
                 await resize_handler("test-sid", {"cols": 120, "rows": 40})
                 mock_setwin.assert_called_once_with(10, 40, 120)
                 assert mock_session.cols == 120
@@ -970,8 +961,8 @@ class TestSocketIOEventHandlers:
         server = SocketIOPTYServer()
 
         resize_handler = None
-        for key, handler in server.sio.handlers.get('/pty', {}).items():
-            if key == 'resize':
+        for key, handler in server.sio.handlers.get("/pty", {}).items():
+            if key == "resize":
                 resize_handler = handler
                 break
 
@@ -982,7 +973,12 @@ class TestSocketIOEventHandlers:
     @pytest.mark.asyncio
     async def test_resize_validates_min_dimensions(self) -> None:
         """Test resize enforces minimum dimensions."""
-        from code_map.terminal.socketio_pty import SocketIOPTYServer, PTYSession, MIN_COLS, MIN_ROWS
+        from code_map.terminal.socketio_pty import (
+            SocketIOPTYServer,
+            PTYSession,
+            MIN_COLS,
+            MIN_ROWS,
+        )
 
         server = SocketIOPTYServer()
 
@@ -993,13 +989,13 @@ class TestSocketIOEventHandlers:
         server.sessions["test-sid"] = mock_session
 
         resize_handler = None
-        for key, handler in server.sio.handlers.get('/pty', {}).items():
-            if key == 'resize':
+        for key, handler in server.sio.handlers.get("/pty", {}).items():
+            if key == "resize":
                 resize_handler = handler
                 break
 
         if resize_handler:
-            with patch.object(server, '_set_winsize') as mock_setwin:
+            with patch.object(server, "_set_winsize") as mock_setwin:
                 await resize_handler("test-sid", {"cols": 1, "rows": 1})
                 # Should use MIN_COLS and MIN_ROWS
                 mock_setwin.assert_called_once_with(10, MIN_ROWS, MIN_COLS)
@@ -1018,13 +1014,15 @@ class TestSocketIOEventHandlers:
         server.sessions["test-sid"] = mock_session
 
         resize_handler = None
-        for key, handler in server.sio.handlers.get('/pty', {}).items():
-            if key == 'resize':
+        for key, handler in server.sio.handlers.get("/pty", {}).items():
+            if key == "resize":
                 resize_handler = handler
                 break
 
         if resize_handler:
-            with patch.object(server, '_set_winsize', side_effect=OSError("Invalid argument")):
+            with patch.object(
+                server, "_set_winsize", side_effect=OSError("Invalid argument")
+            ):
                 # Should not raise
                 await resize_handler("test-sid", {"cols": 120, "rows": 40})
 
@@ -1032,10 +1030,7 @@ class TestSocketIOEventHandlers:
 class TestPTYShellReadLoop:
     """Test PTYShell read loop functionality."""
 
-    @pytest.mark.skipif(
-        not hasattr(os, "fork"),
-        reason="Requires fork support"
-    )
+    @pytest.mark.skipif(not hasattr(os, "fork"), reason="Requires fork support")
     @pytest.mark.asyncio
     async def test_read_with_callback(self) -> None:
         """Test read loop calls callback with output."""
@@ -1056,6 +1051,7 @@ class TestPTYShellReadLoop:
 
             # Run read loop briefly
             import asyncio
+
             await asyncio.wait_for(shell.read(callback), timeout=2.0)
         except asyncio.TimeoutError:
             pass  # Expected if shell keeps running
@@ -1065,10 +1061,7 @@ class TestPTYShellReadLoop:
         # Should have received some output
         assert len(output_received) >= 0  # May not receive in time
 
-    @pytest.mark.skipif(
-        not hasattr(os, "fork"),
-        reason="Requires fork support"
-    )
+    @pytest.mark.skipif(not hasattr(os, "fork"), reason="Requires fork support")
     @pytest.mark.asyncio
     async def test_read_with_agent_parsing(self) -> None:
         """Test read loop with agent parsing enabled."""
@@ -1090,6 +1083,7 @@ class TestPTYShellReadLoop:
             shell.write("echo test\r")
 
             import asyncio
+
             await asyncio.wait_for(shell.read(output_callback), timeout=1.0)
         except asyncio.TimeoutError:
             pass
@@ -1100,10 +1094,7 @@ class TestPTYShellReadLoop:
 class TestPTYShellCloseErrors:
     """Test PTYShell close error handling."""
 
-    @pytest.mark.skipif(
-        not hasattr(os, "fork"),
-        reason="Requires fork support"
-    )
+    @pytest.mark.skipif(not hasattr(os, "fork"), reason="Requires fork support")
     def test_close_handles_kill_error(self) -> None:
         """Test close handles OSError from kill."""
         from code_map.terminal.pty_shell import PTYShell
@@ -1113,16 +1104,13 @@ class TestPTYShellCloseErrors:
 
         # Save the FD to close it ourselves
 
-        with patch('os.kill', side_effect=ProcessLookupError("No such process")):
+        with patch("os.kill", side_effect=ProcessLookupError("No such process")):
             # Should not raise
             shell.close()
 
         assert shell.running is False
 
-    @pytest.mark.skipif(
-        not hasattr(os, "fork"),
-        reason="Requires fork support"
-    )
+    @pytest.mark.skipif(not hasattr(os, "fork"), reason="Requires fork support")
     def test_close_handles_waitpid_error(self) -> None:
         """Test close handles ChildProcessError from waitpid."""
         from code_map.terminal.pty_shell import PTYShell
@@ -1130,8 +1118,10 @@ class TestPTYShellCloseErrors:
         shell = PTYShell()
         shell.spawn()
 
-        with patch('os.kill'):
-            with patch('os.waitpid', side_effect=ChildProcessError("No child processes")):
+        with patch("os.kill"):
+            with patch(
+                "os.waitpid", side_effect=ChildProcessError("No child processes")
+            ):
                 # Should not raise
                 shell.close()
 
@@ -1161,31 +1151,28 @@ class TestSocketIOSpawnDetails:
         server = SocketIOPTYServer()
 
         # Mock pty.fork to simulate parent process
-        with patch('code_map.terminal.socketio_pty.pty.fork') as mock_fork:
+        with patch("code_map.terminal.socketio_pty.pty.fork") as mock_fork:
             mock_fork.return_value = (12345, 10)  # (pid, fd)
 
-            with patch('code_map.terminal.socketio_pty.fcntl.fcntl'):
-                with patch('code_map.terminal.socketio_pty.fcntl.ioctl'):
+            with patch("code_map.terminal.socketio_pty.fcntl.fcntl"):
+                with patch("code_map.terminal.socketio_pty.fcntl.ioctl"):
                     session = server._spawn_pty()
 
                     assert session.pid == 12345
                     assert session.fd == 10
 
-    @pytest.mark.skipif(
-        not hasattr(os, "fork"),
-        reason="Requires fork support"
-    )
+    @pytest.mark.skipif(not hasattr(os, "fork"), reason="Requires fork support")
     def test_spawn_pty_uses_shell_from_env(self) -> None:
         """Test _spawn_pty uses SHELL environment variable."""
         from code_map.terminal.socketio_pty import SocketIOPTYServer
 
         server = SocketIOPTYServer()
 
-        with patch.dict(os.environ, {'SHELL': '/bin/zsh'}):
-            with patch('code_map.terminal.socketio_pty.pty.fork') as mock_fork:
+        with patch.dict(os.environ, {"SHELL": "/bin/zsh"}):
+            with patch("code_map.terminal.socketio_pty.pty.fork") as mock_fork:
                 mock_fork.return_value = (12345, 10)
 
-                with patch('code_map.terminal.socketio_pty.fcntl.fcntl'):
-                    with patch('code_map.terminal.socketio_pty.fcntl.ioctl'):
+                with patch("code_map.terminal.socketio_pty.fcntl.fcntl"):
+                    with patch("code_map.terminal.socketio_pty.fcntl.ioctl"):
                         session = server._spawn_pty()
                         assert session is not None

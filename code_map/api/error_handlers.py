@@ -36,7 +36,9 @@ class ErrorResponse(BaseModel):
     error: ErrorDetail
 
 
-async def aegis_exception_handler(request: Request, exc: AEGISException) -> JSONResponse:
+async def aegis_exception_handler(
+    request: Request, exc: AEGISException
+) -> JSONResponse:
     """Handler for AEGIS custom exceptions.
 
     Logs the error with context and returns a structured JSON response.
@@ -59,11 +61,22 @@ async def aegis_exception_handler(request: Request, exc: AEGISException) -> JSON
     if exc.context:
         # Filter out internal details, keep only user-relevant ones
         safe_keys = {
-            "path", "field", "reason", "endpoint", "run_id", "report_id",
-            "notification_id", "event_id", "reason_code", "retry_after_seconds",
-            "loading_since", "status_code_response",
+            "path",
+            "field",
+            "reason",
+            "endpoint",
+            "run_id",
+            "report_id",
+            "notification_id",
+            "event_id",
+            "reason_code",
+            "retry_after_seconds",
+            "loading_since",
+            "status_code_response",
         }
-        safe_details = {k: v for k, v in exc.context.items() if k in safe_keys and v is not None}
+        safe_details = {
+            k: v for k, v in exc.context.items() if k in safe_keys and v is not None
+        }
         if not safe_details:
             safe_details = None
 

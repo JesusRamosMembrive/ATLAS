@@ -9,15 +9,15 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 def run_detector(fixture_path: str) -> dict:
     """Run the detector on a fixture path."""
-    cmd = [
-        "./static_analysis_motor",
-        "--root", fixture_path,
-        "--ext", ".py"
-    ]
-    result = subprocess.run(cmd, capture_output=True, text=True, cwd=Path(__file__).parent.parent / "build")
+    cmd = ["./static_analysis_motor", "--root", fixture_path, "--ext", ".py"]
+    result = subprocess.run(
+        cmd, capture_output=True, text=True, cwd=Path(__file__).parent.parent / "build"
+    )
     return json.loads(result.stdout)
+
 
 def verify_true_positives():
     """Verify that true duplicates are detected."""
@@ -54,14 +54,21 @@ def verify_true_positives():
         print("\n✅ Detected clones:")
         for i, clone in enumerate(detected_in_true_positives, 1):
             locs = clone.get("locations", [])
-            lines = [f"  lines {l['start_line']}-{l['end_line']}" for l in locs if "true_positives.py" in l.get("file", "")]
-            print(f"  {i}. Type: {clone.get('type')}, Similarity: {clone.get('similarity')}")
+            lines = [
+                f"  lines {loc['start_line']}-{loc['end_line']}"
+                for loc in locs
+                if "true_positives.py" in loc.get("file", "")
+            ]
+            print(
+                f"  {i}. Type: {clone.get('type')}, Similarity: {clone.get('similarity')}"
+            )
             print(f"     Locations: {', '.join(lines)}")
 
     # We should detect at least some of the expected cases
     success = len(detected_in_true_positives) >= 3  # At least 3 of 5 cases
     print(f"\n{'✅ PASS' if success else '❌ FAIL'}: True positive detection")
     return success, len(detected_in_true_positives)
+
 
 def verify_true_negatives():
     """Verify that non-duplicates are NOT detected as clones."""
@@ -85,19 +92,22 @@ def verify_true_negatives():
         if all("true_negatives.py" in f for f in files_in_clone):
             false_positives.append(clone)
 
-    print(f"\nFalse positives found (clones only in true_negatives.py): {len(false_positives)}")
+    print(
+        f"\nFalse positives found (clones only in true_negatives.py): {len(false_positives)}"
+    )
 
     if false_positives:
         print("\n⚠️ Potential false positives:")
         for i, clone in enumerate(false_positives, 1):
             locs = clone.get("locations", [])
-            lines = [f"lines {l['start_line']}-{l['end_line']}" for l in locs]
+            lines = [f"lines {loc['start_line']}-{loc['end_line']}" for loc in locs]
             print(f"  {i}. Type: {clone.get('type')}, Lines: {', '.join(lines)}")
 
     # We should have zero or very few false positives in true_negatives.py
     success = len(false_positives) == 0
     print(f"\n{'✅ PASS' if success else '⚠️ WARNING'}: True negative verification")
     return success, len(false_positives)
+
 
 def verify_cross_file_precision():
     """Verify that we don't get spurious cross-file matches."""
@@ -130,13 +140,16 @@ def verify_cross_file_precision():
             locs = clone.get("locations", [])
             print(f"  {i}. Type: {clone.get('type')}")
             for loc in locs:
-                print(f"     - {Path(loc['file']).name}:{loc['start_line']}-{loc['end_line']}")
+                print(
+                    f"     - {Path(loc['file']).name}:{loc['start_line']}-{loc['end_line']}"
+                )
 
     # Some cross-matches might be legitimate (common patterns)
     # but we should have very few
     success = len(cross_matches) <= 2
     print(f"\n{'✅ PASS' if success else '⚠️ WARNING'}: Cross-file precision")
     return success, len(cross_matches)
+
 
 def main():
     print("\n" + "=" * 60)
@@ -156,9 +169,12 @@ def main():
 
     all_pass = tp_success and tn_success and cf_success
 
-    print(f"\n{'✅ ALL PRECISION TESTS PASSED' if all_pass else '⚠️ SOME TESTS NEED REVIEW'}\n")
+    print(
+        f"\n{'✅ ALL PRECISION TESTS PASSED' if all_pass else '⚠️ SOME TESTS NEED REVIEW'}\n"
+    )
 
     return 0 if all_pass else 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

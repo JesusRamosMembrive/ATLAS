@@ -476,7 +476,6 @@ def test_ollama_analyze_endpoint_generates_insight(
 ) -> None:
     from code_map.insights import OllamaInsightResult
 
-
     generated_at = datetime(2024, 1, 1, tzinfo=timezone.utc)
 
     def fake_run(**kwargs) -> OllamaInsightResult:
@@ -569,7 +568,9 @@ def test_ollama_insights_clear_endpoint(api_client: TestClient, monkeypatch) -> 
     async def fake_clear_insights_async(**kwargs):
         return 5
 
-    monkeypatch.setattr(integrations_module, "clear_insights_async", fake_clear_insights_async)
+    monkeypatch.setattr(
+        integrations_module, "clear_insights_async", fake_clear_insights_async
+    )
 
     response = api_client.delete("/integrations/ollama/insights")
     assert response.status_code == 200
@@ -696,7 +697,9 @@ def test_audit_run_flow(api_client: TestClient) -> None:
     assert len(events) == 1
     assert events[0]["title"] == "Run tests"
 
-    close_resp = api_client.post(f"/audit/runs/{run_id}/close", json={"status": "closed"})
+    close_resp = api_client.post(
+        f"/audit/runs/{run_id}/close", json={"status": "closed"}
+    )
     assert close_resp.status_code == 200
     closed_run = close_resp.json()
     assert closed_run["status"] == "closed"

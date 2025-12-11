@@ -215,9 +215,7 @@ async def stage_status(
     return await asyncio.to_thread(_compute_status, root, metrics)
 
 
-def _run_initializer_sync(
-    command: List[str], cwd: str
-) -> Tuple[int, str, str]:
+def _run_initializer_sync(command: List[str], cwd: str) -> Tuple[int, str, str]:
     """Run initializer subprocess synchronously (for use in thread)."""
     import subprocess
 

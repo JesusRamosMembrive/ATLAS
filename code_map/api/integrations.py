@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import asdict
-from typing import Dict, List
+from typing import List
 
 from fastapi import APIRouter, Depends
 
@@ -130,7 +130,9 @@ async def generate_ollama_insights(
 
     model = payload.model or state.settings.ollama_insights_model
     if not model:
-        raise ModelNotConfiguredError("No hay modelo configurado para ejecutar insights.")
+        raise ModelNotConfiguredError(
+            "No hay modelo configurado para ejecutar insights."
+        )
 
     timeout = (
         payload.timeout_seconds

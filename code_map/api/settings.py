@@ -149,7 +149,9 @@ async def list_directories(
         raise FileNotFoundError(path=str(base_path))
 
     if not base_path.is_dir():
-        raise InvalidPathError(path=str(base_path), reason="El path no es un directorio")
+        raise InvalidPathError(
+            path=str(base_path), reason="El path no es un directorio"
+        )
 
     # Listar subdirectorios
     directories: list[DirectoryItem] = []

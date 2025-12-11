@@ -1,0 +1,18 @@
+# Ruff configuration for AEGIS project
+
+# Exclude test fixtures (generated/intentional errors)
+exclude = [
+    "cpp/tests/fixtures/**",
+    ".venv/**",
+    "node_modules/**",
+    "__pycache__/**",
+]
+
+# Enable all default rules
+lint.select = ["E", "F", "W"]
+
+# Ignore line length in specific cases (long strings, descriptions)
+lint.ignore = ["E501"]
+
+# Line length (for formatting reference)
+line-length = 120

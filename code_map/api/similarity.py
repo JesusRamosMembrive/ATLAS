@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 from typing import Any, List, Optional
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, Field
 
 from ..exceptions import (
@@ -38,18 +38,24 @@ _latest_report: Optional[dict[str, Any]] = None
 class SimilarityAnalyzeRequest(BaseModel):
     """Request body for similarity analysis."""
 
-    extensions: List[str] = Field(default=[".py"], description="File extensions to analyze")
+    extensions: List[str] = Field(
+        default=[".py"], description="File extensions to analyze"
+    )
     exclude_patterns: Optional[List[str]] = Field(
         default=None,
         description="Glob patterns to exclude (e.g., '**/tests/**', '**/venv/**'). If null, uses defaults.",
     )
-    min_tokens: int = Field(default=30, ge=5, le=500, description="Minimum tokens for a clone")
+    min_tokens: int = Field(
+        default=30, ge=5, le=500, description="Minimum tokens for a clone"
+    )
     min_similarity: float = Field(
         default=0.7, ge=0.5, le=1.0, description="Minimum similarity threshold"
     )
     type3: bool = Field(default=False, description="Enable Type-3 detection")
     max_gap: int = Field(default=5, ge=1, le=20, description="Maximum gap for Type-3")
-    threads: Optional[int] = Field(default=None, ge=1, le=32, description="Number of threads")
+    threads: Optional[int] = Field(
+        default=None, ge=1, le=32, description="Number of threads"
+    )
 
 
 class SimilarityStatusResponse(BaseModel):
@@ -150,7 +156,9 @@ async def run_analysis(
 
 @router.get("/hotspots", response_model=HotspotsResponse)
 async def get_hotspots(
-    limit: int = Query(default=10, ge=1, le=100, description="Maximum hotspots to return"),
+    limit: int = Query(
+        default=10, ge=1, le=100, description="Maximum hotspots to return"
+    ),
     extensions: Optional[str] = Query(
         default=None, description="Comma-separated extensions (e.g., '.py,.js')"
     ),
@@ -166,7 +174,9 @@ async def get_hotspots(
     # If we have a cached report, use it
     if _latest_report:
         hotspots = _latest_report.get("hotspots", [])
-        sorted_hotspots = sorted(hotspots, key=lambda h: h.get("duplication_score", 0), reverse=True)
+        sorted_hotspots = sorted(
+            hotspots, key=lambda h: h.get("duplication_score", 0), reverse=True
+        )
         return HotspotsResponse(hotspots=sorted_hotspots[:limit], count=len(hotspots))
 
     # Otherwise, run a fresh analysis
@@ -182,7 +192,9 @@ async def get_hotspots(
         _latest_report = report_to_dict(report)
 
         hotspots = _latest_report.get("hotspots", [])
-        sorted_hotspots = sorted(hotspots, key=lambda h: h.get("duplication_score", 0), reverse=True)
+        sorted_hotspots = sorted(
+            hotspots, key=lambda h: h.get("duplication_score", 0), reverse=True
+        )
         return HotspotsResponse(hotspots=sorted_hotspots[:limit], count=len(hotspots))
 
     except SimilarityServiceError as e:

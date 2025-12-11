@@ -1,4 +1,5 @@
 """Tests for file watcher audit hook (code_map/audit/file_watcher_hook.py)."""
+
 from __future__ import annotations
 
 import os
@@ -30,7 +31,7 @@ def test_run(temp_root: Path) -> AuditRun:
     run = create_run(
         name="Test File Watcher Run",
         root_path=str(temp_root),
-        notes="Testing file watcher hook"
+        notes="Testing file watcher hook",
     )
     yield run
 
@@ -45,9 +46,7 @@ class TestFileWatcherBasics:
     def test_file_watcher_start_stop(self, test_run: AuditRun, temp_root: Path):
         """Test starting and stopping the file watcher."""
         watcher = AuditFileWatcher(
-            run_id=test_run.id,
-            root_path=str(temp_root),
-            actor="test"
+            run_id=test_run.id, root_path=str(temp_root), actor="test"
         )
 
         # Should not be running initially
@@ -68,10 +67,7 @@ class TestFileWatcherBasics:
         (temp_root / "test2.js").write_text("function hello() {}")
         (temp_root / "ignored.pyc").write_text("binary")
 
-        watcher = AuditFileWatcher(
-            run_id=test_run.id,
-            root_path=str(temp_root)
-        )
+        watcher = AuditFileWatcher(run_id=test_run.id, root_path=str(temp_root))
 
         watcher.snapshot_current_state()
 
@@ -91,9 +87,7 @@ class TestFileCreation:
     def test_create_tracked_file(self, test_run: AuditRun, temp_root: Path):
         """Test creating a tracked file generates an event."""
         watcher = AuditFileWatcher(
-            run_id=test_run.id,
-            root_path=str(temp_root),
-            phase="apply"
+            run_id=test_run.id, root_path=str(temp_root), phase="apply"
         )
         watcher.snapshot_current_state()
         watcher.start()
@@ -114,8 +108,7 @@ class TestFileCreation:
 
             # Find the creation event
             creation_event = next(
-                (e for e in file_events if "new_file.py" in e.title),
-                None
+                (e for e in file_events if "new_file.py" in e.title), None
             )
             assert creation_event is not None
             assert creation_event.phase == "apply"
@@ -130,10 +123,7 @@ class TestFileCreation:
 
     def test_create_ignored_file(self, test_run: AuditRun, temp_root: Path):
         """Test creating an ignored file does not generate an event."""
-        watcher = AuditFileWatcher(
-            run_id=test_run.id,
-            root_path=str(temp_root)
-        )
+        watcher = AuditFileWatcher(run_id=test_run.id, root_path=str(temp_root))
         watcher.start()
 
         try:
@@ -162,9 +152,7 @@ class TestFileModification:
         test_file.write_text("def old_function():\n    return 1\n")
 
         watcher = AuditFileWatcher(
-            run_id=test_run.id,
-            root_path=str(temp_root),
-            phase="apply"
+            run_id=test_run.id, root_path=str(temp_root), phase="apply"
         )
         watcher.snapshot_current_state()
         watcher.start()
@@ -177,8 +165,7 @@ class TestFileModification:
 
             events = list_events(test_run.id, limit=10)
             modify_events = [
-                e for e in events
-                if e.type == "file_change" and "Modified" in e.title
+                e for e in events if e.type == "file_change" and "Modified" in e.title
             ]
 
             assert len(modify_events) >= 1
@@ -202,10 +189,7 @@ class TestFileModification:
         content = "def func(): pass\n"
         test_file.write_text(content)
 
-        watcher = AuditFileWatcher(
-            run_id=test_run.id,
-            root_path=str(temp_root)
-        )
+        watcher = AuditFileWatcher(run_id=test_run.id, root_path=str(temp_root))
         watcher.snapshot_current_state()
         watcher.start()
 
@@ -218,8 +202,7 @@ class TestFileModification:
             events = list_events(test_run.id, limit=10)
             # Should not have created a modify event
             modify_events = [
-                e for e in events
-                if "unchanged.py" in e.title and "Modified" in e.title
+                e for e in events if "unchanged.py" in e.title and "Modified" in e.title
             ]
             assert len(modify_events) == 0
 
@@ -238,9 +221,7 @@ class TestFileDeletion:
         test_file.write_text(original_content)
 
         watcher = AuditFileWatcher(
-            run_id=test_run.id,
-            root_path=str(temp_root),
-            phase="apply"
+            run_id=test_run.id, root_path=str(temp_root), phase="apply"
         )
         watcher.snapshot_current_state()
         watcher.start()
@@ -253,8 +234,7 @@ class TestFileDeletion:
 
             events = list_events(test_run.id, limit=10)
             delete_events = [
-                e for e in events
-                if e.type == "file_change" and "Deleted" in e.title
+                e for e in events if e.type == "file_change" and "Deleted" in e.title
             ]
 
             assert len(delete_events) >= 1
@@ -282,10 +262,7 @@ class TestExclusionFiltering:
         test_file = node_modules / "package.js"
         test_file.write_text("module.exports = {}")
 
-        watcher = AuditFileWatcher(
-            run_id=test_run.id,
-            root_path=str(temp_root)
-        )
+        watcher = AuditFileWatcher(run_id=test_run.id, root_path=str(temp_root))
         watcher.start()
 
         try:
@@ -309,9 +286,7 @@ class TestExclusionFiltering:
         custom_dir.mkdir()
 
         watcher = AuditFileWatcher(
-            run_id=test_run.id,
-            root_path=str(temp_root),
-            exclude_dirs={"custom_ignore"}
+            run_id=test_run.id, root_path=str(temp_root), exclude_dirs={"custom_ignore"}
         )
         watcher.start()
 
@@ -340,10 +315,7 @@ class TestDiffGeneration:
         large_content = "\n".join([f"line_{i} = {i}" for i in range(200)])
         test_file.write_text(large_content)
 
-        watcher = AuditFileWatcher(
-            run_id=test_run.id,
-            root_path=str(temp_root)
-        )
+        watcher = AuditFileWatcher(run_id=test_run.id, root_path=str(temp_root))
         watcher.snapshot_current_state()
         watcher.start()
 

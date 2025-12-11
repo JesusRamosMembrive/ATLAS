@@ -40,12 +40,14 @@ router = APIRouter(prefix="/terminal", tags=["terminal"])
 
 class OpenNativeTerminalRequest(BaseModel):
     """Request body for opening a native system terminal with an agent."""
+
     agent_type: Literal["claude", "codex", "gemini"]
     working_directory: Optional[str] = None
 
 
 class OpenNativeTerminalResponse(BaseModel):
     """Response from opening a native terminal."""
+
     success: bool
     message: str
     terminal: Optional[str] = None
@@ -92,12 +94,24 @@ async def open_native_terminal(request: OpenNativeTerminalRequest):
         if system == "Linux":
             # Try different Linux terminal emulators
             linux_terminals = [
-                ("gnome-terminal", ["gnome-terminal", "--working-directory", cwd, "--", agent_cmd]),
+                (
+                    "gnome-terminal",
+                    ["gnome-terminal", "--working-directory", cwd, "--", agent_cmd],
+                ),
                 ("konsole", ["konsole", "--workdir", cwd, "-e", agent_cmd]),
-                ("xfce4-terminal", ["xfce4-terminal", "--working-directory", cwd, "-e", agent_cmd]),
+                (
+                    "xfce4-terminal",
+                    ["xfce4-terminal", "--working-directory", cwd, "-e", agent_cmd],
+                ),
                 ("tilix", ["tilix", "--working-directory", cwd, "-e", agent_cmd]),
-                ("terminator", ["terminator", "--working-directory", cwd, "-e", agent_cmd]),
-                ("alacritty", ["alacritty", "--working-directory", cwd, "-e", agent_cmd]),
+                (
+                    "terminator",
+                    ["terminator", "--working-directory", cwd, "-e", agent_cmd],
+                ),
+                (
+                    "alacritty",
+                    ["alacritty", "--working-directory", cwd, "-e", agent_cmd],
+                ),
                 ("kitty", ["kitty", "--directory", cwd, agent_cmd]),
                 ("xterm", ["xterm", "-e", f"cd {cwd} && {agent_cmd}"]),
             ]
@@ -124,7 +138,7 @@ async def open_native_terminal(request: OpenNativeTerminalRequest):
             terminal_found = "Terminal.app"
 
             # Check for iTerm first (preferred by many developers)
-            iterm_script = f'''
+            iterm_script = f"""
                 tell application "iTerm"
                     activate
                     tell current window
@@ -134,21 +148,26 @@ async def open_native_terminal(request: OpenNativeTerminalRequest):
                         end tell
                     end tell
                 end tell
-            '''
+            """
 
-            terminal_script = f'''
+            terminal_script = f"""
                 tell application "Terminal"
                     activate
                     do script "cd {cwd} && {agent_cmd}"
                 end tell
-            '''
+            """
 
             # Try iTerm first, fallback to Terminal.app
             try:
                 # Check if iTerm exists
                 result = subprocess.run(
-                    ["osascript", "-e", 'tell application "System Events" to get name of processes'],
-                    capture_output=True, text=True
+                    [
+                        "osascript",
+                        "-e",
+                        'tell application "System Events" to get name of processes',
+                    ],
+                    capture_output=True,
+                    text=True,
                 )
                 if "iTerm" in result.stdout:
                     terminal_found = "iTerm.app"
@@ -181,18 +200,20 @@ async def open_native_terminal(request: OpenNativeTerminalRequest):
             # Windows Terminal (wt)
             if shutil.which("wt"):
                 terminal_found = "Windows Terminal"
+                # nosec B602 - shell=True required for Windows Terminal, args are controlled
                 subprocess.Popen(
                     ["wt", "-d", cwd, agent_cmd],
                     start_new_session=True,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
-                    shell=True,
+                    shell=True,  # nosec B602
                 )
             else:
                 # Fallback to cmd
+                # nosec B602 - shell=True required for cmd, cwd is validated path
                 subprocess.Popen(
                     f'start cmd /k "cd /d {cwd} && {agent_cmd}"',
-                    shell=True,
+                    shell=True,  # nosec B602
                     start_new_session=True,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,

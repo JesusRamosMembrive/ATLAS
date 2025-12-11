@@ -5,7 +5,6 @@ import json
 from pathlib import Path
 
 
-
 from code_map.linters import run_linters_pipeline
 from code_map.linters.pipeline import (
     LINTER_CONFIG,
@@ -171,14 +170,16 @@ class TestParseRuff:
 
     def test_parse_ruff_valid_json(self) -> None:
         """Test parsing valid ruff JSON output."""
-        ruff_output = json.dumps([
-            {
-                "filename": "test.py",
-                "code": "E501",
-                "message": "Line too long",
-                "location": {"row": 10, "column": 80}
-            }
-        ])
+        ruff_output = json.dumps(
+            [
+                {
+                    "filename": "test.py",
+                    "code": "E501",
+                    "message": "Line too long",
+                    "location": {"row": 10, "column": 80},
+                }
+            ]
+        )
         count, issues = _parse_ruff(ruff_output, "")
         assert count == 1
         assert len(issues) == 1
@@ -202,14 +203,16 @@ class TestParseRuff:
 
     def test_parse_ruff_null_location(self) -> None:
         """Test parsing with null location."""
-        ruff_output = json.dumps([
-            {
-                "filename": "test.py",
-                "code": "E501",
-                "message": "Error",
-                "location": None
-            }
-        ])
+        ruff_output = json.dumps(
+            [
+                {
+                    "filename": "test.py",
+                    "code": "E501",
+                    "message": "Error",
+                    "location": None,
+                }
+            ]
+        )
         count, issues = _parse_ruff(ruff_output, "")
         assert count == 1
         assert issues[0].line is None
@@ -220,17 +223,19 @@ class TestParseBandit:
 
     def test_parse_bandit_valid_json(self) -> None:
         """Test parsing valid bandit JSON output."""
-        bandit_output = json.dumps({
-            "results": [
-                {
-                    "filename": "test.py",
-                    "issue_text": "Possible hardcoded password",
-                    "line_number": 5,
-                    "issue_severity": "high",
-                    "test_id": "B105"
-                }
-            ]
-        })
+        bandit_output = json.dumps(
+            {
+                "results": [
+                    {
+                        "filename": "test.py",
+                        "issue_text": "Possible hardcoded password",
+                        "line_number": 5,
+                        "issue_severity": "high",
+                        "test_id": "B105",
+                    }
+                ]
+            }
+        )
         count, issues = _parse_bandit(bandit_output, "")
         assert count == 1
         assert len(issues) == 1
@@ -289,6 +294,7 @@ class TestSelectToolSpecs:
     def test_select_all_tools_when_no_options(self) -> None:
         """Test all tools selected with no options."""
         from code_map.linters.pipeline import TOOL_SPECS
+
         result = _select_tool_specs(None)
         assert result == TOOL_SPECS
 
@@ -410,8 +416,15 @@ class TestRunLintersPipeline:
 
         report = run_linters_pipeline(tmp_path)
 
-        assert report.summary.total_checks == len(report.tools) + len(report.custom_rules)
-        assert report.summary.overall_status.value in {"pass", "warn", "fail", "skipped"}
+        assert report.summary.total_checks == len(report.tools) + len(
+            report.custom_rules
+        )
+        assert report.summary.overall_status.value in {
+            "pass",
+            "warn",
+            "fail",
+            "skipped",
+        }
         assert isinstance(report.metrics, dict)
         assert report.summary.duration_ms is not None
 
@@ -422,7 +435,9 @@ class TestRunLintersPipeline:
         report = run_linters_pipeline(tmp_path, options=options)
 
         tool_keys = {t.key for t in report.tools}
-        assert "ruff" in tool_keys or len(report.tools) == 0  # May be skipped if not installed
+        assert (
+            "ruff" in tool_keys or len(report.tools) == 0
+        )  # May be skipped if not installed
 
     def test_run_pipeline_empty_tools_returns_skipped(self, tmp_path: Path) -> None:
         """Test pipeline with no tools enabled returns skipped report."""

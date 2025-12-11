@@ -122,7 +122,9 @@ async def close_audit_run(
     state: AppState = Depends(get_app_state),
 ) -> AuditRunSchema:
     """Mark a run as closed."""
-    run = await close_run_async(run_id, status=payload.status or "closed", notes=payload.notes)
+    run = await close_run_async(
+        run_id, status=payload.status or "closed", notes=payload.notes
+    )
     if run is None:
         raise RunNotFoundError(run_id=run_id)
     _validate_run_root(run, state)
@@ -211,7 +213,9 @@ async def stream_audit_events(
         try:
             while True:
                 # Fetch new events since last_event_id
-                events = await list_events_async(run_id, limit=100, after_id=last_event_id)
+                events = await list_events_async(
+                    run_id, limit=100, after_id=last_event_id
+                )
 
                 # Send new events
                 for event in events:

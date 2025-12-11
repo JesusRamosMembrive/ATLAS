@@ -78,6 +78,7 @@ def calculate_complexity(node: ast.AST) -> int:
     visitor.visit(node)
     return visitor.complexity
 
+
 class FileAnalyzer:
     """
     Extrae símbolos soportados (funciones, clases, métodos) de un archivo Python.

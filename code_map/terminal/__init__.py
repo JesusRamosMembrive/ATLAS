@@ -43,8 +43,9 @@ if _IS_WINDOWS:
 else:
     # Unix: Use native pty
     try:
-        from .pty_shell import PTYShell
-        from .pty_runner import PTYClaudeRunner, PTYRunnerConfig, create_pty_runner
+        from .pty_shell import PTYShell  # type: ignore[assignment]
+        from .pty_runner import PTYClaudeRunner, PTYRunnerConfig, create_pty_runner  # type: ignore[assignment]
+
         _PTY_AVAILABLE = True
     except ImportError:
         _PTY_AVAILABLE = False

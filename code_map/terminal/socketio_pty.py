@@ -39,6 +39,7 @@ MIN_ROWS = 10
 @dataclass
 class PTYSession:
     """Represents an active PTY session"""
+
     pid: int
     fd: int
     cols: int = DEFAULT_COLS
@@ -71,7 +72,7 @@ class SocketIOPTYServer:
             cors_allowed_origins: CORS origins for Socket.IO
         """
         self.sio = socketio.AsyncServer(
-            async_mode='asgi',
+            async_mode="asgi",
             cors_allowed_origins=cors_allowed_origins,
             logger=False,  # Use our own logging
             engineio_logger=False,
@@ -87,7 +88,7 @@ class SocketIOPTYServer:
     def _register_handlers(self):
         """Register Socket.IO event handlers"""
 
-        @self.sio.on('connect', namespace='/pty')
+        @self.sio.on("connect", namespace="/pty")
         async def connect(sid, environ):
             """Handle new client connection - spawn PTY"""
             logger.info(f"[SocketIO PTY] Client connected: {sid}")
@@ -102,12 +103,13 @@ class SocketIOPTYServer:
                 session = self._spawn_pty()
                 self.sessions[sid] = session
 
-                logger.info(f"[SocketIO PTY] Spawned PTY for {sid}: pid={session.pid}, fd={session.fd}")
+                logger.info(
+                    f"[SocketIO PTY] Spawned PTY for {sid}: pid={session.pid}, fd={session.fd}"
+                )
 
                 # Start background task for reading PTY output
                 task = asyncio.create_task(
-                    self._read_pty_output(sid),
-                    name=f"pty-reader-{sid}"
+                    self._read_pty_output(sid), name=f"pty-reader-{sid}"
                 )
                 self._background_tasks[sid] = task
 
@@ -117,13 +119,13 @@ class SocketIOPTYServer:
                 logger.error(f"[SocketIO PTY] Failed to spawn PTY for {sid}: {e}")
                 return False
 
-        @self.sio.on('disconnect', namespace='/pty')
+        @self.sio.on("disconnect", namespace="/pty")
         async def disconnect(sid):
             """Handle client disconnection - cleanup PTY"""
             logger.info(f"[SocketIO PTY] Client disconnected: {sid}")
             await self._cleanup_session(sid)
 
-        @self.sio.on('pty-input', namespace='/pty')
+        @self.sio.on("pty-input", namespace="/pty")
         async def pty_input(sid, data):
             """
             Handle input from browser terminal.
@@ -136,15 +138,17 @@ class SocketIOPTYServer:
                 return
 
             try:
-                input_data = data.get('input', '')
+                input_data = data.get("input", "")
                 if input_data:
-                    os.write(session.fd, input_data.encode('utf-8'))
-                    logger.debug(f"[SocketIO PTY] Wrote {len(input_data)} bytes to PTY {sid}")
+                    os.write(session.fd, input_data.encode("utf-8"))
+                    logger.debug(
+                        f"[SocketIO PTY] Wrote {len(input_data)} bytes to PTY {sid}"
+                    )
             except OSError as e:
                 logger.error(f"[SocketIO PTY] Failed to write to PTY {sid}: {e}")
                 await self._cleanup_session(sid)
 
-        @self.sio.on('resize', namespace='/pty')
+        @self.sio.on("resize", namespace="/pty")
         async def resize(sid, data):
             """
             Handle terminal resize from browser.
@@ -156,8 +160,8 @@ class SocketIOPTYServer:
                 logger.warning(f"[SocketIO PTY] No session for resize from {sid}")
                 return
 
-            cols = data.get('cols', DEFAULT_COLS)
-            rows = data.get('rows', DEFAULT_ROWS)
+            cols = data.get("cols", DEFAULT_COLS)
+            rows = data.get("rows", DEFAULT_ROWS)
 
             # Validate dimensions
             if cols < MIN_COLS:
@@ -183,22 +187,24 @@ class SocketIOPTYServer:
             PTYSession with pid and fd
         """
         # Determine shell
-        shell = os.environ.get('SHELL', '/bin/bash')
+        shell = os.environ.get("SHELL", "/bin/bash")
         if not os.path.exists(shell):
-            shell = '/bin/sh'
+            shell = "/bin/sh"
 
         # Fork with PTY
         pid, fd = pty.fork()
 
         if pid == 0:
             # Child process
-            os.environ.update({
-                'TERM': 'xterm-256color',
-                'COLORTERM': 'truecolor',
-                'LANG': os.environ.get('LANG', 'C.UTF-8'),
-            })
+            os.environ.update(
+                {
+                    "TERM": "xterm-256color",
+                    "COLORTERM": "truecolor",
+                    "LANG": os.environ.get("LANG", "C.UTF-8"),
+                }
+            )
             # Execute shell in interactive login mode
-            os.execvp(shell, [shell, '-li'])
+            os.execvp(shell, [shell, "-li"])
         else:
             # Parent process
             # Set initial window size (like pyxtermjs does with 50x50)
@@ -212,7 +218,7 @@ class SocketIOPTYServer:
 
     def _set_winsize(self, fd: int, rows: int, cols: int, xpix: int = 0, ypix: int = 0):
         """Set terminal window size using ioctl"""
-        winsize = struct.pack('HHHH', rows, cols, xpix, ypix)
+        winsize = struct.pack("HHHH", rows, cols, xpix, ypix)
         fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
 
     async def _read_pty_output(self, sid: str):
@@ -251,12 +257,9 @@ class SocketIOPTYServer:
                             break
 
                         # Decode and send to client
-                        text = output.decode('utf-8', errors='ignore')
+                        text = output.decode("utf-8", errors="ignore")
                         await self.sio.emit(
-                            'pty-output',
-                            {'output': text},
-                            namespace='/pty',
-                            to=sid
+                            "pty-output", {"output": text}, namespace="/pty", to=sid
                         )
 
                 except OSError as e:
@@ -278,10 +281,10 @@ class SocketIOPTYServer:
             # Notify client that session ended
             try:
                 await self.sio.emit(
-                    'pty-exit',
-                    {'reason': 'Shell process exited'},
-                    namespace='/pty',
-                    to=sid
+                    "pty-exit",
+                    {"reason": "Shell process exited"},
+                    namespace="/pty",
+                    to=sid,
                 )
             except Exception:
                 pass
@@ -336,7 +339,9 @@ class SocketIOPTYServer:
 
     async def shutdown(self):
         """Clean up all sessions on server shutdown"""
-        logger.info(f"[SocketIO PTY] Shutting down, cleaning {len(self.sessions)} sessions")
+        logger.info(
+            f"[SocketIO PTY] Shutting down, cleaning {len(self.sessions)} sessions"
+        )
 
         for sid in list(self.sessions.keys()):
             await self._cleanup_session(sid)
@@ -354,7 +359,9 @@ def get_pty_server(cors_allowed_origins: list[str] | str = "*") -> SocketIOPTYSe
     return _pty_server
 
 
-def create_combined_app(fastapi_app: Any, cors_allowed_origins: list[str] | str = "*") -> Any:
+def create_combined_app(
+    fastapi_app: Any, cors_allowed_origins: list[str] | str = "*"
+) -> Any:
     """
     Create a combined ASGI app with Socket.IO PTY server and FastAPI.
 

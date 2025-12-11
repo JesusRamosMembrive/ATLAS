@@ -120,7 +120,9 @@ def create_app_with_socketio(root: Optional[str | Path] = None) -> Any:
     fastapi_app = create_app(root)
 
     if _IS_WINDOWS:
-        logger.info("Windows detected - Socket.IO PTY not available, using WebSocket fallback")
+        logger.info(
+            "Windows detected - Socket.IO PTY not available, using WebSocket fallback"
+        )
         return fastapi_app
 
     try:
@@ -139,7 +141,9 @@ def create_app_with_socketio(root: Optional[str | Path] = None) -> Any:
         logger.warning(f"Socket.IO PTY not available: {e}. Using WebSocket fallback.")
         return fastapi_app
     except Exception as e:
-        logger.error(f"Failed to initialize Socket.IO PTY: {e}. Using WebSocket fallback.")
+        logger.error(
+            f"Failed to initialize Socket.IO PTY: {e}. Using WebSocket fallback."
+        )
         return fastapi_app
 
 

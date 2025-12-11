@@ -1,8 +1,7 @@
-
 import ast
 import unittest
-from pathlib import Path
-from code_map.analyzer import ComplexityVisitor, calculate_complexity, FileAnalyzer
+from code_map.analyzer import calculate_complexity
+
 
 class TestComplexity(unittest.TestCase):
     def test_basic_complexity(self):
@@ -32,7 +31,7 @@ def foo():
             print(i)
 """
         node = ast.parse(code).body[0]
-        self.assertEqual(calculate_complexity(node), 3) # 1 (base) + 1 (for) + 1 (if)
+        self.assertEqual(calculate_complexity(node), 3)  # 1 (base) + 1 (for) + 1 (if)
 
     def test_while_complexity(self):
         code = """
@@ -43,5 +42,6 @@ def foo():
         node = ast.parse(code).body[0]
         self.assertEqual(calculate_complexity(node), 2)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
