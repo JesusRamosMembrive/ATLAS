@@ -10,24 +10,36 @@ Este documento describe las mejoras potenciales para el backend de AEGIS, organi
 - 52/52 tests pasando
 - Type safety completo
 
+✅ **Completado**: Error Handling & Custom Exceptions (Diciembre 2025)
+- Jerarquía de excepciones en `code_map/exceptions.py`
+- Exception handlers centralizados en `code_map/api/error_handlers.py`
+- Todos los endpoints migrados de HTTPException a excepciones custom
+- Error responses estandarizados con code, message, timestamp, path
+
+✅ **Completado**: Async/Await Optimization (Diciembre 2025)
+- Módulo `code_map/database_async.py` con AsyncEngine y AsyncSession
+- Storage modules migrados: audit, linters, insights
+- Todos los endpoints API usando funciones async
+- 89/89 tests core pasando (database, API, linters)
+
 ---
 
 ## Mejoras Propuestas
 
-### 1. Async/Await Optimization ⚡
+### 1. ~~Async/Await Optimization~~ ✅ COMPLETADO
 
-**Prioridad**: Alta  
-**Complejidad**: Media  
+**Estado**: Implementado
+**Complejidad**: Media
 **Impacto**: Alto rendimiento en concurrencia
 
-#### Pasos
+#### Pasos Completados
 
-- [ ] Migrar de SQLModel sync a SQLAlchemy async
-- [ ] Actualizar `database.py` para usar `create_async_engine`
-- [ ] Convertir funciones de storage a `async def`
-- [ ] Actualizar endpoints FastAPI para usar `await`
-- [ ] Añadir tests async
-- [ ] Medir mejora de rendimiento (benchmark)
+- [x] Migrar de SQLModel sync a SQLAlchemy async
+- [x] Crear `database_async.py` para usar `create_async_engine`
+- [x] Convertir funciones de storage a `async def`
+- [x] Actualizar endpoints FastAPI para usar `await`
+- [x] Actualizar tests para soportar async
+- [ ] Medir mejora de rendimiento (benchmark) - Opcional
 
 #### Ejemplo de Código
 
@@ -152,20 +164,20 @@ class SettingsResponse(BaseModel):
 
 ---
 
-### 4. Error Handling & Custom Exceptions 🚨
+### 4. ~~Error Handling & Custom Exceptions~~ ✅ COMPLETADO
 
-**Prioridad**: Alta  
-**Complejidad**: Baja  
+**Estado**: Implementado
+**Complejidad**: Baja
 **Impacto**: Mejor debugging y UX
 
-#### Pasos
+#### Pasos Completados
 
-- [ ] Definir jerarquía de excepciones custom
-- [ ] Crear exception handlers en FastAPI
-- [ ] Añadir logging estructurado en errores
-- [ ] Implementar error responses consistentes
-- [ ] Añadir error codes únicos
-- [ ] Documentar errores posibles por endpoint
+- [x] Definir jerarquía de excepciones custom (`code_map/exceptions.py`)
+- [x] Crear exception handlers en FastAPI (`code_map/api/error_handlers.py`)
+- [x] Añadir logging estructurado en errores
+- [x] Implementar error responses consistentes
+- [x] Añadir error codes únicos
+- [ ] Documentar errores posibles por endpoint - Opcional
 
 #### Ejemplo de Código
 
@@ -267,46 +279,7 @@ async def update_settings(request: UpdateSettingsRequest):
 
 ---
 
-### 6. Database Migrations con Alembic 🔄
-
-**Prioridad**: Baja  
-**Complejidad**: Media  
-**Impacto**: Mejor gestión de schema
-
-#### Pasos
-
-- [ ] Instalar y configurar Alembic
-- [ ] Crear migración inicial desde schema actual
-- [ ] Documentar workflow de migraciones
-- [ ] Añadir CI check para migraciones pendientes
-- [ ] Script de rollback automático
-- [ ] Backup automático antes de migrar
-
-#### Ejemplo de Comandos
-
-```bash
-# Inicializar Alembic
-alembic init alembic
-
-# Crear migración automática
-alembic revision --autogenerate -m "add_user_preferences"
-
-# Aplicar migraciones
-alembic upgrade head
-
-# Rollback
-alembic downgrade -1
-```
-
-#### Beneficios
-- Schema versionado
-- Migraciones reproducibles
-- Rollback seguro
-- Colaboración en equipo
-
----
-
-### 7. Connection Pooling & Performance 🚀
+### 6. Connection Pooling & Performance 🚀
 
 **Prioridad**: Baja  
 **Complejidad**: Baja  
@@ -344,7 +317,7 @@ engine = create_engine(
 
 ---
 
-### 8. API Rate Limiting 🛡️
+### 7. API Rate Limiting 🛡️
 
 **Prioridad**: Baja  
 **Complejidad**: Baja  
@@ -380,22 +353,15 @@ async def analyze_project():
 
 ---
 
-## Priorización Recomendada
+## Priorización
 
-### Sprint 1 (Alta Prioridad)
+### Alcance Actual - COMPLETADO ✅
 1. ✅ SQL → SQLModel (Completado)
-2. [ ] Error Handling & Custom Exceptions
-3. [ ] Async/Await Optimization
+2. ✅ Error Handling & Custom Exceptions (Completado)
+3. ✅ Async/Await Optimization (Completado)
 
-### Sprint 2 (Media Prioridad)
-4. [ ] Caching Layer
-5. [ ] API Validation con Pydantic
-6. [ ] Structured Logging
-
-### Sprint 3 (Baja Prioridad)
-7. [ ] Database Migrations
-8. [ ] Connection Pooling
-9. [ ] Rate Limiting
+### Futuro (si se necesita)
+Las mejoras 2, 3, 5, 6, 7 están documentadas arriba pero **no son prioritarias** dado el tamaño del proyecto y el uso limitado de la base de datos.
 
 ---
 
@@ -419,3 +385,33 @@ Para cada mejora, medir:
 ---
 
 *Última actualización: 2025-12-11*
+
+---
+
+## Archivos Creados/Modificados (Async + Error Handling)
+
+### Nuevos Archivos
+- `code_map/exceptions.py` - Jerarquía de excepciones custom
+- `code_map/api/error_handlers.py` - FastAPI exception handlers
+- `code_map/database_async.py` - Async database engine y sessions
+
+### Archivos Modificados
+- `code_map/server.py` - Registra exception handlers
+- `code_map/audit/storage.py` - Funciones async añadidas
+- `code_map/audit/__init__.py` - Exports async
+- `code_map/api/audit.py` - Usa async storage
+- `code_map/linters/storage.py` - Funciones async añadidas
+- `code_map/linters/__init__.py` - Exports async
+- `code_map/api/linters.py` - Usa async storage + custom exceptions
+- `code_map/insights/storage.py` - Funciones async añadidas
+- `code_map/insights/__init__.py` - Exports async
+- `code_map/api/integrations.py` - Usa async storage
+- `code_map/api/preview.py` - Usa custom exceptions
+- `code_map/api/settings.py` - Usa custom exceptions
+- `code_map/api/analysis.py` - Usa custom exceptions
+- `code_map/api/graph.py` - Usa custom exceptions
+- `code_map/api/similarity.py` - Usa custom exceptions
+- `code_map/api/stage.py` - Usa custom exceptions
+- `code_map/api/terminal.py` - Usa custom exceptions
+- `requirements.txt` - Añade aiosqlite
+- `tests/test_api.py` - Actualiza para async + error format
