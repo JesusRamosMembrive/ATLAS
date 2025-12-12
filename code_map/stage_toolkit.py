@@ -224,6 +224,7 @@ def _run_initializer_sync(command: List[str], cwd: str) -> Tuple[int, str, str]:
         capture_output=True,
         cwd=cwd,
         text=True,
+        encoding="utf-8",
         errors="replace",
     )
     return result.returncode, result.stdout, result.stderr
@@ -302,6 +303,7 @@ def _run_command_sync(
         capture_output=True,
         cwd=cwd,
         text=True,
+        encoding="utf-8",
         errors="replace",
     )
     return result.returncode, result.stdout, result.stderr

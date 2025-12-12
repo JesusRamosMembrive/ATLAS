@@ -168,6 +168,8 @@ async def open_native_terminal(request: OpenNativeTerminalRequest):
                     ],
                     capture_output=True,
                     text=True,
+                    encoding="utf-8",
+                    errors="replace",
                 )
                 if "iTerm" in result.stdout:
                     terminal_found = "iTerm.app"

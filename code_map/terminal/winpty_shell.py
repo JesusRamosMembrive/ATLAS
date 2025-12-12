@@ -349,6 +349,8 @@ class SubprocessShell:
             stderr=subprocess.STDOUT,
             text=True,
             bufsize=1,
+            encoding="utf-8",
+            errors="replace",  # Handle invalid UTF-8 gracefully
             creationflags=(
                 subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == "win32" else 0
             ),

@@ -345,6 +345,8 @@ class CppBridge:
                 cmd,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 timeout=300,  # 5 minute timeout
             )
         except subprocess.TimeoutExpired:

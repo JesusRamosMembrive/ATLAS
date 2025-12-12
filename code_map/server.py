@@ -107,7 +107,7 @@ def create_app_with_socketio(root: Optional[str | Path] = None) -> Any:
     Create FastAPI app combined with Socket.IO PTY server.
 
     On Unix: Returns combined ASGI app with Socket.IO at /pty namespace
-    On Windows: Returns plain FastAPI app (Socket.IO PTY not supported)
+    On Windows: Returns combined ASGI app but PTY sessions will be rejected
 
     Args:
         root: Project root path
@@ -119,12 +119,6 @@ def create_app_with_socketio(root: Optional[str | Path] = None) -> Any:
 
     fastapi_app = create_app(root)
 
-    if _IS_WINDOWS:
-        logger.info(
-            "Windows detected - Socket.IO PTY not available, using WebSocket fallback"
-        )
-        return fastapi_app
-
     try:
         from .terminal.socketio_pty import SocketIOPTYServer
 
@@ -134,7 +128,13 @@ def create_app_with_socketio(root: Optional[str | Path] = None) -> Any:
         # Combine Socket.IO with FastAPI
         combined_app = _pty_server.get_asgi_app(fastapi_app)
 
-        logger.info("Socket.IO PTY server initialized at /pty namespace")
+        if _IS_WINDOWS:
+            logger.info(
+                "Socket.IO server initialized (Windows mode - PTY sessions not available)"
+            )
+        else:
+            logger.info("Socket.IO PTY server initialized at /pty namespace")
+
         return combined_app
 
     except ImportError as e:

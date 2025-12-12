@@ -529,6 +529,41 @@
   height: 100%;
 }
 
+/* Metric details for expandable object/array values */
+.stage-metric-details {
+  cursor: pointer;
+}
+
+.stage-metric-details summary {
+  color: #60a5fa;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.stage-metric-details summary:hover {
+  color: #93c5fd;
+}
+
+.stage-metric-list {
+  margin: 8px 0 0;
+  padding-left: 16px;
+  list-style: disc;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.stage-metric-list li {
+  margin: 4px 0;
+  word-break: break-word;
+}
+
+.stage-metric-more {
+  color: #64748b;
+  font-style: italic;
+}
+
 @media (max-width: 960px) {
   .stage-toolkit {
     padding: 16px;
