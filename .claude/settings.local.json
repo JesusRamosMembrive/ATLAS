@@ -92,7 +92,8 @@
       "Bash(./cpp/build/static_analysis_motor:*)",
       "Bash(./test_tokenizer:*)",
       "Bash(./test_hotspots:*)",
-      "Bash(./cpp/build/similarity_tests:*)"
+      "Bash(./cpp/build/similarity_tests:*)",
+      "Bash(.venv/bin/pip list:*)"
     ],
     "deny": [],
     "ask": []
