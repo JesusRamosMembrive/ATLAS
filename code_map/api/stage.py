@@ -7,8 +7,9 @@ from __future__ import annotations
 
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
+from ..exceptions import InternalError
 from ..stage_toolkit import (
     AgentSelection,
     install_superclaude_framework,
@@ -57,10 +58,7 @@ async def initialize_stage_assets(
         return StageInitResponse.model_validate(result)
     except Exception as exc:
         logger.exception("Error initializing stage assets: %s", exc)
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error initializing stage assets: {exc}",
-        ) from exc
+        raise InternalError(f"Error initializing stage assets: {exc}") from exc
 
 
 @router.post("/superclaude/install", response_model=SuperClaudeInstallResponse)

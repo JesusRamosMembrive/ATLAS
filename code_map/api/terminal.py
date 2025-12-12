@@ -12,9 +12,10 @@ import asyncio
 import logging
 import sys
 from typing import Optional, Literal
-from fastapi import APIRouter, WebSocket, HTTPException
+from fastapi import APIRouter, WebSocket
 from pydantic import BaseModel
 
+from code_map.exceptions import ValidationError, ServiceUnavailableError, InternalError
 from code_map.terminal import _PTY_AVAILABLE
 from code_map.settings import load_settings
 
@@ -39,12 +40,14 @@ router = APIRouter(prefix="/terminal", tags=["terminal"])
 
 class OpenNativeTerminalRequest(BaseModel):
     """Request body for opening a native system terminal with an agent."""
+
     agent_type: Literal["claude", "codex", "gemini"]
     working_directory: Optional[str] = None
 
 
 class OpenNativeTerminalResponse(BaseModel):
     """Response from opening a native terminal."""
+
     success: bool
     message: str
     terminal: Optional[str] = None
@@ -80,9 +83,8 @@ async def open_native_terminal(request: OpenNativeTerminalRequest):
     # Check if agent CLI is available
     agent_path = shutil.which(agent_cmd)
     if not agent_path:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Agent CLI '{agent_cmd}' not found in PATH. Please install it first."
+        raise ValidationError(
+            f"Agent CLI '{agent_cmd}' not found in PATH. Please install it first."
         )
 
     system = platform.system()
@@ -92,12 +94,24 @@ async def open_native_terminal(request: OpenNativeTerminalRequest):
         if system == "Linux":
             # Try different Linux terminal emulators
             linux_terminals = [
-                ("gnome-terminal", ["gnome-terminal", "--working-directory", cwd, "--", agent_cmd]),
+                (
+                    "gnome-terminal",
+                    ["gnome-terminal", "--working-directory", cwd, "--", agent_cmd],
+                ),
                 ("konsole", ["konsole", "--workdir", cwd, "-e", agent_cmd]),
-                ("xfce4-terminal", ["xfce4-terminal", "--working-directory", cwd, "-e", agent_cmd]),
+                (
+                    "xfce4-terminal",
+                    ["xfce4-terminal", "--working-directory", cwd, "-e", agent_cmd],
+                ),
                 ("tilix", ["tilix", "--working-directory", cwd, "-e", agent_cmd]),
-                ("terminator", ["terminator", "--working-directory", cwd, "-e", agent_cmd]),
-                ("alacritty", ["alacritty", "--working-directory", cwd, "-e", agent_cmd]),
+                (
+                    "terminator",
+                    ["terminator", "--working-directory", cwd, "-e", agent_cmd],
+                ),
+                (
+                    "alacritty",
+                    ["alacritty", "--working-directory", cwd, "-e", agent_cmd],
+                ),
                 ("kitty", ["kitty", "--directory", cwd, agent_cmd]),
                 ("xterm", ["xterm", "-e", f"cd {cwd} && {agent_cmd}"]),
             ]
@@ -115,9 +129,8 @@ async def open_native_terminal(request: OpenNativeTerminalRequest):
                     break
 
             if not terminal_found:
-                raise HTTPException(
-                    status_code=500,
-                    detail="No supported terminal emulator found on Linux. Install gnome-terminal, konsole, or xterm."
+                raise ServiceUnavailableError(
+                    "No supported terminal emulator found on Linux. Install gnome-terminal, konsole, or xterm."
                 )
 
         elif system == "Darwin":
@@ -125,7 +138,7 @@ async def open_native_terminal(request: OpenNativeTerminalRequest):
             terminal_found = "Terminal.app"
 
             # Check for iTerm first (preferred by many developers)
-            iterm_script = f'''
+            iterm_script = f"""
                 tell application "iTerm"
                     activate
                     tell current window
@@ -135,21 +148,28 @@ async def open_native_terminal(request: OpenNativeTerminalRequest):
                         end tell
                     end tell
                 end tell
-            '''
+            """
 
-            terminal_script = f'''
+            terminal_script = f"""
                 tell application "Terminal"
                     activate
                     do script "cd {cwd} && {agent_cmd}"
                 end tell
-            '''
+            """
 
             # Try iTerm first, fallback to Terminal.app
             try:
                 # Check if iTerm exists
                 result = subprocess.run(
-                    ["osascript", "-e", 'tell application "System Events" to get name of processes'],
-                    capture_output=True, text=True
+                    [
+                        "osascript",
+                        "-e",
+                        'tell application "System Events" to get name of processes',
+                    ],
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    errors="replace",
                 )
                 if "iTerm" in result.stdout:
                     terminal_found = "iTerm.app"
@@ -182,27 +202,26 @@ async def open_native_terminal(request: OpenNativeTerminalRequest):
             # Windows Terminal (wt)
             if shutil.which("wt"):
                 terminal_found = "Windows Terminal"
+                # nosec B602 - shell=True required for Windows Terminal, args are controlled
                 subprocess.Popen(
                     ["wt", "-d", cwd, agent_cmd],
                     start_new_session=True,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
-                    shell=True,
+                    shell=True,  # nosec B602
                 )
             else:
                 # Fallback to cmd
+                # nosec B602 - shell=True required for cmd, cwd is validated path
                 subprocess.Popen(
                     f'start cmd /k "cd /d {cwd} && {agent_cmd}"',
-                    shell=True,
+                    shell=True,  # nosec B602
                     start_new_session=True,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
                 )
         else:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Unsupported operating system: {system}"
-            )
+            raise ServiceUnavailableError(f"Unsupported operating system: {system}")
 
         return OpenNativeTerminalResponse(
             success=True,
@@ -210,14 +229,11 @@ async def open_native_terminal(request: OpenNativeTerminalRequest):
             terminal=terminal_found,
         )
 
-    except HTTPException:
+    except (ValidationError, ServiceUnavailableError, InternalError):
         raise
     except Exception as e:
         logger.error(f"Error opening native terminal: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to open terminal: {str(e)}"
-        )
+        raise InternalError(f"Failed to open terminal: {str(e)}") from e
 
 
 # ============================================================================

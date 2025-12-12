@@ -96,9 +96,9 @@ export function ComplexityCard({ detection, variant = "full" }: ComplexityCardPr
             </div>
           )}
 
-          <div style={{ display: "grid", gridTemplateColumns: isSidebar ? "1fr" : "1fr 1fr", gap: "32px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: isSidebar ? "1fr" : "1fr 1fr", gap: "32px", overflow: "hidden" }}>
             {/* Distribution Chart */}
-            <div>
+            <div style={{ minWidth: 0, overflow: "hidden" }}>
               <h4 style={{ fontSize: "12px", color: "#94a3b8", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Distribution</h4>
               {distribution ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -124,7 +124,7 @@ export function ComplexityCard({ detection, variant = "full" }: ComplexityCardPr
             </div>
 
             {/* Top Offenders Table */}
-            <div>
+            <div style={{ minWidth: 0, overflow: "hidden" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
                 <h4 style={{ fontSize: "12px", color: "#94a3b8", margin: 0, textTransform: "uppercase", letterSpacing: "0.05em" }}>Most Complex</h4>
                 {isSidebar && problematicFunctions.length > 0 && (
@@ -144,7 +144,7 @@ export function ComplexityCard({ detection, variant = "full" }: ComplexityCardPr
               </div>
 
               {topOffenders && topOffenders.length > 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px", overflow: "hidden" }}>
                   {topOffenders.slice(0, isSidebar ? 3 : 5).map((fn, i) => (
                     <div key={i} style={{
                       display: "flex",
@@ -152,12 +152,13 @@ export function ComplexityCard({ detection, variant = "full" }: ComplexityCardPr
                       alignItems: "center",
                       padding: "6px 10px",
                       background: "#1e293b",
-                      borderRadius: "4px"
+                      borderRadius: "4px",
+                      minWidth: 0,
                     }}>
-                      <div style={{ overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", marginRight: "12px", flex: 1 }}>
+                      <div style={{ overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", marginRight: "12px", flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: "13px", fontWeight: 500, color: "#e2e8f0", overflow: "hidden", textOverflow: "ellipsis" }}>{fn.name}</div>
                         <div style={{ fontSize: "11px", color: "#64748b", overflow: "hidden", textOverflow: "ellipsis" }}>
-                          {fn.path.split("/").pop()}
+                          {getFileName(fn.path)}
                         </div>
                       </div>
                       <div style={{
@@ -166,7 +167,8 @@ export function ComplexityCard({ detection, variant = "full" }: ComplexityCardPr
                         padding: "2px 6px",
                         borderRadius: "3px",
                         fontWeight: 600,
-                        fontSize: "12px"
+                        fontSize: "12px",
+                        flexShrink: 0,
                       }}>
                         {fn.complexity}
                       </div>
@@ -224,4 +226,13 @@ function getComplexityColor(value: number): string {
 function formatNumber(value: number): string {
   if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
   return value.toString();
+}
+
+/**
+ * Extract filename from a path, handling both Windows and Unix paths
+ */
+function getFileName(path: string): string {
+  // Handle both Windows (\) and Unix (/) separators
+  const parts = path.split(/[/\\]/);
+  return parts[parts.length - 1] || path;
 }

@@ -266,7 +266,7 @@ def collect_metrics(
         total_complexity = 0
         max_complexity = 0
         count_functions = 0
-        
+
         all_functions = []
 
         for summary in summaries:
@@ -277,13 +277,13 @@ def collect_metrics(
                     c = int(c)
                 else:
                     c = 1
-                
+
                 total_complexity += c
                 max_complexity = max(max_complexity, c)
-                
+
                 if symbol.kind in ("function", "method"):
                     count_functions += 1
-                    
+
                     # Distribution
                     if c <= 5:
                         complexity_dist["low"] += 1
@@ -293,28 +293,34 @@ def collect_metrics(
                         complexity_dist["high"] += 1
                     else:
                         complexity_dist["extreme"] += 1
-                    
+
                     entry = {
                         "name": symbol.name,
                         "complexity": c,
                         "path": str(summary.path),
-                        "lineno": symbol.lineno
+                        "lineno": symbol.lineno,
                     }
                     all_functions.append(entry)
-                    
+
                     if c > 5:
                         problematic.append(entry)
-        
+
         complexity_stats["total"] = total_complexity
         complexity_stats["max"] = max_complexity
         if count_functions > 0:
             complexity_stats["avg"] = int(total_complexity / count_functions)
-            
+
         # Get top 5 complex functions
-        top_complex = sorted(all_functions, key=lambda x: x["complexity"], reverse=True)[:5]
-        
+        top_complex = sorted(
+            all_functions,
+            key=lambda x: x.get("complexity", 0),  # type: ignore[return-value]
+            reverse=True,
+        )[:5]
+
         # Sort problematic by complexity desc
-        problematic.sort(key=lambda x: x["complexity"], reverse=True)
+        problematic.sort(
+            key=lambda x: x.get("complexity", 0), reverse=True  # type: ignore[arg-type]
+        )
 
     directories: Set[Path] = set()
     for path in unique_files:

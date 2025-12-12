@@ -12,7 +12,17 @@ from .ollama_service import (
     build_insights_prompt,
     OLLAMA_DEFAULT_TIMEOUT,
 )
-from .storage import record_insight, list_insights, clear_insights, StoredInsight
+from .storage import (
+    StoredInsight,
+    # Sync versions
+    record_insight,
+    list_insights,
+    clear_insights,
+    # Async versions
+    record_insight_async,
+    list_insights_async,
+    clear_insights_async,
+)
 
 __all__ = [
     "OllamaInsightResult",
@@ -23,7 +33,12 @@ __all__ = [
     "build_insights_prompt",
     "OLLAMA_DEFAULT_TIMEOUT",
     "StoredInsight",
+    # Sync
     "record_insight",
     "list_insights",
     "clear_insights",
+    # Async
+    "record_insight_async",
+    "list_insights_async",
+    "clear_insights_async",
 ]

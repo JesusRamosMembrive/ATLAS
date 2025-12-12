@@ -13,8 +13,7 @@ from typing import Optional, Any
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -22,6 +21,7 @@ from .scheduler import ChangeScheduler
 from .state import AppState
 from .settings import load_settings, save_settings
 from .api.routes import router as api_router
+from .api.error_handlers import register_exception_handlers
 
 # Socket.IO PTY server (Unix only for now)
 _IS_WINDOWS = sys.platform == "win32"
@@ -83,14 +83,8 @@ def create_app(root: Optional[str | Path] = None) -> FastAPI:
         allow_headers=["*"],
     )
 
-    @app.exception_handler(Exception)
-    async def global_exception_handler(request: Request, exc: Exception):
-        """Global exception handler to ensure all errors return proper JSON responses."""
-        logger.exception("Unhandled exception: %s", exc)
-        return JSONResponse(
-            status_code=500,
-            content={"detail": f"Internal server error: {exc}"},
-        )
+    # Register centralized exception handlers
+    register_exception_handlers(app)
 
     app.include_router(api_router, prefix="/api")
     app.state.app_state = state  # type: ignore[attr-defined]
@@ -113,7 +107,7 @@ def create_app_with_socketio(root: Optional[str | Path] = None) -> Any:
     Create FastAPI app combined with Socket.IO PTY server.
 
     On Unix: Returns combined ASGI app with Socket.IO at /pty namespace
-    On Windows: Returns plain FastAPI app (Socket.IO PTY not supported)
+    On Windows: Returns combined ASGI app but PTY sessions will be rejected
 
     Args:
         root: Project root path
@@ -125,10 +119,6 @@ def create_app_with_socketio(root: Optional[str | Path] = None) -> Any:
 
     fastapi_app = create_app(root)
 
-    if _IS_WINDOWS:
-        logger.info("Windows detected - Socket.IO PTY not available, using WebSocket fallback")
-        return fastapi_app
-
     try:
         from .terminal.socketio_pty import SocketIOPTYServer
 
@@ -138,14 +128,22 @@ def create_app_with_socketio(root: Optional[str | Path] = None) -> Any:
         # Combine Socket.IO with FastAPI
         combined_app = _pty_server.get_asgi_app(fastapi_app)
 
-        logger.info("Socket.IO PTY server initialized at /pty namespace")
+        if _IS_WINDOWS:
+            logger.info(
+                "Socket.IO server initialized (Windows mode - PTY sessions not available)"
+            )
+        else:
+            logger.info("Socket.IO PTY server initialized at /pty namespace")
+
         return combined_app
 
     except ImportError as e:
         logger.warning(f"Socket.IO PTY not available: {e}. Using WebSocket fallback.")
         return fastapi_app
     except Exception as e:
-        logger.error(f"Failed to initialize Socket.IO PTY: {e}. Using WebSocket fallback.")
+        logger.error(
+            f"Failed to initialize Socket.IO PTY: {e}. Using WebSocket fallback."
+        )
         return fastapi_app
 
 

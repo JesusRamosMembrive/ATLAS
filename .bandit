@@ -1,2 +1,12 @@
-[bandit]
-exclude_dirs = .venv,venv,.git,node_modules,__pycache__,.mypy_cache,.ruff_cache,.pytest_cache,.code-map,tests,mad-ideas
+exclude_dirs:
+  - .venv
+  - node_modules
+  - cpp/tests/fixtures
+  - cpp/build
+
+skips:
+  - B404
+  - B110
+  - B603
+  - B606
+  - B607

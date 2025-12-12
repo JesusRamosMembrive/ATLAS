@@ -13,6 +13,7 @@ from fastapi.testclient import TestClient
 from code_map import ChangeScheduler
 from code_map.api.preview import MAX_PREVIEW_BYTES
 from code_map.api.routes import router
+from code_map.api.error_handlers import register_exception_handlers
 from code_map.linters import (
     ChartData,
     CheckStatus,
@@ -29,6 +30,7 @@ from code_map.linters import (
 from code_map.settings import load_settings, save_settings
 from code_map.state import AppState
 from code_map.integrations import OllamaChatResponse
+from code_map.database_async import reset_async_engine
 
 
 def write_file(root: Path, relative: str, content: str) -> Path:
@@ -65,6 +67,7 @@ def create_test_app(root: Path) -> tuple[FastAPI, AppState]:
             await state.shutdown()
 
     app = FastAPI(lifespan=lifespan)
+    register_exception_handlers(app)
     app.include_router(router)
     app.state.app_state = state  # type: ignore[attr-defined]
 
@@ -149,6 +152,11 @@ def build_sample_report(root: Path) -> LintersReport:
 
 @pytest.fixture()
 def api_client(tmp_path: Path) -> Generator[TestClient, None, None]:
+    # Reset async engine to ensure fresh connection for each test
+    # This is needed because sync storage functions may write data
+    # that async storage functions need to read from the same DB file
+    reset_async_engine()
+
     write_file(
         tmp_path,
         "pkg/module.py",
@@ -165,6 +173,8 @@ def helper():
     app, state = create_test_app(tmp_path)
     with TestClient(app) as client:
         yield client
+    # Clean up after test
+    reset_async_engine()
 
 
 def test_health_endpoint(api_client: TestClient) -> None:
@@ -291,9 +301,9 @@ def test_ollama_start_endpoint_handles_error(
 
     response = api_client.post("/integrations/ollama/start", json={})
     assert response.status_code == 502
-    detail = response.json()["detail"]
-    assert detail["message"] == "fallo al iniciar"
-    assert detail["endpoint"] == "http://127.0.0.1:11434"
+    error = response.json()["error"]
+    assert error["message"] == "fallo al iniciar"
+    assert error["details"]["endpoint"] == "http://127.0.0.1:11434"
 
 
 def test_ollama_test_endpoint_returns_response(
@@ -346,9 +356,9 @@ def test_ollama_test_endpoint_handles_error(
         json={"model": "llama3", "prompt": "ping"},
     )
     assert response.status_code == 502
-    detail = response.json()["detail"]
-    assert detail["message"] == "fallo de red"
-    assert detail["endpoint"] == "http://127.0.0.1:11434"
+    error = response.json()["error"]
+    assert error["message"] == "fallo de red"
+    assert error["details"]["endpoint"] == "http://127.0.0.1:11434"
 
 
 def test_ollama_test_endpoint_handles_timeout(
@@ -376,10 +386,10 @@ def test_ollama_test_endpoint_handles_timeout(
         json={"model": "llama3", "prompt": "ping"},
     )
     assert response.status_code == 502
-    detail = response.json()["detail"]
-    assert detail["reason_code"] == "timeout"
-    assert detail["loading"] is True
-    assert detail["message"].startswith("Ollama tardó demasiado en responder")
+    error = response.json()["error"]
+    assert error["details"]["reason_code"] == "timeout"
+    assert error["details"]["loading_since"] is not None
+    assert error["message"].startswith("Ollama tardó demasiado en responder")
 
 
 def test_ollama_test_endpoint_exposes_loading_hint(
@@ -407,11 +417,11 @@ def test_ollama_test_endpoint_exposes_loading_hint(
         json={"model": "llama3", "prompt": "ping"},
     )
     assert response.status_code == 502
-    detail = response.json()["detail"]
-    assert detail["reason_code"] == "timeout"
-    assert detail["loading"] is True
-    assert detail["retry_after_seconds"] == pytest.approx(10.0)
-    assert detail["loading_since"].startswith("2024-01-01T00:00:00")
+    error = response.json()["error"]
+    assert error["details"]["reason_code"] == "timeout"
+    assert error["details"]["loading_since"] is not None
+    assert error["details"]["retry_after_seconds"] == pytest.approx(10.0)
+    assert error["details"]["loading_since"].startswith("2024-01-01T00:00:00")
 
 
 def test_get_settings_endpoint(api_client: TestClient) -> None:
@@ -465,7 +475,6 @@ def test_ollama_analyze_endpoint_generates_insight(
     api_client: TestClient, monkeypatch
 ) -> None:
     from code_map.insights import OllamaInsightResult
-
 
     generated_at = datetime(2024, 1, 1, tzinfo=timezone.utc)
 
@@ -539,8 +548,11 @@ def test_ollama_insights_history_endpoint(api_client: TestClient, monkeypatch) -
         ),
     ]
 
+    async def fake_list_insights_async(*, limit, root_path):
+        return items[:limit]
+
     monkeypatch.setattr(
-        integrations_module, "list_insights", lambda limit, root_path: items[:limit]
+        integrations_module, "list_insights_async", fake_list_insights_async
     )
 
     response = api_client.get("/integrations/ollama/insights", params={"limit": 1})
@@ -553,7 +565,12 @@ def test_ollama_insights_history_endpoint(api_client: TestClient, monkeypatch) -
 def test_ollama_insights_clear_endpoint(api_client: TestClient, monkeypatch) -> None:
     from code_map.api import integrations as integrations_module
 
-    monkeypatch.setattr(integrations_module, "clear_insights", lambda **kwargs: 5)
+    async def fake_clear_insights_async(**kwargs):
+        return 5
+
+    monkeypatch.setattr(
+        integrations_module, "clear_insights_async", fake_clear_insights_async
+    )
 
     response = api_client.delete("/integrations/ollama/insights")
     assert response.status_code == 200
@@ -638,7 +655,7 @@ def test_preview_endpoint_rejects_large_file(tmp_path: Path) -> None:
     with TestClient(app) as client:
         response = client.get("/preview", params={"path": "logs/big.log"})
         assert response.status_code == 413
-        assert "demasiado grande" in response.json()["detail"].lower()
+        assert "too large" in response.json()["error"]["message"].lower()
 
 
 def test_preview_endpoint_rejects_binary_file(tmp_path: Path) -> None:
@@ -647,7 +664,7 @@ def test_preview_endpoint_rejects_binary_file(tmp_path: Path) -> None:
     with TestClient(app) as client:
         response = client.get("/preview", params={"path": "images/logo.png"})
         assert response.status_code == 415
-        assert "no compatible" in response.json()["detail"].lower()
+        assert "binary" in response.json()["error"]["message"].lower()
 
 
 def test_audit_run_flow(api_client: TestClient) -> None:
@@ -680,7 +697,9 @@ def test_audit_run_flow(api_client: TestClient) -> None:
     assert len(events) == 1
     assert events[0]["title"] == "Run tests"
 
-    close_resp = api_client.post(f"/audit/runs/{run_id}/close", json={"status": "closed"})
+    close_resp = api_client.post(
+        f"/audit/runs/{run_id}/close", json={"status": "closed"}
+    )
     assert close_resp.status_code == 200
     closed_run = close_resp.json()
     assert closed_run["status"] == "closed"

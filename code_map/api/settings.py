@@ -10,8 +10,15 @@ from typing import Optional
 
 import asyncio
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
+from ..exceptions import (
+    FileNotFoundError,
+    InvalidPathError,
+    InvalidConfigError,
+    PermissionDeniedError,
+    ValidationError,
+)
 from ..state import AppState
 from .deps import get_app_state
 from .schemas import (
@@ -77,7 +84,7 @@ async def update_settings(
             backend_url=backend_url_value,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise InvalidConfigError(reason=str(exc)) from exc
 
     return SettingsUpdateResponse(
         updated=updated,
@@ -116,7 +123,7 @@ async def browse_directory(
     try:
         path = await asyncio.to_thread(_select_directory, state.settings.root_path)
     except RuntimeError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise ValidationError(str(exc)) from exc
 
     return BrowseDirectoryResponse(path=path)
 
@@ -139,13 +146,11 @@ async def list_directories(
 
     # Verificar que el path existe y es un directorio
     if not base_path.exists():
-        raise HTTPException(
-            status_code=404, detail=f"El directorio no existe: {base_path}"
-        )
+        raise FileNotFoundError(path=str(base_path))
 
     if not base_path.is_dir():
-        raise HTTPException(
-            status_code=400, detail=f"El path no es un directorio: {base_path}"
+        raise InvalidPathError(
+            path=str(base_path), reason="El path no es un directorio"
         )
 
     # Listar subdirectorios
@@ -179,9 +184,7 @@ async def list_directories(
                     )
                 )
     except PermissionError:
-        raise HTTPException(
-            status_code=403, detail=f"Sin permisos para leer el directorio: {base_path}"
-        )
+        raise PermissionDeniedError(path=str(base_path), operation="read")
 
     return ListDirectoriesResponse(
         current_path=str(base_path),

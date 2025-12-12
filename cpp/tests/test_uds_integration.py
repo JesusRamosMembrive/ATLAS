@@ -16,11 +16,7 @@ FIXTURES_DIR = "../tests/fixtures"
 
 def send_request(sock: socket.socket, method: str, params: dict) -> dict:
     """Send a JSON-RPC style request and get response."""
-    request = {
-        "id": str(uuid.uuid4()),
-        "method": method,
-        "params": params
-    }
+    request = {"id": str(uuid.uuid4()), "method": method, "params": params}
     sock.sendall((json.dumps(request) + "\n").encode())
 
     # Read response
@@ -48,7 +44,7 @@ def test_server():
     server_proc = subprocess.Popen(
         [EXECUTABLE, "--socket", SOCKET_PATH],
         stderr=subprocess.PIPE,
-        cwd=os.path.dirname(os.path.abspath(__file__)) + "/../build"
+        cwd=os.path.dirname(os.path.abspath(__file__)) + "/../build",
     )
 
     # Wait for server to start
@@ -69,10 +65,9 @@ def test_server():
 
         # Test 1: Analyze
         print("\n=== Test 1: analyze ===")
-        response = send_request(sock, "analyze", {
-            "root": FIXTURES_DIR,
-            "extensions": [".py"]
-        })
+        response = send_request(
+            sock, "analyze", {"root": FIXTURES_DIR, "extensions": [".py"]}
+        )
 
         if "error" in response:
             print(f"Error: {response['error']}")
@@ -89,10 +84,9 @@ def test_server():
 
         # Test 2: File tree
         print("\n=== Test 2: file_tree ===")
-        response = send_request(sock, "file_tree", {
-            "root": FIXTURES_DIR,
-            "extensions": [".py"]
-        })
+        response = send_request(
+            sock, "file_tree", {"root": FIXTURES_DIR, "extensions": [".py"]}
+        )
 
         if "error" in response:
             print(f"Error: {response['error']}")
@@ -103,11 +97,11 @@ def test_server():
 
         # Test 3: get_hotspots
         print("\n=== Test 3: get_hotspots ===")
-        response = send_request(sock, "get_hotspots", {
-            "root": FIXTURES_DIR,
-            "extensions": [".py"],
-            "limit": 5
-        })
+        response = send_request(
+            sock,
+            "get_hotspots",
+            {"root": FIXTURES_DIR, "extensions": [".py"], "limit": 5},
+        )
 
         if "error" in response:
             print(f"Error: {response['error']}")
@@ -116,17 +110,19 @@ def test_server():
         result = response.get("result", {})
         print(f"Top hotspots: {result.get('count', 0)}")
         for hotspot in result.get("hotspots", [])[:3]:
-            print(f"  - {os.path.basename(hotspot.get('file', 'unknown'))}: "
-                  f"score={hotspot.get('duplication_score', 0):.2f}, "
-                  f"clones={hotspot.get('clone_count', 0)}")
+            print(
+                f"  - {os.path.basename(hotspot.get('file', 'unknown'))}: "
+                f"score={hotspot.get('duplication_score', 0):.2f}, "
+                f"clones={hotspot.get('clone_count', 0)}"
+            )
 
         # Test 4: get_file_clones
         print("\n=== Test 4: get_file_clones ===")
-        response = send_request(sock, "get_file_clones", {
-            "root": FIXTURES_DIR,
-            "file": "example_a.py",
-            "extensions": [".py"]
-        })
+        response = send_request(
+            sock,
+            "get_file_clones",
+            {"root": FIXTURES_DIR, "file": "example_a.py", "extensions": [".py"]},
+        )
 
         if "error" in response:
             print(f"Error: {response['error']}")
@@ -137,10 +133,14 @@ def test_server():
 
         # Test 5: compare_files
         print("\n=== Test 5: compare_files ===")
-        response = send_request(sock, "compare_files", {
-            "file1": FIXTURES_DIR + "/example_a.py",
-            "file2": FIXTURES_DIR + "/example_b.py"
-        })
+        response = send_request(
+            sock,
+            "compare_files",
+            {
+                "file1": FIXTURES_DIR + "/example_a.py",
+                "file2": FIXTURES_DIR + "/example_b.py",
+            },
+        )
 
         if "error" in response:
             print(f"Error: {response['error']}")
@@ -174,6 +174,7 @@ def test_server():
     except Exception as e:
         print(f"Error: {e}")
         import traceback
+
         traceback.print_exc()
         server_proc.terminate()
         server_proc.wait(timeout=5)

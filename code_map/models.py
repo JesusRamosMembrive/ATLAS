@@ -6,10 +6,12 @@ Dataclasses y tipos para representar la información del análisis.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Dict, List, Optional, Union
+
+from sqlmodel import Field, SQLModel, JSON
 
 
 class SymbolKind(str, Enum):
@@ -212,3 +214,136 @@ class ProjectTreeNode:
             child = ProjectTreeNode(name=name, path=path, is_dir=is_dir)
             self.children[name] = child
         return child
+
+
+# --- Database Models (SQLModel) ---
+
+
+class AppSettingsDB(SQLModel, table=True):
+    """
+    Representación en base de datos de la configuración de la aplicación.
+    Tabla: app_settings
+    """
+
+    __tablename__ = "app_settings"
+
+    id: int = Field(default=1, primary_key=True)
+    root_path: str = Field(description="Ruta raíz del proyecto")
+    exclude_dirs: List[str] = Field(default_factory=list, sa_type=JSON)  # type: ignore
+    include_docstrings: bool = Field(default=True)
+    ollama_insights_enabled: bool = Field(default=False)
+    ollama_insights_model: Optional[str] = Field(default=None)
+    ollama_insights_frequency_minutes: Optional[int] = Field(default=None)
+    ollama_insights_focus: Optional[str] = Field(default=None)
+    backend_url: Optional[str] = Field(default=None)
+    updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column_kwargs={"onupdate": lambda: datetime.now(timezone.utc)},
+    )
+
+
+class LinterReportDB(SQLModel, table=True):
+    """
+    Historial de reportes de linters.
+    Tabla: linter_reports
+    """
+
+    __tablename__ = "linter_reports"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    root_path: str
+    overall_status: str
+    issues_total: int = Field(default=0)
+    critical_issues: int = Field(default=0)
+    payload: str  # JSON serializado del reporte completo
+
+
+class NotificationDB(SQLModel, table=True):
+    """
+    Notificaciones del sistema.
+    Tabla: notifications
+    """
+
+    __tablename__ = "notifications"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    channel: str
+    severity: str
+    title: str
+    message: str
+    payload: Optional[str] = Field(default=None)  # JSON opcional
+    root_path: Optional[str] = Field(default=None)
+    read: bool = Field(default=False)
+
+
+class OllamaInsightDB(SQLModel, table=True):
+    """
+    Insights generados por Ollama.
+    Tabla: ollama_insights
+    """
+
+    __tablename__ = "ollama_insights"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    model: str
+    message: str
+    raw_payload: Optional[str] = Field(default=None)
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    root_path: Optional[str] = Field(default=None)
+
+
+class AuditReportDB(SQLModel, table=True):
+    """
+    Reportes de auditoría de código.
+    Tabla: audit_reports
+    """
+
+    __tablename__ = "audit_reports"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    root_path: str
+    overall_status: str
+    issues_total: int = Field(default=0)
+    critical_issues: int = Field(default=0)
+    payload: str  # JSON serializado
+
+
+class AuditRunDB(SQLModel, table=True):
+    """
+    Sesiones de pair-programming auditables.
+    Tabla: audit_runs
+    """
+
+    __tablename__ = "audit_runs"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: Optional[str] = Field(default=None)
+    status: str
+    root_path: Optional[str] = Field(default=None)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    closed_at: Optional[datetime] = Field(default=None)
+    notes: Optional[str] = Field(default=None)
+
+
+class AuditEventDB(SQLModel, table=True):
+    """
+    Eventos granulares dentro de un audit run.
+    Tabla: audit_events
+    """
+
+    __tablename__ = "audit_events"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    run_id: int = Field(foreign_key="audit_runs.id")
+    type: str
+    title: str
+    detail: Optional[str] = Field(default=None)
+    actor: Optional[str] = Field(default=None)
+    phase: Optional[str] = Field(default=None)
+    status: Optional[str] = Field(default=None)
+    ref: Optional[str] = Field(default=None)
+    payload: Optional[str] = Field(default=None)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

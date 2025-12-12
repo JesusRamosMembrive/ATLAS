@@ -7,10 +7,16 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import asdict
-from typing import Dict, List
+from typing import List
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends
 
+from ..exceptions import (
+    OllamaStartError as OllamaStartException,
+    OllamaChatError as OllamaChatException,
+    ModelNotConfiguredError,
+    InternalError,
+)
 from ..integrations import (
     OllamaChatError,
     OllamaChatMessage,
@@ -19,7 +25,7 @@ from ..integrations import (
     discover_ollama,
     start_ollama_server,
 )
-from ..insights import list_insights, clear_insights, OLLAMA_DEFAULT_TIMEOUT
+from ..insights import list_insights_async, clear_insights_async, OLLAMA_DEFAULT_TIMEOUT
 from ..state import AppState
 from .deps import get_app_state
 from .schemas import (
@@ -53,12 +59,11 @@ async def start_ollama(payload: OllamaStartRequest) -> OllamaStartResponse:
     try:
         result = await asyncio.to_thread(start_ollama_server, timeout=timeout)
     except OllamaStartError as exc:
-        detail = {
-            "message": str(exc),
-            "endpoint": exc.endpoint,
-            "original_error": exc.original_error,
-        }
-        raise HTTPException(status_code=502, detail=detail) from exc
+        raise OllamaStartException(
+            str(exc),
+            endpoint=exc.endpoint,
+            original_error=exc.original_error,
+        ) from exc
 
     status_payload = OllamaStatusSchema.model_validate(asdict(result.status))
     return OllamaStartResponse(
@@ -96,20 +101,15 @@ async def test_ollama_chat(payload: OllamaTestRequest) -> OllamaTestResponse:
             timeout=timeout,
         )
     except OllamaChatError as exc:
-        detail: Dict[str, object] = {
-            "message": str(exc),
-            "endpoint": exc.endpoint,
-            "original_error": exc.original_error,
-            "status_code": exc.status_code,
-        }
-        if exc.reason_code is not None:
-            detail["reason_code"] = exc.reason_code
-        if exc.retry_after_seconds is not None:
-            detail["retry_after_seconds"] = exc.retry_after_seconds
-        if exc.loading_since is not None:
-            detail["loading"] = True
-            detail["loading_since"] = exc.loading_since.isoformat()
-        raise HTTPException(status_code=502, detail=detail) from exc
+        raise OllamaChatException(
+            str(exc),
+            endpoint=exc.endpoint,
+            original_error=exc.original_error,
+            status_code_response=exc.status_code,
+            reason_code=exc.reason_code,
+            retry_after_seconds=exc.retry_after_seconds,
+            loading_since=exc.loading_since.isoformat() if exc.loading_since else None,
+        ) from exc
 
     return OllamaTestResponse(
         success=True,
@@ -130,8 +130,8 @@ async def generate_ollama_insights(
 
     model = payload.model or state.settings.ollama_insights_model
     if not model:
-        raise HTTPException(
-            status_code=400, detail="No hay modelo configurado para ejecutar insights."
+        raise ModelNotConfiguredError(
+            "No hay modelo configurado para ejecutar insights."
         )
 
     timeout = (
@@ -153,15 +153,14 @@ async def generate_ollama_insights(
             timeout=timeout,
         )
     except OllamaChatError as exc:
-        detail = {
-            "message": str(exc),
-            "endpoint": exc.endpoint,
-            "original_error": exc.original_error,
-            "status_code": exc.status_code,
-        }
-        raise HTTPException(status_code=502, detail=detail) from exc
+        raise OllamaChatException(
+            str(exc),
+            endpoint=exc.endpoint,
+            original_error=exc.original_error,
+            status_code_response=exc.status_code,
+        ) from exc
     except RuntimeError as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise InternalError(str(exc)) from exc
 
     return OllamaInsightsResponse(
         model=result.model,
@@ -175,8 +174,7 @@ async def list_ollama_insights_endpoint(
     limit: int = 20,
     state: AppState = Depends(get_app_state),
 ) -> List[OllamaInsightEntry]:
-    entries = await asyncio.to_thread(
-        list_insights,
+    entries = await list_insights_async(
         limit=max(1, min(limit, 100)),
         root_path=state.settings.root_path,
     )
@@ -195,8 +193,7 @@ async def list_ollama_insights_endpoint(
 async def clear_ollama_insights_endpoint(
     state: AppState = Depends(get_app_state),
 ) -> OllamaInsightsClearResponse:
-    deleted = await asyncio.to_thread(
-        clear_insights,
+    deleted = await clear_insights_async(
         root_path=state.settings.root_path,
     )
     return OllamaInsightsClearResponse(deleted=deleted)

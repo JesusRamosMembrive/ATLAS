@@ -12,6 +12,7 @@ import logging
 import os
 import socket
 import subprocess
+import tempfile
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -20,8 +21,8 @@ from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
-# Default socket path
-DEFAULT_SOCKET_PATH = "/tmp/aegis-cpp.sock"
+# Default socket path - use system temp directory for portability
+DEFAULT_SOCKET_PATH = os.path.join(tempfile.gettempdir(), "aegis-cpp.sock")
 
 # Path to the C++ executable (relative to project root)
 CPP_EXECUTABLE = "cpp/build/static_analysis_motor"
@@ -168,7 +169,7 @@ class CppBridge:
                     f"stderr: {stderr.decode()}"
                 )
 
-        raise CppBridgeError(f"Timeout waiting for C++ motor to start")
+        raise CppBridgeError("Timeout waiting for C++ motor to start")
 
     def stop_server(self) -> None:
         """Stop the C++ analysis server."""
@@ -344,6 +345,8 @@ class CppBridge:
                 cmd,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 timeout=300,  # 5 minute timeout
             )
         except subprocess.TimeoutExpired:

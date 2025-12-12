@@ -5,16 +5,18 @@ Persistencia y modelo de configuración de la aplicación.
 
 from __future__ import annotations
 
-import json
 import os
-from dataclasses import dataclass, field
 import sqlite3
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable, Mapping, Optional, Tuple
 import logging
 
-from .constants import META_DIR_NAME
+from sqlmodel import Session
+
 from .scanner import DEFAULT_EXCLUDED_DIRS
+from .database import get_engine, init_db, get_db_path
+from .models import AppSettingsDB
 
 ENV_ROOT_PATH = "CODE_MAP_ROOT"
 ENV_INCLUDE_DOCSTRINGS = "CODE_MAP_INCLUDE_DOCSTRINGS"
@@ -158,131 +160,6 @@ def _coerce_path(value: Optional[str | Path]) -> Optional[Path]:
     return Path(value).expanduser().resolve()
 
 
-def database_path(env: Optional[Mapping[str, str]] = None) -> Path:
-    """Obtiene la ruta del archivo SQLite para estado global."""
-    effective_env: Mapping[str, str] = env or os.environ
-    custom_path = effective_env.get(ENV_DB_PATH)
-    if custom_path:
-        return Path(custom_path).expanduser().resolve()
-    return Path.home() / META_DIR_NAME / DB_FILENAME
-
-
-def open_database(env: Optional[Mapping[str, str]] = None) -> sqlite3.Connection:
-    """Abre una conexión a la base de datos y asegura el esquema."""
-    path = database_path(env)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    connection = sqlite3.connect(path)
-    connection.row_factory = sqlite3.Row
-    _ensure_db_schema(connection)
-    return connection
-
-
-def _ensure_db_schema(connection: sqlite3.Connection) -> None:
-    """Crea la tabla de configuración si no existe."""
-    connection.execute(
-        """
-        CREATE TABLE IF NOT EXISTS app_settings (
-            id INTEGER PRIMARY KEY CHECK (id = 1),
-            root_path TEXT NOT NULL,
-            exclude_dirs TEXT NOT NULL,
-            include_docstrings INTEGER NOT NULL,
-            ollama_insights_enabled INTEGER NOT NULL DEFAULT 0,
-            ollama_insights_model TEXT,
-            ollama_insights_frequency_minutes INTEGER,
-            ollama_insights_focus TEXT,
-            updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
-        )
-        """
-    )
-
-    connection.execute(
-        """
-        CREATE TABLE IF NOT EXISTS linter_reports (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            generated_at TEXT NOT NULL,
-            root_path TEXT NOT NULL,
-            overall_status TEXT NOT NULL,
-            issues_total INTEGER NOT NULL DEFAULT 0,
-            critical_issues INTEGER NOT NULL DEFAULT 0,
-            payload TEXT NOT NULL
-        )
-        """
-    )
-
-    connection.execute(
-        """
-        CREATE INDEX IF NOT EXISTS idx_linter_reports_generated_at
-            ON linter_reports(generated_at DESC)
-        """
-    )
-
-    connection.execute(
-        """
-        CREATE TABLE IF NOT EXISTS notifications (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            created_at TEXT NOT NULL,
-            channel TEXT NOT NULL,
-            severity TEXT NOT NULL,
-            title TEXT NOT NULL,
-            message TEXT NOT NULL,
-            payload TEXT,
-            root_path TEXT,
-            read INTEGER NOT NULL DEFAULT 0
-        )
-        """
-    )
-
-    connection.execute(
-        """
-        CREATE INDEX IF NOT EXISTS idx_notifications_created_at
-            ON notifications(created_at DESC)
-        """
-    )
-
-    connection.execute(
-        """
-        CREATE INDEX IF NOT EXISTS idx_notifications_root_path
-            ON notifications(root_path)
-        """
-    )
-
-    # Asegurar columna ollama_insights_enabled en instalaciones existentes.
-    cursor = connection.execute("PRAGMA table_info(app_settings)")
-    columns = {row["name"] for row in cursor.fetchall()}
-
-    def _ensure_column(name: str, ddl: str) -> None:
-        if name in columns:
-            return
-        try:
-            connection.execute(ddl)
-            connection.commit()
-        except sqlite3.OperationalError:
-            pass
-
-    _ensure_column(
-        "ollama_insights_enabled",
-        "ALTER TABLE app_settings ADD COLUMN ollama_insights_enabled INTEGER NOT NULL DEFAULT 0",
-    )
-    _ensure_column(
-        "ollama_insights_model",
-        "ALTER TABLE app_settings ADD COLUMN ollama_insights_model TEXT",
-    )
-    _ensure_column(
-        "ollama_insights_frequency_minutes",
-        "ALTER TABLE app_settings ADD COLUMN ollama_insights_frequency_minutes INTEGER",
-    )
-    _ensure_column(
-        "ollama_insights_focus",
-        "ALTER TABLE app_settings ADD COLUMN ollama_insights_focus TEXT",
-    )
-    _ensure_column(
-        "backend_url",
-        "ALTER TABLE app_settings ADD COLUMN backend_url TEXT",
-    )
-
-    connection.commit()
-
-
 def _load_settings_from_db(
     db_path: Path,
     default_root: Path,
@@ -290,250 +167,53 @@ def _load_settings_from_db(
     default_include_docstrings: bool = True,
 ) -> Optional[AppSettings]:
     """Carga la configuración desde la base de datos SQLite si existe."""
-    with open_database(env={ENV_DB_PATH: str(db_path)}) as connection:
-        insights_supported = True
-        try:
-            cursor = connection.execute(
-                """
-                SELECT
-                    root_path,
-                    exclude_dirs,
-                    include_docstrings,
-                    ollama_insights_enabled,
-                    ollama_insights_model,
-                    ollama_insights_frequency_minutes,
-                    ollama_insights_focus,
-                    backend_url
-                FROM app_settings WHERE id = 1
-                """
-            )
-        except sqlite3.OperationalError:
-            insights_supported = False
-            cursor = connection.execute(
-                "SELECT root_path, exclude_dirs, include_docstrings FROM app_settings WHERE id = 1"
-            )
-        row = cursor.fetchone()
-        if row is None:
+    engine = get_engine(db_path)
+    init_db(engine)  # Asegura que las tablas existan
+
+    with Session(engine) as session:
+        db_settings = session.get(AppSettingsDB, 1)
+
+        if not db_settings:
             return None
 
-        stored_root_raw = row["root_path"]
-        stored_root = (
-            Path(stored_root_raw).expanduser().resolve()
-            if stored_root_raw
-            else default_root
-        )
-        excludes_raw = row["exclude_dirs"] or "[]"
-        try:
-            data = json.loads(excludes_raw)
-        except json.JSONDecodeError:
-            data = []
-
-        include_flag = (
-            bool(row["include_docstrings"])
-            if row["include_docstrings"] is not None
-            else default_include_docstrings
-        )
-        if insights_supported and "ollama_insights_enabled" in row.keys():
-            insights_raw = row["ollama_insights_enabled"]
-            insights_flag = bool(insights_raw) if insights_raw is not None else False
-
-            model_value_raw = (
-                row["ollama_insights_model"]
-                if "ollama_insights_model" in row.keys()
-                else None
-            )
-            model_value = (
-                model_value_raw.strip()
-                if isinstance(model_value_raw, str) and model_value_raw.strip()
-                else None
-            )
-
-            freq_raw = (
-                row["ollama_insights_frequency_minutes"]
-                if "ollama_insights_frequency_minutes" in row.keys()
-                else None
-            )
-            try:
-                freq_value = int(freq_raw) if freq_raw is not None else None
-            except (TypeError, ValueError):
-                freq_value = None
-            focus_raw = (
-                row["ollama_insights_focus"]
-                if "ollama_insights_focus" in row.keys()
-                else None
-            )
-            focus_value = (
-                focus_raw.strip()
-                if isinstance(focus_raw, str) and focus_raw.strip()
-                else "general"
-            )
-        else:
-            insights_flag = False
-            model_value = None
-            freq_value = None
-            focus_value = "general"
-
-        # Load backend_url if available
-        backend_url_value = None
-        if insights_supported and "backend_url" in row.keys():
-            backend_url_raw = row["backend_url"]
-            backend_url_value = (
-                backend_url_raw.strip()
-                if isinstance(backend_url_raw, str) and backend_url_raw.strip()
-                else None
-            )
-
-        effective_root = stored_root if stored_root.exists() else default_root
+        # Convertir JSON a lista
+        exclude_dirs = db_settings.exclude_dirs or []
 
         return AppSettings(
-            root_path=effective_root,
-            exclude_dirs=_normalize_exclusions(data),
-            include_docstrings=include_flag,
-            ollama_insights_enabled=insights_flag,
-            ollama_insights_model=model_value,
-            ollama_insights_frequency_minutes=freq_value,
-            ollama_insights_focus=focus_value,
-            backend_url=backend_url_value,
+            root_path=Path(db_settings.root_path),
+            exclude_dirs=_normalize_exclusions(exclude_dirs),
+            include_docstrings=db_settings.include_docstrings,
+            ollama_insights_enabled=db_settings.ollama_insights_enabled,
+            ollama_insights_model=db_settings.ollama_insights_model,
+            ollama_insights_frequency_minutes=db_settings.ollama_insights_frequency_minutes,
+            ollama_insights_focus=db_settings.ollama_insights_focus or "general",
+            backend_url=db_settings.backend_url,
         )
 
 
 def _save_settings_to_db(db_path: Path, settings: AppSettings) -> None:
-    """Persiste la configuración actual en SQLite."""
-    db_path.parent.mkdir(parents=True, exist_ok=True)
-    with open_database(env={ENV_DB_PATH: str(db_path)}) as connection:
-        cursor = connection.execute("PRAGMA table_info(app_settings)")
-        columns = {row["name"] for row in cursor.fetchall()}
+    """Persiste la configuración actual en SQLite usando SQLModel."""
+    engine = get_engine(db_path)
+    init_db(engine)
 
-        def ensure_column(name: str, ddl: str) -> bool:
-            if name in columns:
-                return True
-            try:
-                connection.execute(ddl)
-                connection.commit()
-                columns.add(name)
-                return True
-            except sqlite3.OperationalError:
-                return False
+    with Session(engine) as session:
+        db_settings = session.get(AppSettingsDB, 1)
+        if not db_settings:
+            db_settings = AppSettingsDB(id=1)
+            session.add(db_settings)
 
-        has_insights_column = ensure_column(
-            "ollama_insights_enabled",
-            "ALTER TABLE app_settings ADD COLUMN ollama_insights_enabled INTEGER NOT NULL DEFAULT 0",
+        db_settings.root_path = str(settings.root_path)
+        db_settings.exclude_dirs = list(settings.exclude_dirs)
+        db_settings.include_docstrings = settings.include_docstrings
+        db_settings.ollama_insights_enabled = settings.ollama_insights_enabled
+        db_settings.ollama_insights_model = settings.ollama_insights_model
+        db_settings.ollama_insights_frequency_minutes = (
+            settings.ollama_insights_frequency_minutes
         )
-        has_model_column = ensure_column(
-            "ollama_insights_model",
-            "ALTER TABLE app_settings ADD COLUMN ollama_insights_model TEXT",
-        )
-        has_frequency_column = ensure_column(
-            "ollama_insights_frequency_minutes",
-            "ALTER TABLE app_settings ADD COLUMN ollama_insights_frequency_minutes INTEGER",
-        )
-        has_focus_column = ensure_column(
-            "ollama_insights_focus",
-            "ALTER TABLE app_settings ADD COLUMN ollama_insights_focus TEXT",
-        )
-        has_backend_url_column = ensure_column(
-            "backend_url",
-            "ALTER TABLE app_settings ADD COLUMN backend_url TEXT",
-        )
-        can_persist_insights = (
-            has_insights_column
-            and has_model_column
-            and has_frequency_column
-            and has_focus_column
-        )
-        can_persist_backend_url = has_backend_url_column
+        db_settings.ollama_insights_focus = settings.ollama_insights_focus
+        db_settings.backend_url = settings.backend_url
 
-        if can_persist_insights and can_persist_backend_url:
-            connection.execute(
-                """
-                INSERT INTO app_settings (
-                    id,
-                    root_path,
-                    exclude_dirs,
-                    include_docstrings,
-                    ollama_insights_enabled,
-                    ollama_insights_model,
-                    ollama_insights_frequency_minutes,
-                    ollama_insights_focus,
-                    backend_url,
-                    updated_at
-                )
-                VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now'))
-                ON CONFLICT(id) DO UPDATE SET
-                    root_path = excluded.root_path,
-                    exclude_dirs = excluded.exclude_dirs,
-                    include_docstrings = excluded.include_docstrings,
-                    ollama_insights_enabled = excluded.ollama_insights_enabled,
-                    ollama_insights_model = excluded.ollama_insights_model,
-                    ollama_insights_frequency_minutes = excluded.ollama_insights_frequency_minutes,
-                    ollama_insights_focus = excluded.ollama_insights_focus,
-                    backend_url = excluded.backend_url,
-                    updated_at = excluded.updated_at
-                """,
-                (
-                    str(settings.root_path),
-                    json.dumps(list(settings.exclude_dirs)),
-                    1 if settings.include_docstrings else 0,
-                    1 if settings.ollama_insights_enabled else 0,
-                    settings.ollama_insights_model,
-                    settings.ollama_insights_frequency_minutes,
-                    settings.ollama_insights_focus,
-                    settings.backend_url,
-                ),
-            )
-        elif can_persist_insights:
-            connection.execute(
-                """
-                INSERT INTO app_settings (
-                    id,
-                    root_path,
-                    exclude_dirs,
-                    include_docstrings,
-                    ollama_insights_enabled,
-                    ollama_insights_model,
-                    ollama_insights_frequency_minutes,
-                    ollama_insights_focus,
-                    updated_at
-                )
-                VALUES (1, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now'))
-                ON CONFLICT(id) DO UPDATE SET
-                    root_path = excluded.root_path,
-                    exclude_dirs = excluded.exclude_dirs,
-                    include_docstrings = excluded.include_docstrings,
-                    ollama_insights_enabled = excluded.ollama_insights_enabled,
-                    ollama_insights_model = excluded.ollama_insights_model,
-                    ollama_insights_frequency_minutes = excluded.ollama_insights_frequency_minutes,
-                    ollama_insights_focus = excluded.ollama_insights_focus,
-                    updated_at = excluded.updated_at
-                """,
-                (
-                    str(settings.root_path),
-                    json.dumps(list(settings.exclude_dirs)),
-                    1 if settings.include_docstrings else 0,
-                    1 if settings.ollama_insights_enabled else 0,
-                    settings.ollama_insights_model,
-                    settings.ollama_insights_frequency_minutes,
-                    settings.ollama_insights_focus,
-                ),
-            )
-        else:
-            connection.execute(
-                """
-                INSERT INTO app_settings (id, root_path, exclude_dirs, include_docstrings, updated_at)
-                VALUES (1, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now'))
-                ON CONFLICT(id) DO UPDATE SET
-                    root_path = excluded.root_path,
-                    exclude_dirs = excluded.exclude_dirs,
-                    include_docstrings = excluded.include_docstrings,
-                    updated_at = excluded.updated_at
-                """,
-                (
-                    str(settings.root_path),
-                    json.dumps(list(settings.exclude_dirs)),
-                    1 if settings.include_docstrings else 0,
-                ),
-            )
-        connection.commit()
+        session.commit()
 
 
 def load_settings(
@@ -551,7 +231,7 @@ def load_settings(
     include_flag = _parse_env_flag(effective_env.get(ENV_INCLUDE_DOCSTRINGS))
     default_include = include_flag if include_flag is not None else True
 
-    db_path = database_path(effective_env)
+    db_path = get_db_path()
     settings = _load_settings_from_db(
         db_path,
         base_root,
@@ -589,7 +269,7 @@ def save_settings(
     settings: AppSettings, *, env: Optional[Mapping[str, str]] = None
 ) -> None:
     """Guarda la configuración en el disco."""
-    db_path = database_path(env)
+    db_path = get_db_path()
     try:
         _save_settings_to_db(db_path, settings)
     except sqlite3.OperationalError as exc:

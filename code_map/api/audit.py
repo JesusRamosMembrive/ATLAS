@@ -10,18 +10,19 @@ import json
 from pathlib import Path
 from typing import AsyncGenerator
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
 
+from ..exceptions import RunNotFoundError, EventNotFoundError, InternalError
 from ..audit import (
     AuditEvent,
     AuditRun,
-    append_event,
-    close_run,
-    create_run,
-    get_run,
-    list_events,
-    list_runs,
+    append_event_async,
+    close_run_async,
+    create_run_async,
+    get_run_async,
+    list_events_async,
+    list_runs_async,
 )
 from ..state import AppState
 from .deps import get_app_state
@@ -73,10 +74,7 @@ def _validate_run_root(run: AuditRun, state: AppState) -> None:
     current_root = Path(state.settings.root_path).expanduser().resolve()
     run_root = Path(run.root_path).expanduser().resolve()
     if current_root != run_root:
-        raise HTTPException(
-            status_code=404,
-            detail="Run not found for this workspace",
-        )
+        raise RunNotFoundError(run_id=run.id)
 
 
 @router.get("/runs", response_model=AuditRunListResponse)
@@ -85,7 +83,7 @@ async def list_audit_runs(
     limit: int = Query(20, ge=1, le=200, description="Maximum runs to fetch"),
 ) -> AuditRunListResponse:
     """List recent audit runs for the current workspace."""
-    runs = list_runs(limit=limit, root_path=state.settings.root_path)
+    runs = await list_runs_async(limit=limit, root_path=state.settings.root_path)
     return AuditRunListResponse(runs=[_serialize_run(run) for run in runs])
 
 
@@ -96,7 +94,7 @@ async def create_audit_run(
 ) -> AuditRunSchema:
     """Create a new auditable session."""
     root_path = payload.root_path or state.settings.root_path
-    run = create_run(
+    run = await create_run_async(
         name=payload.name,
         root_path=root_path,
         notes=payload.notes,
@@ -110,9 +108,9 @@ async def get_audit_run(
     state: AppState = Depends(get_app_state),
 ) -> AuditRunSchema:
     """Retrieve a single run."""
-    run = get_run(run_id)
+    run = await get_run_async(run_id)
     if run is None:
-        raise HTTPException(status_code=404, detail="Run not found")
+        raise RunNotFoundError(run_id=run_id)
     _validate_run_root(run, state)
     return _serialize_run(run)
 
@@ -124,9 +122,11 @@ async def close_audit_run(
     state: AppState = Depends(get_app_state),
 ) -> AuditRunSchema:
     """Mark a run as closed."""
-    run = close_run(run_id, status=payload.status or "closed", notes=payload.notes)
+    run = await close_run_async(
+        run_id, status=payload.status or "closed", notes=payload.notes
+    )
     if run is None:
-        raise HTTPException(status_code=404, detail="Run not found")
+        raise RunNotFoundError(run_id=run_id)
     _validate_run_root(run, state)
     return _serialize_run(run)
 
@@ -146,11 +146,11 @@ async def list_audit_events(
     ),
 ) -> AuditEventListResponse:
     """List events for a run in chronological order."""
-    run = get_run(run_id)
+    run = await get_run_async(run_id)
     if run is None:
-        raise HTTPException(status_code=404, detail="Run not found")
+        raise RunNotFoundError(run_id=run_id)
     _validate_run_root(run, state)
-    events = list_events(run_id, limit=limit, after_id=after_id)
+    events = await list_events_async(run_id, limit=limit, after_id=after_id)
     return AuditEventListResponse(events=[_serialize_event(event) for event in events])
 
 
@@ -164,13 +164,13 @@ async def append_audit_event(
     state: AppState = Depends(get_app_state),
 ) -> AuditEventSchema:
     """Append a new event to a run."""
-    run = get_run(run_id)
+    run = await get_run_async(run_id)
     if run is None:
-        raise HTTPException(status_code=404, detail="Run not found")
+        raise RunNotFoundError(run_id=run_id)
     _validate_run_root(run, state)
 
     try:
-        event = append_event(
+        event = await append_event_async(
             run_id,
             type=payload.type,
             title=payload.title,
@@ -182,9 +182,9 @@ async def append_audit_event(
             payload=payload.payload,
         )
     except LookupError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+        raise EventNotFoundError(str(exc)) from exc
     except Exception as exc:  # pragma: no cover - defensive
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise InternalError() from exc
     return _serialize_event(event)
 
 
@@ -200,9 +200,9 @@ async def stream_audit_events(
     Sends a heartbeat ping every 10 seconds to keep the connection alive.
     """
     # Validate run exists and belongs to current workspace
-    run = get_run(run_id)
+    run = await get_run_async(run_id)
     if run is None:
-        raise HTTPException(status_code=404, detail="Run not found")
+        raise RunNotFoundError(run_id=run_id)
     _validate_run_root(run, state)
 
     async def event_generator() -> AsyncGenerator[str, None]:
@@ -213,7 +213,9 @@ async def stream_audit_events(
         try:
             while True:
                 # Fetch new events since last_event_id
-                events = list_events(run_id, limit=100, after_id=last_event_id)
+                events = await list_events_async(
+                    run_id, limit=100, after_id=last_event_id
+                )
 
                 # Send new events
                 for event in events:

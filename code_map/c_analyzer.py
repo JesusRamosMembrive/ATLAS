@@ -31,11 +31,11 @@ class _CParser:
         )
         if parser_cls is None or get_language is None:
             raise RuntimeError("tree_sitter_languages no disponible")
-            
+
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=FutureWarning)
             language = get_language(name)
-            
+
         parser = parser_cls()
         parser.set_language(language)
         return cls(parser=parser)
@@ -102,7 +102,6 @@ class CAnalyzer:
             errors=[],
             modified_at=get_modified_time(abs_path),
         )
-
 
     def _calculate_complexity(self, node: Any) -> int:
         """Calcula la complejidad ciclomática de un nodo (función)."""

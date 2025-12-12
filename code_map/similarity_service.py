@@ -137,8 +137,8 @@ DEFAULT_EXCLUDE_PATTERNS = [
     "**/dist/**",
     # Build directories
     "**/build/**",
-    "**/cmake-build-*/**",    # CLion build directories
-    "**/_deps/**",            # CMake FetchContent dependencies
+    "**/cmake-build-*/**",  # CLion build directories
+    "**/_deps/**",  # CMake FetchContent dependencies
     "**/vcpkg_installed/**",  # vcpkg dependencies
     # Third-party code
     "**/third_party/**",
@@ -215,7 +215,9 @@ def analyze_similarity(
         cmd.extend(["--ext", ".py"])
 
     # Add exclude patterns
-    patterns = exclude_patterns if exclude_patterns is not None else DEFAULT_EXCLUDE_PATTERNS
+    patterns = (
+        exclude_patterns if exclude_patterns is not None else DEFAULT_EXCLUDE_PATTERNS
+    )
     for pattern in patterns:
         cmd.extend(["--exclude", pattern])
 
@@ -235,6 +237,8 @@ def analyze_similarity(
             cmd,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             timeout=timeout,
         )
     except subprocess.TimeoutExpired:
@@ -246,7 +250,9 @@ def analyze_similarity(
     try:
         data = json.loads(result.stdout)
     except json.JSONDecodeError as e:
-        raise SimilarityServiceError(f"Invalid JSON output: {e}\nOutput: {result.stdout[:500]}")
+        raise SimilarityServiceError(
+            f"Invalid JSON output: {e}\nOutput: {result.stdout[:500]}"
+        )
 
     return _parse_report(data)
 
