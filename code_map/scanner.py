@@ -124,6 +124,9 @@ class ProjectScanner:
         """
         Ejecuta un escaneo, actualiza el índice y opcionalmente persiste un snapshot.
 
+        Además de añadir/actualizar archivos, elimina del índice aquellos
+        que ya no existen en el filesystem (limpieza de archivos borrados).
+
         Args:
             index: El índice de símbolos a actualizar.
             persist: Si es True, se guardará un snapshot del índice.
@@ -134,6 +137,14 @@ class ProjectScanner:
         """
 
         summaries = self.scan()
+        scanned_paths: Set[Path] = {s.path for s in summaries}
+
+        # Eliminar del índice los archivos que ya no existen en el filesystem
+        existing_paths = list(index._files.keys())
+        for path in existing_paths:
+            if path not in scanned_paths:
+                index.remove(path)
+
         index.update(summaries)
         if persist:
             snapshot_store = store or self._default_store()

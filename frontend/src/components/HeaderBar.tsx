@@ -31,6 +31,7 @@ export function HeaderBar({
     { to: "/docs", label: "Docs" },
     { to: "/class-uml", label: "UML" },
     { to: "/linters", label: "Linters" },
+    { to: "/similarity", label: "Similarity" },
     { to: "/terminal", label: "Terminal" },
     { to: "/agent", label: "Agent" },
     { to: "/timeline", label: "Timeline" },

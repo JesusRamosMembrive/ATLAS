@@ -17,7 +17,13 @@ from .cache import SnapshotStore
 from .index import SymbolIndex
 from .scanner import ProjectScanner
 from .scheduler import ChangeScheduler
-from .settings import AppSettings, save_settings, ENV_DISABLE_LINTERS, ENV_CACHE_DIR, should_skip_initial_scan
+from .settings import (
+    AppSettings,
+    save_settings,
+    ENV_DISABLE_LINTERS,
+    ENV_CACHE_DIR,
+    should_skip_initial_scan,
+)
 from .linters import (
     LinterRunOptions,
     get_latest_linters_report,

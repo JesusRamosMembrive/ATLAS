@@ -196,7 +196,9 @@ class TestRunOllamaInsights:
         mock_chat.assert_called_once()
 
     @patch("code_map.insights.ollama_service.chat_with_ollama")
-    def test_run_insights_with_context(self, mock_chat: MagicMock, tmp_path: Path) -> None:
+    def test_run_insights_with_context(
+        self, mock_chat: MagicMock, tmp_path: Path
+    ) -> None:
         """Test insights generation with context."""
         mock_response = OllamaChatResponse(
             model="codellama",
@@ -217,13 +219,17 @@ class TestRunOllamaInsights:
 
         # Verify context was included in the prompt
         call_args = mock_chat.call_args
-        messages = call_args.kwargs.get("messages", call_args.args[1] if len(call_args.args) > 1 else [])
+        messages = call_args.kwargs.get(
+            "messages", call_args.args[1] if len(call_args.args) > 1 else []
+        )
         user_message = next((m for m in messages if m.role == "user"), None)
         assert user_message is not None
         assert "Recent changes" in user_message.content
 
     @patch("code_map.insights.ollama_service.chat_with_ollama")
-    def test_run_insights_with_focus(self, mock_chat: MagicMock, tmp_path: Path) -> None:
+    def test_run_insights_with_focus(
+        self, mock_chat: MagicMock, tmp_path: Path
+    ) -> None:
         """Test insights generation with specific focus."""
         mock_response = OllamaChatResponse(
             model="codellama",
@@ -244,14 +250,21 @@ class TestRunOllamaInsights:
 
         # Verify focus was used in prompt
         call_args = mock_chat.call_args
-        messages = call_args.kwargs.get("messages", call_args.args[1] if len(call_args.args) > 1 else [])
+        messages = call_args.kwargs.get(
+            "messages", call_args.args[1] if len(call_args.args) > 1 else []
+        )
         user_message = next((m for m in messages if m.role == "user"), None)
         assert user_message is not None
         # Testing focus should include test-related keywords
-        assert "test" in user_message.content.lower() or "prueba" in user_message.content.lower()
+        assert (
+            "test" in user_message.content.lower()
+            or "prueba" in user_message.content.lower()
+        )
 
     @patch("code_map.insights.ollama_service.chat_with_ollama")
-    def test_run_insights_with_custom_endpoint(self, mock_chat: MagicMock, tmp_path: Path) -> None:
+    def test_run_insights_with_custom_endpoint(
+        self, mock_chat: MagicMock, tmp_path: Path
+    ) -> None:
         """Test insights generation with custom endpoint."""
         mock_response = OllamaChatResponse(
             model="codellama",
@@ -274,7 +287,9 @@ class TestRunOllamaInsights:
         assert call_kwargs.get("endpoint") == "http://custom:11434"
 
     @patch("code_map.insights.ollama_service.chat_with_ollama")
-    def test_run_insights_with_custom_timeout(self, mock_chat: MagicMock, tmp_path: Path) -> None:
+    def test_run_insights_with_custom_timeout(
+        self, mock_chat: MagicMock, tmp_path: Path
+    ) -> None:
         """Test insights generation with custom timeout."""
         mock_response = OllamaChatResponse(
             model="codellama",
@@ -296,7 +311,9 @@ class TestRunOllamaInsights:
         assert call_kwargs.get("timeout") == 60.0
 
     @patch("code_map.insights.ollama_service.chat_with_ollama")
-    def test_run_insights_error_handling(self, mock_chat: MagicMock, tmp_path: Path) -> None:
+    def test_run_insights_error_handling(
+        self, mock_chat: MagicMock, tmp_path: Path
+    ) -> None:
         """Test insights generation error handling."""
         mock_chat.side_effect = OllamaChatError(
             message="Connection refused",
@@ -313,7 +330,9 @@ class TestRunOllamaInsights:
         assert "Connection refused" in str(exc_info.value)
 
     @patch("code_map.insights.ollama_service.chat_with_ollama")
-    def test_run_insights_includes_system_prompt(self, mock_chat: MagicMock, tmp_path: Path) -> None:
+    def test_run_insights_includes_system_prompt(
+        self, mock_chat: MagicMock, tmp_path: Path
+    ) -> None:
         """Test that system prompt is included in messages."""
         mock_response = OllamaChatResponse(
             model="codellama",
@@ -330,7 +349,9 @@ class TestRunOllamaInsights:
         )
 
         call_args = mock_chat.call_args
-        messages = call_args.kwargs.get("messages", call_args.args[1] if len(call_args.args) > 1 else [])
+        messages = call_args.kwargs.get(
+            "messages", call_args.args[1] if len(call_args.args) > 1 else []
+        )
 
         # Should have system and user messages
         assert len(messages) == 2
@@ -349,7 +370,14 @@ class TestInsightsFocusPrompts:
 
     def test_all_prompts_are_spanish(self) -> None:
         """Test that prompts are in Spanish (contain Spanish words)."""
-        spanish_indicators = ["analiza", "repositorio", "propón", "sugiere", "revisa", "evalúa"]
+        spanish_indicators = [
+            "analiza",
+            "repositorio",
+            "propón",
+            "sugiere",
+            "revisa",
+            "evalúa",
+        ]
         for focus, prompt in INSIGHTS_FOCUS_PROMPTS.items():
             has_spanish = any(word in prompt.lower() for word in spanish_indicators)
             assert has_spanish, f"Focus '{focus}' doesn't appear to be in Spanish"

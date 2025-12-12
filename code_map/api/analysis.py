@@ -11,11 +11,12 @@ from pathlib import Path
 from typing import AsyncIterator, Dict, Iterable, List, Optional
 
 import logging
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
 
 from ..state import AppState
 from ..git_history import GitHistory, GitHistoryError
+from ..exceptions import FileNotFoundError, InvalidPathError, GitError, ValidationError
 from ..models import ProjectTreeNode, FileSummary
 from .deps import get_app_state
 from .schemas import (
@@ -176,10 +177,10 @@ async def get_file(
     try:
         target_path = state.resolve_path(file_path)
     except ValueError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+        raise InvalidPathError(path=file_path, reason=str(exc)) from exc
 
     if not target_path.exists():
-        raise HTTPException(status_code=404, detail="Archivo no encontrado.")
+        raise FileNotFoundError(path=file_path)
 
     summary = state.index.get_file(target_path)
     if summary is None:
@@ -202,13 +203,12 @@ async def get_working_tree_diff(
     try:
         target_path = state.resolve_path(file_path)
     except ValueError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+        raise InvalidPathError(path=file_path, reason=str(exc)) from exc
 
     git_history = _get_git_history(state)
     if git_history is None:
-        raise HTTPException(
-            status_code=400,
-            detail="Proyecto fuera de un repositorio git. Inicializa git para rastrear cambios.",
+        raise ValidationError(
+            "Proyecto fuera de un repositorio git. Inicializa git para rastrear cambios."
         )
 
     relative_path = state.to_relative(target_path)
@@ -217,7 +217,7 @@ async def get_working_tree_diff(
         diff = git_history.get_working_tree_diff(relative_path)
         change_payload = _change_payload_for_path(git_history, relative_path)
     except GitHistoryError as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise GitError(str(exc)) from exc
 
     return FileDiffResponse(
         path=relative_path,

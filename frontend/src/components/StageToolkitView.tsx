@@ -191,6 +191,97 @@ function DocsStatusCard({ status }: { status: DocsStatus | undefined }): JSX.Ele
   );
 }
 
+/**
+ * Format a metric value for display.
+ * Handles primitives, arrays, and objects intelligently.
+ */
+function formatMetricValue(value: unknown): JSX.Element | string {
+  // Null/undefined
+  if (value === null || value === undefined) {
+    return <em>—</em>;
+  }
+
+  // Primitives (string, number, boolean)
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+
+  // Arrays
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return <em>—</em>;
+    }
+
+    // Array of primitives
+    if (value.every((item) => typeof item === "string" || typeof item === "number")) {
+      return value.join(", ");
+    }
+
+    // Array of objects - show count and expandable details
+    return (
+      <details className="stage-metric-details">
+        <summary>{value.length} items</summary>
+        <ul className="stage-metric-list">
+          {value.slice(0, 10).map((item, idx) => (
+            <li key={idx}>
+              {typeof item === "object" && item !== null
+                ? formatObjectCompact(item as Record<string, unknown>)
+                : String(item)}
+            </li>
+          ))}
+          {value.length > 10 && <li className="stage-metric-more">... and {value.length - 10} more</li>}
+        </ul>
+      </details>
+    );
+  }
+
+  // Objects
+  if (typeof value === "object") {
+    return formatObjectCompact(value as Record<string, unknown>);
+  }
+
+  return String(value);
+}
+
+/**
+ * Format an object compactly for inline display.
+ */
+function formatObjectCompact(obj: Record<string, unknown>): string {
+  const entries = Object.entries(obj);
+  if (entries.length === 0) {
+    return "{}";
+  }
+
+  // For small objects, show key=value pairs
+  if (entries.length <= 3) {
+    return entries
+      .map(([k, v]) => {
+        const displayValue = typeof v === "object" ? "..." : String(v);
+        return `${k}: ${displayValue}`;
+      })
+      .join(", ");
+  }
+
+  // For larger objects, show just keys
+  return `{${entries.map(([k]) => k).join(", ")}}`;
+}
+
+/**
+ * Metrics that should be hidden from the UI (too verbose or internal)
+ */
+const HIDDEN_METRICS = new Set([
+  "problematic_functions",
+  "top_complex_functions",
+]);
+
+/**
+ * Metrics that should show as expandable details
+ */
+const EXPANDABLE_METRICS = new Set([
+  "complexity",
+  "complexity_distribution",
+]);
+
 function StageDetectionCard({ detection }: { detection: StageDetectionStatus | undefined }) {
   if (!detection) {
     return null;
@@ -209,6 +300,11 @@ function StageDetectionCard({ detection }: { detection: StageDetectionStatus | u
     );
   }
 
+  // Filter and sort metrics for display
+  const displayMetrics = metrics
+    ? Object.entries(metrics).filter(([key]) => !HIDDEN_METRICS.has(key))
+    : [];
+
   return (
     <article className="stage-card stage-detection">
       <header>
@@ -224,14 +320,14 @@ function StageDetectionCard({ detection }: { detection: StageDetectionStatus | u
         <h4>Key reasons</h4>
         {formatList(reasons)}
       </section>
-      {metrics ? (
+      {displayMetrics.length > 0 ? (
         <section>
           <h4>Metrics</h4>
           <dl className="stage-metrics">
-            {Object.entries(metrics).map(([key, value]) => (
+            {displayMetrics.map(([key, value]) => (
               <div key={key}>
-                <dt>{key}</dt>
-                <dd>{Array.isArray(value) ? value.join(", ") : String(value)}</dd>
+                <dt>{key.replace(/_/g, " ")}</dt>
+                <dd>{formatMetricValue(value)}</dd>
               </div>
             ))}
           </dl>

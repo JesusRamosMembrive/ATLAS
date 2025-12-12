@@ -1,4 +1,5 @@
 """Tests for audit hooks system (code_map/audit/hooks.py)."""
+
 from __future__ import annotations
 
 import os
@@ -34,9 +35,7 @@ def test_run(temp_root: Path) -> AuditRun:
     os.environ["CODE_MAP_DB_PATH"] = str(db_path)
 
     run = create_run(
-        name="Test Audit Run",
-        root_path=str(temp_root),
-        notes="Test audit hooks"
+        name="Test Audit Run", root_path=str(temp_root), notes="Test audit hooks"
     )
     yield run
 
@@ -55,7 +54,7 @@ class TestAuditContext:
             title="Test Operation",
             event_type="test",
             phase="plan",
-            actor="agent"
+            actor="agent",
         ):
             # Simulate some work
             time.sleep(0.1)
@@ -124,7 +123,7 @@ class TestAuditContext:
             run_id=test_run.id,
             title="Operation with Payload",
             event_type="test",
-            payload=payload
+            payload=payload,
         ):
             pass
 
@@ -203,10 +202,7 @@ class TestAuditRunCommand:
     def test_successful_command(self, test_run: AuditRun):
         """Test successful command execution."""
         result = audit_run_command(
-            ["echo", "test output"],
-            run_id=test_run.id,
-            phase="apply",
-            actor="system"
+            ["echo", "test output"], run_id=test_run.id, phase="apply", actor="system"
         )
 
         assert result.returncode == 0
@@ -239,9 +235,7 @@ class TestAuditRunCommand:
     def test_failing_command(self, test_run: AuditRun):
         """Test failing command execution."""
         result = audit_run_command(
-            ["false"],  # Command that always fails
-            run_id=test_run.id,
-            phase="validate"
+            ["false"], run_id=test_run.id, phase="validate"  # Command that always fails
         )
 
         assert result.returncode != 0
@@ -256,11 +250,7 @@ class TestAuditRunCommand:
     def test_command_with_timeout(self, test_run: AuditRun):
         """Test command with timeout."""
         with pytest.raises(subprocess.TimeoutExpired):
-            audit_run_command(
-                ["sleep", "10"],
-                run_id=test_run.id,
-                timeout=0.1
-            )
+            audit_run_command(["sleep", "10"], run_id=test_run.id, timeout=0.1)
 
         # Verify timeout event was created
         events = list_events(test_run.id, limit=10)
@@ -268,7 +258,10 @@ class TestAuditRunCommand:
         assert result_event.status == "error"
         # Check for timeout in detail (case insensitive)
         assert result_event.detail is not None
-        assert "timeout" in result_event.detail.lower() or "timed out" in result_event.detail.lower()
+        assert (
+            "timeout" in result_event.detail.lower()
+            or "timed out" in result_event.detail.lower()
+        )
 
     def test_command_with_cwd(self, test_run: AuditRun, temp_root: Path):
         """Test command with custom working directory."""
@@ -276,9 +269,7 @@ class TestAuditRunCommand:
         test_file.write_text("test content")
 
         result = audit_run_command(
-            ["ls", "test.txt"],
-            run_id=test_run.id,
-            cwd=temp_root
+            ["ls", "test.txt"], run_id=test_run.id, cwd=temp_root
         )
 
         assert result.returncode == 0
@@ -289,10 +280,7 @@ class TestAuditRunCommand:
         # Generate large output (>2000 chars)
         large_text = "x" * 3000
 
-        audit_run_command(
-            ["echo", large_text],
-            run_id=test_run.id
-        )
+        audit_run_command(["echo", large_text], run_id=test_run.id)
 
         events = list_events(test_run.id, limit=10)
         result_event = events[-1]
@@ -390,25 +378,19 @@ class TestIntegrationScenarios:
 
         with audit_phase(run_id=test_run.id, phase_name="plan"):
             with AuditContext(
-                run_id=test_run.id,
-                title="Analyze requirements",
-                event_type="analysis"
+                run_id=test_run.id, title="Analyze requirements", event_type="analysis"
             ):
                 time.sleep(0.05)
 
         with audit_phase(run_id=test_run.id, phase_name="apply"):
             result = audit_run_command(
-                ["echo", "implementation"],
-                run_id=test_run.id,
-                phase="apply"
+                ["echo", "implementation"], run_id=test_run.id, phase="apply"
             )
             assert result.returncode == 0
 
         with audit_phase(run_id=test_run.id, phase_name="validate"):
             result = audit_run_command(
-                ["echo", "tests"],
-                run_id=test_run.id,
-                phase="validate"
+                ["echo", "tests"], run_id=test_run.id, phase="validate"
             )
             assert result.returncode == 0
 
@@ -428,17 +410,13 @@ class TestIntegrationScenarios:
         # First operation fails
         with pytest.raises(RuntimeError):
             with AuditContext(
-                run_id=test_run.id,
-                title="Failing operation",
-                event_type="test"
+                run_id=test_run.id, title="Failing operation", event_type="test"
             ):
                 raise RuntimeError("Intentional error")
 
         # Second operation succeeds
         with AuditContext(
-            run_id=test_run.id,
-            title="Recovery operation",
-            event_type="test"
+            run_id=test_run.id, title="Recovery operation", event_type="test"
         ):
             pass
 
@@ -451,5 +429,7 @@ class TestIntegrationScenarios:
         assert len(error_events) >= 1
 
         # Check recovery was recorded
-        success_events = [e for e in events if e.status == "ok" and "Recovery" in e.title]
+        success_events = [
+            e for e in events if e.status == "ok" and "Recovery" in e.title
+        ]
         assert len(success_events) >= 1

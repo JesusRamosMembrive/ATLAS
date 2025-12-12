@@ -9,7 +9,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional
 
-from ..settings import open_database
+from sqlmodel import Session, select, desc, or_
+from sqlalchemy import select as sa_select
+
+from ..database import get_engine, init_db
+from ..database_async import get_async_session, init_async_db
+from ..models import LinterReportDB, NotificationDB
 from .report_schema import (
     CheckStatus,
     LintersReport,
@@ -23,6 +28,16 @@ def _normalize_root(root: Optional[str | Path]) -> Optional[str]:
     if root is None:
         return None
     return str(Path(root).expanduser().resolve())
+
+
+def _normalize_path_map(env: Optional[Mapping[str, str]]) -> Optional[Path]:
+    """Convert env mapping to database path if ENV_DB_PATH is present."""
+    if not env:
+        return None
+    from ..database import ENV_DB_PATH
+
+    p = env.get(ENV_DB_PATH)
+    return Path(p) if p else None
 
 
 def _parse_datetime(value: str) -> datetime:
@@ -101,35 +116,33 @@ def record_linters_report(
     issues_total = _coerce_int(summary.get("issues_total", 0), default=0)
     critical_issues = _coerce_int(summary.get("critical_issues", 0), default=0)
 
-    with open_database(env) as connection:
-        cursor = connection.execute(
-            """
-            INSERT INTO linter_reports (generated_at, root_path, overall_status, issues_total, critical_issues, payload)
-            VALUES (?, ?, ?, ?, ?, ?)
-            """,
-            (
-                payload.get("generated_at"),
-                _normalize_root(payload.get("root_path")) or "",
-                overall_status,
-                issues_total,
-                critical_issues,
-                json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
-            ),
+    engine = get_engine(_normalize_path_map(env))
+    init_db(engine)
+
+    with Session(engine) as session:
+        db_report = LinterReportDB(
+            generated_at=datetime.now(timezone.utc),
+            root_path=_normalize_root(payload.get("root_path")) or "",
+            overall_status=overall_status,
+            issues_total=issues_total,
+            critical_issues=critical_issues,
+            payload=json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
         )
-        connection.commit()
-        last_id = cursor.lastrowid
-        return int(last_id) if last_id is not None else 0
+        session.add(db_report)
+        session.commit()
+        session.refresh(db_report)
+        return db_report.id or 0
 
 
-def _row_to_report(row: Mapping[str, Any]) -> StoredLintersReport:
-    payload = json.loads(row["payload"])
+def _db_to_report(db_item: LinterReportDB) -> StoredLintersReport:
+    payload = json.loads(db_item.payload)
     return StoredLintersReport(
-        id=int(row["id"]),
-        generated_at=_parse_datetime(row["generated_at"]),
-        root_path=row["root_path"],
-        overall_status=_safe_check_status(row["overall_status"]),
-        issues_total=_coerce_int(row["issues_total"]),
-        critical_issues=_coerce_int(row["critical_issues"]),
+        id=db_item.id or 0,
+        generated_at=db_item.generated_at,
+        root_path=db_item.root_path,
+        overall_status=_safe_check_status(db_item.overall_status),
+        issues_total=_coerce_int(db_item.issues_total),
+        critical_issues=_coerce_int(db_item.critical_issues),
         report=report_from_dict(payload),
     )
 
@@ -138,18 +151,12 @@ def get_linters_report(
     report_id: int, *, env: Optional[Mapping[str, str]] = None
 ) -> Optional[StoredLintersReport]:
     """Obtiene un reporte por ID."""
-    with open_database(env) as connection:
-        row = connection.execute(
-            """
-            SELECT id, generated_at, root_path, overall_status, issues_total, critical_issues, payload
-            FROM linter_reports
-            WHERE id = ?
-            """,
-            (report_id,),
-        ).fetchone()
-    if row is None:
-        return None
-    return _row_to_report(row)
+    engine = get_engine(_normalize_path_map(env))
+    with Session(engine) as session:
+        item = session.get(LinterReportDB, report_id)
+        if not item:
+            return None
+        return _db_to_report(item)
 
 
 def get_latest_linters_report(
@@ -158,31 +165,21 @@ def get_latest_linters_report(
     root_path: Optional[str | Path] = None,
 ) -> Optional[StoredLintersReport]:
     """Obtiene el reporte más reciente, opcionalmente filtrado por root."""
+    engine = get_engine(_normalize_path_map(env))
     normalized_root = _normalize_root(root_path)
-    with open_database(env) as connection:
+
+    with Session(engine) as session:
+        statement = (
+            select(LinterReportDB).order_by(desc(LinterReportDB.generated_at)).limit(1)
+        )
         if normalized_root:
-            row = connection.execute(
-                """
-                SELECT id, generated_at, root_path, overall_status, issues_total, critical_issues, payload
-                FROM linter_reports
-                WHERE root_path = ?
-                ORDER BY generated_at DESC
-                LIMIT 1
-                """,
-                (normalized_root,),
-            ).fetchone()
-        else:
-            row = connection.execute(
-                """
-                SELECT id, generated_at, root_path, overall_status, issues_total, critical_issues, payload
-                FROM linter_reports
-                ORDER BY generated_at DESC
-                LIMIT 1
-                """
-            ).fetchone()
-    if row is None:
-        return None
-    return _row_to_report(row)
+            statement = statement.where(LinterReportDB.root_path == normalized_root)
+
+        result = session.exec(statement).first()
+
+        if not result:
+            return None
+        return _db_to_report(result)
 
 
 def list_linters_reports(
@@ -194,21 +191,21 @@ def list_linters_reports(
 ) -> List[StoredLintersReport]:
     """Lista reportes ordenados por fecha de creación descendente."""
     normalized_root = _normalize_root(root_path)
-    params: List[Any] = []
-    query = (
-        "SELECT id, generated_at, root_path, overall_status, issues_total, critical_issues, payload "
-        "FROM linter_reports"
-    )
-    if normalized_root:
-        query += " WHERE root_path = ?"
-        params.append(normalized_root)
-    query += " ORDER BY generated_at DESC LIMIT ? OFFSET ?"
-    params.extend([limit, offset])
+    engine = get_engine(_normalize_path_map(env))
 
-    with open_database(env) as connection:
-        rows = connection.execute(query, params).fetchall()
+    with Session(engine) as session:
+        statement = select(LinterReportDB)
+        if normalized_root:
+            statement = statement.where(LinterReportDB.root_path == normalized_root)
 
-    return [_row_to_report(row) for row in rows]
+        statement = (
+            statement.order_by(desc(LinterReportDB.generated_at))
+            .offset(offset)
+            .limit(limit)
+        )
+        results = session.exec(statement).all()
+
+        return [_db_to_report(item) for item in results]
 
 
 def record_notification(
@@ -222,7 +219,6 @@ def record_notification(
     env: Optional[Mapping[str, str]] = None,
 ) -> int:
     """Almacena una notificación vinculada al ecosistema de linters."""
-    created_at = datetime.now(timezone.utc).isoformat()
     serialized_payload = (
         json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
         if payload
@@ -230,40 +226,38 @@ def record_notification(
     )
     normalized_root = _normalize_root(root_path)
 
-    with open_database(env) as connection:
-        cursor = connection.execute(
-            """
-            INSERT INTO notifications (created_at, channel, severity, title, message, payload, root_path, read)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 0)
-            """,
-            (
-                created_at,
-                channel,
-                severity.value,
-                title,
-                message,
-                serialized_payload,
-                normalized_root,
-            ),
+    engine = get_engine(_normalize_path_map(env))
+    init_db(engine)
+
+    with Session(engine) as session:
+        notif = NotificationDB(
+            created_at=datetime.now(timezone.utc),
+            channel=channel,
+            severity=severity.value,
+            title=title,
+            message=message,
+            payload=serialized_payload,
+            root_path=normalized_root,
+            read=False,
         )
-        connection.commit()
-        last_id = cursor.lastrowid
-        return int(last_id) if last_id is not None else 0
+        session.add(notif)
+        session.commit()
+        session.refresh(notif)
+        return notif.id or 0
 
 
-def _row_to_notification(row: Mapping[str, Any]) -> StoredNotification:
-    payload_raw = row["payload"]
-    payload = json.loads(payload_raw) if payload_raw else None
+def _db_to_notification(db_item: NotificationDB) -> StoredNotification:
+    payload = json.loads(db_item.payload) if db_item.payload else None
     return StoredNotification(
-        id=int(row["id"]),
-        created_at=_parse_datetime(row["created_at"]),
-        channel=row["channel"],
-        severity=_safe_severity(row["severity"]),
-        title=row["title"],
-        message=row["message"],
+        id=db_item.id or 0,
+        created_at=db_item.created_at,
+        channel=db_item.channel,
+        severity=_safe_severity(db_item.severity),
+        title=db_item.title,
+        message=db_item.message,
         payload=payload,
-        root_path=row["root_path"],
-        read=bool(row["read"]),
+        root_path=db_item.root_path,
+        read=db_item.read,
     )
 
 
@@ -273,18 +267,12 @@ def get_notification(
     env: Optional[Mapping[str, str]] = None,
 ) -> Optional[StoredNotification]:
     """Obtiene una notificación por ID."""
-    with open_database(env) as connection:
-        row = connection.execute(
-            """
-            SELECT id, created_at, channel, severity, title, message, payload, root_path, read
-            FROM notifications
-            WHERE id = ?
-            """,
-            (notification_id,),
-        ).fetchone()
-    if row is None:
-        return None
-    return _row_to_notification(row)
+    engine = get_engine(_normalize_path_map(env))
+    with Session(engine) as session:
+        item = session.get(NotificationDB, notification_id)
+        if not item:
+            return None
+        return _db_to_notification(item)
 
 
 def list_notifications(
@@ -296,29 +284,23 @@ def list_notifications(
 ) -> List[StoredNotification]:
     """Recupera notificaciones ordenadas por fecha descendente."""
     normalized_root = _normalize_root(root_path)
-    params: List[Any] = []
-    clauses: List[str] = []
+    engine = get_engine(_normalize_path_map(env))
 
-    if unread_only:
-        clauses.append("read = 0")
-    if normalized_root:
-        clauses.append("(root_path IS NULL OR root_path = ?)")
-        params.append(normalized_root)
+    with Session(engine) as session:
+        statement = select(NotificationDB)
+        if unread_only:
+            statement = statement.where(NotificationDB.read.is_(False))  # type: ignore[union-attr]
+        if normalized_root:
+            statement = statement.where(
+                or_(
+                    NotificationDB.root_path.is_(None),  # type: ignore[union-attr]
+                    NotificationDB.root_path == normalized_root,
+                )
+            )
 
-    query_parts = [
-        "SELECT id, created_at, channel, severity, title, message, payload, root_path, read",
-        "FROM notifications",
-    ]
-    if clauses:
-        query_parts.append("WHERE " + " AND ".join(clauses))
-    query_parts.append("ORDER BY created_at DESC LIMIT ?")
-    params.append(limit)
-    query = " ".join(query_parts)
-
-    with open_database(env) as connection:
-        rows = connection.execute(query, params).fetchall()
-
-    return [_row_to_notification(row) for row in rows]
+        statement = statement.order_by(desc(NotificationDB.created_at)).limit(limit)
+        results = session.exec(statement).all()
+        return [_db_to_notification(item) for item in results]
 
 
 def mark_notification_read(
@@ -328,14 +310,204 @@ def mark_notification_read(
     read: bool = True,
 ) -> bool:
     """Actualiza el estado de leído de una notificación."""
-    with open_database(env) as connection:
-        cursor = connection.execute(
-            """
-            UPDATE notifications
-            SET read = ?
-            WHERE id = ?
-            """,
-            (1 if read else 0, notification_id),
+    engine = get_engine(_normalize_path_map(env))
+    with Session(engine) as session:
+        notif = session.get(NotificationDB, notification_id)
+        if not notif:
+            return False
+
+        notif.read = read
+        session.add(notif)
+        session.commit()
+        return True
+
+
+# ============================================================================
+# Async versions of storage functions (preferred for FastAPI endpoints)
+# ============================================================================
+
+
+async def record_linters_report_async(
+    report: LintersReport,
+) -> int:
+    """Inserta un nuevo reporte de linters en la base de datos (async)."""
+    await init_async_db()
+    payload = report_to_dict(report)
+    summary = payload.get("summary", {})
+    overall_status = summary.get("overall_status", CheckStatus.PASS.value)
+    issues_total = _coerce_int(summary.get("issues_total", 0), default=0)
+    critical_issues = _coerce_int(summary.get("critical_issues", 0), default=0)
+
+    async with get_async_session() as session:
+        db_report = LinterReportDB(
+            generated_at=datetime.now(timezone.utc),
+            root_path=_normalize_root(payload.get("root_path")) or "",
+            overall_status=overall_status,
+            issues_total=issues_total,
+            critical_issues=critical_issues,
+            payload=json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
         )
-        connection.commit()
-        return cursor.rowcount > 0
+        session.add(db_report)
+        await session.flush()
+        await session.refresh(db_report)
+        return db_report.id or 0
+
+
+async def get_linters_report_async(
+    report_id: int,
+) -> Optional[StoredLintersReport]:
+    """Obtiene un reporte por ID (async)."""
+    await init_async_db()
+
+    async with get_async_session() as session:
+        item = await session.get(LinterReportDB, report_id)
+        if not item:
+            return None
+        return _db_to_report(item)
+
+
+async def get_latest_linters_report_async(
+    *,
+    root_path: Optional[str | Path] = None,
+) -> Optional[StoredLintersReport]:
+    """Obtiene el reporte más reciente (async)."""
+    await init_async_db()
+    normalized_root = _normalize_root(root_path)
+
+    async with get_async_session() as session:
+        statement = (
+            sa_select(LinterReportDB)
+            .order_by(desc(LinterReportDB.generated_at))
+            .limit(1)
+        )
+        if normalized_root:
+            statement = statement.where(LinterReportDB.root_path == normalized_root)
+
+        result = await session.execute(statement)
+        item = result.scalar_one_or_none()
+
+        if not item:
+            return None
+        return _db_to_report(item)
+
+
+async def list_linters_reports_async(
+    *,
+    limit: int = 20,
+    offset: int = 0,
+    root_path: Optional[str | Path] = None,
+) -> List[StoredLintersReport]:
+    """Lista reportes ordenados por fecha descendente (async)."""
+    await init_async_db()
+    normalized_root = _normalize_root(root_path)
+
+    async with get_async_session() as session:
+        statement = sa_select(LinterReportDB)
+        if normalized_root:
+            statement = statement.where(LinterReportDB.root_path == normalized_root)
+
+        statement = (
+            statement.order_by(desc(LinterReportDB.generated_at))
+            .offset(offset)
+            .limit(limit)
+        )
+
+        result = await session.execute(statement)
+        items = result.scalars().all()
+
+        return [_db_to_report(item) for item in items]
+
+
+async def record_notification_async(
+    *,
+    channel: str,
+    severity: Severity,
+    title: str,
+    message: str,
+    root_path: Optional[str | Path] = None,
+    payload: Optional[Dict[str, Any]] = None,
+) -> int:
+    """Almacena una notificación (async)."""
+    await init_async_db()
+    serialized_payload = (
+        json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+        if payload
+        else None
+    )
+    normalized_root = _normalize_root(root_path)
+
+    async with get_async_session() as session:
+        notif = NotificationDB(
+            created_at=datetime.now(timezone.utc),
+            channel=channel,
+            severity=severity.value,
+            title=title,
+            message=message,
+            payload=serialized_payload,
+            root_path=normalized_root,
+            read=False,
+        )
+        session.add(notif)
+        await session.flush()
+        await session.refresh(notif)
+        return notif.id or 0
+
+
+async def get_notification_async(
+    notification_id: int,
+) -> Optional[StoredNotification]:
+    """Obtiene una notificación por ID (async)."""
+    await init_async_db()
+
+    async with get_async_session() as session:
+        item = await session.get(NotificationDB, notification_id)
+        if not item:
+            return None
+        return _db_to_notification(item)
+
+
+async def list_notifications_async(
+    *,
+    limit: int = 50,
+    unread_only: bool = False,
+    root_path: Optional[str | Path] = None,
+) -> List[StoredNotification]:
+    """Recupera notificaciones ordenadas por fecha descendente (async)."""
+    await init_async_db()
+    normalized_root = _normalize_root(root_path)
+
+    async with get_async_session() as session:
+        statement = sa_select(NotificationDB)
+        if unread_only:
+            statement = statement.where(NotificationDB.read.is_(False))  # type: ignore[union-attr]
+        if normalized_root:
+            statement = statement.where(
+                or_(
+                    NotificationDB.root_path.is_(None),  # type: ignore[union-attr]
+                    NotificationDB.root_path == normalized_root,
+                )
+            )
+
+        statement = statement.order_by(desc(NotificationDB.created_at)).limit(limit)
+
+        result = await session.execute(statement)
+        items = result.scalars().all()
+        return [_db_to_notification(item) for item in items]
+
+
+async def mark_notification_read_async(
+    notification_id: int,
+    *,
+    read: bool = True,
+) -> bool:
+    """Actualiza el estado de leído de una notificación (async)."""
+    await init_async_db()
+
+    async with get_async_session() as session:
+        notif = await session.get(NotificationDB, notification_id)
+        if not notif:
+            return False
+
+        notif.read = read
+        session.add(notif)
+        return True

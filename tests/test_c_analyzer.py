@@ -35,7 +35,9 @@ class TestCAnalyzerBasics:
         assert cpp_analyzer is not None
         assert cpp_analyzer.is_cpp is True
 
-    def test_parse_nonexistent_file(self, c_analyzer: CAnalyzer, tmp_path: Path) -> None:
+    def test_parse_nonexistent_file(
+        self, c_analyzer: CAnalyzer, tmp_path: Path
+    ) -> None:
         """Test parsing a file that doesn't exist."""
         fake_path = tmp_path / "nonexistent.c"
         result = c_analyzer.parse(fake_path)
@@ -52,11 +54,13 @@ class TestCFunctionParsing:
             pytest.skip("tree_sitter_languages not available")
 
         c_file = tmp_path / "simple.c"
-        c_file.write_text("""
+        c_file.write_text(
+            """
 int add(int a, int b) {
     return a + b;
 }
-""")
+"""
+        )
         result = c_analyzer.parse(c_file)
         assert len(result.errors) == 0
 
@@ -64,13 +68,16 @@ int add(int a, int b) {
         assert len(functions) == 1
         assert functions[0].name == "add"
 
-    def test_parse_multiple_functions(self, c_analyzer: CAnalyzer, tmp_path: Path) -> None:
+    def test_parse_multiple_functions(
+        self, c_analyzer: CAnalyzer, tmp_path: Path
+    ) -> None:
         """Test parsing multiple C functions."""
         if not c_analyzer.available:
             pytest.skip("tree_sitter_languages not available")
 
         c_file = tmp_path / "multi.c"
-        c_file.write_text("""
+        c_file.write_text(
+            """
 int add(int a, int b) {
     return a + b;
 }
@@ -82,7 +89,8 @@ int subtract(int a, int b) {
 void print_result(int value) {
     // Just a placeholder
 }
-""")
+"""
+        )
         result = c_analyzer.parse(c_file)
         assert len(result.errors) == 0
 
@@ -91,13 +99,16 @@ void print_result(int value) {
         names = {f.name for f in functions}
         assert names == {"add", "subtract", "print_result"}
 
-    def test_parse_function_with_pointer_return(self, c_analyzer: CAnalyzer, tmp_path: Path) -> None:
+    def test_parse_function_with_pointer_return(
+        self, c_analyzer: CAnalyzer, tmp_path: Path
+    ) -> None:
         """Test parsing function with pointer return type."""
         if not c_analyzer.available:
             pytest.skip("tree_sitter_languages not available")
 
         c_file = tmp_path / "pointer.c"
-        c_file.write_text("""
+        c_file.write_text(
+            """
 char* get_string(void) {
     return "hello";
 }
@@ -105,7 +116,8 @@ char* get_string(void) {
 int* allocate_array(int size) {
     return malloc(size * sizeof(int));
 }
-""")
+"""
+        )
         result = c_analyzer.parse(c_file)
         assert len(result.errors) == 0
 
@@ -124,12 +136,14 @@ class TestCStructParsing:
             pytest.skip("tree_sitter_languages not available")
 
         c_file = tmp_path / "struct.c"
-        c_file.write_text("""
+        c_file.write_text(
+            """
 struct Point {
     int x;
     int y;
 };
-""")
+"""
+        )
         result = c_analyzer.parse(c_file)
         assert len(result.errors) == 0
 
@@ -143,7 +157,8 @@ struct Point {
             pytest.skip("tree_sitter_languages not available")
 
         c_file = tmp_path / "typedef_struct.c"
-        c_file.write_text("""
+        c_file.write_text(
+            """
 typedef struct {
     int x;
     int y;
@@ -153,7 +168,8 @@ typedef struct Node {
     int value;
     struct Node* next;
 } Node;
-""")
+"""
+        )
         result = c_analyzer.parse(c_file)
         assert len(result.errors) == 0
 
@@ -171,35 +187,45 @@ class TestCEnumParsing:
             pytest.skip("tree_sitter_languages not available")
 
         c_file = tmp_path / "enum.c"
-        c_file.write_text("""
+        c_file.write_text(
+            """
 enum Color {
     RED,
     GREEN,
     BLUE
 };
-""")
+"""
+        )
         result = c_analyzer.parse(c_file)
         assert len(result.errors) == 0
 
-        enums = [s for s in result.symbols if s.kind == SymbolKind.CLASS and s.name == "Color"]
+        enums = [
+            s
+            for s in result.symbols
+            if s.kind == SymbolKind.CLASS and s.name == "Color"
+        ]
         assert len(enums) == 1
 
 
 class TestCDocstrings:
     """Test docstring extraction from C comments."""
 
-    def test_parse_function_with_line_comment(self, c_analyzer: CAnalyzer, tmp_path: Path) -> None:
+    def test_parse_function_with_line_comment(
+        self, c_analyzer: CAnalyzer, tmp_path: Path
+    ) -> None:
         """Test extracting // comments as docstrings."""
         if not c_analyzer.available:
             pytest.skip("tree_sitter_languages not available")
 
         c_file = tmp_path / "comments.c"
-        c_file.write_text("""
+        c_file.write_text(
+            """
 // Adds two integers together
 int add(int a, int b) {
     return a + b;
 }
-""")
+"""
+        )
         result = c_analyzer.parse(c_file)
         assert len(result.errors) == 0
 
@@ -207,18 +233,22 @@ int add(int a, int b) {
         assert len(functions) == 1
         assert functions[0].docstring == "Adds two integers together"
 
-    def test_parse_function_with_block_comment(self, c_analyzer: CAnalyzer, tmp_path: Path) -> None:
+    def test_parse_function_with_block_comment(
+        self, c_analyzer: CAnalyzer, tmp_path: Path
+    ) -> None:
         """Test extracting /* */ comments as docstrings."""
         if not c_analyzer.available:
             pytest.skip("tree_sitter_languages not available")
 
         c_file = tmp_path / "block_comments.c"
-        c_file.write_text("""
+        c_file.write_text(
+            """
 /* Multiplies two numbers */
 int multiply(int a, int b) {
     return a * b;
 }
-""")
+"""
+        )
         result = c_analyzer.parse(c_file)
         assert len(result.errors) == 0
 
@@ -237,7 +267,8 @@ class TestCppSpecificFeatures:
             pytest.skip("tree_sitter_languages not available")
 
         cpp_file = tmp_path / "class.cpp"
-        cpp_file.write_text("""
+        cpp_file.write_text(
+            """
 class Calculator {
 public:
     int add(int a, int b) {
@@ -248,7 +279,8 @@ public:
         return a - b;
     }
 };
-""")
+"""
+        )
         result = cpp_analyzer.parse(cpp_file)
         assert len(result.errors) == 0
 
@@ -262,13 +294,15 @@ public:
             pytest.skip("tree_sitter_languages not available")
 
         cpp_file = tmp_path / "namespace.cpp"
-        cpp_file.write_text("""
+        cpp_file.write_text(
+            """
 namespace math {
     int add(int a, int b) {
         return a + b;
     }
 }
-""")
+"""
+        )
         result = cpp_analyzer.parse(cpp_file)
         assert len(result.errors) == 0
 
@@ -280,13 +314,16 @@ namespace math {
         assert len(functions) >= 1
         assert any(f.name == "add" for f in functions)
 
-    def test_parse_cpp_class_with_methods(self, cpp_analyzer: CAnalyzer, tmp_path: Path) -> None:
+    def test_parse_cpp_class_with_methods(
+        self, cpp_analyzer: CAnalyzer, tmp_path: Path
+    ) -> None:
         """Test parsing C++ class methods."""
         if not cpp_analyzer.available:
             pytest.skip("tree_sitter_languages not available")
 
         cpp_file = tmp_path / "methods.cpp"
-        cpp_file.write_text("""
+        cpp_file.write_text(
+            """
 class Point {
 public:
     Point(int x, int y) : x_(x), y_(y) {}
@@ -298,12 +335,17 @@ private:
     int x_;
     int y_;
 };
-""")
+"""
+        )
         result = cpp_analyzer.parse(cpp_file)
         assert len(result.errors) == 0
 
         # Should find Point class
-        classes = [s for s in result.symbols if s.name == "Point" and s.kind == SymbolKind.CLASS]
+        classes = [
+            s
+            for s in result.symbols
+            if s.name == "Point" and s.kind == SymbolKind.CLASS
+        ]
         assert len(classes) == 1
 
 
@@ -321,31 +363,38 @@ class TestCAnalyzerEdgeCases:
         assert len(result.errors) == 0
         assert len(result.symbols) == 0
 
-    def test_parse_file_with_only_comments(self, c_analyzer: CAnalyzer, tmp_path: Path) -> None:
+    def test_parse_file_with_only_comments(
+        self, c_analyzer: CAnalyzer, tmp_path: Path
+    ) -> None:
         """Test parsing a file with only comments."""
         if not c_analyzer.available:
             pytest.skip("tree_sitter_languages not available")
 
         c_file = tmp_path / "comments_only.c"
-        c_file.write_text("""
+        c_file.write_text(
+            """
 // This is a comment
 /* This is a block comment */
 /*
  * Multi-line
  * block comment
  */
-""")
+"""
+        )
         result = c_analyzer.parse(c_file)
         assert len(result.errors) == 0
         assert len(result.symbols) == 0
 
-    def test_parse_file_with_preprocessor_directives(self, c_analyzer: CAnalyzer, tmp_path: Path) -> None:
+    def test_parse_file_with_preprocessor_directives(
+        self, c_analyzer: CAnalyzer, tmp_path: Path
+    ) -> None:
         """Test parsing file with preprocessor directives."""
         if not c_analyzer.available:
             pytest.skip("tree_sitter_languages not available")
 
         c_file = tmp_path / "preprocessor.c"
-        c_file.write_text("""
+        c_file.write_text(
+            """
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -360,7 +409,8 @@ void debug_print(const char* msg) {
 int main(void) {
     return 0;
 }
-""")
+"""
+        )
         result = c_analyzer.parse(c_file)
         assert len(result.errors) == 0
 
@@ -368,13 +418,16 @@ int main(void) {
         functions = [s for s in result.symbols if s.kind == SymbolKind.FUNCTION]
         assert any(f.name == "main" for f in functions)
 
-    def test_parse_complex_declarations(self, c_analyzer: CAnalyzer, tmp_path: Path) -> None:
+    def test_parse_complex_declarations(
+        self, c_analyzer: CAnalyzer, tmp_path: Path
+    ) -> None:
         """Test parsing complex C declarations."""
         if not c_analyzer.available:
             pytest.skip("tree_sitter_languages not available")
 
         c_file = tmp_path / "complex.c"
-        c_file.write_text("""
+        c_file.write_text(
+            """
 // Function pointer type
 typedef int (*callback_t)(int, int);
 
@@ -389,7 +442,8 @@ int process(int value) {
     count++;
     return value + count;
 }
-""")
+"""
+        )
         result = c_analyzer.parse(c_file)
         assert len(result.errors) == 0
 

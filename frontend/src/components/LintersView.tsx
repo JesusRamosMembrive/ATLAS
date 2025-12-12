@@ -143,7 +143,6 @@ export function LintersView(): JSX.Element {
   const refetchAll = async () => {
     setIsRunning(true);
     try {
-      // Ejecutar los linters manualmente
       const response = await fetch("/api/linters/run", {
         method: "POST",
         headers: {
@@ -152,10 +151,10 @@ export function LintersView(): JSX.Element {
       });
 
       if (!response.ok) {
-        console.error("Failed to run linters:", await response.text());
+        const errorText = await response.text();
+        throw new Error(`Failed to run linters: ${errorText}`);
       }
 
-      // Actualizar todas las queries
       await Promise.all([
         latestReportQuery.refetch(),
         historyQuery.refetch(),
@@ -250,24 +249,15 @@ export function LintersView(): JSX.Element {
             className="secondary-btn"
             onClick={refetchAll}
             disabled={isRunning || latestReportQuery.isFetching || historyQuery.isFetching}
-            style={{ position: "relative", overflow: "hidden" }}
+            aria-busy={isRunning}
           >
-            <span style={{ position: "relative", zIndex: 1 }}>
-              {isRunning ? "Running linters…" : latestReportQuery.isFetching || historyQuery.isFetching ? "Refreshing…" : "Refresh"}
-            </span>
-            {isRunning && (
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  height: "3px",
-                  width: "100%",
-                  background: "linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.6), transparent)",
-                  backgroundSize: "200% 100%",
-                  animation: "shimmer 1.5s infinite",
-                }}
-              />
+            {isRunning || latestReportQuery.isFetching || historyQuery.isFetching ? (
+              <>
+                <span className="linters-btn-spinner" aria-hidden="true" />
+                {isRunning ? "Running…" : "Refreshing…"}
+              </>
+            ) : (
+              "Run Linters"
             )}
           </button>
         </div>

@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import (
     Dict,
+    Any,
     Iterable,
     Iterator,
     List,
@@ -191,6 +192,10 @@ class StageMetrics:
 
     file_count: int
     lines_of_code: int
+    complexity: Dict[str, int]
+    complexity_distribution: Dict[str, int]
+    top_complex_functions: List[Dict[str, Any]]
+    problematic_functions: List[Dict[str, Any]]
     directory_count: int
     patterns_found: List[str]
     architectural_folders: List[str]
@@ -252,6 +257,71 @@ def collect_metrics(
     file_count = len(unique_files)
     loc = sum(_count_file_lines(path) for path in unique_files)
 
+    complexity_stats = {"total": 0, "max": 0, "avg": 0}
+    complexity_dist = {"low": 0, "medium": 0, "high": 0, "extreme": 0}
+    top_complex = []
+    problematic = []
+
+    if symbol_index:
+        total_complexity = 0
+        max_complexity = 0
+        count_functions = 0
+
+        all_functions = []
+
+        for summary in summaries:
+            for symbol in summary.symbols:
+                c = symbol.metrics.get("complexity", 1) if symbol.metrics else 1
+                # Ensure it's an int
+                if isinstance(c, (int, float)):
+                    c = int(c)
+                else:
+                    c = 1
+
+                total_complexity += c
+                max_complexity = max(max_complexity, c)
+
+                if symbol.kind in ("function", "method"):
+                    count_functions += 1
+
+                    # Distribution
+                    if c <= 5:
+                        complexity_dist["low"] += 1
+                    elif c <= 10:
+                        complexity_dist["medium"] += 1
+                    elif c <= 25:
+                        complexity_dist["high"] += 1
+                    else:
+                        complexity_dist["extreme"] += 1
+
+                    entry = {
+                        "name": symbol.name,
+                        "complexity": c,
+                        "path": str(summary.path),
+                        "lineno": symbol.lineno,
+                    }
+                    all_functions.append(entry)
+
+                    if c > 5:
+                        problematic.append(entry)
+
+        complexity_stats["total"] = total_complexity
+        complexity_stats["max"] = max_complexity
+        if count_functions > 0:
+            complexity_stats["avg"] = int(total_complexity / count_functions)
+
+        # Get top 5 complex functions
+        top_complex = sorted(
+            all_functions,
+            key=lambda x: x.get("complexity", 0),  # type: ignore[return-value]
+            reverse=True,
+        )[:5]
+
+        # Sort problematic by complexity desc
+        problematic.sort(
+            key=lambda x: x.get("complexity", 0), reverse=True  # type: ignore[arg-type]
+        )
+
     directories: Set[Path] = set()
     for path in unique_files:
         try:
@@ -267,6 +337,10 @@ def collect_metrics(
     return StageMetrics(
         file_count=file_count,
         lines_of_code=loc,
+        complexity=complexity_stats,
+        complexity_distribution=complexity_dist,
+        top_complex_functions=top_complex,
+        problematic_functions=problematic,
         directory_count=directory_count,
         patterns_found=patterns,
         architectural_folders=architecture,

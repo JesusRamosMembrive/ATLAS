@@ -1,8 +1,12 @@
 # Core backend dependencies
 fastapi>=0.110,<0.120
 pydantic>=2.7,<3
+sqlmodel>=0.0.16,<1
 uvicorn[standard]>=0.29,<0.32
 watchdog>=3.0,<5
+
+# Async database support
+aiosqlite>=0.19,<1
 
 # Tooling / tests
 pytest>=8.2,<9
@@ -24,9 +28,9 @@ esprima>=4.0,<5
 defusedxml>=0.7,<0.8
 
 # Tree-sitter (optional - NOT available for Python 3.13+)
-# Provides enhanced TSX/JSX parsing. Uncomment if using Python <=3.12:
-# tree_sitter>=0.20,<0.22
-# tree_sitter_languages>=1.10,<2
+# Provides enhanced TSX/JSX and C/C++ parsing. Required versions for compatibility:
+tree_sitter>=0.20,<0.22
+tree_sitter_languages>=1.10,<2
 
 # Terminal / Agent runners (cross-platform)
 anthropic>=0.40,<1

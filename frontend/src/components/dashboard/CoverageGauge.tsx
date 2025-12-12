@@ -70,7 +70,7 @@ export function CoverageGauge({
       </div>
       <div className="coverage-gauge__labels">
         <span className="coverage-gauge__title">Coverage</span>
-        {statementCoverage !== null && branchCoverage !== null && (
+        {statementCoverage != null && branchCoverage != null && (
           <span className="coverage-gauge__detail">
             Stmt: {Math.round(statementCoverage)}% | Branch: {Math.round(branchCoverage)}%
           </span>

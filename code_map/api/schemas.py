@@ -39,6 +39,7 @@ class SymbolSchema(BaseModel):
     parent: Optional[str] = None
     path: Optional[str] = None
     docstring: Optional[str] = None
+    metrics: Optional[Dict[str, Any]] = None
 
 
 class FileSummarySchema(BaseModel):
@@ -800,6 +801,7 @@ def serialize_symbol(
         parent=symbol.parent,
         path=path,
         docstring=symbol.docstring,
+        metrics=symbol.metrics if symbol.metrics else None,
     )
 
 

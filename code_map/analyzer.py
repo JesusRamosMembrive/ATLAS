@@ -39,6 +39,46 @@ def get_modified_time(path: Path) -> Optional[datetime]:
 AstFunction = Union[ast.FunctionDef, ast.AsyncFunctionDef]
 
 
+class ComplexityVisitor(ast.NodeVisitor):
+    """
+    Calcula la complejidad ciclomática (McCabe) de un nodo AST.
+    """
+
+    def __init__(self) -> None:
+        self.complexity = 1
+
+    def visit_If(self, node: ast.If) -> None:
+        self.complexity += 1
+        self.generic_visit(node)
+
+    def visit_For(self, node: ast.For) -> None:
+        self.complexity += 1
+        self.generic_visit(node)
+
+    def visit_AsyncFor(self, node: ast.AsyncFor) -> None:
+        self.complexity += 1
+        self.generic_visit(node)
+
+    def visit_While(self, node: ast.While) -> None:
+        self.complexity += 1
+        self.generic_visit(node)
+
+    def visit_ExceptHandler(self, node: ast.ExceptHandler) -> None:
+        self.complexity += 1
+        self.generic_visit(node)
+
+    def visit_MatchCase(self, node: ast.AST) -> None:
+        # Soporte para Python 3.10+
+        self.complexity += 1
+        self.generic_visit(node)
+
+
+def calculate_complexity(node: ast.AST) -> int:
+    visitor = ComplexityVisitor()
+    visitor.visit(node)
+    return visitor.complexity
+
+
 class FileAnalyzer:
     """
     Extrae símbolos soportados (funciones, clases, métodos) de un archivo Python.
@@ -167,6 +207,10 @@ class FileAnalyzer:
             path=path,
             lineno=node.lineno,
             docstring=self._docstring_for(node),
+            metrics={
+                "loc": (node.end_lineno or node.lineno) - node.lineno + 1,
+                "complexity": calculate_complexity(node),
+            },
         )
 
     def _build_class_symbol(self, node: ast.ClassDef, path: Path) -> SymbolInfo:
@@ -206,6 +250,10 @@ class FileAnalyzer:
                     lineno=item.lineno,
                     parent=class_node.name,
                     docstring=self._docstring_for(item),
+                    metrics={
+                        "loc": (item.end_lineno or item.lineno) - item.lineno + 1,
+                        "complexity": calculate_complexity(item),
+                    },
                 )
 
     def _docstring_for(self, node: ast.AST) -> Optional[str]:

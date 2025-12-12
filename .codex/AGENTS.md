@@ -1,4 +1,4 @@
-# Codex Agent Instructions
+# Codex CLI Instructions
 
 ## 🎯 PROJECT CONTEXT
 
@@ -34,46 +34,63 @@ At END of session:
 
 ## 🔄 FEATURE DEVELOPMENT WORKFLOW
 
-For ANY new feature, follow this workflow with explicit gates:
+For ANY new feature, follow this simplified workflow:
 
 ```
-1. CHECK/CREATE → 2. PLAN → 3. APPROVE → 4. IMPLEMENT → 5. TEST → 6. VALIDATE → 7. APPROVE
+1. ANALYZE → 2. PLAN → 3. IMPLEMENT → 4. TEST
 ```
 
-### Phase 1: PLANNING
-**Output**: `docs/{feature}/architecture.md`
+### Step 1: ANALYZE
+**Output**: Understanding of requirements and constraints
 
-**Steps**:
-1. Check if `docs/{feature}/` exists
-   - If exists: **READ existing documentation first**
-   - If not: Create the directory
-2. Analyze requirements and constraints
-3. Design stage-appropriate architecture
-4. Define testing strategy (unit + integration)
-5. Document in `docs/{feature}/architecture.md`
+**Actions**:
+1. Check if `docs/{feature-name}/` exists
+   - **If exists**: READ `architecture.md` and `implementation.md` FIRST
+   - **If not**: Create the directory
+2. Understand what needs to be built
+3. Identify constraints and dependencies
+4. Assess current project stage (1-4)
+
+### Step 2: PLAN
+**Output**: `docs/{feature-name}/architecture.md`
+
+**Actions**:
+1. Design stage-appropriate solution
+2. Define components and their responsibilities
+3. Specify build order with dependencies
+4. Define testing strategy
+5. Document in `docs/{feature-name}/architecture.md`
 
 **Architecture must include**:
 - Context & Requirements
-- Stage Assessment
+- Stage Assessment (1-4)
 - Component Structure
-- Technology Stack with trade-offs
-- Build Order with dependencies
-- **Testing Strategy** (what to test, how)
-- Evolution Triggers
+- Build Order
+- Testing Strategy
 
-**🚦 GATE**: Present plan to user. **WAIT FOR APPROVAL** before Phase 2.
+**🚦 CHECKPOINT**: Present plan to user. **WAIT FOR APPROVAL** before implementing.
 
-### Phase 2: IMPLEMENTATION
-**Output**: Code files + `docs/{feature}/implementation.md`
+### Step 3: IMPLEMENT
+**Output**: Code files + `docs/{feature-name}/implementation.md`
 
-**Steps**:
+**Actions**:
 1. **READ `architecture.md` FIRST** (mandatory)
 2. Implement components in specified build order
-3. Write unit tests for each component
-4. **Run unit tests - MUST PASS**
-5. Write integration tests (if Stage 2+)
-6. **Run integration tests - MUST PASS**
-7. Track progress in `docs/{feature}/implementation.md`
+3. Track progress in `docs/{feature-name}/implementation.md`
+4. Document any deviations or blockers
+
+**If blocked**:
+- Document in `docs/{feature-name}/blockers.md`
+- Return to PLAN step if architecture needs changes
+
+### Step 4: TEST
+**Output**: Working, tested code
+
+**Actions**:
+1. Write tests appropriate to stage level
+2. Run tests - **MUST PASS**
+3. Update `implementation.md` with test results
+4. Present results to user
 
 **Testing Requirements by Stage**:
 | Stage | Unit Tests | Integration Tests |
@@ -83,45 +100,24 @@ For ANY new feature, follow this workflow with explicit gates:
 | 3 (Production) | Full coverage | Required |
 | 4 (Scale) | Full + edge cases | Full + performance |
 
-**🚦 GATE**: All tests must **PASS** before Phase 3.
-
-### Phase 3: VALIDATION
-**Output**: `docs/{feature}/qa-report.md`
-
-**Steps**:
-1. Read `architecture.md` and `implementation.md`
-2. Validate implementation matches plan
-3. Verify all tests pass
-4. Check security, correctness, performance
-5. Verify stage-appropriate complexity
-6. Document findings in `docs/{feature}/qa-report.md`
-
-**Recommendation options**:
-- ✅ **APPROVED**: Feature complete
-- ⚠️ **MINOR FIXES**: Small changes needed
-- ❌ **REQUEST CHANGES**: Return to Phase 2
-
-**🚦 GATE**: Present QA report to user. **WAIT FOR FINAL APPROVAL**.
-
 ## 📁 DOCUMENTATION STRUCTURE
 
 For each feature, maintain:
 ```
 docs/{feature-name}/
-├── architecture.md      # Phase 1: Plan
-├── implementation.md    # Phase 2: Progress
-├── qa-report.md        # Phase 3: Validation
+├── architecture.md      # Step 2: Plan
+├── implementation.md    # Step 3: Progress
 └── blockers.md         # Issues (optional)
 ```
 
 ## ⚠️ CRITICAL RULES
 
 ### Workflow Compliance
-- **NEVER skip phases** (must go 1 → 2 → 3)
-- **NEVER implement without approved plan**
+- **ALWAYS check** if `docs/{feature-name}/` exists before starting
+- **ALWAYS read** existing documentation if present
+- **NEVER implement** without a documented plan
 - **NEVER skip tests** (except Stage 1 PoC)
-- **NEVER proceed without user approval at gates**
-- **ALWAYS read existing docs before changes**
+- **ALWAYS get approval** before implementing
 
 ### Session Management
 - Never implement without reading current context
@@ -137,28 +133,29 @@ docs/{feature-name}/
 
 ## 🚫 NEVER
 
-- Skip reading `docs/{feature}/architecture.md` before implementing
-- Implement without user approval on the plan
-- Skip writing tests (Stage 2+)
-- Proceed to validation with failing tests
+- Start implementing without checking `docs/{feature-name}/`
+- Ignore existing architecture.md documentation
+- Skip the planning phase
+- Make undocumented architectural decisions
+- Skip tests (Stage 2+)
 - Over-engineer beyond current stage
-- Make undocumented deviations from plan
 
 ## 📚 PROJECT RESOURCES
 
 Available in `docs/` folder:
-- **README.md** - Workflow documentation and templates
+- **README.md** - Workflow documentation
 - **PROMPT_LIBRARY.md** - Templates for common situations
 - **QUICK_START.md** - Workflow guide
 - **STAGES_COMPARISON.md** - Quick reference table
 
 ## 💡 REMEMBER
 
-- **Check → Plan → Approve → Implement → Test → Validate → Approve**
+- **Analyze → Plan → Implement → Test**
+- Always check/create `docs/{feature-name}/` first
+- Read existing docs before making changes
 - Tests are mandatory (Stage 2+)
-- User approval required at gates
+- User approval required before implementing
 - Simplicity > Completeness
-- When in doubt, check the stage rules
 
 ---
 

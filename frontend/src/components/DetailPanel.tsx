@@ -233,6 +233,9 @@ export function DetailPanel({
                         marginBottom: "6px",
                         fontFamily: "monospace"
                       }}>
+                        {method.metrics?.complexity && method.metrics.complexity > 10 && (
+                          <span title={`High complexity: CCN ${method.metrics.complexity}`} style={{ marginRight: "6px", color: "#facc15" }}>⚠</span>
+                        )}
                         {method.name}
                         <span style={{
                           fontSize: "12px",
@@ -242,6 +245,20 @@ export function DetailPanel({
                         }}>
                           (line {method.lineno})
                         </span>
+                        {method.metrics && (
+                          <span style={{ marginLeft: "8px", display: "inline-flex", gap: "6px" }}>
+                            {method.metrics.loc && (
+                              <span style={{ fontSize: "11px", background: "#333", padding: "2px 6px", borderRadius: "3px", color: "#bbb" }}>
+                                {method.metrics.loc} LOC
+                              </span>
+                            )}
+                            {method.metrics.complexity && (
+                              <span style={{ fontSize: "11px", background: "#333", padding: "2px 6px", borderRadius: "3px", color: method.metrics.complexity > 10 ? "#f87171" : "#bbb" }}>
+                                CCN {method.metrics.complexity}
+                              </span>
+                            )}
+                          </span>
+                        )}
                       </div>
                       {method.docstring && (
                         <p style={{
@@ -285,6 +302,9 @@ export function DetailPanel({
         <article key={fn.name} className="symbol-card">
           <div className="symbol-title">
             <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
+              {fn.metrics?.complexity && fn.metrics.complexity > 10 && (
+                <span title={`High complexity: CCN ${fn.metrics.complexity}`} style={{ color: "#facc15" }}>⚠</span>
+              )}
               {fn.name}
               <button
                 onClick={() => setTraceTarget(`${selectedPath}::${fn.name}`)}
@@ -304,6 +324,12 @@ export function DetailPanel({
             </div>
             <span className="symbol-meta">
               <span>line {fn.lineno}</span>
+              {fn.metrics?.loc && <span>{fn.metrics.loc} LOC</span>}
+              {fn.metrics?.complexity && (
+                <span style={{ color: fn.metrics.complexity > 10 ? "#f87171" : "inherit" }}>
+                  CCN {fn.metrics.complexity}
+                </span>
+              )}
               <span>function</span>
             </span>
           </div>

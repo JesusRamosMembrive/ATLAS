@@ -288,6 +288,8 @@ def audit_run_command(
             cmd,
             capture_output=capture_output,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             timeout=timeout,
             **subprocess_kwargs,
         )

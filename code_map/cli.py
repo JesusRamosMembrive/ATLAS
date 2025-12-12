@@ -13,7 +13,6 @@ if TYPE_CHECKING:  # pragma: no cover - solo para tipado
     import typer  # type: ignore[import-not-found]
 else:  # pragma: no cover - manejo de dependencia opcional en runtime
 
-
     try:
         import typer  # type: ignore[import-not-found]
     except ImportError as exc:  # pragma: no cover

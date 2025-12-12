@@ -109,13 +109,17 @@ class TestLintersDisabledFromEnv:
         """Test various true values."""
         for value in ["1", "true", "TRUE", "yes", "YES", "on", "ON"]:
             with patch.dict(os.environ, {"CODE_MAP_DISABLE_LINTERS": value}):
-                assert _linters_disabled_from_env() is True, f"Failed for value: {value}"
+                assert (
+                    _linters_disabled_from_env() is True
+                ), f"Failed for value: {value}"
 
     def test_disabled_false_values(self) -> None:
         """Test various false values."""
         for value in ["0", "false", "no", "off", "", "random"]:
             with patch.dict(os.environ, {"CODE_MAP_DISABLE_LINTERS": value}):
-                assert _linters_disabled_from_env() is False, f"Failed for value: {value}"
+                assert (
+                    _linters_disabled_from_env() is False
+                ), f"Failed for value: {value}"
 
     def test_disabled_with_whitespace(self) -> None:
         """Test value with whitespace."""
@@ -167,7 +171,9 @@ class TestAppStateBasics:
         """Create a mocked AppState for testing."""
         # Mock WatcherManager
         monkeypatch.setattr("code_map.state.WatcherManager", _DummyWatcher)
-        monkeypatch.setattr("code_map.services.watcher_manager.WatcherService", _DummyWatcher)
+        monkeypatch.setattr(
+            "code_map.services.watcher_manager.WatcherService", _DummyWatcher
+        )
 
         # Mock insights service schedule to avoid background tasks
         monkeypatch.setattr(
@@ -258,7 +264,9 @@ class TestAppStateBasics:
         assert "src/main.py" in result["updated"]
         assert result["deleted"] == []
 
-    def test_serialize_changes_limits_tracking(self, mock_state, tmp_path: Path) -> None:
+    def test_serialize_changes_limits_tracking(
+        self, mock_state, tmp_path: Path
+    ) -> None:
         """Test _serialize_changes limits recent changes."""
         # Create many paths
         many_paths = [tmp_path / f"file{i}.py" for i in range(100)]
@@ -275,7 +283,9 @@ class TestAppStateAsync:
     def mock_state(self, tmp_path: Path, monkeypatch):
         """Create a mocked AppState for async testing."""
         monkeypatch.setattr("code_map.state.WatcherManager", _DummyWatcher)
-        monkeypatch.setattr("code_map.services.watcher_manager.WatcherService", _DummyWatcher)
+        monkeypatch.setattr(
+            "code_map.services.watcher_manager.WatcherService", _DummyWatcher
+        )
         monkeypatch.setattr(
             "code_map.services.insights_service.InsightsService.schedule",
             lambda self: None,
@@ -316,7 +326,9 @@ class TestAppStateUpdateSettings:
     def mock_state(self, tmp_path: Path, monkeypatch):
         """Create a mocked AppState for settings update testing."""
         monkeypatch.setattr("code_map.state.WatcherManager", _DummyWatcher)
-        monkeypatch.setattr("code_map.services.watcher_manager.WatcherService", _DummyWatcher)
+        monkeypatch.setattr(
+            "code_map.services.watcher_manager.WatcherService", _DummyWatcher
+        )
         monkeypatch.setattr(
             "code_map.services.insights_service.InsightsService.schedule",
             lambda self: None,
@@ -390,7 +402,9 @@ class TestAppStateLinters:
     def mock_state(self, tmp_path: Path, monkeypatch):
         """Create a mocked AppState for linter testing."""
         monkeypatch.setattr("code_map.state.WatcherManager", _DummyWatcher)
-        monkeypatch.setattr("code_map.services.watcher_manager.WatcherService", _DummyWatcher)
+        monkeypatch.setattr(
+            "code_map.services.watcher_manager.WatcherService", _DummyWatcher
+        )
         monkeypatch.setattr(
             "code_map.services.insights_service.InsightsService.schedule",
             lambda self: None,
@@ -430,7 +444,9 @@ class TestAppStateInsights:
     def mock_state(self, tmp_path: Path, monkeypatch):
         """Create a mocked AppState for insights testing."""
         monkeypatch.setattr("code_map.state.WatcherManager", _DummyWatcher)
-        monkeypatch.setattr("code_map.services.watcher_manager.WatcherService", _DummyWatcher)
+        monkeypatch.setattr(
+            "code_map.services.watcher_manager.WatcherService", _DummyWatcher
+        )
         monkeypatch.setattr(
             "code_map.services.insights_service.InsightsService.schedule",
             lambda self: None,

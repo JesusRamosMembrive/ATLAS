@@ -32,6 +32,7 @@ from .pipeline import (
 from .storage import (
     StoredLintersReport,
     StoredNotification,
+    # Sync versions
     get_latest_linters_report,
     get_linters_report,
     list_linters_reports,
@@ -40,6 +41,15 @@ from .storage import (
     get_notification,
     record_linters_report,
     record_notification,
+    # Async versions
+    get_latest_linters_report_async,
+    get_linters_report_async,
+    list_linters_reports_async,
+    list_notifications_async,
+    mark_notification_read_async,
+    get_notification_async,
+    record_linters_report_async,
+    record_notification_async,
 )
 
 __all__ = [
@@ -58,6 +68,7 @@ __all__ = [
     "report_from_dict",
     "run_linters_pipeline",
     "LinterRunOptions",
+    # Sync storage
     "record_linters_report",
     "get_linters_report",
     "get_latest_linters_report",
@@ -68,6 +79,15 @@ __all__ = [
     "mark_notification_read",
     "StoredNotification",
     "get_notification",
+    # Async storage
+    "record_linters_report_async",
+    "get_linters_report_async",
+    "get_latest_linters_report_async",
+    "list_linters_reports_async",
+    "record_notification_async",
+    "list_notifications_async",
+    "mark_notification_read_async",
+    "get_notification_async",
     "LINTER_TIMEOUT_FAST",
     "LINTER_TIMEOUT_STANDARD",
     "LINTER_TIMEOUT_TESTS",

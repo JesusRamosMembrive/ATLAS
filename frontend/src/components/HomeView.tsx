@@ -69,7 +69,7 @@ export function HomeView({
         <div className="home-hero__glow" aria-hidden />
         <div className="home-hero__content">
           <div className="home-hero__badges">
-            <span className="home-version-pill">v4.0.0</span>
+            <span className="home-version-pill">v1.0.0</span>
             <span className={`home-stage-pill ${detectionTone}`}>
               {stageStatusQuery.isLoading ? "Calculating…" : detectionLabel}
             </span>
@@ -262,6 +262,16 @@ export function HomeView({
             </p>
           </div>
           <span className="home-card-cta">View linters →</span>
+        </TiltCard>
+
+        <TiltCard to="/similarity" icon={<CardIcons.Similarity />}>
+          <div className="home-card-body">
+            <h3>Code Similarity</h3>
+            <p>
+              Detect duplicate code across your codebase. Find exact clones, renamed variants, and modified copies.
+            </p>
+          </div>
+          <span className="home-card-cta">Analyze clones →</span>
         </TiltCard>
 
         <TiltCard to="/ollama" icon={<CardIcons.Ollama />}>

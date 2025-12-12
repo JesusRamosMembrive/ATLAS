@@ -481,6 +481,8 @@ def _run_command(
             sanitized_command,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             timeout=timeout,
             check=False,
         )

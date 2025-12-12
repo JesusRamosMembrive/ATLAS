@@ -4,6 +4,10 @@ Socket.IO PTY Terminal Server
 Based on pyxtermjs pattern for reliable terminal communication.
 Uses python-socketio with ASGI for integration with FastAPI.
 
+Cross-platform support:
+- Unix: Uses native pty module
+- Windows: Uses pywinpty via WinPTYShell
+
 Key differences from WebSocket approach:
 1. Socket.IO handles reconnection automatically
 2. Typed events (pty-input, pty-output, resize) instead of text protocol
@@ -12,18 +16,40 @@ Key differences from WebSocket approach:
 """
 
 import os
-import pty
-import select
+import sys
 import struct
-import fcntl
-import termios
 import signal
 import asyncio
 import logging
-from typing import Optional, Dict, Any
-from dataclasses import dataclass
+from typing import Optional, Dict, Any, Union
+from dataclasses import dataclass, field
 
 import socketio
+
+# Platform detection
+_IS_WINDOWS = sys.platform == "win32"
+
+# Unix-only imports (pty, fcntl, termios, select)
+if not _IS_WINDOWS:
+    import pty
+    import select
+    import fcntl
+    import termios
+else:
+    # Windows: Import WinPTYShell
+    pty = None  # type: ignore
+    select = None  # type: ignore
+    fcntl = None  # type: ignore
+    termios = None  # type: ignore
+
+# Import Windows PTY shell if available
+_WINPTY_AVAILABLE = False
+WinPTYShell = None
+if _IS_WINDOWS:
+    try:
+        from .winpty_shell import WinPTYShell, WINPTY_AVAILABLE as _WINPTY_AVAILABLE
+    except ImportError:
+        pass
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +64,8 @@ MIN_ROWS = 10
 
 @dataclass
 class PTYSession:
-    """Represents an active PTY session"""
+    """Represents an active PTY session (Unix)"""
+
     pid: int
     fd: int
     cols: int = DEFAULT_COLS
@@ -53,6 +80,27 @@ class PTYSession:
             return False
 
 
+@dataclass
+class WinPTYSession:
+    """Represents an active PTY session (Windows)"""
+
+    shell: Any  # WinPTYShell instance
+    cols: int = DEFAULT_COLS
+    rows: int = DEFAULT_ROWS
+    # For compatibility with PTYSession interface
+    pid: int = field(default=0, init=False)
+    fd: int = field(default=0, init=False)
+
+    def __post_init__(self):
+        if self.shell:
+            self.pid = self.shell.pid or 0
+            self.fd = self.pid  # Use pid as fd for compatibility
+
+    def is_alive(self) -> bool:
+        """Check if the PTY process is still running"""
+        return self.shell is not None and self.shell.running
+
+
 class SocketIOPTYServer:
     """
     Socket.IO server for PTY terminal access.
@@ -61,6 +109,10 @@ class SocketIOPTYServer:
     - One PTY session per Socket.IO connection
     - Background task for continuous output reading
     - Typed events for input/output/resize
+
+    Cross-platform:
+    - Unix: Uses native pty.fork()
+    - Windows: Uses pywinpty via WinPTYShell
     """
 
     def __init__(self, cors_allowed_origins: list[str] | str = "*"):
@@ -71,15 +123,29 @@ class SocketIOPTYServer:
             cors_allowed_origins: CORS origins for Socket.IO
         """
         self.sio = socketio.AsyncServer(
-            async_mode='asgi',
+            async_mode="asgi",
             cors_allowed_origins=cors_allowed_origins,
             logger=False,  # Use our own logging
             engineio_logger=False,
         )
 
         # Track sessions by socket ID
-        self.sessions: Dict[str, PTYSession] = {}
+        self.sessions: Dict[str, Union[PTYSession, WinPTYSession]] = {}
         self._background_tasks: Dict[str, asyncio.Task] = {}
+
+        # Platform availability
+        if _IS_WINDOWS:
+            self._pty_available = _WINPTY_AVAILABLE
+            if _WINPTY_AVAILABLE:
+                logger.info("[SocketIO PTY] Windows PTY available via pywinpty")
+            else:
+                logger.warning(
+                    "[SocketIO PTY] Running on Windows - pywinpty not installed. "
+                    "Install with: pip install pywinpty"
+                )
+        else:
+            self._pty_available = True
+            logger.info("[SocketIO PTY] Unix PTY available")
 
         # Register event handlers
         self._register_handlers()
@@ -87,10 +153,23 @@ class SocketIOPTYServer:
     def _register_handlers(self):
         """Register Socket.IO event handlers"""
 
-        @self.sio.on('connect', namespace='/pty')
+        @self.sio.on("connect", namespace="/pty")
         async def connect(sid, environ):
             """Handle new client connection - spawn PTY"""
             logger.info(f"[SocketIO PTY] Client connected: {sid}")
+
+            # Check platform availability
+            if not self._pty_available:
+                logger.error(
+                    f"[SocketIO PTY] PTY not available on this platform"
+                )
+                await self.sio.emit(
+                    "pty-error",
+                    {"error": "PTY terminal not available. Install pywinpty on Windows."},
+                    namespace="/pty",
+                    to=sid,
+                )
+                return False
 
             # Check if already has a session (reconnection)
             if sid in self.sessions:
@@ -102,12 +181,13 @@ class SocketIOPTYServer:
                 session = self._spawn_pty()
                 self.sessions[sid] = session
 
-                logger.info(f"[SocketIO PTY] Spawned PTY for {sid}: pid={session.pid}, fd={session.fd}")
+                logger.info(
+                    f"[SocketIO PTY] Spawned PTY for {sid}: pid={session.pid}"
+                )
 
                 # Start background task for reading PTY output
                 task = asyncio.create_task(
-                    self._read_pty_output(sid),
-                    name=f"pty-reader-{sid}"
+                    self._read_pty_output(sid), name=f"pty-reader-{sid}"
                 )
                 self._background_tasks[sid] = task
 
@@ -115,15 +195,21 @@ class SocketIOPTYServer:
 
             except Exception as e:
                 logger.error(f"[SocketIO PTY] Failed to spawn PTY for {sid}: {e}")
+                await self.sio.emit(
+                    "pty-error",
+                    {"error": f"Failed to spawn terminal: {e}"},
+                    namespace="/pty",
+                    to=sid,
+                )
                 return False
 
-        @self.sio.on('disconnect', namespace='/pty')
+        @self.sio.on("disconnect", namespace="/pty")
         async def disconnect(sid):
             """Handle client disconnection - cleanup PTY"""
             logger.info(f"[SocketIO PTY] Client disconnected: {sid}")
             await self._cleanup_session(sid)
 
-        @self.sio.on('pty-input', namespace='/pty')
+        @self.sio.on("pty-input", namespace="/pty")
         async def pty_input(sid, data):
             """
             Handle input from browser terminal.
@@ -136,15 +222,22 @@ class SocketIOPTYServer:
                 return
 
             try:
-                input_data = data.get('input', '')
+                input_data = data.get("input", "")
                 if input_data:
-                    os.write(session.fd, input_data.encode('utf-8'))
-                    logger.debug(f"[SocketIO PTY] Wrote {len(input_data)} bytes to PTY {sid}")
+                    if _IS_WINDOWS and isinstance(session, WinPTYSession):
+                        # Windows: Use WinPTYShell.write()
+                        session.shell.write(input_data)
+                    else:
+                        # Unix: Write to fd
+                        os.write(session.fd, input_data.encode("utf-8"))
+                    logger.debug(
+                        f"[SocketIO PTY] Wrote {len(input_data)} bytes to PTY {sid}"
+                    )
             except OSError as e:
                 logger.error(f"[SocketIO PTY] Failed to write to PTY {sid}: {e}")
                 await self._cleanup_session(sid)
 
-        @self.sio.on('resize', namespace='/pty')
+        @self.sio.on("resize", namespace="/pty")
         async def resize(sid, data):
             """
             Handle terminal resize from browser.
@@ -156,8 +249,8 @@ class SocketIOPTYServer:
                 logger.warning(f"[SocketIO PTY] No session for resize from {sid}")
                 return
 
-            cols = data.get('cols', DEFAULT_COLS)
-            rows = data.get('rows', DEFAULT_ROWS)
+            cols = data.get("cols", DEFAULT_COLS)
+            rows = data.get("rows", DEFAULT_ROWS)
 
             # Validate dimensions
             if cols < MIN_COLS:
@@ -168,40 +261,64 @@ class SocketIOPTYServer:
                 rows = MIN_ROWS
 
             try:
-                self._set_winsize(session.fd, rows, cols)
+                if _IS_WINDOWS and isinstance(session, WinPTYSession):
+                    # Windows: Use WinPTYShell.resize()
+                    session.shell.resize(cols, rows)
+                else:
+                    # Unix: Use ioctl
+                    self._set_winsize(session.fd, rows, cols)
                 session.cols = cols
                 session.rows = rows
                 logger.debug(f"[SocketIO PTY] Resized {sid} to {cols}x{rows}")
             except OSError as e:
                 logger.error(f"[SocketIO PTY] Failed to resize PTY {sid}: {e}")
 
-    def _spawn_pty(self) -> PTYSession:
+    def _spawn_pty(self) -> Union[PTYSession, WinPTYSession]:
         """
         Spawn a new PTY process with shell.
 
         Returns:
-            PTYSession with pid and fd
+            PTYSession (Unix) or WinPTYSession (Windows)
         """
+        if _IS_WINDOWS:
+            return self._spawn_pty_windows()
+        else:
+            return self._spawn_pty_unix()
+
+    def _spawn_pty_windows(self) -> WinPTYSession:
+        """Spawn PTY on Windows using WinPTYShell"""
+        if not _WINPTY_AVAILABLE or WinPTYShell is None:
+            raise RuntimeError("pywinpty not available")
+
+        shell = WinPTYShell(cols=DEFAULT_COLS, rows=DEFAULT_ROWS)
+        shell.spawn()
+
+        return WinPTYSession(shell=shell, cols=DEFAULT_COLS, rows=DEFAULT_ROWS)
+
+    def _spawn_pty_unix(self) -> PTYSession:
+        """Spawn PTY on Unix using pty.fork()"""
         # Determine shell
-        shell = os.environ.get('SHELL', '/bin/bash')
+        shell = os.environ.get("SHELL", "/bin/bash")
         if not os.path.exists(shell):
-            shell = '/bin/sh'
+            shell = "/bin/sh"
 
         # Fork with PTY
         pid, fd = pty.fork()
 
         if pid == 0:
             # Child process
-            os.environ.update({
-                'TERM': 'xterm-256color',
-                'COLORTERM': 'truecolor',
-                'LANG': os.environ.get('LANG', 'C.UTF-8'),
-            })
+            os.environ.update(
+                {
+                    "TERM": "xterm-256color",
+                    "COLORTERM": "truecolor",
+                    "LANG": os.environ.get("LANG", "C.UTF-8"),
+                }
+            )
             # Execute shell in interactive login mode
-            os.execvp(shell, [shell, '-li'])
+            os.execvp(shell, [shell, "-li"])
         else:
             # Parent process
-            # Set initial window size (like pyxtermjs does with 50x50)
+            # Set initial window size
             self._set_winsize(fd, DEFAULT_ROWS, DEFAULT_COLS)
 
             # Make FD non-blocking
@@ -211,31 +328,93 @@ class SocketIOPTYServer:
             return PTYSession(pid=pid, fd=fd)
 
     def _set_winsize(self, fd: int, rows: int, cols: int, xpix: int = 0, ypix: int = 0):
-        """Set terminal window size using ioctl"""
-        winsize = struct.pack('HHHH', rows, cols, xpix, ypix)
+        """Set terminal window size using ioctl (Unix only)"""
+        if _IS_WINDOWS:
+            return  # No-op on Windows (handled by WinPTYShell)
+        winsize = struct.pack("HHHH", rows, cols, xpix, ypix)
         fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
 
     async def _read_pty_output(self, sid: str):
         """
         Background task to continuously read PTY output and send to client.
-
-        Follows pyxtermjs pattern:
-        - Non-blocking select with timeout=0
-        - Small sleep between iterations (10ms)
-        - Large read buffer (20KB)
         """
         session = self.sessions.get(sid)
         if not session:
             return
 
-        logger.info(f"[SocketIO PTY] Starting output reader for {sid}")
+        if _IS_WINDOWS and isinstance(session, WinPTYSession):
+            await self._read_pty_output_windows(sid, session)
+        else:
+            await self._read_pty_output_unix(sid, session)
+
+    async def _read_pty_output_windows(self, sid: str, session: WinPTYSession):
+        """Read PTY output on Windows using WinPTYShell"""
+        import queue
+
+        logger.info(f"[SocketIO PTY] Starting Windows output reader for {sid}")
+
+        # Queue for data from blocking read
+        data_queue: queue.Queue[Optional[str]] = queue.Queue()
+
+        def output_callback(text: str):
+            """Callback for PTY output"""
+            data_queue.put(text)
+
+        try:
+            # Start the read loop in background thread via WinPTYShell
+            read_task = asyncio.create_task(
+                session.shell.read(output_callback)
+            )
+
+            while sid in self.sessions and session.shell.running:
+                try:
+                    # Non-blocking get with small timeout
+                    try:
+                        text = data_queue.get(timeout=0.05)
+                    except queue.Empty:
+                        await asyncio.sleep(READ_INTERVAL)
+                        continue
+
+                    if text is None:
+                        break
+
+                    # Send to client
+                    await self.sio.emit(
+                        "pty-output", {"output": text}, namespace="/pty", to=sid
+                    )
+
+                except Exception as e:
+                    logger.error(f"[SocketIO PTY] Error reading Windows PTY {sid}: {e}")
+                    break
+
+            read_task.cancel()
+
+        except asyncio.CancelledError:
+            logger.info(f"[SocketIO PTY] Windows reader task cancelled for {sid}")
+        except Exception as e:
+            logger.error(f"[SocketIO PTY] Unexpected error in Windows reader for {sid}: {e}")
+        finally:
+            logger.info(f"[SocketIO PTY] Windows reader exiting for {sid}")
+            try:
+                await self.sio.emit(
+                    "pty-exit",
+                    {"reason": "Shell process exited"},
+                    namespace="/pty",
+                    to=sid,
+                )
+            except Exception:
+                pass
+
+    async def _read_pty_output_unix(self, sid: str, session: PTYSession):
+        """Read PTY output on Unix using select()"""
+        logger.info(f"[SocketIO PTY] Starting Unix output reader for {sid}")
 
         try:
             while sid in self.sessions:
                 await asyncio.sleep(READ_INTERVAL)  # 10ms like pyxtermjs
 
                 session = self.sessions.get(sid)
-                if not session:
+                if not session or not isinstance(session, PTYSession):
                     break
 
                 try:
@@ -251,12 +430,9 @@ class SocketIOPTYServer:
                             break
 
                         # Decode and send to client
-                        text = output.decode('utf-8', errors='ignore')
+                        text = output.decode("utf-8", errors="ignore")
                         await self.sio.emit(
-                            'pty-output',
-                            {'output': text},
-                            namespace='/pty',
-                            to=sid
+                            "pty-output", {"output": text}, namespace="/pty", to=sid
                         )
 
                 except OSError as e:
@@ -270,18 +446,18 @@ class SocketIOPTYServer:
                         break
 
         except asyncio.CancelledError:
-            logger.info(f"[SocketIO PTY] Reader task cancelled for {sid}")
+            logger.info(f"[SocketIO PTY] Unix reader task cancelled for {sid}")
         except Exception as e:
-            logger.error(f"[SocketIO PTY] Unexpected error in reader for {sid}: {e}")
+            logger.error(f"[SocketIO PTY] Unexpected error in Unix reader for {sid}: {e}")
         finally:
-            logger.info(f"[SocketIO PTY] Reader exiting for {sid}")
+            logger.info(f"[SocketIO PTY] Unix reader exiting for {sid}")
             # Notify client that session ended
             try:
                 await self.sio.emit(
-                    'pty-exit',
-                    {'reason': 'Shell process exited'},
-                    namespace='/pty',
-                    to=sid
+                    "pty-exit",
+                    {"reason": "Shell process exited"},
+                    namespace="/pty",
+                    to=sid,
                 )
             except Exception:
                 pass
@@ -304,23 +480,28 @@ class SocketIOPTYServer:
 
         logger.info(f"[SocketIO PTY] Cleaning up session {sid}: pid={session.pid}")
 
-        # Terminate process
-        try:
-            os.kill(session.pid, signal.SIGTERM)
-            # Wait briefly for graceful exit
-            await asyncio.sleep(0.1)
+        if _IS_WINDOWS and isinstance(session, WinPTYSession):
+            # Windows: Close WinPTYShell
             try:
-                os.waitpid(session.pid, os.WNOHANG)
-            except ChildProcessError:
+                session.shell.close()
+            except Exception as e:
+                logger.debug(f"[SocketIO PTY] Error closing Windows PTY: {e}")
+        else:
+            # Unix: Kill process and close fd
+            try:
+                os.kill(session.pid, signal.SIGTERM)
+                await asyncio.sleep(0.1)
+                try:
+                    os.waitpid(session.pid, os.WNOHANG)
+                except ChildProcessError:
+                    pass
+            except (OSError, ProcessLookupError):
                 pass
-        except (OSError, ProcessLookupError):
-            pass
 
-        # Close file descriptor
-        try:
-            os.close(session.fd)
-        except OSError:
-            pass
+            try:
+                os.close(session.fd)
+            except OSError:
+                pass
 
     def get_asgi_app(self, other_app: Any = None) -> Any:
         """
@@ -336,7 +517,9 @@ class SocketIOPTYServer:
 
     async def shutdown(self):
         """Clean up all sessions on server shutdown"""
-        logger.info(f"[SocketIO PTY] Shutting down, cleaning {len(self.sessions)} sessions")
+        logger.info(
+            f"[SocketIO PTY] Shutting down, cleaning {len(self.sessions)} sessions"
+        )
 
         for sid in list(self.sessions.keys()):
             await self._cleanup_session(sid)
@@ -354,7 +537,9 @@ def get_pty_server(cors_allowed_origins: list[str] | str = "*") -> SocketIOPTYSe
     return _pty_server
 
 
-def create_combined_app(fastapi_app: Any, cors_allowed_origins: list[str] | str = "*") -> Any:
+def create_combined_app(
+    fastapi_app: Any, cors_allowed_origins: list[str] | str = "*"
+) -> Any:
     """
     Create a combined ASGI app with Socket.IO PTY server and FastAPI.
 

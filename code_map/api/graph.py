@@ -7,8 +7,9 @@ from __future__ import annotations
 
 from typing import List, Optional, Set
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Response
+from fastapi import APIRouter, Depends, Query, Response
 
+from ..exceptions import InternalError
 from ..class_graph import build_class_graph
 from ..uml import GraphvizStyleOptions, build_uml_model, render_uml_svg
 from ..state import AppState
@@ -242,5 +243,5 @@ async def get_uml_svg(
     try:
         svg = render_uml_svg(model, requested_types, graphviz)
     except RuntimeError as exc:  # pragma: no cover
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise InternalError(str(exc)) from exc
     return Response(content=svg, media_type="image/svg+xml")
