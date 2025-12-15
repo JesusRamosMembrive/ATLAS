@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 
 import { useInstanceGraphQuery } from "../hooks/useInstanceGraphQuery";
 import { ArchitectureGraph } from "./instance-graph/ArchitectureGraph";
+import { DetailPanel } from "./instance-graph/DetailPanel";
 import { DirectoryBrowserModal } from "./settings/DirectoryBrowserModal";
 
 export function InstanceGraphView(): JSX.Element {
@@ -231,116 +232,14 @@ export function InstanceGraphView(): JSX.Element {
 
         {/* Selection Details Panel */}
         {(selectedNode || selectedEdge) && (
-          <div
-            style={{
-              width: "300px",
-              borderLeft: "1px solid #334155",
-              backgroundColor: "#1e293b",
-              padding: "16px",
-              overflowY: "auto",
+          <DetailPanel
+            node={selectedNode ?? null}
+            edge={selectedEdge ?? null}
+            onClose={() => {
+              setSelectedNodeId(null);
+              setSelectedEdgeId(null);
             }}
-          >
-            {selectedNode && (
-              <>
-                <div
-                  style={{
-                    fontSize: "12px",
-                    color: "#94a3b8",
-                    textTransform: "uppercase",
-                    marginBottom: "8px",
-                  }}
-                >
-                  Node Details
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  <div>
-                    <div style={{ fontSize: "11px", color: "#64748b", marginBottom: "4px" }}>
-                      Name
-                    </div>
-                    <div style={{ fontSize: "14px", fontWeight: 500 }}>
-                      {selectedNode.data.label}
-                    </div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: "11px", color: "#64748b", marginBottom: "4px" }}>
-                      Type
-                    </div>
-                    <div style={{ fontSize: "14px" }}>{selectedNode.data.type}</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: "11px", color: "#64748b", marginBottom: "4px" }}>
-                      Role
-                    </div>
-                    <div style={{ fontSize: "14px", textTransform: "capitalize" }}>
-                      {selectedNode.data.role}
-                    </div>
-                  </div>
-                  {selectedNode.data.location && (
-                    <div>
-                      <div style={{ fontSize: "11px", color: "#64748b", marginBottom: "4px" }}>
-                        Location
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "12px",
-                          fontFamily: "monospace",
-                          wordBreak: "break-all",
-                          color: "#94a3b8",
-                        }}
-                      >
-                        {selectedNode.data.location}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-
-            {selectedEdge && (
-              <>
-                <div
-                  style={{
-                    fontSize: "12px",
-                    color: "#94a3b8",
-                    textTransform: "uppercase",
-                    marginBottom: "8px",
-                  }}
-                >
-                  Edge Details
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  <div>
-                    <div style={{ fontSize: "11px", color: "#64748b", marginBottom: "4px" }}>
-                      From
-                    </div>
-                    <div style={{ fontSize: "14px" }}>{selectedEdge.source}</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: "11px", color: "#64748b", marginBottom: "4px" }}>
-                      To
-                    </div>
-                    <div style={{ fontSize: "14px" }}>{selectedEdge.target}</div>
-                  </div>
-                  {selectedEdge.label && (
-                    <div>
-                      <div style={{ fontSize: "11px", color: "#64748b", marginBottom: "4px" }}>
-                        Method
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "14px",
-                          fontFamily: "monospace",
-                          color: "#94a3b8",
-                        }}
-                      >
-                        {selectedEdge.label}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
+          />
         )}
       </div>
 

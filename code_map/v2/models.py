@@ -460,10 +460,33 @@ class InstanceGraph:
         Serialize to React Flow format for frontend visualization.
 
         Returns a dictionary with 'nodes' and 'edges' arrays formatted
-        for direct use with React Flow library.
+        for direct use with React Flow library. Includes enriched data
+        for the Phase 4 detail panel.
+
+        Node data includes:
+            - label: Instance name
+            - type: Type symbol
+            - role: Instance role (source, processing, sink)
+            - location: Short location string for display
+            - args: Constructor/factory arguments
+            - config: Configuration data
+            - type_location: Full location dict for jump-to-type (if available)
+            - creation_location: Full location dict for the instance declaration
+            - incoming_connections: List of {from_name, method, location} dicts
+            - outgoing_connections: List of {to_name, method, location} dicts
+
+        Edge data includes:
+            - source_location: Full location dict for the wiring call
+            - source_name: Name of the source instance
+            - target_name: Name of the target instance
         """
         rf_nodes = []
         rf_edges = []
+
+        # Build reverse lookup: node_id -> node_name for edge enrichment
+        id_to_name: Dict[str, str] = {
+            node.id: node.name for node in self.nodes.values()
+        }
 
         # Position nodes in a simple left-to-right layout
         sorted_nodes = self.topological_sort() or list(self.nodes.values())
@@ -471,6 +494,26 @@ class InstanceGraph:
         y_spacing = 100
 
         for i, node in enumerate(sorted_nodes):
+            # Build incoming connections list
+            incoming_connections: List[Dict[str, Any]] = []
+            for edge in self.get_incoming_edges(node.id):
+                source_name = id_to_name.get(edge.source_id, "unknown")
+                incoming_connections.append({
+                    "from_name": source_name,
+                    "method": edge.method,
+                    "location": edge.location.to_dict(),
+                })
+
+            # Build outgoing connections list
+            outgoing_connections: List[Dict[str, Any]] = []
+            for edge in self.get_outgoing_edges(node.id):
+                target_name = id_to_name.get(edge.target_id, "unknown")
+                outgoing_connections.append({
+                    "to_name": target_name,
+                    "method": edge.method,
+                    "location": edge.location.to_dict(),
+                })
+
             # Map role to React Flow node type for styling
             rf_type = self._get_react_flow_node_type(node)
             rf_nodes.append({
@@ -481,11 +524,19 @@ class InstanceGraph:
                     "type": node.type_symbol,
                     "role": node.role.value,
                     "location": f"{node.location.file_path.name}:{node.location.line}",
+                    "args": node.args,
+                    "config": node.config,
+                    "type_location": node.type_location.to_dict() if node.type_location else None,
+                    "creation_location": node.location.to_dict(),
+                    "incoming_connections": incoming_connections,
+                    "outgoing_connections": outgoing_connections,
                 },
                 "position": {"x": i * x_spacing, "y": (i % 2) * y_spacing},
             })
 
         for edge in self.edges.values():
+            source_name = id_to_name.get(edge.source_id, "unknown")
+            target_name = id_to_name.get(edge.target_id, "unknown")
             rf_edges.append({
                 "id": edge.id,
                 "source": edge.source_id,
@@ -493,6 +544,11 @@ class InstanceGraph:
                 "label": edge.method,
                 "type": "smoothstep",
                 "animated": True,
+                "data": {
+                    "source_location": edge.location.to_dict(),
+                    "source_name": source_name,
+                    "target_name": target_name,
+                },
             })
 
         return {"nodes": rf_nodes, "edges": rf_edges}
