@@ -43,6 +43,6 @@ export const queryKeys = {
   // Instance graph (React Flow visualization)
   instanceGraph: (projectPath: string) => ["instance-graph", projectPath] as const,
   // Contracts API (AEGIS v2 Phase 5)
-  contracts: (filePath: string, symbolLine: number) =>
-    ["contracts", "discover", filePath, symbolLine] as const,
+  contracts: (filePath: string, symbolLine: number, levels?: number[]) =>
+    ["contracts", "discover", filePath, symbolLine, levels?.join(",") ?? "default"] as const,
 };

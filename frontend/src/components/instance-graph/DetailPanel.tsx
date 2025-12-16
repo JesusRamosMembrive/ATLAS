@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useDiscoverContracts } from "../../hooks/useDiscoverContracts";
-import type { ContractResponse, ThreadSafety, EvidencePolicy } from "../../api/types";
+import type { ContractResponse, ThreadSafety, EvidencePolicy, DocumentationType } from "../../api/types";
 
 interface DetailPanelProps {
   node: {
@@ -51,12 +51,44 @@ interface ContractSectionProps {
   symbolLine?: number;
 }
 
+type AnalysisChoice = "none" | "llm" | "static" | "skip";
+
 function ContractSection({ filePath, symbolLine }: ContractSectionProps): JSX.Element {
-  const { data, isLoading, error } = useDiscoverContracts({
+  // State for user's analysis choice when no documentation found
+  const [analysisChoice, setAnalysisChoice] = useState<AnalysisChoice>("none");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  // Determine which levels to use based on user choice
+  const getLevelsForChoice = useCallback((choice: AnalysisChoice): number[] | undefined => {
+    switch (choice) {
+      case "llm":
+        return [3]; // Only LLM extraction
+      case "static":
+        return [4]; // Only static analysis
+      default:
+        return undefined; // Default levels [1,2,3,4]
+    }
+  }, []);
+
+  const { data, isLoading, error, refetch } = useDiscoverContracts({
     filePath: filePath ?? "",
     symbolLine: symbolLine ?? 0,
     enabled: !!filePath && !!symbolLine,
+    levels: getLevelsForChoice(analysisChoice),
   });
+
+  // Handle user clicking analysis option
+  const handleAnalysisChoice = useCallback(async (choice: AnalysisChoice) => {
+    if (choice === "skip") {
+      setAnalysisChoice("skip");
+      return;
+    }
+    setAnalysisChoice(choice);
+    setIsAnalyzing(true);
+    // The hook will automatically refetch with new levels
+    await refetch();
+    setIsAnalyzing(false);
+  }, [refetch]);
 
   // No location available
   if (!filePath || !symbolLine) {
@@ -79,7 +111,7 @@ function ContractSection({ filePath, symbolLine }: ContractSectionProps): JSX.El
   }
 
   // Loading state
-  if (isLoading) {
+  if (isLoading || isAnalyzing) {
     return (
       <div
         style={{
@@ -92,7 +124,11 @@ function ContractSection({ filePath, symbolLine }: ContractSectionProps): JSX.El
         }}
       >
         <div style={{ fontSize: "13px", color: "#94a3b8" }}>
-          Discovering contracts...
+          {isAnalyzing && analysisChoice === "llm"
+            ? "Analyzing with AI (this may take a moment)..."
+            : isAnalyzing && analysisChoice === "static"
+            ? "Running static analysis..."
+            : "Discovering contracts..."}
         </div>
       </div>
     );
@@ -120,7 +156,149 @@ function ContractSection({ filePath, symbolLine }: ContractSectionProps): JSX.El
     );
   }
 
-  // No contracts found
+  // User chose to skip analysis
+  if (analysisChoice === "skip") {
+    return (
+      <div
+        style={{
+          marginTop: "16px",
+          padding: "16px",
+          backgroundColor: "#0f172a",
+          borderRadius: "6px",
+          border: "1px dashed #334155",
+          textAlign: "center",
+        }}
+      >
+        <div style={{ fontSize: "13px", color: "#64748b", fontStyle: "italic" }}>
+          Contract analysis skipped
+        </div>
+        <button
+          onClick={() => setAnalysisChoice("none")}
+          style={{
+            marginTop: "8px",
+            padding: "4px 8px",
+            fontSize: "11px",
+            color: "#3b82f6",
+            backgroundColor: "transparent",
+            border: "1px solid #3b82f6",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  // Check for warning: no documentation found (interactive flow)
+  const hasWarning = data?.warning === "no_documentation_found" && analysisChoice === "none";
+  const llmAvailable = data?.llm_available ?? false;
+
+  if (hasWarning) {
+    return (
+      <div
+        style={{
+          marginTop: "16px",
+          padding: "16px",
+          backgroundColor: "#0f172a",
+          borderRadius: "6px",
+          border: "1px solid #f59e0b",
+        }}
+      >
+        {/* Warning Header */}
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+          <span style={{ fontSize: "16px" }}>⚠️</span>
+          <span style={{ fontSize: "13px", color: "#f59e0b", fontWeight: 500 }}>
+            No documentation found
+          </span>
+        </div>
+
+        {/* Description */}
+        <div style={{ fontSize: "12px", color: "#94a3b8", marginBottom: "16px" }}>
+          This symbol has no @aegis-contract block or Doxygen documentation.
+          Choose an analysis method:
+        </div>
+
+        {/* Action Buttons */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          {/* LLM Option */}
+          <button
+            onClick={() => handleAnalysisChoice("llm")}
+            disabled={!llmAvailable}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "10px 12px",
+              backgroundColor: llmAvailable ? "#1e3a5f" : "#1e293b",
+              border: `1px solid ${llmAvailable ? "#3b82f6" : "#334155"}`,
+              borderRadius: "6px",
+              cursor: llmAvailable ? "pointer" : "not-allowed",
+              opacity: llmAvailable ? 1 : 0.5,
+            }}
+          >
+            <span style={{ fontSize: "14px" }}>🤖</span>
+            <div style={{ textAlign: "left", flex: 1 }}>
+              <div style={{ fontSize: "12px", color: llmAvailable ? "#f1f5f9" : "#64748b", fontWeight: 500 }}>
+                Analyze with AI (Ollama)
+              </div>
+              <div style={{ fontSize: "10px", color: "#64748b" }}>
+                {llmAvailable ? "More accurate, ~5-10s" : "Ollama not available"}
+              </div>
+            </div>
+            <span style={{ fontSize: "11px", color: "#f59e0b" }}>L3 60%</span>
+          </button>
+
+          {/* Static Analysis Option */}
+          <button
+            onClick={() => handleAnalysisChoice("static")}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "10px 12px",
+              backgroundColor: "#1e293b",
+              border: "1px solid #334155",
+              borderRadius: "6px",
+              cursor: "pointer",
+            }}
+          >
+            <span style={{ fontSize: "14px" }}>📊</span>
+            <div style={{ textAlign: "left", flex: 1 }}>
+              <div style={{ fontSize: "12px", color: "#f1f5f9", fontWeight: 500 }}>
+                Static Analysis
+              </div>
+              <div style={{ fontSize: "10px", color: "#64748b" }}>
+                Instant, less precise
+              </div>
+            </div>
+            <span style={{ fontSize: "11px", color: "#94a3b8" }}>L4 40%</span>
+          </button>
+
+          {/* Skip Option */}
+          <button
+            onClick={() => handleAnalysisChoice("skip")}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "6px",
+              padding: "8px 12px",
+              backgroundColor: "transparent",
+              border: "1px solid #334155",
+              borderRadius: "6px",
+              cursor: "pointer",
+            }}
+          >
+            <span style={{ fontSize: "12px", color: "#64748b" }}>❌ Don't analyze</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // No contracts found (after analysis or no warning)
   const contracts = data?.contracts ?? [];
   if (contracts.length === 0) {
     return (

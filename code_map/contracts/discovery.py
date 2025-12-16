@@ -12,6 +12,7 @@ Orchestrates multi-level contract extraction:
 
 import logging
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import List, Optional
 
@@ -21,6 +22,15 @@ from .patterns.static import StaticAnalyzer
 from .schema import ContractData
 
 logger = logging.getLogger(__name__)
+
+
+class DocumentationType(str, Enum):
+    """Type of documentation found near a symbol."""
+
+    AEGIS_CONTRACT = "aegis"  # L1: @aegis-contract-begin/end
+    DOXYGEN = "doxygen"  # L2: @pre, @post, @throws, @invariant
+    GENERIC_COMMENT = "comment"  # Has comment but no structured contract
+    NONE = "none"  # No documentation found
 
 
 @dataclass
@@ -53,6 +63,57 @@ class ContractDiscovery:
         self._enable_llm = enable_llm
         self._llm_extractor = LLMContractExtractor() if enable_llm else None
         self._static_analyzer = StaticAnalyzer()
+
+    def quick_scan(
+        self,
+        file_path: Path,
+        symbol_line: int,
+    ) -> DocumentationType:
+        """
+        Quick scan to detect what type of documentation exists.
+
+        This is a fast pre-check before running the full discovery pipeline.
+        It helps the UI decide whether to show warnings about missing docs.
+
+        Args:
+            file_path: File to analyze
+            symbol_line: Line of the symbol (1-indexed)
+
+        Returns:
+            DocumentationType indicating what was found
+        """
+        strategy = LanguageRegistry.get_for_file(file_path)
+        if not strategy:
+            return DocumentationType.NONE
+
+        try:
+            source = file_path.read_text(encoding="utf-8")
+        except Exception:
+            return DocumentationType.NONE
+
+        # Check for @aegis-contract block (Level 1)
+        block = strategy.find_contract_block(source, symbol_line)
+        if block:
+            return DocumentationType.AEGIS_CONTRACT
+
+        # Check for comment block (could be Doxygen or generic)
+        comment = strategy.find_comment_block(source, symbol_line)
+        if comment:
+            content = comment.content
+            # Check for Doxygen/structured patterns
+            doxygen_markers = ["@pre", "@post", "@throws", "@invariant", "@param", "@return"]
+            if any(marker in content for marker in doxygen_markers):
+                return DocumentationType.DOXYGEN
+            # Has comment but no structure
+            return DocumentationType.GENERIC_COMMENT
+
+        return DocumentationType.NONE
+
+    def is_llm_available(self) -> bool:
+        """Check if Ollama LLM is available for Level 3 extraction."""
+        if not self._enable_llm or not self._llm_extractor:
+            return False
+        return self._llm_extractor.is_available()
 
     def discover(
         self,

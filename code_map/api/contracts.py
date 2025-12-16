@@ -7,17 +7,21 @@ Provides REST interface for AEGIS v2 contract system.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
+logger = logging.getLogger(__name__)
+
 from ..contracts import (
     ContractData,
     ContractDiscovery,
     ContractRewriter,
     DiscoveryStats,
+    DocumentationType,
     EvidenceItem,
     EvidencePolicy,
     ThreadSafety,
@@ -97,6 +101,10 @@ class DiscoverResponse(BaseModel):
 
     contracts: List[Dict[str, Any]]
     stats: Dict[str, int]
+    # New fields for interactive flow
+    documentation_type: Optional[str] = None  # aegis, doxygen, comment, none
+    warning: Optional[str] = None  # no_documentation_found, etc.
+    llm_available: bool = False
 
 
 class WriteRequest(BaseModel):
@@ -160,6 +168,12 @@ async def discover_contracts(
 
     Runs the multi-level discovery pipeline to find contracts
     embedded in code comments and documentation.
+
+    The response includes:
+    - documentation_type: What kind of docs were found (aegis, doxygen, comment, none)
+    - warning: Set to "no_documentation_found" if no structured docs exist
+    - llm_available: Whether Ollama is available for L3 extraction
+    - contracts: The discovered contracts (may be empty if user needs to choose method)
     """
     file_path = Path(request.file_path)
 
@@ -169,26 +183,83 @@ async def discover_contracts(
     if not file_path.exists():
         raise HTTPException(status_code=404, detail=f"File not found: {file_path}")
 
-    discovery = ContractDiscovery(enable_llm=True)
-
-    if request.symbol_line:
-        # Discover single symbol
-        contract = await discovery.discover_async(
-            file_path, request.symbol_line, request.levels
-        )
-        contracts = [contract.to_dict()]
-        stats = {
-            f"level_{contract.source_level}_found": 1,
-            "total_symbols": 1,
-        }
-    else:
-        # TODO: Discover all symbols in file
-        # For now, require symbol_line
+    if not request.symbol_line:
         raise HTTPException(
             status_code=400, detail="symbol_line is required (full-file scan not yet implemented)"
         )
 
-    return DiscoverResponse(contracts=contracts, stats=stats)
+    logger.info("[DEBUG] /contracts/discover: file=%s, symbol_line=%d",
+                file_path, request.symbol_line)
+
+    discovery = ContractDiscovery(enable_llm=True)
+
+    # Quick scan to detect documentation type
+    doc_type = discovery.quick_scan(file_path, request.symbol_line)
+    logger.info("[DEBUG] quick_scan result: %s", doc_type)
+    llm_available = discovery.is_llm_available()
+
+    # Determine what levels to try based on documentation type
+    if doc_type == DocumentationType.NONE:
+        # No documentation found - return warning, let UI decide
+        # Only run static analysis (L4) if explicitly requested
+        if request.levels and (3 in request.levels or 4 in request.levels):
+            # User explicitly requested L3/L4
+            contract = await discovery.discover_async(
+                file_path, request.symbol_line, request.levels
+            )
+            contracts = [contract.to_dict()]
+            stats = {f"level_{contract.source_level}_found": 1, "total_symbols": 1}
+        else:
+            # Return empty with warning - UI will show options
+            contracts = []
+            stats = {"total_symbols": 1, "level_5_found": 1}
+
+        return DiscoverResponse(
+            contracts=contracts,
+            stats=stats,
+            documentation_type=doc_type.value,
+            warning="no_documentation_found",
+            llm_available=llm_available,
+        )
+
+    elif doc_type == DocumentationType.GENERIC_COMMENT:
+        # Has comment but no structured contract
+        # Still try L3/L4 if available, but warn user
+        if request.levels:
+            levels_to_try = request.levels
+        else:
+            # Default: skip L1/L2 (won't find anything), try L3/L4
+            levels_to_try = [3, 4] if llm_available else [4]
+
+        contract = await discovery.discover_async(
+            file_path, request.symbol_line, levels_to_try
+        )
+        contracts = [contract.to_dict()]
+        stats = {f"level_{contract.source_level}_found": 1, "total_symbols": 1}
+
+        return DiscoverResponse(
+            contracts=contracts,
+            stats=stats,
+            documentation_type=doc_type.value,
+            warning="no_structured_documentation",
+            llm_available=llm_available,
+        )
+
+    else:
+        # Has structured documentation (AEGIS_CONTRACT or DOXYGEN)
+        # Run normal discovery
+        contract = await discovery.discover_async(
+            file_path, request.symbol_line, request.levels
+        )
+        contracts = [contract.to_dict()]
+        stats = {f"level_{contract.source_level}_found": 1, "total_symbols": 1}
+
+        return DiscoverResponse(
+            contracts=contracts,
+            stats=stats,
+            documentation_type=doc_type.value,
+            llm_available=llm_available,
+        )
 
 
 @router.post("/write", response_model=WriteResponse)

@@ -13,7 +13,7 @@ from .schema import (
     EvidenceResult,
     ThreadSafety,
 )
-from .discovery import ContractDiscovery, DiscoveryStats
+from .discovery import ContractDiscovery, DiscoveryStats, DocumentationType
 from .rewriter import ContractRewriter
 
 # Import language strategies to trigger registration
@@ -29,6 +29,7 @@ __all__ = [
     # Discovery
     "ContractDiscovery",
     "DiscoveryStats",
+    "DocumentationType",
     # Rewriter
     "ContractRewriter",
 ]

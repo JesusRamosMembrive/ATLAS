@@ -563,7 +563,13 @@ export interface DiscoverContractsRequest {
   levels?: number[] | null;
 }
 
+export type DocumentationType = "aegis" | "doxygen" | "comment" | "none";
+
 export interface DiscoverContractsResponse {
   contracts: ContractResponse[];
   stats: Record<string, number>;
+  // New fields for interactive flow
+  documentation_type?: DocumentationType | null;
+  warning?: string | null;  // "no_documentation_found", etc.
+  llm_available: boolean;
 }

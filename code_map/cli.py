@@ -5,6 +5,7 @@ CLI principal para gestionar Code Map desde la terminal.
 
 from __future__ import annotations
 
+import logging
 import os
 from pathlib import Path
 from typing import Optional, TYPE_CHECKING
@@ -96,6 +97,16 @@ def run(
         f"Escaneando proyecto en {settings.root_path}",
         fg=typer.colors.GREEN,
     )
+
+    # Configure logging for our modules to show [DEBUG] messages
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(levelname)s:%(name)s:%(message)s",
+    )
+    # Ensure our v2 modules log at INFO level
+    logging.getLogger("code_map.v2").setLevel(logging.INFO)
+    logging.getLogger("code_map.api").setLevel(logging.INFO)
+    logging.getLogger("code_map.contracts").setLevel(logging.INFO)
 
     # Use the combined app with Socket.IO PTY support
     # Falls back to plain FastAPI on Windows or if Socket.IO init fails

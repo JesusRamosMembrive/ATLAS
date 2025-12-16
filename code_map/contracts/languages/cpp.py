@@ -7,12 +7,15 @@ Supports:
 - Doxygen documentation patterns (@pre, @post, @throws, etc.)
 """
 
+import logging
 import re
 from typing import List, Optional, Tuple
 
 from ..schema import ContractData, ThreadSafety
 from .base import CommentBlock, ContractBlock, LanguageStrategy
 from .registry import LanguageRegistry
+
+logger = logging.getLogger(__name__)
 
 
 @LanguageRegistry.register
@@ -83,17 +86,24 @@ class CppLanguageStrategy(LanguageStrategy):
         end_idx = None
 
         # Search in the 30 lines before the symbol
-        search_start = max(0, symbol_line - 30)
-        for i in range(symbol_line - 1, search_start - 1, -1):
+        # Note: symbol_line is 1-based, lines[] is 0-based
+        # Start from line BEFORE the symbol (symbol_line - 2 in 0-based)
+        search_start = max(0, symbol_line - 31)
+        logger.info("[DEBUG] find_contract_block: symbol_line=%d, search_range=[%d..%d]",
+                    symbol_line, search_start, symbol_line - 2)
+        for i in range(symbol_line - 2, search_start - 1, -1):
             if i >= len(lines):
                 continue
             line = lines[i]
             if end_marker in line and end_idx is None:
                 end_idx = i
+                logger.info("[DEBUG] Found end_marker at line %d (0-indexed)", i)
             if start_marker in line:
                 start_idx = i
+                logger.info("[DEBUG] Found start_marker at line %d (0-indexed)", i)
                 break
 
+        logger.info("[DEBUG] Result: start_idx=%s, end_idx=%s", start_idx, end_idx)
         if start_idx is not None and end_idx is not None and start_idx < end_idx:
             # Extract content between markers
             content_lines = []

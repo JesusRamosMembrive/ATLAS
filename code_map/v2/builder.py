@@ -69,9 +69,13 @@ class TypeLocationResolver:
         Returns:
             Location of the type definition, or None if not found
         """
+        logger.info("[DEBUG] TypeLocationResolver.resolve('%s') called", type_name)
+
         # Check cache first
         if type_name in self._cache:
-            return self._cache[type_name]
+            cached = self._cache[type_name]
+            logger.info("[DEBUG] Cache hit for '%s': %s", type_name, cached)
+            return cached
 
         # Build index if not yet done
         if self._type_index is None:
@@ -79,12 +83,14 @@ class TypeLocationResolver:
 
         # Look up in index
         file_path = self._type_index.get(type_name)
+        logger.info("[DEBUG] Type index lookup '%s' -> %s", type_name, file_path)
         if file_path is None:
             self._cache[type_name] = None
             return None
 
         # Find exact line number
         location = self._find_definition_line(file_path, type_name)
+        logger.info("[DEBUG] _find_definition_line('%s', '%s') -> %s", file_path, type_name, location)
         self._cache[type_name] = location
         return location
 
@@ -205,8 +211,12 @@ class GraphBuilder:
 
     def _create_node(self, instance: InstanceInfo) -> InstanceNode:
         """Create a graph node from instance info."""
+        logger.info("[DEBUG] _create_node() for instance '%s'", instance.name)
+
         # Determine the type symbol - prefer actual_type if available
         type_symbol = instance.actual_type or instance.type_name
+        logger.info("[DEBUG]   actual_type=%s, type_name=%s -> type_symbol=%s",
+                    instance.actual_type, instance.type_name, type_symbol)
 
         # If we have a factory name, we can infer the type from it
         # e.g., createGeneratorModule -> GeneratorModule
@@ -217,11 +227,18 @@ class GraphBuilder:
                 type_symbol = factory[6:]  # Remove "create" prefix
             elif factory.startswith("make"):
                 type_symbol = factory[4:]  # Remove "make" prefix
+            logger.info("[DEBUG]   Inferred type_symbol from factory '%s' -> '%s'",
+                        instance.factory_name, type_symbol)
 
         # Resolve type location for jump-to-definition
         type_location: Optional[Location] = None
         if self._type_resolver and type_symbol and type_symbol != "auto":
+            logger.info("[DEBUG]   Resolving type_location for '%s'...", type_symbol)
             type_location = self._type_resolver.resolve(type_symbol)
+            logger.info("[DEBUG]   type_location resolved: %s", type_location)
+        else:
+            logger.info("[DEBUG]   Skipping type resolution (resolver=%s, type_symbol=%s)",
+                        self._type_resolver is not None, type_symbol)
 
         return InstanceNode(
             id=str(uuid4()),

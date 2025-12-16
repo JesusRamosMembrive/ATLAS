@@ -1,21 +1,21 @@
 {
   "version": "1.0",
   "project_path": "/home/jesusramos/Workspace/AEGIS",
-  "updated_at": "2025-12-15T20:48:10.247376+00:00",
+  "updated_at": "2025-12-16T15:37:30.070217+00:00",
   "graphs": [
     {
       "id": "b00197f91c01353a",
       "project_path": "/home/jesusramos/Workspace/AEGIS",
       "source_file": "/home/jesusramos/Workspace/Actia Prueba Tecnica/main.cpp",
       "function_name": "main",
-      "analyzed_at": "2025-12-15T20:48:10.247346+00:00",
+      "analyzed_at": "2025-12-16T15:37:30.070170+00:00",
       "source_modified_at": "2025-12-12T12:20:52.473548+00:00",
       "node_count": 4,
       "edge_count": 2,
       "graph_data": {
         "nodes": [
           {
-            "id": "448ada29-af1c-4d14-a30b-fd138073af68",
+            "id": "c99097c0-9bfd-43ab-9102-bedbbc344fd3",
             "name": "m1",
             "type_symbol": "GeneratorModule",
             "role": "source",
@@ -35,7 +35,7 @@
             },
             "type_location": {
               "file_path": "/home/jesusramos/Workspace/Actia Prueba Tecnica/GeneratorModule.h",
-              "line": 17,
+              "line": 32,
               "column": 0,
               "end_line": null,
               "end_column": null
@@ -43,7 +43,7 @@
             "contract": null
           },
           {
-            "id": "96fb7b21-a2fe-4023-b0a6-405c431d2eba",
+            "id": "3a8508d1-af30-4838-a925-b6173b351b40",
             "name": "m2",
             "type_symbol": "FilterModule",
             "role": "processing",
@@ -65,7 +65,7 @@
             },
             "type_location": {
               "file_path": "/home/jesusramos/Workspace/Actia Prueba Tecnica/FilterModule.h",
-              "line": 12,
+              "line": 36,
               "column": 0,
               "end_line": null,
               "end_column": null
@@ -73,7 +73,7 @@
             "contract": null
           },
           {
-            "id": "e7a529d9-ac52-4267-ad33-ea06f5bd5f15",
+            "id": "2a1d81cd-5e67-408b-860a-b9e22085c24b",
             "name": "m3",
             "type_symbol": "PrinterModule",
             "role": "sink",
@@ -93,7 +93,7 @@
             },
             "type_location": {
               "file_path": "/home/jesusramos/Workspace/Actia Prueba Tecnica/PrinterModule.h",
-              "line": 13,
+              "line": 34,
               "column": 0,
               "end_line": null,
               "end_column": null
@@ -101,7 +101,7 @@
             "contract": null
           },
           {
-            "id": "4a30ed33-c1aa-4d25-8483-0bc6caa2b2e7",
+            "id": "eddccb90-885d-442d-a64c-a4747d135159",
             "name": "timeToRunSeconds",
             "type_symbol": "int",
             "role": "unknown",
@@ -125,9 +125,9 @@
         ],
         "edges": [
           {
-            "id": "56dfab8f-c959-4e1c-a51b-c389b771bc4d",
-            "source_id": "448ada29-af1c-4d14-a30b-fd138073af68",
-            "target_id": "96fb7b21-a2fe-4023-b0a6-405c431d2eba",
+            "id": "98feedda-8ebd-4164-9f14-0a1f237a2a29",
+            "source_id": "c99097c0-9bfd-43ab-9102-bedbbc344fd3",
+            "target_id": "3a8508d1-af30-4838-a925-b6173b351b40",
             "method": "setNext",
             "location": {
               "file_path": "/home/jesusramos/Workspace/Actia Prueba Tecnica/main.cpp",
@@ -140,9 +140,9 @@
             "metadata": {}
           },
           {
-            "id": "7a7debca-4023-4205-af30-9766e30b017e",
-            "source_id": "96fb7b21-a2fe-4023-b0a6-405c431d2eba",
-            "target_id": "e7a529d9-ac52-4267-ad33-ea06f5bd5f15",
+            "id": "d375a14a-4c00-4d96-9134-a513db3090b6",
+            "source_id": "3a8508d1-af30-4838-a925-b6173b351b40",
+            "target_id": "2a1d81cd-5e67-408b-860a-b9e22085c24b",
             "method": "setNext",
             "location": {
               "file_path": "/home/jesusramos/Workspace/Actia Prueba Tecnica/main.cpp",

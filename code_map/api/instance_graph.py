@@ -8,6 +8,7 @@ Uses InstanceGraphService for caching and persistence.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -16,6 +17,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from ..state import AppState
 from .deps import get_app_state
 from .schemas import InstanceGraphResponse
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/instance-graph", tags=["instance-graph"])
 
@@ -72,12 +75,18 @@ async def get_instance_graph(
         )
 
     # Get graph from service (uses cache if valid)
+    logger.info("[DEBUG] API: Calling get_graph for %s", main_cpp)
     graph = await state.instance_graph.get_graph(main_cpp, "main")
+    logger.info("[DEBUG] API: get_graph returned graph=%s", graph is not None)
     if graph is None:
         raise HTTPException(
             status_code=422,
             detail=f"Failed to extract composition root from {main_cpp}. Check that main() function exists.",
         )
+
+    # Log node type_locations for debugging
+    for node in graph.iter_nodes():
+        logger.info("[DEBUG] API GET: Node '%s' type_location=%s", node.name, node.type_location)
 
     # Convert to React Flow format
     react_flow_data = graph.to_react_flow()

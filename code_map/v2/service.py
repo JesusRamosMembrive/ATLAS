@@ -211,6 +211,7 @@ class InstanceGraphService:
 
         try:
             # Phase 1: Extract composition root
+            logger.info("[DEBUG] Phase 1: Extracting composition root from %s", source_file)
             composition_root = self.extractor.extract(source_file, function_name)
             if composition_root is None:
                 logger.warning(
@@ -220,11 +221,23 @@ class InstanceGraphService:
                 )
                 return None
 
+            logger.info("[DEBUG] Phase 1 complete: Found %d instances, %d wiring",
+                        len(composition_root.instances), len(composition_root.wiring))
+            for inst in composition_root.instances:
+                logger.info("[DEBUG]   Instance: name=%s, type=%s, actual_type=%s, factory=%s",
+                            inst.name, inst.type_name, inst.actual_type, inst.factory_name)
+
             # Phase 2: Build graph with type resolution from project directory
             # Use the source file's directory as project root for type lookup
             project_dir = source_file.parent
+            logger.info("[DEBUG] Phase 2: Building graph with project_dir=%s", project_dir)
             builder = GraphBuilder(project_root=project_dir)
             graph = builder.build(composition_root)
+
+            # Log resulting type_locations
+            for node in graph.iter_nodes():
+                logger.info("[DEBUG] Node '%s' (type=%s): type_location=%s",
+                            node.name, node.type_symbol, node.type_location)
 
             # Update cache
             current_mtime = _get_file_mtime(source_file)
