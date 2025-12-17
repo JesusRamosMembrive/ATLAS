@@ -10,6 +10,8 @@ interface CallFlowNodeData {
   isEntryPoint: boolean;
   depth: number;
   docstring?: string | null;
+  complexity?: number | null;  // Cyclomatic complexity (McCabe)
+  loc?: number | null;         // Lines of code
 }
 
 const KIND_COLORS = {
@@ -27,6 +29,17 @@ const KIND_LABELS = {
   builtin: "Built-in",
   class: "Class",
 } as const;
+
+/**
+ * Get color for cyclomatic complexity value.
+ * Uses same thresholds as ComplexityCard for consistency.
+ */
+function getComplexityColor(value: number): string {
+  if (value <= 5) return "#4ade80";   // Green - Low
+  if (value <= 10) return "#facc15";  // Yellow - Medium
+  if (value <= 25) return "#fb923c";  // Orange - High
+  return "#f87171";                    // Red - Extreme
+}
 
 export const CallFlowNode = memo(({ data }: NodeProps<CallFlowNodeData>) => {
   const kind = data.kind as keyof typeof KIND_COLORS;
@@ -99,21 +112,44 @@ export const CallFlowNode = memo(({ data }: NodeProps<CallFlowNodeData>) => {
           </div>
         )}
 
-        {/* Kind Badge */}
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            fontSize: "11px",
-            fontWeight: 500,
-            padding: "2px 8px",
-            borderRadius: "4px",
-            backgroundColor: kindColor,
-            color: "#fff",
-            width: "fit-content",
-          }}
-        >
-          {kindLabel}
+        {/* Kind and Complexity Badges */}
+        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+          {/* Kind Badge */}
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              fontSize: "11px",
+              fontWeight: 500,
+              padding: "2px 8px",
+              borderRadius: "4px",
+              backgroundColor: kindColor,
+              color: "#fff",
+            }}
+          >
+            {kindLabel}
+          </div>
+
+          {/* Complexity Badge */}
+          {data.complexity != null && (
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px",
+                fontSize: "11px",
+                fontWeight: 600,
+                padding: "2px 8px",
+                borderRadius: "4px",
+                backgroundColor: getComplexityColor(data.complexity) + "20",
+                color: getComplexityColor(data.complexity),
+              }}
+              title={`Cyclomatic Complexity: ${data.complexity}${data.loc ? ` | ${data.loc} lines` : ""}`}
+            >
+              <span style={{ fontWeight: 400 }}>CC</span>
+              {data.complexity}
+            </div>
+          )}
         </div>
 
         {/* Location */}

@@ -125,6 +125,73 @@ class PythonCallFlowExtractor:
         return self._type_resolver
 
     # ─────────────────────────────────────────────────────────────
+    # Complexity calculation
+    # ─────────────────────────────────────────────────────────────
+
+    def _calculate_complexity(self, func_node: Any) -> int:
+        """
+        Calculate cyclomatic complexity (McCabe) for a function node.
+
+        Counts decision points: if, for, while, except, with, match/case,
+        comprehensions, boolean operators (and, or).
+
+        Args:
+            func_node: tree-sitter node for the function
+
+        Returns:
+            Cyclomatic complexity (1 + number of decision points)
+        """
+        count = 0
+        to_visit = [func_node]
+
+        # Decision point node types in Python
+        decision_types = {
+            "if_statement",
+            "elif_clause",
+            "for_statement",
+            "while_statement",
+            "except_clause",
+            "with_statement",
+            "case_clause",  # match/case (Python 3.10+)
+            "list_comprehension",
+            "dictionary_comprehension",
+            "set_comprehension",
+            "generator_expression",
+            "conditional_expression",  # ternary: x if cond else y
+        }
+
+        # Boolean operators also add complexity
+        boolean_ops = {"and", "or"}
+
+        while to_visit:
+            node = to_visit.pop()
+            if node.type in decision_types:
+                count += 1
+            elif node.type == "boolean_operator":
+                # Check if it's 'and' or 'or'
+                for child in node.children:
+                    if child.type in boolean_ops:
+                        count += 1
+                        break
+            to_visit.extend(node.children)
+
+        return 1 + count
+
+    def _calculate_loc(self, func_node: Any) -> int:
+        """
+        Calculate lines of code for a function node.
+
+        Args:
+            func_node: tree-sitter node for the function
+
+        Returns:
+            Number of lines (end_line - start_line + 1)
+        """
+        start_line = func_node.start_point[0]
+        end_line = func_node.end_point[0]
+        return end_line - start_line + 1
+
+    # ─────────────────────────────────────────────────────────────
     # v2 Resolution methods
     # ─────────────────────────────────────────────────────────────
 
@@ -257,6 +324,8 @@ class PythonCallFlowExtractor:
             docstring=self._get_docstring(func_node, source),
             symbol_id=entry_id,
             resolution_status=ResolutionStatus.RESOLVED_PROJECT,
+            complexity=self._calculate_complexity(func_node),
+            loc=self._calculate_loc(func_node),
         )
 
         # Initialize graph
@@ -428,6 +497,12 @@ class PythonCallFlowExtractor:
                     tree.root_node, target_func, source, target_class
                 )
                 if target_node_ast:
+                    # Update node with complexity metrics now that we have AST
+                    node_to_update = graph.get_node(target_id)
+                    if node_to_update:
+                        node_to_update.complexity = self._calculate_complexity(target_node_ast)
+                        node_to_update.loc = self._calculate_loc(target_node_ast)
+
                     self._extract_calls_recursive(
                         graph=graph,
                         node=target_node_ast,
@@ -451,6 +526,12 @@ class PythonCallFlowExtractor:
                         target_tree.root_node, target_func, target_source, target_class
                     )
                     if target_node_ast:
+                        # Update node with complexity metrics now that we have AST
+                        node_to_update = graph.get_node(target_id)
+                        if node_to_update:
+                            node_to_update.complexity = self._calculate_complexity(target_node_ast)
+                            node_to_update.loc = self._calculate_loc(target_node_ast)
+
                         self._extract_calls_recursive(
                             graph=graph,
                             node=target_node_ast,

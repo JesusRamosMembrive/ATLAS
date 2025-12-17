@@ -86,6 +86,8 @@ class CallNode:
         symbol_id: Stable identifier format: {rel_path}:{line}:{col}:{kind}:{name}
         resolution_status: How this node was resolved
         reasons: Explanation for UNRESOLVED/AMBIGUOUS status
+        complexity: Cyclomatic complexity (McCabe) - None if not available
+        loc: Lines of code in the function - None if not available
     """
 
     id: str
@@ -101,6 +103,8 @@ class CallNode:
     symbol_id: Optional[str] = None  # Stable ID: {rel_path}:{line}:{col}:{kind}:{name}
     resolution_status: ResolutionStatus = ResolutionStatus.RESOLVED_PROJECT
     reasons: Optional[str] = None  # Why UNRESOLVED/AMBIGUOUS
+    complexity: Optional[int] = None  # Cyclomatic complexity (McCabe)
+    loc: Optional[int] = None  # Lines of code
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
@@ -118,6 +122,8 @@ class CallNode:
             "symbol_id": self.symbol_id,
             "resolution_status": self.resolution_status.value,
             "reasons": self.reasons,
+            "complexity": self.complexity,
+            "loc": self.loc,
         }
 
     @classmethod
@@ -138,6 +144,8 @@ class CallNode:
             symbol_id=data.get("symbol_id"),
             resolution_status=ResolutionStatus(status_val),
             reasons=data.get("reasons"),
+            complexity=data.get("complexity"),
+            loc=data.get("loc"),
         )
 
 
@@ -320,6 +328,8 @@ class CallGraph:
                     "symbolId": node.symbol_id,
                     "resolutionStatus": node.resolution_status.value,
                     "reasons": node.reasons,
+                    "complexity": node.complexity,
+                    "loc": node.loc,
                 },
             })
 

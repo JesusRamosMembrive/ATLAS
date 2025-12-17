@@ -312,6 +312,66 @@ class CppCallFlowExtractor:
         return extension.lower() in cls.CPP_EXTENSIONS
 
     # ─────────────────────────────────────────────────────────────
+    # Complexity Calculation
+    # ─────────────────────────────────────────────────────────────
+
+    def _calculate_complexity(self, func_node: Any) -> int:
+        """
+        Calculate cyclomatic complexity (McCabe) for a function node.
+
+        Counts decision points: if, for, while, switch/case, catch,
+        ternary expressions, && and || operators.
+
+        Args:
+            func_node: tree-sitter node for the function
+
+        Returns:
+            Cyclomatic complexity (1 + number of decision points)
+        """
+        count = 0
+        to_visit = [func_node]
+
+        # Decision point node types in C++
+        decision_types = {
+            "if_statement",
+            "for_statement",
+            "for_range_loop",
+            "while_statement",
+            "do_statement",
+            "case_statement",
+            "catch_clause",
+            "conditional_expression",  # ternary: x ? y : z
+        }
+
+        while to_visit:
+            node = to_visit.pop()
+            if node.type in decision_types:
+                count += 1
+            elif node.type == "binary_expression":
+                # Check for && or || operators
+                for child in node.children:
+                    if child.type in ("&&", "||"):
+                        count += 1
+                        break
+            to_visit.extend(node.children)
+
+        return 1 + count
+
+    def _calculate_loc(self, func_node: Any) -> int:
+        """
+        Calculate lines of code for a function node.
+
+        Args:
+            func_node: tree-sitter node for the function
+
+        Returns:
+            Number of lines (end_line - start_line + 1)
+        """
+        start_line = func_node.start_point[0]
+        end_line = func_node.end_point[0]
+        return end_line - start_line + 1
+
+    # ─────────────────────────────────────────────────────────────
     # Call Flow Extraction (v2)
     # ─────────────────────────────────────────────────────────────
 
@@ -383,6 +443,8 @@ class CppCallFlowExtractor:
             depth=0,
             symbol_id=entry_id,
             resolution_status=ResolutionStatus.RESOLVED_PROJECT,
+            complexity=self._calculate_complexity(func_node),
+            loc=self._calculate_loc(func_node),
         )
 
         # Initialize graph
@@ -621,6 +683,8 @@ class CppCallFlowExtractor:
                     depth=depth,
                     symbol_id=target_id,
                     resolution_status=ResolutionStatus.RESOLVED_PROJECT,
+                    complexity=self._calculate_complexity(target_node),
+                    loc=self._calculate_loc(target_node),
                 )
                 graph.add_node(target_node_obj)
 
