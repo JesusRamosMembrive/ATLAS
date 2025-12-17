@@ -40,8 +40,6 @@ export const queryKeys = {
     ["similarity", "analyze", extensions.sort().join(","), type3] as const,
   similarityHotspots: (limit: number, extensions?: string[]) =>
     ["similarity", "hotspots", limit, extensions?.sort().join(",") ?? ""] as const,
-  // Instance graph (React Flow visualization)
-  instanceGraph: (projectPath: string) => ["instance-graph", projectPath] as const,
   // Contracts API (AEGIS v2 Phase 5)
   contracts: (filePath: string, symbolLine: number, levels?: number[]) =>
     ["contracts", "discover", filePath, symbolLine, levels?.join(",") ?? "default"] as const,

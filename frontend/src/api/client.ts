@@ -358,6 +358,21 @@ export function listDirectories(path?: string): Promise<ListDirectoriesResponse>
   });
 }
 
+export interface ListFilesResponse {
+  current_path: string;
+  directories: { name: string; path: string; is_parent: boolean }[];
+  files: { name: string; path: string; extension: string; size_bytes: number }[];
+}
+
+export function listFiles(path?: string, extensions: string = ".py"): Promise<ListFilesResponse> {
+  const params = new URLSearchParams();
+  if (path) params.set("path", path);
+  params.set("extensions", extensions);
+  return fetchJson(`/settings/list-files?${params.toString()}`, {
+    method: "GET",
+  });
+}
+
 /**
  * Obtiene el estado Stage-Aware del proyecto.
  */
@@ -808,33 +823,6 @@ export function getSimilarityDefaultPatterns(): Promise<string[]> {
   return fetchJson<{ patterns: string[] }>("/similarity/default-exclude-patterns").then(
     (res) => res.patterns
   );
-}
-
-// =============================================================================
-// Instance Graph API (React Flow Visualization)
-// =============================================================================
-
-/**
- * Get the instance graph for React Flow visualization.
- *
- * Args:
- *     projectPath: Path to the project to analyze
- *
- * Returns:
- *     Promise with nodes, edges, and metadata for React Flow
- *
- * Notes:
- *     - Endpoint: GET /api/instance-graph/{projectPath}
- *     - Analyzes module instantiation patterns
- *     - Returns nodes with role classification (source/processing/sink)
- */
-export async function getInstanceGraph(projectPath: string): Promise<import('./instanceGraphTypes').InstanceGraphResponse> {
-  const url = buildUrl(`/instance-graph/${encodeURIComponent(projectPath)}`);
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch instance graph: ${response.statusText}`);
-  }
-  return response.json();
 }
 
 // =============================================================================

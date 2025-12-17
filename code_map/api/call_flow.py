@@ -18,6 +18,8 @@ from ..v2.call_flow.extractor import PythonCallFlowExtractor
 from .schemas import (
     CallFlowEntryPointSchema,
     CallFlowEntryPointsResponse,
+    CallFlowIgnoredCallSchema,
+    CallFlowResolutionStatus,
     CallFlowResponse,
 )
 
@@ -179,6 +181,17 @@ async def get_call_flow(
     # Convert to React Flow format
     react_flow_data = graph.to_react_flow()
 
+    # Convert ignored calls to schema format
+    ignored_calls_schema = [
+        CallFlowIgnoredCallSchema(
+            expression=ic.expression,
+            status=CallFlowResolutionStatus(ic.status.value),
+            call_site_line=ic.call_site_line,
+            module_hint=ic.module_hint,
+        )
+        for ic in graph.ignored_calls[:50]  # Limit to first 50
+    ]
+
     return CallFlowResponse(
         nodes=react_flow_data["nodes"],
         edges=react_flow_data["edges"],
@@ -190,7 +203,8 @@ async def get_call_flow(
             "max_depth_reached": graph.max_depth_reached,
             "node_count": graph.node_count(),
             "edge_count": graph.edge_count(),
-            "external_calls": graph.external_calls[:20],  # Limit to first 20
-            "external_calls_count": len(graph.external_calls),
         },
+        ignored_calls=ignored_calls_schema,
+        unresolved_calls=graph.unresolved_calls[:20],  # Limit to first 20
+        diagnostics=graph.diagnostics,
     )

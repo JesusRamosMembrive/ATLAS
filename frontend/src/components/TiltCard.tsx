@@ -157,20 +157,4 @@ export const CardIcons = {
       <path d="M8 8l8 8" strokeDasharray="2 2" opacity="0.6" />
     </svg>
   ),
-  InstanceGraph: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      {/* Source node (left) */}
-      <circle cx="4" cy="12" r="3" fill="currentColor" opacity="0.3" />
-      {/* Processing node (center) */}
-      <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.5" />
-      {/* Sink node (right) */}
-      <circle cx="20" cy="12" r="3" fill="currentColor" opacity="0.7" />
-      {/* Edges */}
-      <path d="M7 12h2" />
-      <path d="M15 12h2" />
-      {/* Arrowheads */}
-      <polyline points="8 10 10 12 8 14" opacity="0.6" />
-      <polyline points="16 10 18 12 16 14" opacity="0.6" />
-    </svg>
-  ),
 };

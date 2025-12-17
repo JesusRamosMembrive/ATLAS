@@ -30,7 +30,6 @@ export function HeaderBar({
     { to: "/code-map", label: "Analysis" },
     { to: "/docs", label: "Docs" },
     { to: "/class-uml", label: "UML" },
-    { to: "/instance-graph", label: "Graphs" },
     { to: "/call-flow", label: "Call Flow" },
     { to: "/linters", label: "Linters" },
     { to: "/similarity", label: "Similarity" },

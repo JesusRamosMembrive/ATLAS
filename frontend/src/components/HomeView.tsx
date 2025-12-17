@@ -224,17 +224,6 @@ export function HomeView({
           <span className="home-card-cta">View UML →</span>
         </TiltCard>
 
-        <TiltCard to="/instance-graph" icon={<CardIcons.InstanceGraph />}>
-          <div className="home-card-body">
-            <h3>Instance Graph</h3>
-            <p>
-              Visualize runtime pipelines and component wiring. See how instances connect
-              in composition roots with React Flow interactive graphs.
-            </p>
-          </div>
-          <span className="home-card-cta">View Graph →</span>
-        </TiltCard>
-
         <TiltCard to="/timeline" icon={<CardIcons.Timeline />}>
           <div className="home-card-body">
             <h3>Code Timeline</h3>

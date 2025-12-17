@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 
 import { useCallFlowEntryPointsQuery, useCallFlowQuery } from "../hooks/useCallFlowQuery";
 import { CallFlowGraph } from "./call-flow/CallFlowGraph";
-import { DirectoryBrowserModal } from "./settings/DirectoryBrowserModal";
+import { FileBrowserModal } from "./settings/FileBrowserModal";
 import type { CallFlowEntryPoint } from "../api/types";
 
 export function CallFlowView(): JSX.Element {
@@ -496,10 +496,11 @@ export function CallFlowView(): JSX.Element {
         )}
       </div>
 
-      {/* Directory Browser Modal */}
-      <DirectoryBrowserModal
+      {/* File Browser Modal */}
+      <FileBrowserModal
         isOpen={isBrowseModalOpen}
         currentPath={inputValue || "/home"}
+        extensions=".py"
         onClose={() => setIsBrowseModalOpen(false)}
         onSelect={handleBrowseSelect}
       />

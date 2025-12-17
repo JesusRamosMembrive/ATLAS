@@ -6,6 +6,7 @@ Esquemas Pydantic para serializar respuestas de la API.
 from __future__ import annotations
 
 from datetime import datetime
+from enum import Enum
 from typing import Any, Dict, Iterable, List, Optional
 
 from pydantic import BaseModel, Field, ConfigDict
@@ -626,6 +627,27 @@ class ListDirectoriesResponse(BaseModel):
     )
 
 
+class FileItem(BaseModel):
+    """Representa un archivo en el listado."""
+
+    name: str = Field(..., description="Nombre del archivo")
+    path: str = Field(..., description="Path absoluto del archivo")
+    extension: str = Field(..., description="Extensión del archivo")
+    size_bytes: int = Field(default=0, description="Tamaño en bytes")
+
+
+class ListFilesResponse(BaseModel):
+    """Respuesta al listar directorios y archivos."""
+
+    current_path: str = Field(..., description="Path del directorio actual")
+    directories: List[DirectoryItem] = Field(
+        default_factory=list, description="Lista de subdirectorios"
+    )
+    files: List[FileItem] = Field(
+        default_factory=list, description="Lista de archivos que coinciden con el filtro"
+    )
+
+
 class ClassGraphNode(BaseModel):
     """Nodo del grafo de clases."""
 
@@ -690,88 +712,44 @@ class UMLDiagramResponse(BaseModel):
 
 
 # -----------------------------------------------------------------------------
-# Instance Graph Schemas (AEGIS v2 - React Flow visualization)
+# Call Flow Schemas (v2)
 # -----------------------------------------------------------------------------
 
 
-class InstanceGraphNodeSchema(BaseModel):
+class CallFlowResolutionStatus(str, Enum):
     """
-    Node in the instance graph formatted for React Flow.
+    Resolution status for a call in the call flow graph.
+
+    Values:
+        resolved_project: Successfully resolved to a project symbol
+        ignored_builtin: Python builtin (print, len, etc.)
+        ignored_stdlib: Standard library (os, json, etc.)
+        ignored_third_party: Third-party package
+        unresolved: Could not resolve (unknown symbol)
+        ambiguous: Multiple possible targets
+    """
+    RESOLVED_PROJECT = "resolved_project"
+    IGNORED_BUILTIN = "ignored_builtin"
+    IGNORED_STDLIB = "ignored_stdlib"
+    IGNORED_THIRD_PARTY = "ignored_third_party"
+    UNRESOLVED = "unresolved"
+    AMBIGUOUS = "ambiguous"
+
+
+class CallFlowIgnoredCallSchema(BaseModel):
+    """
+    Information about an ignored/external call.
 
     Attributes:
-        id: Unique node identifier (UUID)
-        type: React Flow node type (input, output, default)
-        data: Node data including label, type, role, location
-        position: Node position coordinates {x, y}
+        expression: The call expression (e.g., "print", "os.path.join")
+        status: Why it was ignored (builtin, stdlib, third-party)
+        call_site_line: Line where the call occurs
+        module_hint: Module name if known
     """
-
-    id: str
-    type: str = Field(description="React Flow node type: input, output, or default")
-    data: Dict[str, Any] = Field(
-        description="Node data with label, type, role, and location"
-    )
-    position: Dict[str, float] = Field(description="Position coordinates {x, y}")
-
-
-class InstanceGraphEdgeSchema(BaseModel):
-    """
-    Edge in the instance graph formatted for React Flow.
-
-    Attributes:
-        id: Unique edge identifier (UUID)
-        source: Source node ID
-        target: Target node ID
-        label: Edge label (method name used for wiring)
-        type: React Flow edge type (e.g., smoothstep)
-        animated: Whether the edge should be animated
-    """
-
-    id: str
-    source: str
-    target: str
-    label: Optional[str] = None
-    type: str = Field(default="smoothstep", description="React Flow edge type")
-    animated: bool = Field(default=True, description="Whether edge is animated")
-
-
-class InstanceGraphMetadataSchema(BaseModel):
-    """
-    Metadata about the extracted instance graph.
-
-    Attributes:
-        source_file: Path to the analyzed source file
-        function_name: Name of the composition root function
-        node_count: Number of nodes in the graph
-        edge_count: Number of edges in the graph
-    """
-
-    source_file: str
-    function_name: str
-    node_count: int
-    edge_count: int
-
-
-class InstanceGraphResponse(BaseModel):
-    """
-    Complete instance graph response for React Flow visualization.
-
-    Attributes:
-        nodes: List of nodes formatted for React Flow
-        edges: List of edges formatted for React Flow
-        metadata: Graph metadata including source file and counts
-    """
-
-    nodes: List[InstanceGraphNodeSchema] = Field(default_factory=list)
-    edges: List[InstanceGraphEdgeSchema] = Field(default_factory=list)
-    metadata: Dict[str, Any] = Field(
-        default_factory=dict,
-        description="Graph metadata: source_file, function_name, node_count, edge_count",
-    )
-
-
-# -----------------------------------------------------------------------------
-# Call Flow Schemas
-# -----------------------------------------------------------------------------
+    expression: str
+    status: CallFlowResolutionStatus
+    call_site_line: int
+    module_hint: Optional[str] = None
 
 
 class CallFlowNodeSchema(BaseModel):
@@ -779,15 +757,19 @@ class CallFlowNodeSchema(BaseModel):
     A node in the call flow graph representing a function or method.
 
     Attributes:
-        id: Unique node identifier
+        id: Unique node identifier (stable symbol ID format)
         name: Function/method name
         qualified_name: Full name including class (e.g., "MainWindow.on_click")
         file_path: Path to source file
         line: Line number of definition
-        kind: Type: function, method, external, builtin
+        column: Column number of definition
+        kind: Type: function, method, class
         is_entry_point: True if this is the starting node
         depth: Distance from entry point
         docstring: First line of docstring
+        symbol_id: Stable symbol ID (same as id in v2)
+        resolution_status: How this node was resolved
+        reasons: Explanation if unresolved/ambiguous
     """
 
     id: str
@@ -795,10 +777,14 @@ class CallFlowNodeSchema(BaseModel):
     qualified_name: str
     file_path: Optional[str] = None
     line: int = 0
+    column: int = 0
     kind: str = "function"
     is_entry_point: bool = False
     depth: int = 0
     docstring: Optional[str] = None
+    symbol_id: Optional[str] = None
+    resolution_status: CallFlowResolutionStatus = CallFlowResolutionStatus.RESOLVED_PROJECT
+    reasons: Optional[str] = None
 
 
 class CallFlowEdgeSchema(BaseModel):
@@ -811,6 +797,8 @@ class CallFlowEdgeSchema(BaseModel):
         target: Target node ID (callee)
         call_site_line: Line where the call occurs
         call_type: Type of call: direct, method, super, static
+        expression: The call expression (e.g., "self.load()")
+        resolution_status: How this edge's target was resolved
     """
 
     id: str
@@ -818,6 +806,8 @@ class CallFlowEdgeSchema(BaseModel):
     target: str
     call_site_line: int
     call_type: str = "direct"
+    expression: Optional[str] = None
+    resolution_status: CallFlowResolutionStatus = CallFlowResolutionStatus.RESOLVED_PROJECT
 
 
 class CallFlowReactFlowNodeSchema(BaseModel):
@@ -847,14 +837,29 @@ class CallFlowResponse(BaseModel):
     Attributes:
         nodes: List of nodes formatted for React Flow
         edges: List of edges formatted for React Flow
-        metadata: Graph metadata
+        metadata: Graph metadata (entry_point, max_depth, etc.)
+        ignored_calls: Calls that were classified as external (builtins, stdlib, third-party)
+        unresolved_calls: Calls that could not be resolved
+        diagnostics: Diagnostic info (cycles detected, max depth reached, etc.)
     """
 
     nodes: List[CallFlowReactFlowNodeSchema] = Field(default_factory=list)
     edges: List[CallFlowReactFlowEdgeSchema] = Field(default_factory=list)
     metadata: Dict[str, Any] = Field(
         default_factory=dict,
-        description="Graph metadata: entry_point, max_depth, external_calls",
+        description="Graph metadata: entry_point, max_depth, source_file",
+    )
+    ignored_calls: List[CallFlowIgnoredCallSchema] = Field(
+        default_factory=list,
+        description="External calls (builtins, stdlib, third-party)",
+    )
+    unresolved_calls: List[str] = Field(
+        default_factory=list,
+        description="Calls that could not be resolved",
+    )
+    diagnostics: Dict[str, Any] = Field(
+        default_factory=dict,
+        description="Diagnostic info: cycles_detected, max_depth_reached, etc.",
     )
 
 

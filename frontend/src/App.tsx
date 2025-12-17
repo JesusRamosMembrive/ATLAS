@@ -5,7 +5,6 @@ import { CodeMapDashboard } from "./components/CodeMapDashboard";
 import { SettingsView } from "./components/SettingsView";
 import { StageToolkitView } from "./components/StageToolkitView";
 import { ClassUMLView } from "./components/ClassUMLView";
-import { InstanceGraphView } from "./components/InstanceGraphView";
 import { CallFlowView } from "./components/CallFlowView";
 import { LintersView } from "./components/LintersView";
 import { OverviewDashboard } from "./components/OverviewDashboard";
@@ -81,10 +80,6 @@ export function App(): JSX.Element {
           <Route
             path="/class-uml"
             element={withLayout("Class UML", <ClassUMLView />)}
-          />
-          <Route
-            path="/instance-graph"
-            element={withLayout("Instance Graph", <InstanceGraphView />)}
           />
           <Route
             path="/call-flow"

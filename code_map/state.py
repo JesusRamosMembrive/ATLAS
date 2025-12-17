@@ -89,7 +89,6 @@ from .insights import VALID_INSIGHTS_FOCUS
 from .services.linters_service import LintersService, LintersConfig
 from .services.insights_service import InsightsService, InsightsConfig
 from .services.watcher_manager import WatcherManager, WatcherConfig
-from .v2.service import InstanceGraphService
 
 logger = logging.getLogger(__name__)
 
@@ -196,7 +195,6 @@ class AppState:
     reporter: StateReporter = field(init=False)
     linters: LintersService = field(init=False)
     insights: InsightsService = field(init=False)
-    instance_graph: InstanceGraphService = field(init=False)
 
     def __post_init__(self) -> None:
         """
@@ -281,7 +279,6 @@ class AppState:
 
         self.linters.schedule(pending_changes=self.scheduler.pending_count())
         self.insights.schedule()
-        await self.instance_graph.startup()
         self._scheduler_task = asyncio.create_task(self._scheduler_loop())
 
     async def shutdown(self) -> None:
@@ -307,7 +304,6 @@ class AppState:
         self._stop_event.set()
         await self.linters.shutdown()
         await self.insights.shutdown()
-        await self.instance_graph.shutdown()
         if self._scheduler_task:
             await self._scheduler_task
         await asyncio.to_thread(self.watcher.stop)
@@ -349,11 +345,6 @@ class AppState:
                         pending_changes=self.scheduler.pending_count()
                     )
                     self.insights.schedule()
-                    # Notify instance graph service of file changes
-                    changed_paths = [
-                        self.resolve_path(p) for p in payload["updated"]
-                    ] + [self.resolve_path(p) for p in payload["deleted"]]
-                    await self.instance_graph.handle_file_changes(changed_paths)
             await asyncio.sleep(self.scheduler.debounce_seconds)
 
     def _serialize_changes(
@@ -753,9 +744,6 @@ class AppState:
         self.linters = LintersService(self._build_linters_config())
         self.insights = InsightsService(
             self._build_insights_config(), context_builder=self._build_insights_context
-        )
-        self.instance_graph = InstanceGraphService(
-            self.settings.root_path, cache_dir=cache_dir_path
         )
 
     def _build_linters_config(self) -> LintersConfig:
