@@ -18,7 +18,7 @@ pytest.importorskip("tree_sitter")
 pytest.importorskip("tree_sitter_languages")
 
 
-from code_map.v2.call_flow.type_resolver import TypeResolver, TypeInfo, ScopeInfo
+from code_map.graph_analysis.call_flow.type_resolver import TypeResolver, TypeInfo, ScopeInfo
 
 
 @pytest.fixture

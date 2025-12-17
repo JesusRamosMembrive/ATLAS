@@ -621,6 +621,7 @@ class CppCallFlowExtractor:
                     status=status,
                     call_site_line=call_info.line,
                     module_hint=hint,
+                    caller_id=parent_id,
                 )
                 graph.ignored_calls.append(ignored_call)
 

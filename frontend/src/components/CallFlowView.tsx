@@ -24,6 +24,7 @@ export function CallFlowView(): JSX.Element {
   const [selectedFunction, setSelectedFunction] = useState<CallFlowEntryPoint | null>(null);
   const [maxDepth, setMaxDepth] = useState(5);
   const [minCalls, setMinCalls] = useState(0);
+  const [includeExternal, setIncludeExternal] = useState(true); // Show external calls by default
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
   const [isBrowseModalOpen, setIsBrowseModalOpen] = useState(false);
@@ -43,6 +44,7 @@ export function CallFlowView(): JSX.Element {
     functionName: selectedFunction?.name || "",
     maxDepth,
     className: selectedFunction?.class_name,
+    includeExternal,
     enabled: !!filePath && !!selectedFunction,
   });
 
@@ -279,6 +281,49 @@ export function CallFlowView(): JSX.Element {
                 ({filteredEntryPoints.length}/{entryPoints.length} shown)
               </span>
             </div>
+
+            {/* Include External Toggle */}
+            {selectedFunction && (
+              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                <label
+                  htmlFor="include-external"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    fontSize: "14px",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                  }}
+                >
+                  <input
+                    id="include-external"
+                    type="checkbox"
+                    checked={includeExternal}
+                    onChange={(e) => setIncludeExternal(e.target.checked)}
+                    style={{
+                      width: "16px",
+                      height: "16px",
+                      accentColor: "#3b82f6",
+                      cursor: "pointer",
+                    }}
+                  />
+                  Show External Calls
+                </label>
+                <span
+                  style={{
+                    fontSize: "11px",
+                    color: "#64748b",
+                    padding: "2px 6px",
+                    backgroundColor: "#334155",
+                    borderRadius: "4px",
+                  }}
+                  title="Include stdlib, builtins, and third-party calls as gray/amber leaf nodes"
+                >
+                  ?
+                </span>
+              </div>
+            )}
           </div>
         )}
 

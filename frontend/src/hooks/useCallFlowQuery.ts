@@ -24,15 +24,16 @@ interface CallFlowOptions {
   functionName: string;
   maxDepth?: number;
   className?: string | null;
+  includeExternal?: boolean;
   enabled?: boolean;
 }
 
 export function useCallFlowQuery(options: CallFlowOptions) {
-  const { filePath, functionName, maxDepth = 5, className, enabled = true } = options;
+  const { filePath, functionName, maxDepth = 5, className, includeExternal = false, enabled = true } = options;
 
   return useQuery({
-    queryKey: queryKeys.callFlow(filePath, functionName, maxDepth),
-    queryFn: () => getCallFlow(filePath, functionName, maxDepth, className),
+    queryKey: [...queryKeys.callFlow(filePath, functionName, maxDepth), includeExternal],
+    queryFn: () => getCallFlow(filePath, functionName, maxDepth, className, includeExternal),
     enabled: enabled && !!filePath.trim() && !!functionName.trim(),
     staleTime: 60_000,
   });

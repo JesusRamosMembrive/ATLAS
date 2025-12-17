@@ -745,11 +745,13 @@ class CallFlowIgnoredCallSchema(BaseModel):
         status: Why it was ignored (builtin, stdlib, third-party)
         call_site_line: Line where the call occurs
         module_hint: Module name if known
+        caller_id: ID of the node that made this call
     """
     expression: str
     status: CallFlowResolutionStatus
     call_site_line: int
     module_hint: Optional[str] = None
+    caller_id: Optional[str] = None
 
 
 class CallFlowNodeSchema(BaseModel):

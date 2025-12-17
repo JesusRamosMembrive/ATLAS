@@ -15,9 +15,10 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import PlainTextResponse
 
-from ..v2.call_flow.extractor import PythonCallFlowExtractor
-from ..v2.call_flow.cpp_extractor import CppCallFlowExtractor
-from ..v2.call_flow.ts_extractor import TsCallFlowExtractor
+from ..graph_analysis.call_flow.extractor import PythonCallFlowExtractor
+from ..graph_analysis.call_flow.cpp_extractor import CppCallFlowExtractor
+from ..graph_analysis.call_flow.ts_extractor import TsCallFlowExtractor
+from ..graph_analysis.call_flow.models import CallGraph, CallNode, CallEdge, ResolutionStatus
 from .schemas import (
     CallFlowEntryPointSchema,
     CallFlowEntryPointsResponse,
@@ -78,6 +79,87 @@ MAX_SOURCE_BYTES = 512 * 1024
 
 # Allowed file extensions for source code viewing
 ALLOWED_SOURCE_EXTENSIONS = {".py", ".js", ".ts", ".jsx", ".tsx", ".java", ".c", ".cpp", ".h", ".hpp", ".go", ".rs"}
+
+
+def _add_external_nodes_to_graph(graph: CallGraph) -> None:
+    """
+    Add external/builtin calls as leaf nodes in the graph.
+
+    Converts IgnoredCall entries into CallNode + CallEdge objects,
+    allowing visualization of external dependencies without source code.
+
+    Args:
+        graph: The CallGraph to modify in-place
+    """
+    # Track external nodes we've already added to avoid duplicates
+    external_nodes: dict[str, str] = {}  # expression -> node_id
+
+    for ignored in graph.ignored_calls:
+        # Skip if no caller info (shouldn't happen with updated extractors)
+        if not ignored.caller_id:
+            continue
+
+        # Skip if caller doesn't exist in graph (edge case)
+        if ignored.caller_id not in graph.nodes:
+            continue
+
+        # Determine kind based on resolution status
+        if ignored.status == ResolutionStatus.IGNORED_BUILTIN:
+            kind = "builtin"
+        else:
+            kind = "external"
+
+        # Create a unique ID for this external call
+        # Use expression + module_hint to differentiate (e.g., json.loads vs yaml.loads)
+        expr_key = f"{ignored.module_hint or ''}:{ignored.expression}"
+
+        if expr_key not in external_nodes:
+            # Create new external node
+            node_id = f"external:{expr_key}:{ignored.call_site_line}"
+
+            # Get depth from caller + 1
+            caller_node = graph.nodes[ignored.caller_id]
+            depth = caller_node.depth + 1
+
+            # Extract simple name from expression (e.g., "print" from "print(...)")
+            name = ignored.expression.split("(")[0].split(".")[-1]
+            qualified_name = ignored.expression.split("(")[0]
+            if ignored.module_hint:
+                qualified_name = f"{ignored.module_hint}.{qualified_name}"
+
+            external_node = CallNode(
+                id=node_id,
+                name=name,
+                qualified_name=qualified_name,
+                file_path=None,  # External - no file path
+                line=0,
+                column=0,
+                kind=kind,
+                is_entry_point=False,
+                depth=depth,
+                docstring=f"External call: {ignored.status.value}",
+                symbol_id=None,
+                resolution_status=ignored.status,
+                reasons=None,
+                complexity=None,
+                loc=None,
+            )
+            graph.add_node(external_node)
+            external_nodes[expr_key] = node_id
+        else:
+            node_id = external_nodes[expr_key]
+
+        # Create edge from caller to external node
+        edge = CallEdge(
+            source_id=ignored.caller_id,
+            target_id=node_id,
+            call_site_line=ignored.call_site_line,
+            call_type="external",
+            arguments=None,
+            expression=ignored.expression,
+            resolution_status=ignored.status,
+        )
+        graph.add_edge(edge)
 
 
 @router.get("/source/{file_path:path}", response_class=PlainTextResponse)
@@ -261,6 +343,7 @@ async def get_call_flow(
     function: str = Query(..., description="Function or method name to analyze"),
     max_depth: int = Query(default=5, ge=1, le=20, description="Maximum call depth"),
     class_name: Optional[str] = Query(default=None, description="Class name if analyzing a method"),
+    include_external: bool = Query(default=False, description="Include external calls (builtins, stdlib, third-party) as leaf nodes"),
 ) -> CallFlowResponse:
     """
     Extract call flow graph from a function or method.
@@ -275,6 +358,9 @@ async def get_call_flow(
         function: Name of function/method to analyze
         max_depth: Maximum depth to follow calls (default: 5)
         class_name: Class name if analyzing a method (optional)
+        include_external: If True, include external calls (builtins, stdlib, third-party)
+                         as leaf nodes in the graph. These won't be expanded further
+                         but will show all dependencies visually.
 
     Returns:
         React Flow compatible graph with nodes, edges, and metadata
@@ -346,6 +432,10 @@ async def get_call_flow(
             "Check that the function exists.",
         )
 
+    # If include_external is True, add external calls as leaf nodes
+    if include_external:
+        _add_external_nodes_to_graph(graph)
+
     # Convert to React Flow format
     react_flow_data = graph.to_react_flow()
 
@@ -356,6 +446,7 @@ async def get_call_flow(
             status=CallFlowResolutionStatus(ic.status.value),
             call_site_line=ic.call_site_line,
             module_hint=ic.module_hint,
+            caller_id=ic.caller_id,
         )
         for ic in graph.ignored_calls[:50]  # Limit to first 50
     ]

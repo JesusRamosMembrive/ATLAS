@@ -46,6 +46,7 @@ class IgnoredCall:
     status: ResolutionStatus  # IGNORED_BUILTIN, IGNORED_STDLIB, etc.
     call_site_line: int  # Line where the call occurs
     module_hint: Optional[str] = None  # Module name if known (e.g., "json")
+    caller_id: Optional[str] = None  # ID of the node that made this call
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
@@ -54,6 +55,7 @@ class IgnoredCall:
             "status": self.status.value,
             "call_site_line": self.call_site_line,
             "module_hint": self.module_hint,
+            "caller_id": self.caller_id,
         }
 
     @classmethod
@@ -64,6 +66,7 @@ class IgnoredCall:
             status=ResolutionStatus(data["status"]),
             call_site_line=data["call_site_line"],
             module_hint=data.get("module_hint"),
+            caller_id=data.get("caller_id"),
         )
 
 

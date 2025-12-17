@@ -949,6 +949,7 @@ export function getCallFlowEntryPoints(
  *     functionName: Name of function or method to analyze
  *     maxDepth: Maximum call depth to follow (default 5, max 20)
  *     className: Class name if analyzing a method (optional)
+ *     includeExternal: Include external calls (builtins, stdlib, third-party) as leaf nodes
  *
  * Returns:
  *     Promise with React Flow compatible graph (nodes, edges, metadata)
@@ -957,12 +958,14 @@ export function getCallFlowEntryPoints(
  *     - Endpoint: GET /api/call-flow/{filePath}?function=X&max_depth=N
  *     - Follows function calls recursively up to maxDepth
  *     - External calls (stdlib, third-party) are marked but not followed
+ *     - With includeExternal=true, external calls appear as gray leaf nodes
  */
 export function getCallFlow(
   filePath: string,
   functionName: string,
   maxDepth = 5,
-  className?: string | null
+  className?: string | null,
+  includeExternal = false
 ): Promise<CallFlowResponse> {
   const params = new URLSearchParams({
     function: functionName,
@@ -970,6 +973,9 @@ export function getCallFlow(
   });
   if (className) {
     params.set("class_name", className);
+  }
+  if (includeExternal) {
+    params.set("include_external", "true");
   }
   return fetchJson<CallFlowResponse>(
     `/call-flow/${encodeURIComponent(filePath)}?${params.toString()}`
