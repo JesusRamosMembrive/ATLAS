@@ -72,6 +72,13 @@ class ComplexityVisitor(ast.NodeVisitor):
         self.complexity += 1
         self.generic_visit(node)
 
+    def visit_BoolOp(self, node: ast.BoolOp) -> None:
+        # Cada operador and/or añade un punto de decisión
+        # 'a and b and c' tiene 2 operadores (3 valores - 1)
+        # Según McCabe, cada operador booleano es un branch adicional
+        self.complexity += len(node.values) - 1
+        self.generic_visit(node)
+
 
 def calculate_complexity(node: ast.AST) -> int:
     visitor = ComplexityVisitor()

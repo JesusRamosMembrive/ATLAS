@@ -1,0 +1,184 @@
+{
+  "entry_point": "test_cpp_call_flow.cpp:74:0:function:main",
+  "nodes": {
+    "test_cpp_call_flow.cpp:74:0:function:main": {
+      "id": "test_cpp_call_flow.cpp:74:0:function:main",
+      "name": "main",
+      "qualified_name": "main",
+      "file_path": "test_cpp_call_flow.cpp",
+      "line": 74,
+      "column": 0,
+      "kind": "function",
+      "is_entry_point": true,
+      "depth": 0,
+      "docstring": null,
+      "symbol_id": "test_cpp_call_flow.cpp:74:0:function:main",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 1,
+      "loc": 13
+    },
+    "test_cpp_call_flow.cpp:20:0:function:complex_function": {
+      "id": "test_cpp_call_flow.cpp:20:0:function:complex_function",
+      "name": "complex_function",
+      "qualified_name": "complex_function",
+      "file_path": "test_cpp_call_flow.cpp",
+      "line": 20,
+      "column": 0,
+      "kind": "function",
+      "is_entry_point": false,
+      "depth": 1,
+      "docstring": null,
+      "symbol_id": "test_cpp_call_flow.cpp:20:0:function:complex_function",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 1,
+      "loc": 5
+    },
+    "test_cpp_call_flow.cpp:14:0:function:process_value": {
+      "id": "test_cpp_call_flow.cpp:14:0:function:process_value",
+      "name": "process_value",
+      "qualified_name": "process_value",
+      "file_path": "test_cpp_call_flow.cpp",
+      "line": 14,
+      "column": 0,
+      "kind": "function",
+      "is_entry_point": false,
+      "depth": 2,
+      "docstring": null,
+      "symbol_id": "test_cpp_call_flow.cpp:14:0:function:process_value",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 1,
+      "loc": 4
+    },
+    "test_cpp_call_flow.cpp:9:0:function:helper_function": {
+      "id": "test_cpp_call_flow.cpp:9:0:function:helper_function",
+      "name": "helper_function",
+      "qualified_name": "helper_function",
+      "file_path": "test_cpp_call_flow.cpp",
+      "line": 9,
+      "column": 0,
+      "kind": "function",
+      "is_entry_point": false,
+      "depth": 3,
+      "docstring": null,
+      "symbol_id": "test_cpp_call_flow.cpp:9:0:function:helper_function",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 1,
+      "loc": 3
+    },
+    "test_cpp_call_flow.cpp:65:0:function:calculate_total": {
+      "id": "test_cpp_call_flow.cpp:65:0:function:calculate_total",
+      "name": "calculate_total",
+      "qualified_name": "calculate_total",
+      "file_path": "test_cpp_call_flow.cpp",
+      "line": 65,
+      "column": 0,
+      "kind": "function",
+      "is_entry_point": false,
+      "depth": 1,
+      "docstring": null,
+      "symbol_id": "test_cpp_call_flow.cpp:65:0:function:calculate_total",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 2,
+      "loc": 7
+    }
+  },
+  "edges": [
+    {
+      "source_id": "test_cpp_call_flow.cpp:14:0:function:process_value",
+      "target_id": "test_cpp_call_flow.cpp:9:0:function:helper_function",
+      "call_site_line": 15,
+      "call_type": "direct",
+      "arguments": null,
+      "expression": "helper_function",
+      "resolution_status": "resolved_project"
+    },
+    {
+      "source_id": "test_cpp_call_flow.cpp:20:0:function:complex_function",
+      "target_id": "test_cpp_call_flow.cpp:14:0:function:process_value",
+      "call_site_line": 21,
+      "call_type": "direct",
+      "arguments": [
+        "a"
+      ],
+      "expression": "process_value",
+      "resolution_status": "resolved_project"
+    },
+    {
+      "source_id": "test_cpp_call_flow.cpp:20:0:function:complex_function",
+      "target_id": "test_cpp_call_flow.cpp:9:0:function:helper_function",
+      "call_site_line": 22,
+      "call_type": "direct",
+      "arguments": null,
+      "expression": "helper_function",
+      "resolution_status": "resolved_project"
+    },
+    {
+      "source_id": "test_cpp_call_flow.cpp:74:0:function:main",
+      "target_id": "test_cpp_call_flow.cpp:20:0:function:complex_function",
+      "call_site_line": 75,
+      "call_type": "direct",
+      "arguments": [
+        "1",
+        "2"
+      ],
+      "expression": "complex_function",
+      "resolution_status": "resolved_project"
+    },
+    {
+      "source_id": "test_cpp_call_flow.cpp:74:0:function:main",
+      "target_id": "test_cpp_call_flow.cpp:65:0:function:calculate_total",
+      "call_site_line": 78,
+      "call_type": "direct",
+      "arguments": [
+        "nums"
+      ],
+      "expression": "calculate_total",
+      "resolution_status": "resolved_project"
+    }
+  ],
+  "max_depth": 5,
+  "max_depth_reached": false,
+  "ignored_calls": [
+    {
+      "expression": "calc.add",
+      "status": "unresolved",
+      "call_site_line": 68,
+      "module_hint": null,
+      "caller_id": "test_cpp_call_flow.cpp:65:0:function:calculate_total"
+    },
+    {
+      "expression": "calc.get_result",
+      "status": "unresolved",
+      "call_site_line": 70,
+      "module_hint": null,
+      "caller_id": "test_cpp_call_flow.cpp:65:0:function:calculate_total"
+    },
+    {
+      "expression": "c.compute",
+      "status": "unresolved",
+      "call_site_line": 82,
+      "module_hint": null,
+      "caller_id": "test_cpp_call_flow.cpp:74:0:function:main"
+    },
+    {
+      "expression": "c.get_result",
+      "status": "unresolved",
+      "call_site_line": 83,
+      "module_hint": null,
+      "caller_id": "test_cpp_call_flow.cpp:74:0:function:main"
+    }
+  ],
+  "unresolved_calls": [
+    "calc.add",
+    "calc.get_result",
+    "c.compute",
+    "c.get_result"
+  ],
+  "source_file": "test_cpp_call_flow.cpp",
+  "diagnostics": {}
+}

@@ -6,6 +6,9 @@ import { CallFlowGraph } from "./call-flow/CallFlowGraph";
 import { FileBrowserModal } from "./settings/FileBrowserModal";
 import { getCallFlowSource } from "../api/client";
 import type { CallFlowEntryPoint } from "../api/types";
+import { DESIGN_TOKENS } from "../theme/designTokens";
+
+const { colors, borders } = DESIGN_TOKENS;
 
 export function CallFlowView(): JSX.Element {
   // Get project root from settings
@@ -173,16 +176,16 @@ export function CallFlowView(): JSX.Element {
         flexDirection: "column",
         height: "calc(100vh - 200px)",
         minHeight: "500px",
-        backgroundColor: "#0f172a",
-        color: "#f1f5f9",
+        backgroundColor: colors.base.panel,
+        color: colors.text.secondary,
       }}
     >
       {/* Header Controls */}
       <div
         style={{
           padding: "16px 24px",
-          borderBottom: "1px solid #334155",
-          backgroundColor: "#1e293b",
+          borderBottom: `1px solid ${borders.default}`,
+          backgroundColor: colors.base.card,
         }}
       >
         <form onSubmit={handleFileSubmit} style={{ display: "flex", gap: "12px", alignItems: "center" }}>
@@ -199,9 +202,9 @@ export function CallFlowView(): JSX.Element {
               flex: 1,
               padding: "8px 12px",
               borderRadius: "6px",
-              border: "1px solid #334155",
-              backgroundColor: "#0f172a",
-              color: "#f1f5f9",
+              border: `1px solid ${borders.default}`,
+              backgroundColor: colors.base.panel,
+              color: colors.text.secondary,
               fontSize: "14px",
             }}
           />
@@ -211,9 +214,9 @@ export function CallFlowView(): JSX.Element {
             style={{
               padding: "8px 16px",
               borderRadius: "6px",
-              border: "1px solid #334155",
-              backgroundColor: "#1e293b",
-              color: "#f1f5f9",
+              border: `1px solid ${borders.default}`,
+              backgroundColor: colors.base.card,
+              color: colors.text.secondary,
               fontSize: "14px",
               fontWeight: 500,
               cursor: "pointer",
@@ -228,8 +231,8 @@ export function CallFlowView(): JSX.Element {
               padding: "8px 16px",
               borderRadius: "6px",
               border: "none",
-              backgroundColor: "#3b82f6",
-              color: "#fff",
+              backgroundColor: colors.primary.main,
+              color: colors.contrast.light,
               fontSize: "14px",
               fontWeight: 500,
               cursor: entryPointsQuery.isFetching ? "not-allowed" : "pointer",
@@ -258,7 +261,7 @@ export function CallFlowView(): JSX.Element {
                   onChange={(e) => setMaxDepth(Number(e.target.value))}
                   style={{ width: "120px" }}
                 />
-                <span style={{ fontSize: "14px", color: "#94a3b8", minWidth: "24px" }}>{maxDepth}</span>
+                <span style={{ fontSize: "14px", color: colors.text.muted, minWidth: "24px" }}>{maxDepth}</span>
               </div>
             )}
 
@@ -276,8 +279,8 @@ export function CallFlowView(): JSX.Element {
                 onChange={(e) => setMinCalls(Number(e.target.value))}
                 style={{ width: "120px" }}
               />
-              <span style={{ fontSize: "14px", color: "#94a3b8", minWidth: "24px" }}>{minCalls}</span>
-              <span style={{ fontSize: "12px", color: "#64748b" }}>
+              <span style={{ fontSize: "14px", color: colors.text.muted, minWidth: "24px" }}>{minCalls}</span>
+              <span style={{ fontSize: "12px", color: colors.gray[500] }}>
                 ({filteredEntryPoints.length}/{entryPoints.length} shown)
               </span>
             </div>
@@ -304,7 +307,7 @@ export function CallFlowView(): JSX.Element {
                     style={{
                       width: "16px",
                       height: "16px",
-                      accentColor: "#3b82f6",
+                      accentColor: colors.primary.main,
                       cursor: "pointer",
                     }}
                   />
@@ -313,9 +316,9 @@ export function CallFlowView(): JSX.Element {
                 <span
                   style={{
                     fontSize: "11px",
-                    color: "#64748b",
+                    color: colors.gray[500],
                     padding: "2px 6px",
-                    backgroundColor: "#334155",
+                    backgroundColor: borders.default,
                     borderRadius: "4px",
                   }}
                   title="Include stdlib, builtins, and third-party calls as gray/amber leaf nodes"
@@ -335,51 +338,51 @@ export function CallFlowView(): JSX.Element {
               gap: "24px",
               marginTop: "12px",
               padding: "12px",
-              backgroundColor: "#0f172a",
+              backgroundColor: colors.base.panel,
               borderRadius: "6px",
-              border: "1px solid #334155",
+              border: `1px solid ${borders.default}`,
               flexWrap: "wrap",
             }}
           >
             <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-              <span style={{ fontSize: "11px", color: "#94a3b8", textTransform: "uppercase" }}>
+              <span style={{ fontSize: "11px", color: colors.text.muted, textTransform: "uppercase" }}>
                 Entry Point
               </span>
-              <strong style={{ fontSize: "14px", color: "#f59e0b" }}>{metadata.entry_point}</strong>
+              <strong style={{ fontSize: "14px", color: colors.callFlow.entryPoint }}>{metadata.entry_point}</strong>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-              <span style={{ fontSize: "11px", color: "#94a3b8", textTransform: "uppercase" }}>
+              <span style={{ fontSize: "11px", color: colors.text.muted, textTransform: "uppercase" }}>
                 Max Depth
               </span>
               <strong style={{ fontSize: "14px" }}>
                 {metadata.max_depth}
                 {metadata.max_depth_reached && (
-                  <span style={{ color: "#f59e0b", marginLeft: "4px" }}>(reached)</span>
+                  <span style={{ color: colors.callFlow.entryPoint, marginLeft: "4px" }}>(reached)</span>
                 )}
               </strong>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-              <span style={{ fontSize: "11px", color: "#94a3b8", textTransform: "uppercase" }}>
+              <span style={{ fontSize: "11px", color: colors.text.muted, textTransform: "uppercase" }}>
                 Nodes
               </span>
-              <strong style={{ fontSize: "14px", color: "#3b82f6" }}>
+              <strong style={{ fontSize: "14px", color: colors.primary.main }}>
                 {metadata.node_count}
               </strong>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-              <span style={{ fontSize: "11px", color: "#94a3b8", textTransform: "uppercase" }}>
+              <span style={{ fontSize: "11px", color: colors.text.muted, textTransform: "uppercase" }}>
                 Edges
               </span>
-              <strong style={{ fontSize: "14px", color: "#a855f7" }}>
+              <strong style={{ fontSize: "14px", color: colors.callFlow.class }}>
                 {metadata.edge_count}
               </strong>
             </div>
             {metadata.external_calls_count > 0 && (
               <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                <span style={{ fontSize: "11px", color: "#94a3b8", textTransform: "uppercase" }}>
+                <span style={{ fontSize: "11px", color: colors.text.muted, textTransform: "uppercase" }}>
                   External Calls
                 </span>
-                <strong style={{ fontSize: "14px", color: "#6b7280" }}>
+                <strong style={{ fontSize: "14px", color: colors.callFlow.external }}>
                   {metadata.external_calls_count}
                 </strong>
               </div>
@@ -395,8 +398,8 @@ export function CallFlowView(): JSX.Element {
           <div
             style={{
               width: sidebarCollapsed ? "48px" : "280px",
-              borderRight: "1px solid #334155",
-              backgroundColor: "#1e293b",
+              borderRight: `1px solid ${borders.default}`,
+              backgroundColor: colors.base.card,
               overflow: "auto",
               transition: "width 0.2s ease-in-out",
               flexShrink: 0,
@@ -404,7 +407,7 @@ export function CallFlowView(): JSX.Element {
           >
             <div style={{
               padding: sidebarCollapsed ? "12px 8px" : "12px 16px",
-              borderBottom: "1px solid #334155",
+              borderBottom: `1px solid ${borders.default}`,
               display: "flex",
               alignItems: "center",
               justifyContent: sidebarCollapsed ? "center" : "space-between",
@@ -413,7 +416,7 @@ export function CallFlowView(): JSX.Element {
               {!sidebarCollapsed && (
                 <div>
                   <h3 style={{ margin: 0, fontSize: "14px", fontWeight: 600 }}>Entry Points</h3>
-                  <p style={{ margin: "4px 0 0", fontSize: "12px", color: "#94a3b8" }}>
+                  <p style={{ margin: "4px 0 0", fontSize: "12px", color: colors.text.muted }}>
                     Select a function to visualize
                   </p>
                 </div>
@@ -424,7 +427,7 @@ export function CallFlowView(): JSX.Element {
                 style={{
                   border: "none",
                   background: "transparent",
-                  color: "#94a3b8",
+                  color: colors.text.muted,
                   cursor: "pointer",
                   fontSize: "16px",
                   padding: "4px",
@@ -434,7 +437,7 @@ export function CallFlowView(): JSX.Element {
                   borderRadius: "4px",
                   transition: "background-color 0.15s",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#334155")}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = borders.default)}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
               >
                 {sidebarCollapsed ? "»" : "«"}
@@ -444,7 +447,7 @@ export function CallFlowView(): JSX.Element {
             {/* Functions - hidden when collapsed */}
             {!sidebarCollapsed && groupedEntryPoints.functions.length > 0 && (
               <div style={{ padding: "8px 0" }}>
-                <div style={{ padding: "4px 16px", fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>
+                <div style={{ padding: "4px 16px", fontSize: "11px", color: colors.gray[500], textTransform: "uppercase" }}>
                   Functions
                 </div>
                 {groupedEntryPoints.functions.map((ep) => (
@@ -457,8 +460,8 @@ export function CallFlowView(): JSX.Element {
                       padding: "8px 16px",
                       textAlign: "left",
                       border: "none",
-                      backgroundColor: selectedFunction?.qualified_name === ep.qualified_name ? "#334155" : "transparent",
-                      color: "#f1f5f9",
+                      backgroundColor: selectedFunction?.qualified_name === ep.qualified_name ? borders.default : "transparent",
+                      color: colors.text.secondary,
                       cursor: "pointer",
                       fontSize: "13px",
                     }}
@@ -471,8 +474,8 @@ export function CallFlowView(): JSX.Element {
                             fontSize: "10px",
                             padding: "2px 6px",
                             borderRadius: "10px",
-                            backgroundColor: ep.node_count > 10 ? "#dc2626" : ep.node_count > 5 ? "#f59e0b" : "#3b82f6",
-                            color: "#fff",
+                            backgroundColor: ep.node_count > 10 ? colors.severity.danger : ep.node_count > 5 ? colors.severity.warning : colors.severity.info,
+                            color: colors.contrast.light,
                             fontWeight: 600,
                           }}
                           title={`${ep.node_count} calls in this function`}
@@ -481,7 +484,7 @@ export function CallFlowView(): JSX.Element {
                         </span>
                       )}
                     </div>
-                    <div style={{ fontSize: "11px", color: "#64748b" }}>Line {ep.line}</div>
+                    <div style={{ fontSize: "11px", color: colors.gray[500] }}>Line {ep.line}</div>
                   </button>
                 ))}
               </div>
@@ -490,7 +493,7 @@ export function CallFlowView(): JSX.Element {
             {/* Methods by class - hidden when collapsed */}
             {!sidebarCollapsed && Array.from(groupedEntryPoints.methods.entries()).map(([className, methods]) => (
               <div key={className} style={{ padding: "8px 0" }}>
-                <div style={{ padding: "4px 16px", fontSize: "11px", color: "#a855f7", textTransform: "uppercase" }}>
+                <div style={{ padding: "4px 16px", fontSize: "11px", color: colors.callFlow.class, textTransform: "uppercase" }}>
                   {className}
                 </div>
                 {methods.map((ep) => (
@@ -503,8 +506,8 @@ export function CallFlowView(): JSX.Element {
                       padding: "8px 16px",
                       textAlign: "left",
                       border: "none",
-                      backgroundColor: selectedFunction?.qualified_name === ep.qualified_name ? "#334155" : "transparent",
-                      color: "#f1f5f9",
+                      backgroundColor: selectedFunction?.qualified_name === ep.qualified_name ? borders.default : "transparent",
+                      color: colors.text.secondary,
                       cursor: "pointer",
                       fontSize: "13px",
                     }}
@@ -517,8 +520,8 @@ export function CallFlowView(): JSX.Element {
                             fontSize: "10px",
                             padding: "2px 6px",
                             borderRadius: "10px",
-                            backgroundColor: ep.node_count > 10 ? "#dc2626" : ep.node_count > 5 ? "#f59e0b" : "#3b82f6",
-                            color: "#fff",
+                            backgroundColor: ep.node_count > 10 ? colors.severity.danger : ep.node_count > 5 ? colors.severity.warning : colors.severity.info,
+                            color: colors.contrast.light,
                             fontWeight: 600,
                           }}
                           title={`${ep.node_count} calls in this method`}
@@ -527,7 +530,7 @@ export function CallFlowView(): JSX.Element {
                         </span>
                       )}
                     </div>
-                    <div style={{ fontSize: "11px", color: "#64748b" }}>Line {ep.line}</div>
+                    <div style={{ fontSize: "11px", color: colors.gray[500] }}>Line {ep.line}</div>
                   </button>
                 ))}
               </div>
@@ -539,7 +542,7 @@ export function CallFlowView(): JSX.Element {
                 style={{
                   padding: "12px 8px",
                   textAlign: "center",
-                  color: "#64748b",
+                  color: colors.gray[500],
                   fontSize: "11px",
                 }}
                 title={`${filteredEntryPoints.length}/${entryPoints.length} entry points`}
@@ -561,7 +564,7 @@ export function CallFlowView(): JSX.Element {
                 justifyContent: "center",
                 height: "100%",
                 fontSize: "16px",
-                color: "#94a3b8",
+                color: colors.text.muted,
               }}
             >
               Loading entry points...
@@ -576,7 +579,7 @@ export function CallFlowView(): JSX.Element {
                 justifyContent: "center",
                 height: "100%",
                 fontSize: "16px",
-                color: "#94a3b8",
+                color: colors.text.muted,
               }}
             >
               Analyzing call flow...
@@ -594,10 +597,10 @@ export function CallFlowView(): JSX.Element {
                 gap: "8px",
               }}
             >
-              <div style={{ fontSize: "16px", color: "#ef4444", fontWeight: 500 }}>
+              <div style={{ fontSize: "16px", color: colors.complexity.extreme, fontWeight: 500 }}>
                 Error loading call flow
               </div>
-              <div style={{ fontSize: "14px", color: "#94a3b8" }}>
+              <div style={{ fontSize: "14px", color: colors.text.muted }}>
                 {entryPointsQuery.error?.message || callFlowQuery.error?.message || "Unknown error"}
               </div>
             </div>
@@ -615,10 +618,10 @@ export function CallFlowView(): JSX.Element {
               }}
             >
               <div style={{ fontSize: "24px" }}>🔄</div>
-              <div style={{ fontSize: "16px", color: "#94a3b8" }}>
+              <div style={{ fontSize: "16px", color: colors.text.muted }}>
                 Enter a source file path to analyze call flows
               </div>
-              <div style={{ fontSize: "14px", color: "#64748b" }}>
+              <div style={{ fontSize: "14px", color: colors.gray[500] }}>
                 Supports Python (.py) and C++ (.cpp, .hpp, .c, .h) files
               </div>
             </div>
@@ -636,7 +639,7 @@ export function CallFlowView(): JSX.Element {
               }}
             >
               <div style={{ fontSize: "24px" }}>👈</div>
-              <div style={{ fontSize: "16px", color: "#94a3b8" }}>
+              <div style={{ fontSize: "16px", color: colors.text.muted }}>
                 Select a function from the sidebar
               </div>
             </div>
@@ -653,10 +656,10 @@ export function CallFlowView(): JSX.Element {
                 gap: "8px",
               }}
             >
-              <div style={{ fontSize: "16px", color: "#f59e0b" }}>
+              <div style={{ fontSize: "16px", color: colors.severity.warning }}>
                 No functions found in this file
               </div>
-              <div style={{ fontSize: "14px", color: "#94a3b8" }}>
+              <div style={{ fontSize: "14px", color: colors.text.muted }}>
                 Make sure the file contains function definitions (Python or C++)
               </div>
             </div>
@@ -679,8 +682,8 @@ export function CallFlowView(): JSX.Element {
           <div
             style={{
               width: "400px",
-              borderLeft: "1px solid #334155",
-              backgroundColor: "#1e293b",
+              borderLeft: `1px solid ${borders.default}`,
+              backgroundColor: colors.base.card,
               padding: "16px",
               overflow: "auto",
             }}
@@ -692,7 +695,7 @@ export function CallFlowView(): JSX.Element {
                 style={{
                   border: "none",
                   background: "transparent",
-                  color: "#94a3b8",
+                  color: colors.text.muted,
                   cursor: "pointer",
                   fontSize: "18px",
                 }}
@@ -706,20 +709,20 @@ export function CallFlowView(): JSX.Element {
               return (
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   <div>
-                    <div style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Name</div>
+                    <div style={{ fontSize: "11px", color: colors.gray[500], textTransform: "uppercase" }}>Name</div>
                     <div style={{ fontSize: "14px", fontWeight: 500 }}>{node.data.label}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Qualified Name</div>
+                    <div style={{ fontSize: "11px", color: colors.gray[500], textTransform: "uppercase" }}>Qualified Name</div>
                     <div style={{ fontSize: "13px", fontFamily: "monospace" }}>{node.data.qualifiedName}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Kind</div>
+                    <div style={{ fontSize: "11px", color: colors.gray[500], textTransform: "uppercase" }}>Kind</div>
                     <div style={{ fontSize: "14px" }}>{node.data.kind}</div>
                   </div>
                   {node.data.filePath && (
                     <div>
-                      <div style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Location</div>
+                      <div style={{ fontSize: "11px", color: colors.gray[500], textTransform: "uppercase" }}>Location</div>
                       <div style={{ fontSize: "12px", fontFamily: "monospace" }}>
                         {node.data.filePath}:{node.data.line}
                       </div>
@@ -727,8 +730,8 @@ export function CallFlowView(): JSX.Element {
                   )}
                   {node.data.docstring && (
                     <div>
-                      <div style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Docstring</div>
-                      <div style={{ fontSize: "12px", color: "#94a3b8", whiteSpace: "pre-wrap" }}>
+                      <div style={{ fontSize: "11px", color: colors.gray[500], textTransform: "uppercase" }}>Docstring</div>
+                      <div style={{ fontSize: "12px", color: colors.text.muted, whiteSpace: "pre-wrap" }}>
                         {node.data.docstring}
                       </div>
                     </div>
@@ -739,7 +742,7 @@ export function CallFlowView(): JSX.Element {
                     <div style={{ marginTop: "8px" }}>
                       <div style={{
                         fontSize: "11px",
-                        color: "#64748b",
+                        color: colors.gray[500],
                         textTransform: "uppercase",
                         marginBottom: "8px",
                         display: "flex",
@@ -748,7 +751,7 @@ export function CallFlowView(): JSX.Element {
                       }}>
                         Source Code
                         {sourceCodeLoading && (
-                          <span style={{ color: "#94a3b8", fontWeight: "normal", textTransform: "none" }}>
+                          <span style={{ color: colors.text.muted, fontWeight: "normal", textTransform: "none" }}>
                             Loading...
                           </span>
                         )}
@@ -758,23 +761,23 @@ export function CallFlowView(): JSX.Element {
                           style={{
                             margin: 0,
                             padding: "12px",
-                            backgroundColor: "#0f172a",
+                            backgroundColor: colors.base.panel,
                             borderRadius: "6px",
-                            border: "1px solid #334155",
+                            border: `1px solid ${borders.default}`,
                             fontSize: "11px",
                             fontFamily: "'Fira Code', 'Consolas', monospace",
                             lineHeight: "1.5",
                             overflow: "auto",
                             maxHeight: "300px",
                             whiteSpace: "pre",
-                            color: "#e2e8f0",
+                            color: colors.gray[300],
                           }}
                         >
                           <code>{nodeSourceCode}</code>
                         </pre>
                       )}
                       {!nodeSourceCode && !sourceCodeLoading && (
-                        <div style={{ fontSize: "12px", color: "#64748b", fontStyle: "italic" }}>
+                        <div style={{ fontSize: "12px", color: colors.gray[500], fontStyle: "italic" }}>
                           Could not load source code
                         </div>
                       )}

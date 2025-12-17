@@ -13,6 +13,9 @@ import "reactflow/dist/style.css";
 
 import { CallFlowNode } from "./CallFlowNode";
 import { CallFlowEdge } from "./CallFlowEdge";
+import { DESIGN_TOKENS } from "../../theme/designTokens";
+
+const { colors, borders } = DESIGN_TOKENS;
 
 interface CallFlowGraphProps {
   nodes: Node[];
@@ -54,7 +57,7 @@ export function CallFlowGraph({
         animated: true,
         markerEnd: {
           type: MarkerType.ArrowClosed,
-          color: "#3b82f6",
+          color: colors.primary.main,
         },
       })),
     [edges]
@@ -81,21 +84,21 @@ export function CallFlowGraph({
 
   const minimapNodeColor = useCallback((node: Node) => {
     if (node.data?.isEntryPoint) {
-      return "#f59e0b"; // amber for entry point
+      return colors.callFlow.entryPoint;
     }
     const kind = node.data?.kind || "function";
-    const colors: Record<string, string> = {
-      function: "#3b82f6",
-      method: "#10b981",
-      external: "#6b7280",
-      builtin: "#f59e0b",
-      class: "#a855f7",
+    const kindColors: Record<string, string> = {
+      function: colors.callFlow.function,
+      method: colors.callFlow.method,
+      external: colors.callFlow.external,
+      builtin: colors.callFlow.builtin,
+      class: colors.callFlow.class,
     };
-    return colors[kind] || "#3b82f6";
+    return kindColors[kind] || colors.callFlow.function;
   }, []);
 
   return (
-    <div style={{ width: "100%", height: "100%", backgroundColor: "#0f172a" }}>
+    <div style={{ width: "100%", height: "100%", backgroundColor: colors.base.panel }}>
       <ReactFlow
         nodes={mappedNodes}
         edges={mappedEdges}
@@ -113,32 +116,32 @@ export function CallFlowGraph({
           animated: true,
           style: {
             strokeWidth: 2,
-            stroke: "#3b82f6",
+            stroke: colors.primary.main,
           },
         }}
         proOptions={{ hideAttribution: true }}
       >
         <Background
-          color="#334155"
+          color={borders.default}
           gap={16}
           size={1}
-          style={{ backgroundColor: "#0f172a" }}
+          style={{ backgroundColor: colors.base.panel }}
         />
         <Controls
           style={{
-            backgroundColor: "#1e293b",
-            border: "1px solid #334155",
+            backgroundColor: colors.base.card,
+            border: `1px solid ${borders.default}`,
             borderRadius: "8px",
           }}
         />
         <MiniMap
           nodeColor={minimapNodeColor}
           style={{
-            backgroundColor: "#1e293b",
-            border: "1px solid #334155",
+            backgroundColor: colors.base.card,
+            border: `1px solid ${borders.default}`,
             borderRadius: "8px",
           }}
-          maskColor="rgba(15, 23, 42, 0.7)"
+          maskColor={`${colors.base.panel}B3`} // B3 = 70% opacity
         />
       </ReactFlow>
     </div>

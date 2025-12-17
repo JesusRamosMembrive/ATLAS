@@ -4,18 +4,21 @@ import {
   getBezierPath,
   type EdgeProps,
 } from "reactflow";
+import { DESIGN_TOKENS } from "../../theme/designTokens";
 
 interface CallFlowEdgeData {
   callSiteLine: number;
   callType: string;  // direct | method | super | static
 }
 
-const CALL_TYPE_COLORS = {
-  direct: "#3b82f6",    // blue
-  method: "#10b981",    // green
-  super: "#f59e0b",     // amber
-  static: "#a855f7",    // purple
-} as const;
+const { colors } = DESIGN_TOKENS;
+
+const CALL_TYPE_COLORS: Record<string, string> = {
+  direct: colors.callFlow.direct,
+  method: colors.callFlow.methodCall,
+  super: colors.callFlow.superCall,
+  static: colors.callFlow.staticCall,
+};
 
 export function CallFlowEdge({
   id,
@@ -62,8 +65,8 @@ export function CallFlowEdge({
               fontWeight: 500,
               padding: "2px 6px",
               borderRadius: "4px",
-              backgroundColor: "#1e293b",
-              color: "#94a3b8",
+              backgroundColor: colors.base.card,
+              color: colors.callFlow.edgeLabel,
               border: `1px solid ${edgeColor}`,
               pointerEvents: "all",
             }}
