@@ -10,6 +10,7 @@ Key features in v2:
 - Stable symbol IDs: {rel_path}:{line}:{col}:{kind}:{name}
 - Proper classification of external calls (builtin vs stdlib vs third-party)
 - Per-branch cycle detection
+- Type inference for obj.method() resolution
 """
 
 from .models import (
@@ -19,6 +20,7 @@ from .models import (
     IgnoredCall,
     ResolutionStatus,
 )
+from .type_resolver import TypeResolver, TypeInfo, ScopeInfo
 
 __all__ = [
     "CallNode",
@@ -26,4 +28,7 @@ __all__ = [
     "CallGraph",
     "IgnoredCall",
     "ResolutionStatus",
+    "TypeResolver",
+    "TypeInfo",
+    "ScopeInfo",
 ]

@@ -21,6 +21,7 @@ from typing import Any, Dict, List, Optional, Set, TYPE_CHECKING, Tuple
 
 from .constants import PYTHON_BUILTINS, is_stdlib
 from .models import CallEdge, CallGraph, CallNode, IgnoredCall, ResolutionStatus
+from .type_resolver import TypeResolver, TypeInfo, ScopeInfo
 
 if TYPE_CHECKING:
     from code_map.index import SymbolIndex
@@ -71,6 +72,7 @@ class PythonCallFlowExtractor:
         self._available: Optional[bool] = None
         self.root_path = root_path
         self.symbol_index = symbol_index
+        self._type_resolver: Optional[TypeResolver] = None
 
     def is_available(self) -> bool:
         """Check if tree-sitter is available."""
@@ -115,6 +117,12 @@ class PythonCallFlowExtractor:
         if self._parser is not None:
             return True
         return self.is_available()
+
+    def _get_type_resolver(self, project_root: Path) -> TypeResolver:
+        """Get or create the type resolver (lazy initialization)."""
+        if self._type_resolver is None:
+            self._type_resolver = TypeResolver(project_root, self._parser)
+        return self._type_resolver
 
     # ─────────────────────────────────────────────────────────────
     # v2 Resolution methods
@@ -318,6 +326,12 @@ class PythonCallFlowExtractor:
         # Extract all calls in this function
         calls = self._extract_calls_from_body(body, source)
 
+        # Get type resolver for type inference
+        type_resolver = self._get_type_resolver(project_root)
+
+        # Analyze scope for type inference (cached per function)
+        scope_info = type_resolver.analyze_scope(node, source, file_path, imports)
+
         for call_info in calls:
             # Try to resolve the call to a definition
             resolved, status, module_hint = self._resolve_call_v2(
@@ -327,6 +341,7 @@ class PythonCallFlowExtractor:
                 project_root=project_root,
                 class_context=class_context,
                 imports=imports,
+                scope_info=scope_info,
             )
 
             # Handle external/ignored calls
@@ -543,6 +558,7 @@ class PythonCallFlowExtractor:
         project_root: Path,
         class_context: Optional[str] = None,
         imports: Optional[Dict[str, Dict[str, Any]]] = None,
+        scope_info: Optional[ScopeInfo] = None,
     ) -> Tuple[
         Optional[Tuple[Path, str, int, int, Optional[str]]],  # resolved: (file, func, line, col, class)
         ResolutionStatus,
@@ -550,6 +566,15 @@ class PythonCallFlowExtractor:
     ]:
         """
         Resolve a call to its definition location with resolution status.
+
+        Args:
+            call_info: Information about the call expression
+            file_path: Path to the current file
+            source: Source code of the current file
+            project_root: Root path for import resolution
+            class_context: Current class name if inside a method
+            imports: Pre-extracted import information
+            scope_info: Type information for the current scope (from TypeResolver)
 
         Returns:
             Tuple of:
@@ -714,15 +739,36 @@ class PythonCallFlowExtractor:
             # Module import found but couldn't resolve in project - third-party
             return (None, ResolutionStatus.IGNORED_THIRD_PARTY, module_name)
 
-        # Case 4: Method call on object (obj.method) - requires type inference
+        # Case 4: Method call on object (obj.method) - use type inference
         if call_info.receiver and call_info.receiver != "self":
-            # For MVP, we can't resolve obj.method() without type inference
-            # Check if receiver is an imported name
+            # First check if receiver is an imported module/name
             if call_info.receiver in imports:
                 module_name = imports[call_info.receiver]["module"]
                 if is_stdlib(module_name):
                     return (None, ResolutionStatus.IGNORED_STDLIB, module_name)
                 return (None, ResolutionStatus.IGNORED_THIRD_PARTY, module_name)
+
+            # Try type inference to resolve the receiver's type
+            if scope_info:
+                type_resolver = self._get_type_resolver(project_root)
+                type_info = type_resolver.resolve_type(call_info.receiver, scope_info)
+
+                if type_info and type_info.name:
+                    # We have a type - try to find the method in that type
+                    method_result = self._find_method_in_type(
+                        type_name=type_info.name,
+                        method_name=call_info.name,
+                        file_path=file_path,
+                        project_root=project_root,
+                        imports=imports,
+                    )
+                    if method_result:
+                        target_file, target_method, target_line, target_col, target_class = method_result
+                        return (
+                            (target_file, target_method, target_line, target_col, target_class),
+                            ResolutionStatus.RESOLVED_PROJECT,
+                            None,
+                        )
 
             # Unknown receiver - unresolved
             return (None, ResolutionStatus.UNRESOLVED, None)
@@ -854,10 +900,29 @@ class PythonCallFlowExtractor:
 
             elif node.type == "import_from_statement":
                 # from foo import bar, baz
+                # AST structure: from, dotted_name (module), import, dotted_name|identifier (names)
                 module_name = None
+                seen_import_keyword = False
                 for child in node.children:
-                    if child.type == "dotted_name":
-                        module_name = self._get_node_text(child, source)
+                    if child.type == "from":
+                        continue
+                    elif child.type == "import":
+                        seen_import_keyword = True
+                        continue
+                    elif child.type == "dotted_name":
+                        name_text = self._get_node_text(child, source)
+                        if not seen_import_keyword:
+                            # This is the module name (before 'import' keyword)
+                            module_name = name_text
+                        else:
+                            # This is an imported name (after 'import' keyword)
+                            # e.g., from foo import Bar where Bar is dotted_name
+                            if module_name:
+                                imports[name_text] = {
+                                    "module": module_name,
+                                    "original_name": name_text,
+                                    "type": "from",
+                                }
                     elif child.type == "import_prefix":
                         # relative import: from . import or from .. import
                         module_name = self._get_node_text(child, source)
@@ -1002,6 +1067,82 @@ class PythonCallFlowExtractor:
                 name = self._get_class_name(node)
                 if name == class_name:
                     return node
+        return None
+
+    def _find_method_in_type(
+        self,
+        type_name: str,
+        method_name: str,
+        file_path: Path,
+        project_root: Path,
+        imports: Optional[Dict[str, Dict[str, Any]]] = None,
+    ) -> Optional[Tuple[Path, str, int, int, str]]:
+        """
+        Find a method in a class by type name.
+
+        Searches for the class definition in the current file first,
+        then looks in imported modules.
+
+        Args:
+            type_name: Name of the class/type
+            method_name: Name of the method to find
+            file_path: Current file path for context
+            project_root: Project root for resolving imports
+            imports: Pre-extracted import information
+
+        Returns:
+            Tuple of (file_path, method_name, line, col, class_name) or None
+        """
+        try:
+            source = file_path.read_text(encoding="utf-8")
+            tree = self._parser.parse(bytes(source, "utf-8"))
+
+            # First, try to find class in current file
+            method_node = self._find_method_in_class(
+                tree.root_node, type_name, method_name, source
+            )
+            if method_node:
+                return (
+                    file_path,
+                    method_name,
+                    method_node.start_point[0] + 1,
+                    method_node.start_point[1],
+                    type_name,
+                )
+
+            # If not found, check if type_name is imported
+            if imports is None:
+                imports = self._extract_imports(tree.root_node, source)
+
+            if type_name in imports:
+                import_info = imports[type_name]
+                module_name = import_info["module"]
+
+                # Try to resolve the import to a file
+                resolved_file = self._resolve_import_path(
+                    module_name, project_root, file_path.parent
+                )
+                if resolved_file and resolved_file.exists():
+                    target_source = resolved_file.read_text(encoding="utf-8")
+                    target_tree = self._parser.parse(bytes(target_source, "utf-8"))
+
+                    # Look for method in the imported class
+                    original_name = import_info.get("original_name", type_name)
+                    method_node = self._find_method_in_class(
+                        target_tree.root_node, original_name, method_name, target_source
+                    )
+                    if method_node:
+                        return (
+                            resolved_file,
+                            method_name,
+                            method_node.start_point[0] + 1,
+                            method_node.start_point[1],
+                            original_name,
+                        )
+
+        except OSError:
+            logger.debug("Could not read file for type resolution: %s", file_path)
+
         return None
 
     def list_entry_points(self, file_path: Path) -> List[Dict[str, Any]]:

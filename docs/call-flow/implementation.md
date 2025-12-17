@@ -89,13 +89,50 @@ Display graph → CallFlowGraph (React Flow)
 3. `self.method()` within class
 4. Constructor calls: `ClassName()` → `__init__`
 5. Multi-file resolution within project
+6. **NEW: Type inference for `obj.method()` resolution**
+
+## Type Inference (NEW)
+
+### TypeResolver Module (`code_map/v2/call_flow/type_resolver.py`)
+
+Resolves `obj.method()` calls by inferring the type of `obj` through:
+
+1. **Constructor assignments**: `loader = FileLoader()` → `loader` is `FileLoader`
+2. **Type annotations**: `loader: FileLoader = ...` → `loader` is `FileLoader`
+3. **Return types**: `result = get_loader()` where `def get_loader() -> FileLoader` → `result` is `FileLoader`
+
+### Key Classes
+
+- **TypeInfo**: Stores inferred type information (name, module, confidence, source)
+- **ScopeInfo**: Holds variables and parameters type mappings for a function
+- **TypeResolver**: Main resolver that analyzes function scopes
+
+### Priority Order
+
+When multiple type sources exist:
+1. Parameters (highest) - from function signature
+2. Annotations - explicit type hints
+3. Constructor assignments - PascalCase calls
+4. Return types (lowest) - from called functions
+
+### Features
+
+- Handles `Optional[T]`, `Union[T, None]`, `T | None` extracting base type
+- Resolves imported function return types across files
+- Caches return types per file for performance
+- Filters out Python builtins (dict, list, str, etc.)
+
+### Tests
+
+```bash
+# Run type resolver tests
+pytest tests/test_type_resolver.py -v
+```
 
 ## Not Yet Implemented (Future Work)
 
-- `obj.method()` with type inference
 - Inheritance/MRO resolution
-- `self.attr.method()` chained calls
-- TypeResolver integration
+- `self.attr.method()` chained calls (multi-level attribute access)
 
 ## Testing
 
@@ -117,6 +154,7 @@ curl "http://localhost:8010/api/call-flow/path/to/file.py?function=main&max_dept
 | `code_map/v2/call_flow/models.py` | Modified |
 | `code_map/v2/call_flow/extractor.py` | Modified |
 | `code_map/v2/call_flow/constants.py` | Created |
+| `code_map/v2/call_flow/type_resolver.py` | **Created** (NEW) |
 | `code_map/v2/call_flow/__init__.py` | Modified |
 | `code_map/api/call_flow.py` | Modified |
 | `code_map/api/schemas.py` | Modified |
@@ -124,3 +162,4 @@ curl "http://localhost:8010/api/call-flow/path/to/file.py?function=main&max_dept
 | `frontend/src/api/client.ts` | Modified |
 | `frontend/src/components/CallFlowView.tsx` | Modified |
 | `frontend/src/components/settings/FileBrowserModal.tsx` | Created |
+| `tests/test_type_resolver.py` | **Created** (NEW) |
