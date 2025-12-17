@@ -98,6 +98,25 @@ private:
     static void skip_single_line_comment(TokenizerState& state);
     static void skip_multi_line_comment(TokenizerState& state);
 
+    // Refactoring Helpers
+    void handle_line_metrics(TokenizerState& state, uint32_t& current_line,
+                             size_t& code_lines, size_t& comment_lines, size_t& blank_lines,
+                             bool& line_has_code, bool& line_has_comment) const;
+                             
+    bool skip_whitespace_and_newline(TokenizerState& state);
+    
+    bool process_preprocessor(TokenizerState& state, bool& line_has_code, TokenizedFile& result);
+
+    bool process_comment(TokenizerState& state, bool& line_has_comment);
+    
+    bool process_string_literal(TokenizerState& state, TokenizedFile& result, bool& line_has_code);
+    
+    bool process_number(TokenizerState& state, TokenizedFile& result, bool& line_has_code) const;
+    
+    bool process_identifier(TokenizerState& state, TokenizedFile& result, bool& line_has_code) const;
+    
+    bool process_operator(TokenizerState& state, TokenizedFile& result, bool& line_has_code);
+
     // Helper methods
     static bool is_identifier_start(char c) ;
     static bool is_identifier_char(char c) ;

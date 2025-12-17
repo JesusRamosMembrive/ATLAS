@@ -66,6 +66,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Set, Mapping
+from concurrent.futures import Executor
 
 from .cache import SnapshotStore
 from .index import SymbolIndex
@@ -83,6 +84,7 @@ from .linters import (
     get_latest_linters_report,
     LINTER_TIMEOUT_FAST,  # Re-export for consistency
 )
+from .similarity_service import is_available, analyze_similarity, report_to_dict
 from .stage_toolkit import stage_status as compute_stage_status
 from .state_reporter import StateReporter
 from .insights import VALID_INSIGHTS_FOCUS
@@ -159,6 +161,8 @@ class AppState:
             execution (ruff, mypy, bandit, pytest).
         insights (InsightsService): Background service managing AI-powered
             code analysis via Ollama.
+        similarity_report (Optional[Dict[str, Any]]): Cached result of the last
+            similarity analysis run.
 
     Lifecycle:
         1. **Instantiation**: Create with settings and scheduler. Components
@@ -195,6 +199,7 @@ class AppState:
     reporter: StateReporter = field(init=False)
     linters: LintersService = field(init=False)
     insights: InsightsService = field(init=False)
+    similarity_report: Optional[Dict[str, Any]] = field(init=False, default=None)
 
     def __post_init__(self) -> None:
         """
@@ -410,8 +415,47 @@ class AppState:
             self._recent_changes = updated[:MAX_RECENT_CHANGES_TRACKED]
         self.last_full_scan = datetime.now(timezone.utc)
         self.linters.schedule(pending_changes=self.scheduler.pending_count())
+        self.last_full_scan = datetime.now(timezone.utc)
+        self.linters.schedule(pending_changes=self.scheduler.pending_count())
         self.insights.schedule()
+        
+        # Fire and forget similarity analysis if available
+        if is_available():
+            asyncio.create_task(self.run_similarity_bg())
+            
         return len(summaries)
+
+    async def run_similarity_bg(
+        self,
+        extensions: Optional[List[str]] = None,
+        type3: bool = False,
+    ) -> None:
+        """
+        Run similarity analysis in a background thread and update state.
+        
+        Args:
+            extensions: List of file extensions to include (default: [".py"])
+            type3: Whether to enable Type-3 (modified clone) detection
+        """
+        if not is_available():
+            logger.warning("Similarity motor not available, skipping background run")
+            return
+
+        try:
+            logger.info("Running background similarity analysis...")
+            # Run blocking C++ binding in thread pool
+            report = await asyncio.to_thread(
+                analyze_similarity,
+                root=self.settings.root_path,
+                extensions=extensions or [".py"],
+                type3=type3
+            )
+            self.similarity_report = report_to_dict(report)
+            logger.info(
+                f"Similarity analysis updated: {report.summary.clone_pairs_found} pairs found"
+            )
+        except Exception as e:
+            logger.error(f"Background similarity analysis failed: {e}")
 
     def _compute_insights_next_run(self) -> Optional[datetime]:
         return self.insights.next_run

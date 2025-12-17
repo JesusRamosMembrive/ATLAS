@@ -95,7 +95,14 @@
       "Bash(./cpp/build/similarity_tests:*)",
       "Bash(.venv/bin/pip list:*)",
       "Bash(file:*)",
-      "Bash(timeout 60 .venv/bin/python -m pytest:*)"
+      "Bash(timeout 60 .venv/bin/python -m pytest:*)",
+      "Bash(timeout:*)",
+      "Bash(Y lines\"\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git rm:*)",
+      "Bash(python -m pytest tests/test_call_flow_baseline.py -v --tb=short)",
+      "Bash(python3 -m pytest:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npx tsc --noEmit)"
     ],
     "deny": [],
     "ask": []
