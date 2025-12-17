@@ -40,6 +40,8 @@ import type {
   SymbolDetailsResponse,
   SymbolSearchResponse,
   SymbolSearchResult,
+  CallFlowEntryPointsResponse,
+  CallFlowResponse,
 } from "./types";
 import type {
   SimilarityReport,
@@ -924,4 +926,64 @@ export function searchSymbolsByName(
  */
 export function getSymbolsInFile(filePath: string): Promise<SymbolSearchResult[]> {
   return fetchJson<SymbolSearchResult[]>(`/symbols/file/${encodeURIComponent(filePath)}`);
+}
+
+// =============================================================================
+// Call Flow API (Function Call Chain Visualization)
+// =============================================================================
+
+/**
+ * Get entry points (functions/methods) available in a file.
+ *
+ * Args:
+ *     filePath: Absolute path to Python file
+ *
+ * Returns:
+ *     Promise with list of entry points (name, qualified_name, line, kind)
+ *
+ * Notes:
+ *     - Endpoint: GET /api/call-flow/entry-points/{filePath}
+ *     - Returns all functions and methods that can be used as call flow entry points
+ */
+export function getCallFlowEntryPoints(
+  filePath: string
+): Promise<CallFlowEntryPointsResponse> {
+  return fetchJson<CallFlowEntryPointsResponse>(
+    `/call-flow/entry-points/${encodeURIComponent(filePath)}`
+  );
+}
+
+/**
+ * Get the call flow graph from a function/method entry point.
+ *
+ * Args:
+ *     filePath: Absolute path to Python file
+ *     functionName: Name of function or method to analyze
+ *     maxDepth: Maximum call depth to follow (default 5, max 20)
+ *     className: Class name if analyzing a method (optional)
+ *
+ * Returns:
+ *     Promise with React Flow compatible graph (nodes, edges, metadata)
+ *
+ * Notes:
+ *     - Endpoint: GET /api/call-flow/{filePath}?function=X&max_depth=N
+ *     - Follows function calls recursively up to maxDepth
+ *     - External calls (stdlib, third-party) are marked but not followed
+ */
+export function getCallFlow(
+  filePath: string,
+  functionName: string,
+  maxDepth = 5,
+  className?: string | null
+): Promise<CallFlowResponse> {
+  const params = new URLSearchParams({
+    function: functionName,
+    max_depth: String(maxDepth),
+  });
+  if (className) {
+    params.set("class_name", className);
+  }
+  return fetchJson<CallFlowResponse>(
+    `/call-flow/${encodeURIComponent(filePath)}?${params.toString()}`
+  );
 }

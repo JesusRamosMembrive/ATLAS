@@ -6,6 +6,7 @@ import { SettingsView } from "./components/SettingsView";
 import { StageToolkitView } from "./components/StageToolkitView";
 import { ClassUMLView } from "./components/ClassUMLView";
 import { InstanceGraphView } from "./components/InstanceGraphView";
+import { CallFlowView } from "./components/CallFlowView";
 import { LintersView } from "./components/LintersView";
 import { OverviewDashboard } from "./components/OverviewDashboard";
 import { PromptLibraryView } from "./components/PromptLibraryView";
@@ -84,6 +85,10 @@ export function App(): JSX.Element {
           <Route
             path="/instance-graph"
             element={withLayout("Instance Graph", <InstanceGraphView />)}
+          />
+          <Route
+            path="/call-flow"
+            element={withLayout("Call Flow", <CallFlowView />)}
           />
           <Route
             path="/prompts"

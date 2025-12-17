@@ -608,3 +608,70 @@ export interface SymbolSearchResponse {
   results: SymbolSearchResult[];
   total: number;
 }
+
+// =============================================================================
+// Call Flow API (Phase 8 - Call Flow Graph)
+// =============================================================================
+
+export interface CallFlowEntryPoint {
+  name: string;
+  qualified_name: string;
+  line: number;
+  kind: string;  // "function" | "method" | "class"
+  class_name?: string | null;
+}
+
+export interface CallFlowEntryPointsResponse {
+  file_path: string;
+  entry_points: CallFlowEntryPoint[];
+}
+
+export interface CallFlowNodeData {
+  label: string;
+  qualifiedName: string;
+  filePath?: string | null;
+  line: number;
+  kind: string;
+  isEntryPoint: boolean;
+  depth: number;
+  docstring?: string | null;
+}
+
+export interface CallFlowNode {
+  id: string;
+  type: string;
+  position: { x: number; y: number };
+  data: CallFlowNodeData;
+}
+
+export interface CallFlowEdgeData {
+  callSiteLine: number;
+  callType: string;
+}
+
+export interface CallFlowEdge {
+  id: string;
+  source: string;
+  target: string;
+  type: string;
+  animated: boolean;
+  data?: CallFlowEdgeData | null;
+}
+
+export interface CallFlowMetadata {
+  entry_point: string;
+  source_file: string;
+  function_name: string;
+  max_depth: number;
+  max_depth_reached: boolean;
+  node_count: number;
+  edge_count: number;
+  external_calls: string[];
+  external_calls_count: number;
+}
+
+export interface CallFlowResponse {
+  nodes: CallFlowNode[];
+  edges: CallFlowEdge[];
+  metadata: CallFlowMetadata;
+}

@@ -52,4 +52,9 @@ export const queryKeys = {
     ["symbols", "search", query] as const,
   symbolsInFile: (filePath: string) =>
     ["symbols", "file", filePath] as const,
+  // Call Flow API (Function Call Chain Visualization)
+  callFlowEntryPoints: (filePath: string) =>
+    ["call-flow", "entry-points", filePath] as const,
+  callFlow: (filePath: string, functionName: string, maxDepth: number) =>
+    ["call-flow", filePath, functionName, maxDepth] as const,
 };
