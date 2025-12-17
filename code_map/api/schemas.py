@@ -6,6 +6,7 @@ Esquemas Pydantic para serializar respuestas de la API.
 from __future__ import annotations
 
 from datetime import datetime
+from enum import Enum
 from typing import Any, Dict, Iterable, List, Optional
 
 from pydantic import BaseModel, Field, ConfigDict
@@ -626,6 +627,27 @@ class ListDirectoriesResponse(BaseModel):
     )
 
 
+class FileItem(BaseModel):
+    """Representa un archivo en el listado."""
+
+    name: str = Field(..., description="Nombre del archivo")
+    path: str = Field(..., description="Path absoluto del archivo")
+    extension: str = Field(..., description="Extensión del archivo")
+    size_bytes: int = Field(default=0, description="Tamaño en bytes")
+
+
+class ListFilesResponse(BaseModel):
+    """Respuesta al listar directorios y archivos."""
+
+    current_path: str = Field(..., description="Path del directorio actual")
+    directories: List[DirectoryItem] = Field(
+        default_factory=list, description="Lista de subdirectorios"
+    )
+    files: List[FileItem] = Field(
+        default_factory=list, description="Lista de archivos que coinciden con el filtro"
+    )
+
+
 class ClassGraphNode(BaseModel):
     """Nodo del grafo de clases."""
 
@@ -687,6 +709,183 @@ class UMLClass(BaseModel):
 class UMLDiagramResponse(BaseModel):
     classes: List[UMLClass]
     stats: Dict[str, int]
+
+
+# -----------------------------------------------------------------------------
+# Call Flow Schemas (v2)
+# -----------------------------------------------------------------------------
+
+
+class CallFlowResolutionStatus(str, Enum):
+    """
+    Resolution status for a call in the call flow graph.
+
+    Values:
+        resolved_project: Successfully resolved to a project symbol
+        ignored_builtin: Python builtin (print, len, etc.)
+        ignored_stdlib: Standard library (os, json, etc.)
+        ignored_third_party: Third-party package
+        unresolved: Could not resolve (unknown symbol)
+        ambiguous: Multiple possible targets
+    """
+    RESOLVED_PROJECT = "resolved_project"
+    IGNORED_BUILTIN = "ignored_builtin"
+    IGNORED_STDLIB = "ignored_stdlib"
+    IGNORED_THIRD_PARTY = "ignored_third_party"
+    UNRESOLVED = "unresolved"
+    AMBIGUOUS = "ambiguous"
+
+
+class CallFlowIgnoredCallSchema(BaseModel):
+    """
+    Information about an ignored/external call.
+
+    Attributes:
+        expression: The call expression (e.g., "print", "os.path.join")
+        status: Why it was ignored (builtin, stdlib, third-party)
+        call_site_line: Line where the call occurs
+        module_hint: Module name if known
+        caller_id: ID of the node that made this call
+    """
+    expression: str
+    status: CallFlowResolutionStatus
+    call_site_line: int
+    module_hint: Optional[str] = None
+    caller_id: Optional[str] = None
+
+
+class CallFlowNodeSchema(BaseModel):
+    """
+    A node in the call flow graph representing a function or method.
+
+    Attributes:
+        id: Unique node identifier (stable symbol ID format)
+        name: Function/method name
+        qualified_name: Full name including class (e.g., "MainWindow.on_click")
+        file_path: Path to source file
+        line: Line number of definition
+        column: Column number of definition
+        kind: Type: function, method, class
+        is_entry_point: True if this is the starting node
+        depth: Distance from entry point
+        docstring: First line of docstring
+        symbol_id: Stable symbol ID (same as id in v2)
+        resolution_status: How this node was resolved
+        reasons: Explanation if unresolved/ambiguous
+    """
+
+    id: str
+    name: str
+    qualified_name: str
+    file_path: Optional[str] = None
+    line: int = 0
+    column: int = 0
+    kind: str = "function"
+    is_entry_point: bool = False
+    depth: int = 0
+    docstring: Optional[str] = None
+    symbol_id: Optional[str] = None
+    resolution_status: CallFlowResolutionStatus = CallFlowResolutionStatus.RESOLVED_PROJECT
+    reasons: Optional[str] = None
+
+
+class CallFlowEdgeSchema(BaseModel):
+    """
+    An edge representing a function call.
+
+    Attributes:
+        id: Unique edge identifier
+        source: Source node ID (caller)
+        target: Target node ID (callee)
+        call_site_line: Line where the call occurs
+        call_type: Type of call: direct, method, super, static
+        expression: The call expression (e.g., "self.load()")
+        resolution_status: How this edge's target was resolved
+    """
+
+    id: str
+    source: str
+    target: str
+    call_site_line: int
+    call_type: str = "direct"
+    expression: Optional[str] = None
+    resolution_status: CallFlowResolutionStatus = CallFlowResolutionStatus.RESOLVED_PROJECT
+
+
+class CallFlowReactFlowNodeSchema(BaseModel):
+    """React Flow formatted node for call flow visualization."""
+
+    id: str
+    type: str = "callNode"
+    position: Dict[str, float]
+    data: Dict[str, Any]
+
+
+class CallFlowReactFlowEdgeSchema(BaseModel):
+    """React Flow formatted edge for call flow visualization."""
+
+    id: str
+    source: str
+    target: str
+    type: str = "smoothstep"
+    animated: bool = False
+    data: Optional[Dict[str, Any]] = None
+
+
+class CallFlowResponse(BaseModel):
+    """
+    Complete call flow graph response for React Flow visualization.
+
+    Attributes:
+        nodes: List of nodes formatted for React Flow
+        edges: List of edges formatted for React Flow
+        metadata: Graph metadata (entry_point, max_depth, etc.)
+        ignored_calls: Calls that were classified as external (builtins, stdlib, third-party)
+        unresolved_calls: Calls that could not be resolved
+        diagnostics: Diagnostic info (cycles detected, max depth reached, etc.)
+    """
+
+    nodes: List[CallFlowReactFlowNodeSchema] = Field(default_factory=list)
+    edges: List[CallFlowReactFlowEdgeSchema] = Field(default_factory=list)
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict,
+        description="Graph metadata: entry_point, max_depth, source_file",
+    )
+    ignored_calls: List[CallFlowIgnoredCallSchema] = Field(
+        default_factory=list,
+        description="External calls (builtins, stdlib, third-party)",
+    )
+    unresolved_calls: List[str] = Field(
+        default_factory=list,
+        description="Calls that could not be resolved",
+    )
+    diagnostics: Dict[str, Any] = Field(
+        default_factory=dict,
+        description="Diagnostic info: cycles_detected, max_depth_reached, etc.",
+    )
+
+
+class CallFlowEntryPointSchema(BaseModel):
+    """An entry point (function/method) that can be used as call flow start."""
+
+    name: str
+    qualified_name: str
+    line: int
+    kind: str  # function, method, class
+    class_name: Optional[str] = None
+    node_count: Optional[int] = None  # Estimated number of nodes in call graph
+
+
+class CallFlowEntryPointsResponse(BaseModel):
+    """List of available entry points in a file."""
+
+    file_path: str
+    entry_points: List[CallFlowEntryPointSchema] = Field(default_factory=list)
+
+
+# -----------------------------------------------------------------------------
+# Audit Schemas
+# -----------------------------------------------------------------------------
 
 
 class AuditRunSchema(BaseModel):

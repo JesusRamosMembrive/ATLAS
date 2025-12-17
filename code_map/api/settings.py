@@ -23,8 +23,10 @@ from ..state import AppState
 from .deps import get_app_state
 from .schemas import (
     BrowseDirectoryResponse,
-    ListDirectoriesResponse,
     DirectoryItem,
+    FileItem,
+    ListDirectoriesResponse,
+    ListFilesResponse,
     SettingsResponse,
     SettingsUpdateRequest,
     SettingsUpdateResponse,
@@ -189,4 +191,94 @@ async def list_directories(
     return ListDirectoriesResponse(
         current_path=str(base_path),
         directories=directories,
+    )
+
+
+@router.get("/settings/list-files", response_model=ListFilesResponse)
+async def list_files(
+    path: Optional[str] = None,
+    extensions: str = ".py",
+    state: AppState = Depends(get_app_state),
+) -> ListFilesResponse:
+    """Lista directorios y archivos con extensiones específicas.
+
+    Args:
+        path: Directorio a explorar. Si no se especifica, usa root_path.
+        extensions: Extensiones a filtrar, separadas por coma. Ej: ".py,.pyi"
+
+    Útil para el browser de archivos de Call Flow y otras herramientas.
+    """
+    # Determinar el directorio base
+    if path:
+        base_path = Path(path).expanduser().resolve()
+    else:
+        base_path = state.settings.root_path
+
+    # Verificar que el path existe y es un directorio
+    if not base_path.exists():
+        raise FileNotFoundError(path=str(base_path))
+
+    if not base_path.is_dir():
+        raise InvalidPathError(
+            path=str(base_path), reason="El path no es un directorio"
+        )
+
+    # Parsear extensiones
+    ext_list = [e.strip().lower() for e in extensions.split(",") if e.strip()]
+    if not ext_list:
+        ext_list = [".py"]
+
+    directories: list[DirectoryItem] = []
+    files: list[FileItem] = []
+
+    # Agregar directorio padre si no estamos en la raíz
+    if base_path.parent != base_path:
+        directories.append(
+            DirectoryItem(
+                name="..",
+                path=str(base_path.parent),
+                is_parent=True,
+            )
+        )
+
+    # Listar contenido
+    try:
+        for item in sorted(base_path.iterdir()):
+            # Excluir ocultos y directorios comunes no útiles
+            if item.name.startswith("."):
+                continue
+            if item.name in ("__pycache__", "node_modules", ".git", "venv", ".venv"):
+                continue
+
+            if item.is_dir():
+                directories.append(
+                    DirectoryItem(
+                        name=item.name,
+                        path=str(item),
+                        is_parent=False,
+                    )
+                )
+            elif item.is_file():
+                # Filtrar por extensiones
+                ext = item.suffix.lower()
+                if ext in ext_list:
+                    try:
+                        size = item.stat().st_size
+                    except OSError:
+                        size = 0
+                    files.append(
+                        FileItem(
+                            name=item.name,
+                            path=str(item),
+                            extension=ext,
+                            size_bytes=size,
+                        )
+                    )
+    except PermissionError:
+        raise PermissionDeniedError(path=str(base_path), operation="read")
+
+    return ListFilesResponse(
+        current_path=str(base_path),
+        directories=directories,
+        files=files,
     )

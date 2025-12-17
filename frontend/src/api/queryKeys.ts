@@ -40,4 +40,19 @@ export const queryKeys = {
     ["similarity", "analyze", extensions.sort().join(","), type3] as const,
   similarityHotspots: (limit: number, extensions?: string[]) =>
     ["similarity", "hotspots", limit, extensions?.sort().join(",") ?? ""] as const,
+  // Contracts API (AEGIS v2 Phase 5)
+  contracts: (filePath: string, symbolLine: number, levels?: number[]) =>
+    ["contracts", "discover", filePath, symbolLine, levels?.join(",") ?? "default"] as const,
+  // Symbols API (Phase 7.5 - Instance Graph Integration)
+  symbolDetails: (filePath: string, line: number) =>
+    ["symbols", "at-location", filePath, line] as const,
+  symbolSearch: (query: string) =>
+    ["symbols", "search", query] as const,
+  symbolsInFile: (filePath: string) =>
+    ["symbols", "file", filePath] as const,
+  // Call Flow API (Function Call Chain Visualization)
+  callFlowEntryPoints: (filePath: string) =>
+    ["call-flow", "entry-points", filePath] as const,
+  callFlow: (filePath: string, functionName: string, maxDepth: number) =>
+    ["call-flow", filePath, functionName, maxDepth] as const,
 };

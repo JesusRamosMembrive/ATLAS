@@ -1,0 +1,1112 @@
+# SPDX-License-Identifier: MIT
+"""
+Python Call Flow extractor using tree-sitter.
+
+Refactored to use BaseCallFlowExtractor and shared mixins.
+Reduces code duplication while maintaining full functionality.
+
+Features:
+- Proper classification of external calls (builtin/stdlib/third-party)
+- Stable symbol IDs: {rel_path}:{line}:{col}:{kind}:{name}
+- Per-branch cycle detection (allows same symbol in different paths)
+- Optional SymbolIndex integration for faster lookups
+- TypeResolver integration for type inference
+"""
+
+from __future__ import annotations
+
+import logging
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, ClassVar, Dict, List, Optional, Set, Tuple, TYPE_CHECKING
+
+from .base_extractor import BaseCallFlowExtractor
+from ..constants import PYTHON_BUILTINS, is_stdlib
+from ..models import CallEdge, CallGraph, CallNode, IgnoredCall, ResolutionStatus
+from ..type_resolver import TypeResolver, ScopeInfo
+
+if TYPE_CHECKING:
+    from code_map.index import SymbolIndex
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class CallInfo:
+    """Information about a Python function/method call."""
+
+    name: str  # Simple name: "foo" or "bar"
+    receiver: Optional[str]  # Object receiving the call: "self", "obj", None
+    qualified_name: str  # Full call: "self.foo", "obj.bar()", "foo"
+    line: int  # Line where call occurs
+    call_type: str  # "direct" | "method" | "attribute_chain"
+    arguments: List[str]  # Argument expressions
+
+
+class PythonCallFlowExtractor(BaseCallFlowExtractor):
+    """
+    Extracts function call flows from Python source code.
+
+    Inherits from BaseCallFlowExtractor to share:
+    - Tree-sitter initialization (TreeSitterMixin)
+    - Complexity and LOC calculation (MetricsMixin)
+    - Symbol ID generation (SymbolMixin)
+
+    Adds Python-specific features:
+    - TypeResolver integration for type inference
+    - Import resolution across project files
+    - Builtin/stdlib/third-party classification
+
+    Example:
+        >>> extractor = PythonCallFlowExtractor(Path("/project"))
+        >>> graph = extractor.extract(Path("app.py"), "on_button_click", max_depth=5)
+        >>> print(graph.to_react_flow())
+    """
+
+    # Class variables from BaseCallFlowExtractor
+    LANGUAGE: ClassVar[str] = "python"
+    EXTENSIONS: ClassVar[Set[str]] = {".py", ".pyw"}
+
+    def __init__(
+        self,
+        root_path: Optional[Path] = None,
+        symbol_index: Optional["SymbolIndex"] = None,
+    ) -> None:
+        """
+        Initialize the extractor.
+
+        Args:
+            root_path: Project root for relative paths in symbol IDs.
+                       If None, uses file's parent directory.
+            symbol_index: Optional SymbolIndex for faster symbol lookups.
+        """
+        super().__init__(root_path, symbol_index)
+        self._type_resolver: Optional[TypeResolver] = None
+
+    @property
+    def decision_types(self) -> Set[str]:
+        """Python decision point node types for complexity calculation.
+
+        Note: Comprehensions (list/dict/set/generator) are intentionally excluded
+        to maintain consistency with code_map/analyzer.py and keep values readable.
+        Boolean operators (and/or) are counted separately by MetricsMixin.
+        """
+        return {
+            "if_statement",
+            "elif_clause",
+            "for_statement",
+            "while_statement",
+            "except_clause",
+            "with_statement",
+            "case_clause",  # match/case (Python 3.10+)
+            "conditional_expression",  # ternary: x if cond else y
+        }
+
+    @property
+    def builtin_functions(self) -> Set[str]:
+        """Python builtin functions to ignore."""
+        return PYTHON_BUILTINS
+
+    # ─────────────────────────────────────────────────────────────
+    # Override tree-sitter initialization for Python specifics
+    # ─────────────────────────────────────────────────────────────
+
+    def is_available(self) -> bool:
+        """Check if tree-sitter is available for Python parsing."""
+        if self._available is not None:
+            return self._available
+
+        try:
+            from code_map.dependencies import optional_dependencies
+
+            modules = optional_dependencies.load("tree_sitter_languages")
+            if not modules:
+                self._available = False
+                return False
+
+            import warnings
+
+            parser_cls = getattr(modules.get("tree_sitter"), "Parser", None)
+            get_language = getattr(
+                modules.get("tree_sitter_languages"), "get_language", None
+            )
+
+            if parser_cls is None or get_language is None:
+                self._available = False
+                return False
+
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=FutureWarning)
+                language = get_language("python")
+
+            parser = parser_cls()
+            parser.set_language(language)
+            self._parser = parser
+            self._available = True
+            return True
+
+        except Exception:
+            self._available = False
+            return False
+
+    def _get_type_resolver(self, project_root: Path) -> TypeResolver:
+        """Get or create the type resolver (lazy initialization)."""
+        if self._type_resolver is None:
+            self._type_resolver = TypeResolver(project_root, self._parser)
+        return self._type_resolver
+
+    # ─────────────────────────────────────────────────────────────
+    # Override complexity calculation for Python-specific patterns
+    # ─────────────────────────────────────────────────────────────
+
+    def _calculate_complexity(self, func_node: Any) -> int:
+        """
+        Calculate cyclomatic complexity (McCabe) for a function node.
+
+        Extended for Python:
+        - Counts 'and' and 'or' operators as decision points
+        """
+        count = 0
+        to_visit = [func_node]
+        boolean_ops = {"and", "or"}
+
+        while to_visit:
+            node = to_visit.pop()
+            if node.type in self.decision_types:
+                count += 1
+            elif node.type == "boolean_operator":
+                for child in node.children:
+                    if child.type in boolean_ops:
+                        count += 1
+                        break
+            to_visit.extend(node.children)
+
+        return 1 + count
+
+    # ─────────────────────────────────────────────────────────────
+    # Python-specific helper methods
+    # ─────────────────────────────────────────────────────────────
+
+    def _get_function_name(self, node: Any, source: str = "") -> Optional[str]:
+        """Extract function name from function_definition node."""
+        for child in node.children:
+            if child.type == "identifier":
+                text = child.text
+                if isinstance(text, bytes):
+                    return text.decode("utf-8")
+                return text
+        return None
+
+    def _get_class_name(self, node: Any, source: str = "") -> Optional[str]:
+        """Extract class name from class_definition node."""
+        for child in node.children:
+            if child.type == "identifier":
+                text = child.text
+                if isinstance(text, bytes):
+                    return text.decode("utf-8")
+                return text
+        return None
+
+    def _get_docstring(self, func_node: Any, source: str) -> Optional[str]:
+        """Get first line of docstring from a function definition."""
+        body = self._find_child_by_type(func_node, "block")
+        if body is None:
+            return None
+
+        for child in body.children:
+            if child.type == "expression_statement":
+                for subchild in child.children:
+                    if subchild.type == "string":
+                        doc = self._get_node_text(subchild, source.encode("utf-8") if isinstance(source, str) else source)
+                        # Clean up and get first line
+                        doc = doc.strip("\"'")
+                        first_line = doc.split("\n")[0].strip()
+                        return first_line if first_line else None
+            break
+        return None
+
+    def _should_skip_function(self, name: str) -> bool:
+        """Check if function should be skipped from entry points."""
+        return name.startswith("_") and not name.startswith("__")
+
+    def _count_calls_in_node(self, node: Any) -> int:
+        """Count function/method calls within an AST node."""
+        count = 0
+        for child in self._walk_tree(node):
+            if child.type == "call":
+                count += 1
+        return count
+
+    def _classify_external(self, name: str, module_hint: Optional[str] = None) -> ResolutionStatus:
+        """Classify an external (non-project) call."""
+        if name in PYTHON_BUILTINS:
+            return ResolutionStatus.IGNORED_BUILTIN
+
+        if module_hint:
+            if is_stdlib(module_hint):
+                return ResolutionStatus.IGNORED_STDLIB
+            return ResolutionStatus.IGNORED_THIRD_PARTY
+
+        if is_stdlib(name):
+            return ResolutionStatus.IGNORED_STDLIB
+
+        return ResolutionStatus.IGNORED_THIRD_PARTY
+
+    # ─────────────────────────────────────────────────────────────
+    # Required abstract method implementations
+    # ─────────────────────────────────────────────────────────────
+
+    def list_entry_points(self, file_path: Path) -> List[Dict[str, Any]]:
+        """
+        List all functions and methods in a file that could be entry points.
+
+        Args:
+            file_path: Path to Python file
+
+        Returns:
+            List of entry point info with name, qualified_name, line, kind, node_count
+        """
+        if not self._ensure_parser():
+            return []
+
+        try:
+            source = file_path.read_text(encoding="utf-8")
+        except OSError:
+            return []
+
+        tree = self._parser.parse(bytes(source, "utf-8"))
+        entry_points: List[Dict[str, Any]] = []
+
+        for node in self._walk_tree(tree.root_node):
+            if node.type == "function_definition":
+                func_name = self._get_function_name(node)
+                if func_name and not self._should_skip_function(func_name):
+                    # Check if method or function
+                    parent = node.parent
+                    class_name = None
+                    while parent:
+                        if parent.type == "class_definition":
+                            class_name = self._get_class_name(parent)
+                            break
+                        parent = parent.parent
+
+                    if class_name:
+                        qualified_name = f"{class_name}.{func_name}"
+                        kind = "method"
+                    else:
+                        qualified_name = func_name
+                        kind = "function"
+
+                    call_count = self._count_calls_in_node(node)
+
+                    entry_points.append({
+                        "name": func_name,
+                        "qualified_name": qualified_name,
+                        "line": node.start_point[0] + 1,
+                        "kind": kind,
+                        "class_name": class_name,
+                        "node_count": call_count,
+                        "file_path": str(file_path),
+                    })
+
+            elif node.type == "class_definition":
+                class_name = self._get_class_name(node)
+                if class_name and not self._should_skip_function(class_name):
+                    # Count calls in __init__ method if present
+                    init_calls = 0
+                    for child in self._walk_tree(node):
+                        if child.type == "function_definition":
+                            init_name = self._get_function_name(child)
+                            if init_name == "__init__":
+                                init_calls = self._count_calls_in_node(child)
+                                break
+
+                    entry_points.append({
+                        "name": class_name,
+                        "qualified_name": class_name,
+                        "line": node.start_point[0] + 1,
+                        "kind": "class",
+                        "class_name": None,
+                        "node_count": init_calls,
+                        "file_path": str(file_path),
+                    })
+
+        return entry_points
+
+    def extract(
+        self,
+        file_path: Path,
+        function_name: str,
+        max_depth: int = 5,
+        project_root: Optional[Path] = None,
+    ) -> Optional[CallGraph]:
+        """
+        Extract call flow graph starting from a function.
+
+        Args:
+            file_path: Path to the Python source file
+            function_name: Name of the entry point function/method
+            max_depth: Maximum depth to follow calls
+            project_root: Project root for resolving imports
+
+        Returns:
+            CallGraph containing all reachable calls, or None if extraction fails
+        """
+        if not self._ensure_parser():
+            logger.warning("tree-sitter not available for call flow extraction")
+            return None
+
+        file_path = file_path.resolve()
+        effective_root = project_root or self.root_path or file_path.parent
+
+        try:
+            source = file_path.read_text(encoding="utf-8")
+        except OSError as e:
+            logger.error("Failed to read file %s: %s", file_path, e)
+            return None
+
+        tree = self._parser.parse(bytes(source, "utf-8"))
+
+        # Find the target function
+        func_node, class_name = self._find_function_or_method(
+            tree.root_node, function_name, source
+        )
+        if func_node is None:
+            logger.warning(
+                "Function '%s' not found in %s", function_name, file_path
+            )
+            return None
+
+        # Build qualified name
+        if class_name:
+            qualified_name = f"{class_name}.{function_name}"
+        else:
+            qualified_name = function_name
+
+        # Create entry point node using SymbolMixin
+        line = func_node.start_point[0] + 1
+        col = func_node.start_point[1]
+        kind = "method" if class_name else "function"
+        entry_id = self._make_symbol_id(file_path, line, col, kind, function_name, effective_root)
+
+        entry_node = CallNode(
+            id=entry_id,
+            name=function_name,
+            qualified_name=qualified_name,
+            file_path=file_path,
+            line=line,
+            column=col,
+            kind=kind,
+            is_entry_point=True,
+            depth=0,
+            docstring=self._get_docstring(func_node, source),
+            symbol_id=entry_id,
+            resolution_status=ResolutionStatus.RESOLVED_PROJECT,
+            complexity=self._calculate_complexity(func_node),
+            loc=self._calculate_loc(func_node),
+        )
+
+        # Initialize graph
+        graph = CallGraph(
+            entry_point=entry_id,
+            max_depth=max_depth,
+            source_file=file_path,
+        )
+        graph.add_node(entry_node)
+
+        # Extract imports for resolution context
+        imports = self._extract_imports(tree.root_node, source)
+
+        # Extract calls recursively
+        call_stack: List[str] = [entry_id]
+        self._extract_calls_recursive(
+            graph=graph,
+            node=func_node,
+            parent_id=entry_id,
+            file_path=file_path,
+            source=source,
+            project_root=effective_root,
+            depth=1,
+            max_depth=max_depth,
+            call_stack=call_stack,
+            class_context=class_name,
+            imports=imports,
+        )
+
+        return graph
+
+    # ─────────────────────────────────────────────────────────────
+    # Internal extraction methods
+    # ─────────────────────────────────────────────────────────────
+
+    def _extract_calls_recursive(
+        self,
+        graph: CallGraph,
+        node: Any,
+        parent_id: str,
+        file_path: Path,
+        source: str,
+        project_root: Path,
+        depth: int,
+        max_depth: int,
+        call_stack: List[str],
+        class_context: Optional[str] = None,
+        imports: Optional[Dict[str, Dict[str, Any]]] = None,
+    ) -> None:
+        """Recursively extract calls from a function body."""
+        if depth > max_depth:
+            graph.max_depth_reached = True
+            graph.diagnostics["max_depth_reached"] = True
+            return
+
+        # Find function body
+        body = self._find_child_by_type(node, "block")
+        if body is None:
+            return
+
+        # Extract imports if not provided
+        if imports is None:
+            tree = self._parser.parse(bytes(source, "utf-8"))
+            imports = self._extract_imports(tree.root_node, source)
+
+        # Extract all calls in this function
+        calls = self._extract_calls_from_body(body, source)
+
+        # Get type resolver for type inference
+        type_resolver = self._get_type_resolver(project_root)
+
+        # Analyze scope for type inference
+        scope_info = type_resolver.analyze_scope(node, source, file_path, imports)
+
+        for call_info in calls:
+            # Try to resolve the call
+            resolved, status, module_hint = self._resolve_call_v2(
+                call_info=call_info,
+                file_path=file_path,
+                source=source,
+                project_root=project_root,
+                class_context=class_context,
+                imports=imports,
+                scope_info=scope_info,
+            )
+
+            # Handle external/ignored calls
+            if status != ResolutionStatus.RESOLVED_PROJECT:
+                ignored_call = IgnoredCall(
+                    expression=call_info.qualified_name,
+                    status=status,
+                    call_site_line=call_info.line,
+                    module_hint=module_hint,
+                    caller_id=parent_id,
+                )
+                graph.ignored_calls.append(ignored_call)
+
+                if status == ResolutionStatus.UNRESOLVED:
+                    graph.unresolved_calls.append(call_info.qualified_name)
+                continue
+
+            # We have a resolved project call
+            target_file, target_func, target_line, target_col, target_class = resolved
+
+            # Build target node ID using stable symbol ID
+            target_kind = "method" if target_class else "function"
+            target_id = self._make_symbol_id(
+                target_file, target_line, target_col, target_kind, target_func, project_root
+            )
+
+            if target_class:
+                target_qualified = f"{target_class}.{target_func}"
+            else:
+                target_qualified = target_func
+
+            # Per-branch cycle detection
+            is_cycle = target_id in call_stack
+            if is_cycle:
+                graph.diagnostics.setdefault("cycles_detected", []).append({
+                    "from": parent_id,
+                    "to": target_id,
+                    "path": list(call_stack),
+                })
+
+            # Add edge
+            edge = CallEdge(
+                source_id=parent_id,
+                target_id=target_id,
+                call_site_line=call_info.line,
+                call_type=call_info.call_type,
+                arguments=call_info.arguments if call_info.arguments else None,
+                expression=call_info.qualified_name,
+                resolution_status=ResolutionStatus.RESOLVED_PROJECT,
+            )
+            graph.add_edge(edge)
+
+            if is_cycle:
+                continue
+
+            # Check if node already exists (from another branch)
+            existing_node = graph.get_node(target_id)
+            if existing_node is None:
+                target_node = CallNode(
+                    id=target_id,
+                    name=target_func,
+                    qualified_name=target_qualified,
+                    file_path=target_file,
+                    line=target_line,
+                    column=target_col,
+                    kind=target_kind,
+                    is_entry_point=False,
+                    depth=depth,
+                    symbol_id=target_id,
+                    resolution_status=ResolutionStatus.RESOLVED_PROJECT,
+                )
+                graph.add_node(target_node)
+
+            # Add to call stack for this branch and recurse
+            call_stack.append(target_id)
+
+            if target_file == file_path:
+                # Same file - parse from existing tree
+                tree = self._parser.parse(bytes(source, "utf-8"))
+                target_node_ast, _ = self._find_function_or_method(
+                    tree.root_node, target_func, source, target_class
+                )
+                if target_node_ast:
+                    # Update node with complexity metrics
+                    node_to_update = graph.get_node(target_id)
+                    if node_to_update:
+                        node_to_update.complexity = self._calculate_complexity(target_node_ast)
+                        node_to_update.loc = self._calculate_loc(target_node_ast)
+
+                    self._extract_calls_recursive(
+                        graph=graph,
+                        node=target_node_ast,
+                        parent_id=target_id,
+                        file_path=target_file,
+                        source=source,
+                        project_root=project_root,
+                        depth=depth + 1,
+                        max_depth=max_depth,
+                        call_stack=call_stack,
+                        class_context=target_class,
+                        imports=imports,
+                    )
+            else:
+                # Different file - need to load and parse
+                try:
+                    target_source = target_file.read_text(encoding="utf-8")
+                    target_tree = self._parser.parse(bytes(target_source, "utf-8"))
+                    target_imports = self._extract_imports(target_tree.root_node, target_source)
+                    target_node_ast, _ = self._find_function_or_method(
+                        target_tree.root_node, target_func, target_source, target_class
+                    )
+                    if target_node_ast:
+                        # Update node with complexity metrics
+                        node_to_update = graph.get_node(target_id)
+                        if node_to_update:
+                            node_to_update.complexity = self._calculate_complexity(target_node_ast)
+                            node_to_update.loc = self._calculate_loc(target_node_ast)
+
+                        self._extract_calls_recursive(
+                            graph=graph,
+                            node=target_node_ast,
+                            parent_id=target_id,
+                            file_path=target_file,
+                            source=target_source,
+                            project_root=project_root,
+                            depth=depth + 1,
+                            max_depth=max_depth,
+                            call_stack=call_stack,
+                            class_context=target_class,
+                            imports=target_imports,
+                        )
+                except OSError:
+                    logger.debug("Could not read file for recursive extraction: %s", target_file)
+
+            call_stack.pop()
+
+    def _extract_calls_from_body(self, body: Any, source: str) -> List[CallInfo]:
+        """Extract all function/method calls from a code block."""
+        calls: List[CallInfo] = []
+
+        for node in self._walk_tree(body):
+            if node.type == "call":
+                call_info = self._parse_call(node, source)
+                if call_info:
+                    calls.append(call_info)
+
+        return calls
+
+    def _parse_call(self, node: Any, source: str) -> Optional[CallInfo]:
+        """Parse a call node to extract call information."""
+        if node.type != "call":
+            return None
+
+        func_node = node.children[0] if node.children else None
+        if func_node is None:
+            return None
+
+        name = ""
+        receiver = None
+        call_type = "direct"
+
+        if func_node.type == "identifier":
+            name = self._get_node_text(func_node, source.encode("utf-8") if isinstance(source, str) else source)
+            call_type = "direct"
+        elif func_node.type == "attribute":
+            parts = self._parse_attribute_chain(func_node, source)
+            if parts:
+                receiver = ".".join(parts[:-1]) if len(parts) > 1 else None
+                name = parts[-1]
+                call_type = "method" if receiver else "direct"
+
+        if not name:
+            return None
+
+        # Build qualified name
+        if receiver:
+            qualified_name = f"{receiver}.{name}"
+        else:
+            qualified_name = name
+
+        # Extract arguments
+        arguments: List[str] = []
+        args_node = self._find_child_by_type(node, "argument_list")
+        if args_node:
+            for child in args_node.children:
+                if child.type not in ("(", ")", ","):
+                    arg_text = self._get_node_text(child, source.encode("utf-8") if isinstance(source, str) else source)
+                    arguments.append(arg_text)
+
+        return CallInfo(
+            name=name,
+            receiver=receiver,
+            qualified_name=qualified_name,
+            line=node.start_point[0] + 1,
+            call_type=call_type,
+            arguments=arguments,
+        )
+
+    def _parse_attribute_chain(self, node: Any, source: str) -> List[str]:
+        """Parse attribute chain like self.loader.load into ['self', 'loader', 'load']."""
+        parts: List[str] = []
+        source_bytes = source.encode("utf-8") if isinstance(source, str) else source
+
+        def extract_parts(n: Any) -> None:
+            if n.type == "identifier":
+                parts.append(self._get_node_text(n, source_bytes))
+            elif n.type == "attribute":
+                for child in n.children:
+                    if child.type != ".":
+                        extract_parts(child)
+
+        extract_parts(node)
+        return parts
+
+    def _resolve_call_v2(
+        self,
+        call_info: CallInfo,
+        file_path: Path,
+        source: str,
+        project_root: Path,
+        class_context: Optional[str] = None,
+        imports: Optional[Dict[str, Dict[str, Any]]] = None,
+        scope_info: Optional[ScopeInfo] = None,
+    ) -> Tuple[
+        Optional[Tuple[Path, str, int, int, Optional[str]]],
+        ResolutionStatus,
+        Optional[str],
+    ]:
+        """Resolve a call to its definition location with resolution status."""
+        tree = self._parser.parse(bytes(source, "utf-8"))
+
+        if imports is None:
+            imports = self._extract_imports(tree.root_node, source)
+
+        # Check for builtins first
+        if call_info.name in PYTHON_BUILTINS:
+            return (None, ResolutionStatus.IGNORED_BUILTIN, None)
+
+        # Case 1: self.method() - look in current class
+        if call_info.receiver == "self" and class_context:
+            method_node = self._find_method_in_class(
+                tree.root_node, class_context, call_info.name, source
+            )
+            if method_node:
+                return (
+                    (
+                        file_path,
+                        call_info.name,
+                        method_node.start_point[0] + 1,
+                        method_node.start_point[1],
+                        class_context,
+                    ),
+                    ResolutionStatus.RESOLVED_PROJECT,
+                    None,
+                )
+            return (None, ResolutionStatus.UNRESOLVED, None)
+
+        # Case 2: Direct function call - look in same file
+        if call_info.call_type == "direct":
+            func_node, found_class = self._find_function_or_method(
+                tree.root_node, call_info.name, source
+            )
+            if func_node:
+                return (
+                    (
+                        file_path,
+                        call_info.name,
+                        func_node.start_point[0] + 1,
+                        func_node.start_point[1],
+                        found_class,
+                    ),
+                    ResolutionStatus.RESOLVED_PROJECT,
+                    None,
+                )
+
+            # Try to find as class (constructor call)
+            class_node = self._find_class(tree.root_node, call_info.name, source)
+            if class_node:
+                init_node = self._find_method_in_class(
+                    tree.root_node, call_info.name, "__init__", source
+                )
+                if init_node:
+                    return (
+                        (
+                            file_path,
+                            "__init__",
+                            init_node.start_point[0] + 1,
+                            init_node.start_point[1],
+                            call_info.name,
+                        ),
+                        ResolutionStatus.RESOLVED_PROJECT,
+                        None,
+                    )
+                return (
+                    (
+                        file_path,
+                        call_info.name,
+                        class_node.start_point[0] + 1,
+                        class_node.start_point[1],
+                        None,
+                    ),
+                    ResolutionStatus.RESOLVED_PROJECT,
+                    None,
+                )
+
+        # Case 3: Check imports and resolve to other files
+        if call_info.name in imports:
+            import_info = imports[call_info.name]
+            module_name = import_info["module"]
+
+            if is_stdlib(module_name):
+                return (None, ResolutionStatus.IGNORED_STDLIB, module_name)
+
+            resolved_file = self._resolve_import_path(
+                module_name, project_root, file_path.parent
+            )
+            if resolved_file and resolved_file.exists():
+                try:
+                    target_source = resolved_file.read_text(encoding="utf-8")
+                    target_tree = self._parser.parse(bytes(target_source, "utf-8"))
+                    original_name = import_info.get("original_name", call_info.name)
+
+                    target_func, target_class = self._find_function_or_method(
+                        target_tree.root_node, original_name, target_source
+                    )
+                    if target_func:
+                        return (
+                            (
+                                resolved_file,
+                                original_name,
+                                target_func.start_point[0] + 1,
+                                target_func.start_point[1],
+                                target_class,
+                            ),
+                            ResolutionStatus.RESOLVED_PROJECT,
+                            None,
+                        )
+
+                    target_cls = self._find_class(
+                        target_tree.root_node, original_name, target_source
+                    )
+                    if target_cls:
+                        init_node = self._find_method_in_class(
+                            target_tree.root_node, original_name, "__init__", target_source
+                        )
+                        if init_node:
+                            return (
+                                (
+                                    resolved_file,
+                                    "__init__",
+                                    init_node.start_point[0] + 1,
+                                    init_node.start_point[1],
+                                    original_name,
+                                ),
+                                ResolutionStatus.RESOLVED_PROJECT,
+                                None,
+                            )
+                        return (
+                            (
+                                resolved_file,
+                                original_name,
+                                target_cls.start_point[0] + 1,
+                                target_cls.start_point[1],
+                                None,
+                            ),
+                            ResolutionStatus.RESOLVED_PROJECT,
+                            None,
+                        )
+                except OSError:
+                    pass
+
+            return (None, ResolutionStatus.IGNORED_THIRD_PARTY, module_name)
+
+        # Case 4: Method call on object (obj.method) - use type inference
+        if call_info.receiver and call_info.receiver != "self":
+            if call_info.receiver in imports:
+                module_name = imports[call_info.receiver]["module"]
+                if is_stdlib(module_name):
+                    return (None, ResolutionStatus.IGNORED_STDLIB, module_name)
+                return (None, ResolutionStatus.IGNORED_THIRD_PARTY, module_name)
+
+            if scope_info:
+                type_resolver = self._get_type_resolver(project_root)
+                type_info = type_resolver.resolve_type(call_info.receiver, scope_info)
+
+                if type_info and type_info.name:
+                    method_result = self._find_method_in_type(
+                        type_name=type_info.name,
+                        method_name=call_info.name,
+                        file_path=file_path,
+                        project_root=project_root,
+                        imports=imports,
+                    )
+                    if method_result:
+                        target_file, target_method, target_line, target_col, target_class = method_result
+                        return (
+                            (target_file, target_method, target_line, target_col, target_class),
+                            ResolutionStatus.RESOLVED_PROJECT,
+                            None,
+                        )
+
+            return (None, ResolutionStatus.UNRESOLVED, None)
+
+        # Could not resolve - check if it might be external
+        status = self._classify_external(call_info.name)
+        if status in (ResolutionStatus.IGNORED_BUILTIN, ResolutionStatus.IGNORED_STDLIB):
+            return (None, status, call_info.name)
+
+        return (None, ResolutionStatus.UNRESOLVED, None)
+
+    def _extract_imports(self, root: Any, source: str) -> Dict[str, Dict[str, Any]]:
+        """Extract import statements and map names to modules."""
+        imports: Dict[str, Dict[str, Any]] = {}
+        source_bytes = source.encode("utf-8") if isinstance(source, str) else source
+
+        for node in self._walk_tree(root):
+            if node.type == "import_statement":
+                for child in node.children:
+                    if child.type == "dotted_name":
+                        module_name = self._get_node_text(child, source_bytes)
+                        imports[module_name.split(".")[-1]] = {
+                            "module": module_name,
+                            "type": "import",
+                        }
+
+            elif node.type == "import_from_statement":
+                module_name = None
+                seen_import_keyword = False
+                for child in node.children:
+                    if child.type == "from":
+                        continue
+                    elif child.type == "import":
+                        seen_import_keyword = True
+                        continue
+                    elif child.type == "dotted_name":
+                        name_text = self._get_node_text(child, source_bytes)
+                        if not seen_import_keyword:
+                            module_name = name_text
+                        else:
+                            if module_name:
+                                imports[name_text] = {
+                                    "module": module_name,
+                                    "original_name": name_text,
+                                    "type": "from",
+                                }
+                    elif child.type == "import_prefix":
+                        module_name = self._get_node_text(child, source_bytes)
+                    elif child.type == "aliased_import":
+                        original = None
+                        alias = None
+                        for subchild in child.children:
+                            if subchild.type == "identifier":
+                                if original is None:
+                                    original = self._get_node_text(subchild, source_bytes)
+                                else:
+                                    alias = self._get_node_text(subchild, source_bytes)
+                        if original and alias and module_name:
+                            imports[alias] = {
+                                "module": module_name,
+                                "original_name": original,
+                                "type": "from",
+                            }
+                    elif child.type == "identifier":
+                        name = self._get_node_text(child, source_bytes)
+                        if module_name:
+                            imports[name] = {
+                                "module": module_name,
+                                "original_name": name,
+                                "type": "from",
+                            }
+
+        return imports
+
+    def _resolve_import_path(
+        self, module_name: str, project_root: Path, current_dir: Path
+    ) -> Optional[Path]:
+        """Resolve a module name to a file path within the project."""
+        # Handle relative imports
+        if module_name.startswith("."):
+            dots = 0
+            for c in module_name:
+                if c == ".":
+                    dots += 1
+                else:
+                    break
+
+            base_dir = current_dir
+            for _ in range(dots - 1):
+                base_dir = base_dir.parent
+
+            remaining = module_name[dots:]
+            if remaining:
+                module_path = remaining.replace(".", "/")
+                candidate = base_dir / f"{module_path}.py"
+                if candidate.exists():
+                    return candidate
+                candidate = base_dir / module_path / "__init__.py"
+                if candidate.exists():
+                    return candidate
+            return None
+
+        # Absolute import
+        module_path = module_name.replace(".", "/")
+
+        candidate = project_root / f"{module_path}.py"
+        if candidate.exists():
+            return candidate
+
+        candidate = project_root / module_path / "__init__.py"
+        if candidate.exists():
+            return candidate
+
+        return None
+
+    def _find_function_or_method(
+        self,
+        root: Any,
+        name: str,
+        source: str,
+        class_name: Optional[str] = None,
+    ) -> Tuple[Optional[Any], Optional[str]]:
+        """Find a function or method by name."""
+        if class_name:
+            method = self._find_method_in_class(root, class_name, name, source)
+            if method:
+                return (method, class_name)
+            return (None, None)
+
+        for node in self._walk_tree(root):
+            if node.type == "function_definition":
+                func_name = self._get_function_name(node)
+                if func_name == name:
+                    parent = node.parent
+                    while parent:
+                        if parent.type == "class_definition":
+                            cls_name = self._get_class_name(parent)
+                            return (node, cls_name)
+                        parent = parent.parent
+                    return (node, None)
+
+        return (None, None)
+
+    def _find_method_in_class(
+        self, root: Any, class_name: str, method_name: str, source: str
+    ) -> Optional[Any]:
+        """Find a method within a specific class."""
+        for node in self._walk_tree(root):
+            if node.type == "class_definition":
+                cls_name = self._get_class_name(node)
+                if cls_name == class_name:
+                    for child in self._walk_tree(node):
+                        if child.type == "function_definition":
+                            func_name = self._get_function_name(child)
+                            if func_name == method_name:
+                                return child
+        return None
+
+    def _find_class(self, root: Any, class_name: str, source: str) -> Optional[Any]:
+        """Find a class definition by name."""
+        for node in self._walk_tree(root):
+            if node.type == "class_definition":
+                name = self._get_class_name(node)
+                if name == class_name:
+                    return node
+        return None
+
+    def _find_method_in_type(
+        self,
+        type_name: str,
+        method_name: str,
+        file_path: Path,
+        project_root: Path,
+        imports: Optional[Dict[str, Dict[str, Any]]] = None,
+    ) -> Optional[Tuple[Path, str, int, int, str]]:
+        """Find a method in a class by type name."""
+        try:
+            source = file_path.read_text(encoding="utf-8")
+            tree = self._parser.parse(bytes(source, "utf-8"))
+
+            method_node = self._find_method_in_class(
+                tree.root_node, type_name, method_name, source
+            )
+            if method_node:
+                return (
+                    file_path,
+                    method_name,
+                    method_node.start_point[0] + 1,
+                    method_node.start_point[1],
+                    type_name,
+                )
+
+            if imports is None:
+                imports = self._extract_imports(tree.root_node, source)
+
+            if type_name in imports:
+                import_info = imports[type_name]
+                module_name = import_info["module"]
+
+                resolved_file = self._resolve_import_path(
+                    module_name, project_root, file_path.parent
+                )
+                if resolved_file and resolved_file.exists():
+                    target_source = resolved_file.read_text(encoding="utf-8")
+                    target_tree = self._parser.parse(bytes(target_source, "utf-8"))
+
+                    original_name = import_info.get("original_name", type_name)
+                    method_node = self._find_method_in_class(
+                        target_tree.root_node, original_name, method_name, target_source
+                    )
+                    if method_node:
+                        return (
+                            resolved_file,
+                            method_name,
+                            method_node.start_point[0] + 1,
+                            method_node.start_point[1],
+                            original_name,
+                        )
+
+        except OSError:
+            logger.debug("Could not read file for type resolution: %s", file_path)
+
+        return None

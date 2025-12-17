@@ -93,7 +93,9 @@
       "Bash(./test_tokenizer:*)",
       "Bash(./test_hotspots:*)",
       "Bash(./cpp/build/similarity_tests:*)",
-      "Bash(.venv/bin/pip list:*)"
+      "Bash(.venv/bin/pip list:*)",
+      "Bash(file:*)",
+      "Bash(timeout 60 .venv/bin/python -m pytest:*)"
     ],
     "deny": [],
     "ask": []

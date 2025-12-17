@@ -11,7 +11,20 @@ from typing import Dict, List, Set
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
-from ..call_tracer_v2 import CrossFileCallGraphExtractor, TREE_SITTER_AVAILABLE
+# Import from legacy compatibility layer (will emit DeprecationWarning)
+# TODO: Migrate to new PythonCallFlowExtractor API
+import warnings
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    from ..call_tracer_v2 import CrossFileCallGraphExtractor
+
+# Check tree-sitter availability directly
+try:
+    from tree_sitter import Parser
+    from tree_sitter_languages import get_language
+    TREE_SITTER_AVAILABLE = True
+except ImportError:
+    TREE_SITTER_AVAILABLE = False
 from ..state import AppState
 from .deps import get_app_state
 

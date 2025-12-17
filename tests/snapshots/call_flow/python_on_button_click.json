@@ -1,0 +1,222 @@
+{
+  "entry_point": "call_flow_sample.py:44:0:function:on_button_click",
+  "nodes": {
+    "call_flow_sample.py:44:0:function:on_button_click": {
+      "id": "call_flow_sample.py:44:0:function:on_button_click",
+      "name": "on_button_click",
+      "qualified_name": "on_button_click",
+      "file_path": "call_flow_sample.py",
+      "line": 44,
+      "column": 0,
+      "kind": "function",
+      "is_entry_point": true,
+      "depth": 0,
+      "docstring": "Event handler simulating a button click.",
+      "symbol_id": "call_flow_sample.py:44:0:function:on_button_click",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 1,
+      "loc": 6
+    },
+    "call_flow_sample.py:23:4:method:__init__": {
+      "id": "call_flow_sample.py:23:4:method:__init__",
+      "name": "__init__",
+      "qualified_name": "DataHandler.__init__",
+      "file_path": "call_flow_sample.py",
+      "line": 23,
+      "column": 4,
+      "kind": "method",
+      "is_entry_point": false,
+      "depth": 1,
+      "docstring": null,
+      "symbol_id": "call_flow_sample.py:23:4:method:__init__",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 1,
+      "loc": 2
+    },
+    "call_flow_sample.py:37:4:method:handle": {
+      "id": "call_flow_sample.py:37:4:method:handle",
+      "name": "handle",
+      "qualified_name": "DataHandler.handle",
+      "file_path": "call_flow_sample.py",
+      "line": 37,
+      "column": 4,
+      "kind": "method",
+      "is_entry_point": false,
+      "depth": 1,
+      "docstring": null,
+      "symbol_id": "call_flow_sample.py:37:4:method:handle",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 1,
+      "loc": 5
+    },
+    "call_flow_sample.py:26:4:method:load": {
+      "id": "call_flow_sample.py:26:4:method:load",
+      "name": "load",
+      "qualified_name": "DataHandler.load",
+      "file_path": "call_flow_sample.py",
+      "line": 26,
+      "column": 4,
+      "kind": "method",
+      "is_entry_point": false,
+      "depth": 2,
+      "docstring": null,
+      "symbol_id": "call_flow_sample.py:26:4:method:load",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 1,
+      "loc": 4
+    },
+    "call_flow_sample.py:15:0:function:load_content": {
+      "id": "call_flow_sample.py:15:0:function:load_content",
+      "name": "load_content",
+      "qualified_name": "load_content",
+      "file_path": "call_flow_sample.py",
+      "line": 15,
+      "column": 0,
+      "kind": "function",
+      "is_entry_point": false,
+      "depth": 3,
+      "docstring": null,
+      "symbol_id": "call_flow_sample.py:15:0:function:load_content",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 1,
+      "loc": 3
+    },
+    "call_flow_sample.py:31:4:method:process": {
+      "id": "call_flow_sample.py:31:4:method:process",
+      "name": "process",
+      "qualified_name": "DataHandler.process",
+      "file_path": "call_flow_sample.py",
+      "line": 31,
+      "column": 4,
+      "kind": "method",
+      "is_entry_point": false,
+      "depth": 2,
+      "docstring": null,
+      "symbol_id": "call_flow_sample.py:31:4:method:process",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 2,
+      "loc": 5
+    },
+    "call_flow_sample.py:9:0:function:process_data": {
+      "id": "call_flow_sample.py:9:0:function:process_data",
+      "name": "process_data",
+      "qualified_name": "process_data",
+      "file_path": "call_flow_sample.py",
+      "line": 9,
+      "column": 0,
+      "kind": "function",
+      "is_entry_point": false,
+      "depth": 3,
+      "docstring": null,
+      "symbol_id": "call_flow_sample.py:9:0:function:process_data",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 1,
+      "loc": 4
+    },
+    "call_flow_sample.py:4:0:function:helper_function": {
+      "id": "call_flow_sample.py:4:0:function:helper_function",
+      "name": "helper_function",
+      "qualified_name": "helper_function",
+      "file_path": "call_flow_sample.py",
+      "line": 4,
+      "column": 0,
+      "kind": "function",
+      "is_entry_point": false,
+      "depth": 4,
+      "docstring": null,
+      "symbol_id": "call_flow_sample.py:4:0:function:helper_function",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 1,
+      "loc": 3
+    }
+  },
+  "edges": [
+    {
+      "source_id": "call_flow_sample.py:26:4:method:load",
+      "target_id": "call_flow_sample.py:15:0:function:load_content",
+      "call_site_line": 28,
+      "call_type": "direct",
+      "arguments": null,
+      "expression": "load_content",
+      "resolution_status": "resolved_project"
+    },
+    {
+      "source_id": "call_flow_sample.py:31:4:method:process",
+      "target_id": "call_flow_sample.py:9:0:function:process_data",
+      "call_site_line": 34,
+      "call_type": "direct",
+      "arguments": [
+        "self.data"
+      ],
+      "expression": "process_data",
+      "resolution_status": "resolved_project"
+    },
+    {
+      "source_id": "call_flow_sample.py:37:4:method:handle",
+      "target_id": "call_flow_sample.py:26:4:method:load",
+      "call_site_line": 39,
+      "call_type": "method",
+      "arguments": null,
+      "expression": "self.load",
+      "resolution_status": "resolved_project"
+    },
+    {
+      "source_id": "call_flow_sample.py:37:4:method:handle",
+      "target_id": "call_flow_sample.py:31:4:method:process",
+      "call_site_line": 40,
+      "call_type": "method",
+      "arguments": null,
+      "expression": "self.process",
+      "resolution_status": "resolved_project"
+    },
+    {
+      "source_id": "call_flow_sample.py:44:0:function:on_button_click",
+      "target_id": "call_flow_sample.py:23:4:method:__init__",
+      "call_site_line": 46,
+      "call_type": "direct",
+      "arguments": null,
+      "expression": "DataHandler",
+      "resolution_status": "resolved_project"
+    },
+    {
+      "source_id": "call_flow_sample.py:44:0:function:on_button_click",
+      "target_id": "call_flow_sample.py:37:4:method:handle",
+      "call_site_line": 47,
+      "call_type": "method",
+      "arguments": null,
+      "expression": "handler.handle",
+      "resolution_status": "resolved_project"
+    },
+    {
+      "source_id": "call_flow_sample.py:9:0:function:process_data",
+      "target_id": "call_flow_sample.py:4:0:function:helper_function",
+      "call_site_line": 11,
+      "call_type": "direct",
+      "arguments": null,
+      "expression": "helper_function",
+      "resolution_status": "resolved_project"
+    }
+  ],
+  "max_depth": 5,
+  "max_depth_reached": false,
+  "ignored_calls": [
+    {
+      "expression": "print",
+      "status": "ignored_builtin",
+      "call_site_line": 48,
+      "module_hint": null,
+      "caller_id": "call_flow_sample.py:44:0:function:on_button_click"
+    }
+  ],
+  "unresolved_calls": [],
+  "source_file": "call_flow_sample.py",
+  "diagnostics": {}
+}

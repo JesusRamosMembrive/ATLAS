@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { RescanButton } from "./RescanButton";
 
@@ -18,6 +19,7 @@ export function HeaderBar({
 }: HeaderBarProps): JSX.Element {
   const location = useLocation();
   const currentPath = location.pathname;
+  const [collapsed, setCollapsed] = useState(false);
 
   const rootLabel = rootPath ?? "AEGIS_ROOT";
   const description = lastFullScan
@@ -30,6 +32,7 @@ export function HeaderBar({
     { to: "/code-map", label: "Analysis" },
     { to: "/docs", label: "Docs" },
     { to: "/class-uml", label: "UML" },
+    { to: "/call-flow", label: "Call Flow" },
     { to: "/linters", label: "Linters" },
     { to: "/similarity", label: "Similarity" },
     { to: "/terminal", label: "Terminal" },
@@ -41,13 +44,15 @@ export function HeaderBar({
   ];
 
   return (
-    <header className="header-bar">
+    <header className={`header-bar${collapsed ? " header-collapsed" : ""}`}>
       <div className="header-left">
         <div className="brand-logo">&lt;/&gt;</div>
-        <div className="brand-copy">
-          <h1>{title ?? "AEGIS"}</h1>
-          <p>{description}</p>
-        </div>
+        {!collapsed && (
+          <div className="brand-copy">
+            <h1>{title ?? "AEGIS"}</h1>
+            <p>{description}</p>
+          </div>
+        )}
       </div>
 
       <div className="header-actions">
@@ -62,14 +67,26 @@ export function HeaderBar({
             </Link>
           ))}
         </nav>
-        <div className="status-indicator" title={`Root: ${rootLabel}`}>
-          <span className="status-dot" style={{ opacity: watcherActive ? 1 : 0.4 }} />
-          {watcherActive ? "Watcher active" : "Watcher inactive"}
-        </div>
-        <Link className="secondary-btn" to="/settings">
-          Settings
-        </Link>
-        <RescanButton />
+        {!collapsed && (
+          <div className="status-indicator" title={`Root: ${rootLabel}`}>
+            <span className="status-dot" style={{ opacity: watcherActive ? 1 : 0.4 }} />
+            {watcherActive ? "Watcher active" : "Watcher inactive"}
+          </div>
+        )}
+        {!collapsed && (
+          <Link className="secondary-btn" to="/settings">
+            Settings
+          </Link>
+        )}
+        {!collapsed && <RescanButton />}
+        <button
+          className="header-collapse-btn"
+          onClick={() => setCollapsed(!collapsed)}
+          title={collapsed ? "Expand header" : "Collapse header"}
+          aria-label={collapsed ? "Expand header" : "Collapse header"}
+        >
+          {collapsed ? "▼" : "▲"}
+        </button>
       </div>
     </header>
   );

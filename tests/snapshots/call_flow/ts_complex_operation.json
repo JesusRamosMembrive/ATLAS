@@ -1,0 +1,155 @@
+{
+  "entry_point": "test_ts_call_flow.ts:67:0:function:complexOperation",
+  "nodes": {
+    "test_ts_call_flow.ts:67:0:function:complexOperation": {
+      "id": "test_ts_call_flow.ts:67:0:function:complexOperation",
+      "name": "complexOperation",
+      "qualified_name": "complexOperation",
+      "file_path": "test_ts_call_flow.ts",
+      "line": 67,
+      "column": 0,
+      "kind": "function",
+      "is_entry_point": true,
+      "depth": 0,
+      "docstring": null,
+      "symbol_id": "test_ts_call_flow.ts:67:0:function:complexOperation",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 2,
+      "loc": 7
+    },
+    "test_ts_call_flow.ts:5:0:function:greet": {
+      "id": "test_ts_call_flow.ts:5:0:function:greet",
+      "name": "greet",
+      "qualified_name": "greet",
+      "file_path": "test_ts_call_flow.ts",
+      "line": 5,
+      "column": 0,
+      "kind": "function",
+      "is_entry_point": false,
+      "depth": 1,
+      "docstring": null,
+      "symbol_id": "test_ts_call_flow.ts:5:0:function:greet",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 1,
+      "loc": 3
+    },
+    "test_ts_call_flow.ts:58:0:function:calculateTotal": {
+      "id": "test_ts_call_flow.ts:58:0:function:calculateTotal",
+      "name": "calculateTotal",
+      "qualified_name": "calculateTotal",
+      "file_path": "test_ts_call_flow.ts",
+      "line": 58,
+      "column": 0,
+      "kind": "function",
+      "is_entry_point": false,
+      "depth": 1,
+      "docstring": null,
+      "symbol_id": "test_ts_call_flow.ts:58:0:function:calculateTotal",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 2,
+      "loc": 7
+    },
+    "test_ts_call_flow.ts:10:12:function:add": {
+      "id": "test_ts_call_flow.ts:10:12:function:add",
+      "name": "add",
+      "qualified_name": "add",
+      "file_path": "test_ts_call_flow.ts",
+      "line": 10,
+      "column": 12,
+      "kind": "function",
+      "is_entry_point": false,
+      "depth": 2,
+      "docstring": null,
+      "symbol_id": "test_ts_call_flow.ts:10:12:function:add",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 1,
+      "loc": 3
+    },
+    "test_ts_call_flow.ts:48:2:method:getResult": {
+      "id": "test_ts_call_flow.ts:48:2:method:getResult",
+      "name": "getResult",
+      "qualified_name": "Calculator.getResult",
+      "file_path": "test_ts_call_flow.ts",
+      "line": 48,
+      "column": 2,
+      "kind": "method",
+      "is_entry_point": false,
+      "depth": 2,
+      "docstring": null,
+      "symbol_id": "test_ts_call_flow.ts:48:2:method:getResult",
+      "resolution_status": "resolved_project",
+      "reasons": null,
+      "complexity": 1,
+      "loc": 3
+    }
+  },
+  "edges": [
+    {
+      "source_id": "test_ts_call_flow.ts:58:0:function:calculateTotal",
+      "target_id": "test_ts_call_flow.ts:10:12:function:add",
+      "call_site_line": 61,
+      "call_type": "method",
+      "arguments": [
+        "val"
+      ],
+      "expression": "calc.add",
+      "resolution_status": "resolved_project"
+    },
+    {
+      "source_id": "test_ts_call_flow.ts:58:0:function:calculateTotal",
+      "target_id": "test_ts_call_flow.ts:48:2:method:getResult",
+      "call_site_line": 63,
+      "call_type": "method",
+      "arguments": null,
+      "expression": "calc.getResult",
+      "resolution_status": "resolved_project"
+    },
+    {
+      "source_id": "test_ts_call_flow.ts:67:0:function:complexOperation",
+      "target_id": "test_ts_call_flow.ts:58:0:function:calculateTotal",
+      "call_site_line": 71,
+      "call_type": "direct",
+      "arguments": [
+        "[1, 2, 3]"
+      ],
+      "expression": "calculateTotal",
+      "resolution_status": "resolved_project"
+    },
+    {
+      "source_id": "test_ts_call_flow.ts:67:0:function:complexOperation",
+      "target_id": "test_ts_call_flow.ts:5:0:function:greet",
+      "call_site_line": 70,
+      "call_type": "direct",
+      "arguments": [
+        "first"
+      ],
+      "expression": "greet",
+      "resolution_status": "resolved_project"
+    }
+  ],
+  "max_depth": 5,
+  "max_depth_reached": false,
+  "ignored_calls": [
+    {
+      "expression": "data.map",
+      "status": "ignored_builtin",
+      "call_site_line": 68,
+      "module_hint": "map",
+      "caller_id": "test_ts_call_flow.ts:67:0:function:complexOperation"
+    },
+    {
+      "expression": "item.toUpperCase",
+      "status": "ignored_builtin",
+      "call_site_line": 68,
+      "module_hint": "toUpperCase",
+      "caller_id": "test_ts_call_flow.ts:67:0:function:complexOperation"
+    }
+  ],
+  "unresolved_calls": [],
+  "source_file": "test_ts_call_flow.ts",
+  "diagnostics": {}
+}

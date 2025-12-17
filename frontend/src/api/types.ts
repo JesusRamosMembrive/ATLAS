@@ -524,3 +524,155 @@ export interface AuditEventCreatePayload {
   ref?: string | null;
   payload?: Record<string, unknown> | null;
 }
+
+// =============================================================================
+// Contracts API (Phase 5 - AEGIS v2)
+// =============================================================================
+
+export type ThreadSafety = "not_safe" | "safe" | "safe_after_start" | "immutable" | "unknown";
+export type EvidencePolicy = "required" | "optional" | "warning";
+
+export interface EvidenceItemResponse {
+  type: string;
+  reference: string;
+  policy: EvidencePolicy;
+}
+
+export interface ContractResponse {
+  thread_safety?: ThreadSafety | null;
+  lifecycle?: string | null;
+  invariants: string[];
+  preconditions: string[];
+  postconditions: string[];
+  errors: string[];
+  dependencies: string[];
+  evidence: EvidenceItemResponse[];
+  confidence: number;
+  source_level: number;
+  needs_review: boolean;
+  inferred: boolean;
+  confidence_notes?: string | null;
+  file_path?: string | null;
+  start_line?: number | null;
+  end_line?: number | null;
+}
+
+export interface DiscoverContractsRequest {
+  file_path: string;
+  symbol_line?: number | null;
+  levels?: number[] | null;
+}
+
+export type DocumentationType = "aegis" | "doxygen" | "comment" | "none";
+
+export interface DiscoverContractsResponse {
+  contracts: ContractResponse[];
+  stats: Record<string, number>;
+  // New fields for interactive flow
+  documentation_type?: DocumentationType | null;
+  warning?: string | null;  // "no_documentation_found", etc.
+  llm_available: boolean;
+}
+
+// =============================================================================
+// Symbols API (Phase 7.5 - Instance Graph Integration)
+// =============================================================================
+
+export interface SymbolMember {
+  name: string;
+  kind: string;  // "method" | "function" | "class"
+  lineno: number;
+  docstring?: string | null;
+}
+
+export interface SymbolDetailsResponse {
+  name: string;
+  kind: string;  // "class" | "function" | "method" | "unknown"
+  lineno: number;
+  file_path: string;
+  docstring?: string | null;
+  parent?: string | null;
+  members: SymbolMember[];
+  metrics?: Record<string, any> | null;
+}
+
+export interface SymbolSearchResult {
+  name: string;
+  kind: string;
+  lineno: number;
+  file_path: string;
+  parent?: string | null;
+}
+
+export interface SymbolSearchResponse {
+  results: SymbolSearchResult[];
+  total: number;
+}
+
+// =============================================================================
+// Call Flow API (Phase 8 - Call Flow Graph)
+// =============================================================================
+
+export interface CallFlowEntryPoint {
+  name: string;
+  qualified_name: string;
+  line: number;
+  kind: string;  // "function" | "method" | "class"
+  class_name?: string | null;
+  node_count?: number | null;  // Number of calls in this function
+}
+
+export interface CallFlowEntryPointsResponse {
+  file_path: string;
+  entry_points: CallFlowEntryPoint[];
+}
+
+export interface CallFlowNodeData {
+  label: string;
+  qualifiedName: string;
+  filePath?: string | null;
+  line: number;
+  kind: string;
+  isEntryPoint: boolean;
+  depth: number;
+  docstring?: string | null;
+}
+
+export interface CallFlowNode {
+  id: string;
+  type: string;
+  position: { x: number; y: number };
+  data: CallFlowNodeData;
+}
+
+export interface CallFlowEdgeData {
+  callSiteLine: number;
+  callType: string;
+}
+
+export interface CallFlowEdge {
+  id: string;
+  source: string;
+  target: string;
+  type: string;
+  animated: boolean;
+  data?: CallFlowEdgeData | null;
+}
+
+export interface CallFlowMetadata {
+  entry_point: string;
+  source_file: string;
+  function_name: string;
+  max_depth: number;
+  max_depth_reached: boolean;
+  node_count: number;
+  edge_count: number;
+  external_calls: string[];
+  external_calls_count: number;
+}
+
+export interface CallFlowResponse {
+  nodes: CallFlowNode[];
+  edges: CallFlowEdge[];
+  metadata: CallFlowMetadata;
+}

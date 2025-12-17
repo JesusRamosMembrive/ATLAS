@@ -35,6 +35,13 @@ import type {
   AuditEvent,
   AuditEventListResponse,
   AuditEventCreatePayload,
+  DiscoverContractsRequest,
+  DiscoverContractsResponse,
+  SymbolDetailsResponse,
+  SymbolSearchResponse,
+  SymbolSearchResult,
+  CallFlowEntryPointsResponse,
+  CallFlowResponse,
 } from "./types";
 import type {
   SimilarityReport,
@@ -347,6 +354,21 @@ export function browseForRoot(): Promise<BrowseDirectoryResponse> {
 export function listDirectories(path?: string): Promise<ListDirectoriesResponse> {
   const url = path ? `/settings/list-directories?path=${encodeURIComponent(path)}` : "/settings/list-directories";
   return fetchJson(url, {
+    method: "GET",
+  });
+}
+
+export interface ListFilesResponse {
+  current_path: string;
+  directories: { name: string; path: string; is_parent: boolean }[];
+  files: { name: string; path: string; extension: string; size_bytes: number }[];
+}
+
+export function listFiles(path?: string, extensions: string = ".py"): Promise<ListFilesResponse> {
+  const params = new URLSearchParams();
+  if (path) params.set("path", path);
+  params.set("extensions", extensions);
+  return fetchJson(`/settings/list-files?${params.toString()}`, {
     method: "GET",
   });
 }
@@ -801,4 +823,201 @@ export function getSimilarityDefaultPatterns(): Promise<string[]> {
   return fetchJson<{ patterns: string[] }>("/similarity/default-exclude-patterns").then(
     (res) => res.patterns
   );
+}
+
+// =============================================================================
+// Contracts API (Phase 5 - AEGIS v2)
+// =============================================================================
+
+/**
+ * Discover contracts for a symbol in a file.
+ *
+ * Args:
+ *     request: Discovery request with file path and optional symbol line
+ *
+ * Returns:
+ *     Promise with discovered contracts and stats
+ *
+ * Notes:
+ *     - Endpoint: POST /api/contracts/discover
+ *     - Runs multi-level discovery pipeline (L1: @aegis-contract, L2: patterns, etc.)
+ *     - Requires symbol_line to be specified
+ */
+export function discoverContracts(
+  request: DiscoverContractsRequest
+): Promise<DiscoverContractsResponse> {
+  return fetchJson<DiscoverContractsResponse>("/contracts/discover", {
+    method: "POST",
+    body: JSON.stringify(request),
+  });
+}
+
+// =============================================================================
+// Symbols API (Phase 7.5 - Instance Graph Integration)
+// =============================================================================
+
+/**
+ * Get detailed symbol information at a specific file:line location.
+ *
+ * Args:
+ *     filePath: Path to the source file (relative or absolute)
+ *     line: Line number where the symbol is defined (1-indexed)
+ *
+ * Returns:
+ *     Promise with symbol details including name, kind, members, etc.
+ *
+ * Notes:
+ *     - Endpoint: GET /api/symbols/at-location
+ *     - Returns class members if symbol is a class
+ *     - Returns parent class name if symbol is a method
+ */
+export function getSymbolAtLocation(
+  filePath: string,
+  line: number
+): Promise<SymbolDetailsResponse> {
+  const params = new URLSearchParams({
+    file_path: filePath,
+    line: String(line),
+  });
+  return fetchJson<SymbolDetailsResponse>(`/symbols/at-location?${params.toString()}`);
+}
+
+/**
+ * Search for symbols by name across the project.
+ *
+ * Args:
+ *     query: Search term (minimum 1 character)
+ *     limit: Maximum number of results (default 50)
+ *
+ * Returns:
+ *     Promise with matching symbols and total count
+ */
+export function searchSymbolsByName(
+  query: string,
+  limit = 50
+): Promise<SymbolSearchResponse> {
+  const params = new URLSearchParams({
+    query,
+    limit: String(limit),
+  });
+  return fetchJson<SymbolSearchResponse>(`/symbols/search?${params.toString()}`);
+}
+
+/**
+ * Get all symbols defined in a specific file.
+ *
+ * Args:
+ *     filePath: Path to the source file (relative or absolute)
+ *
+ * Returns:
+ *     Promise with list of symbols sorted by line number
+ */
+export function getSymbolsInFile(filePath: string): Promise<SymbolSearchResult[]> {
+  return fetchJson<SymbolSearchResult[]>(`/symbols/file/${encodeURIComponent(filePath)}`);
+}
+
+// =============================================================================
+// Call Flow API (Function Call Chain Visualization)
+// =============================================================================
+
+/**
+ * Get entry points (functions/methods) available in a file.
+ *
+ * Args:
+ *     filePath: Absolute path to Python file
+ *
+ * Returns:
+ *     Promise with list of entry points (name, qualified_name, line, kind)
+ *
+ * Notes:
+ *     - Endpoint: GET /api/call-flow/entry-points/{filePath}
+ *     - Returns all functions and methods that can be used as call flow entry points
+ */
+export function getCallFlowEntryPoints(
+  filePath: string
+): Promise<CallFlowEntryPointsResponse> {
+  return fetchJson<CallFlowEntryPointsResponse>(
+    `/call-flow/entry-points/${encodeURIComponent(filePath)}`
+  );
+}
+
+/**
+ * Get the call flow graph from a function/method entry point.
+ *
+ * Args:
+ *     filePath: Absolute path to Python file
+ *     functionName: Name of function or method to analyze
+ *     maxDepth: Maximum call depth to follow (default 5, max 20)
+ *     className: Class name if analyzing a method (optional)
+ *     includeExternal: Include external calls (builtins, stdlib, third-party) as leaf nodes
+ *
+ * Returns:
+ *     Promise with React Flow compatible graph (nodes, edges, metadata)
+ *
+ * Notes:
+ *     - Endpoint: GET /api/call-flow/{filePath}?function=X&max_depth=N
+ *     - Follows function calls recursively up to maxDepth
+ *     - External calls (stdlib, third-party) are marked but not followed
+ *     - With includeExternal=true, external calls appear as gray leaf nodes
+ */
+export function getCallFlow(
+  filePath: string,
+  functionName: string,
+  maxDepth = 5,
+  className?: string | null,
+  includeExternal = false
+): Promise<CallFlowResponse> {
+  const params = new URLSearchParams({
+    function: functionName,
+    max_depth: String(maxDepth),
+  });
+  if (className) {
+    params.set("class_name", className);
+  }
+  if (includeExternal) {
+    params.set("include_external", "true");
+  }
+  return fetchJson<CallFlowResponse>(
+    `/call-flow/${encodeURIComponent(filePath)}?${params.toString()}`
+  );
+}
+
+/**
+ * Get source code from a file for call flow node details.
+ *
+ * This endpoint allows reading files outside the AEGIS root since
+ * Call Flow can analyze external projects.
+ *
+ * Args:
+ *     filePath: Absolute path to the source file
+ *     startLine: Start line number (1-indexed, default: 1)
+ *     endLine: End line number (optional)
+ *
+ * Returns:
+ *     Promise with plain text source code content
+ *
+ * Notes:
+ *     - Endpoint: GET /api/call-flow/source/{filePath}
+ *     - Only allows code file extensions (.py, .js, .ts, etc.)
+ *     - File size limited to 512 KB
+ */
+export async function getCallFlowSource(
+  filePath: string,
+  startLine = 1,
+  endLine?: number
+): Promise<string> {
+  const params = new URLSearchParams({
+    start_line: String(startLine),
+  });
+  if (endLine !== undefined) {
+    params.set("end_line", String(endLine));
+  }
+  const response = await fetch(
+    buildUrl(`/call-flow/source/${encodeURIComponent(filePath)}?${params.toString()}`)
+  );
+  if (!response.ok) {
+    const detail = await response.text().catch(() => response.statusText);
+    throw new Error(`Source code request failed (${response.status}): ${detail || "Unknown error"}`);
+  }
+  return response.text();
 }

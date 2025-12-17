@@ -5,6 +5,7 @@ import { CodeMapDashboard } from "./components/CodeMapDashboard";
 import { SettingsView } from "./components/SettingsView";
 import { StageToolkitView } from "./components/StageToolkitView";
 import { ClassUMLView } from "./components/ClassUMLView";
+import { CallFlowView } from "./components/CallFlowView";
 import { LintersView } from "./components/LintersView";
 import { OverviewDashboard } from "./components/OverviewDashboard";
 import { PromptLibraryView } from "./components/PromptLibraryView";
@@ -79,6 +80,10 @@ export function App(): JSX.Element {
           <Route
             path="/class-uml"
             element={withLayout("Class UML", <ClassUMLView />)}
+          />
+          <Route
+            path="/call-flow"
+            element={withLayout("Call Flow", <CallFlowView />)}
           />
           <Route
             path="/prompts"

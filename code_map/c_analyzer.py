@@ -109,6 +109,7 @@ class CAnalyzer:
         to_visit = [node]
         while to_visit:
             curr = to_visit.pop()
+            # Decision points: control flow structures
             if curr.type in {
                 "if_statement",
                 "while_statement",
@@ -118,6 +119,13 @@ class CAnalyzer:
                 "conditional_expression",
             }:
                 count += 1
+            # Boolean operators: && and || add decision points
+            elif curr.type == "binary_expression":
+                # Check if operator is && or ||
+                for child in curr.children:
+                    if child.type in {"&&", "||"}:
+                        count += 1
+                        break
             to_visit.extend(curr.children)
         return 1 + count
 
