@@ -17,7 +17,11 @@ DEFAULT_EXCLUDED_DIRS = {
     ".tox",
     ".venv",
     META_DIR_NAME,
+    "build",
+    "dist",
     "env",
     "node_modules",
+    "test",
+    "tests",
     "venv",
 }
