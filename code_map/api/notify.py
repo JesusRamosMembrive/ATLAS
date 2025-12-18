@@ -24,7 +24,7 @@ from ..state import AppState
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/notify", tags=["notify"])
+router = APIRouter(prefix="/notify", tags=["notify"])
 
 
 @router.post("/changes", response_model=NotifyChangesResponse)

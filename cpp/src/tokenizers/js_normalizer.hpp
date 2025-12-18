@@ -117,6 +117,33 @@ private:
     static void parse_decimal_part(TokenizerState& state, std::string& value);
     static void parse_exponent_part(TokenizerState& state, std::string& value);
     static void skip_bigint_suffix(TokenizerState& state, std::string& value);
+
+    /**
+     * Line metrics tracking for code analysis.
+     */
+    struct LineMetrics {
+        uint32_t code_lines = 0;
+        uint32_t blank_lines = 0;
+        uint32_t comment_lines = 0;
+        uint32_t current_line = 0;
+        bool line_has_code = false;
+        bool line_has_comment = false;
+    };
+
+    // Normalize helpers (reduce cyclomatic complexity of normalize)
+    static void update_line_metrics(TokenizerState& state, LineMetrics& metrics);
+    static bool skip_whitespace(TokenizerState& state, char c);
+    static bool process_newline(TokenizerState& state, char c);
+    bool process_single_line_comment(TokenizerState& state, char c, LineMetrics& metrics) const;
+    bool process_multi_line_comment(TokenizerState& state, char c, LineMetrics& metrics) const;
+    bool process_regex(TokenizerState& state, char c, TokenizedFile& result, LineMetrics& metrics);
+    static bool process_string(TokenizerState& state, char c, TokenizedFile& result, LineMetrics& metrics);
+    static bool process_template_literal(TokenizerState& state, char c, TokenizedFile& result, LineMetrics& metrics);
+    bool process_number(TokenizerState& state, char c, TokenizedFile& result, LineMetrics& metrics) const;
+    bool process_identifier(TokenizerState& state, char c, TokenizedFile& result, LineMetrics& metrics);
+    bool process_operator(TokenizerState& state, char c, TokenizedFile& result, LineMetrics& metrics);
+    static void finalize_metrics(const TokenizerState& state, const LineMetrics& metrics,
+                                 std::string_view source, TokenizedFile& result);
 };
 
 }  // namespace aegis::similarity
