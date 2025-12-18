@@ -67,78 +67,106 @@ struct CliArgs {
     std::string error_message;
 };
 
-CliArgs parse_args(int argc, char* argv[]) {
-    CliArgs args;
+// -----------------------------------------------------------------------------
+// Argument parsing helpers (reduce cyclomatic complexity of parse_args)
+// -----------------------------------------------------------------------------
 
-    for (int i = 1; i < argc; ++i) {
-        std::string arg = argv[i];
+namespace {
 
-        if (arg == "--help" || arg == "-h") {
-            args.show_help = true;
-            return args;
-        }
-
-        if (arg == "--root" && i + 1 < argc) {
-            args.root = argv[++i];
-        }
-        else if (arg == "--ext" && i + 1 < argc) {
-            std::string ext = argv[++i];
-            if (ext[0] != '.') ext = "." + ext;
-            args.extensions.push_back(ext);
-        }
-        else if (arg == "--exclude" && i + 1 < argc) {
-            args.exclude_patterns.push_back(argv[++i]);
-        }
-        else if (arg == "--window" && i + 1 < argc) {
-            args.window_size = std::stoul(argv[++i]);
-        }
-        else if (arg == "--min-tokens" && i + 1 < argc) {
-            args.min_clone_tokens = std::stoul(argv[++i]);
-        }
-        else if (arg == "--threshold" && i + 1 < argc) {
-            args.similarity_threshold = std::stof(argv[++i]);
-        }
-        else if (arg == "--type3") {
-            args.detect_type3 = true;
-        }
-        else if (arg == "--max-gap" && i + 1 < argc) {
-            args.max_gap_tokens = std::stoul(argv[++i]);
-        }
-        else if (arg == "--compare" && i + 2 < argc) {
-            args.compare_file1 = argv[++i];
-            args.compare_file2 = argv[++i];
-        }
-        else if (arg == "--socket" && i + 1 < argc) {
-            args.socket_path = argv[++i];
-        }
-        else if (arg == "--pretty") {
-            args.pretty_print = true;
-        }
-        else if (arg[0] == '-') {
-            args.has_error = true;
-            args.error_message = "Unknown option: " + arg;
-            return args;
-        }
-        else {
-            // Positional argument - treat as root if not set
-            if (args.root.empty()) {
-                args.root = arg;
-            } else {
-                args.has_error = true;
-                args.error_message = "Unexpected argument: " + arg;
-                return args;
-            }
-        }
+bool try_parse_help(const std::string& arg, CliArgs& args) {
+    if (arg == "--help" || arg == "-h") {
+        args.show_help = true;
+        return true;
     }
+    return false;
+}
 
-    // Validate
+bool try_parse_string_arg(const std::string& arg, const char* name,
+                          int& i, int argc, char* argv[], std::string& target) {
+    if (arg == name && i + 1 < argc) {
+        target = argv[++i];
+        return true;
+    }
+    return false;
+}
+
+bool try_parse_extension(const std::string& arg, int& i, int argc, char* argv[], CliArgs& args) {
+    if (arg == "--ext" && i + 1 < argc) {
+        std::string ext = argv[++i];
+        if (ext[0] != '.') ext = "." + ext;
+        args.extensions.push_back(ext);
+        return true;
+    }
+    return false;
+}
+
+bool try_parse_exclude(const std::string& arg, int& i, int argc, char* argv[], CliArgs& args) {
+    if (arg == "--exclude" && i + 1 < argc) {
+        args.exclude_patterns.push_back(argv[++i]);
+        return true;
+    }
+    return false;
+}
+
+bool try_parse_size_arg(const std::string& arg, const char* name,
+                        int& i, int argc, char* argv[], size_t& target) {
+    if (arg == name && i + 1 < argc) {
+        target = std::stoul(argv[++i]);
+        return true;
+    }
+    return false;
+}
+
+bool try_parse_float_arg(const std::string& arg, const char* name,
+                         int& i, int argc, char* argv[], float& target) {
+    if (arg == name && i + 1 < argc) {
+        target = std::stof(argv[++i]);
+        return true;
+    }
+    return false;
+}
+
+bool try_parse_flag(const std::string& arg, const char* name, bool& target) {
+    if (arg == name) {
+        target = true;
+        return true;
+    }
+    return false;
+}
+
+bool try_parse_compare(const std::string& arg, int& i, int argc, char* argv[], CliArgs& args) {
+    if (arg == "--compare" && i + 2 < argc) {
+        args.compare_file1 = argv[++i];
+        args.compare_file2 = argv[++i];
+        return true;
+    }
+    return false;
+}
+
+bool try_parse_positional(const std::string& arg, CliArgs& args) {
+    if (arg[0] == '-') return false;
+    if (args.root.empty()) {
+        args.root = arg;
+        return true;
+    }
+    args.has_error = true;
+    args.error_message = "Unexpected argument: " + arg;
+    return true;  // Handled (with error)
+}
+
+void set_error_unknown_option(const std::string& arg, CliArgs& args) {
+    args.has_error = true;
+    args.error_message = "Unknown option: " + arg;
+}
+
+void validate_required_args(CliArgs& args) {
     if (args.root.empty() && args.compare_file1.empty() && args.socket_path.empty()) {
         args.has_error = true;
         args.error_message = "Either --root, --compare, or --socket is required";
-        return args;
     }
+}
 
-    // Defaults
+void apply_defaults(CliArgs& args) {
     if (args.extensions.empty()) {
         args.extensions = {".py"};
     }
@@ -157,6 +185,49 @@ CliArgs parse_args(int argc, char* argv[]) {
             "**/vendor/**",
             "**/external/**"
         };
+    }
+}
+
+}  // anonymous namespace
+
+// -----------------------------------------------------------------------------
+// Main parse_args (refactored to use helpers)
+// -----------------------------------------------------------------------------
+
+CliArgs parse_args(int argc, char* argv[]) {
+    CliArgs args;
+
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+
+        // Early return for help
+        if (try_parse_help(arg, args)) return args;
+
+        // Try each argument type
+        if (try_parse_string_arg(arg, "--root", i, argc, argv, args.root)) continue;
+        if (try_parse_extension(arg, i, argc, argv, args)) continue;
+        if (try_parse_exclude(arg, i, argc, argv, args)) continue;
+        if (try_parse_size_arg(arg, "--window", i, argc, argv, args.window_size)) continue;
+        if (try_parse_size_arg(arg, "--min-tokens", i, argc, argv, args.min_clone_tokens)) continue;
+        if (try_parse_float_arg(arg, "--threshold", i, argc, argv, args.similarity_threshold)) continue;
+        if (try_parse_flag(arg, "--type3", args.detect_type3)) continue;
+        if (try_parse_size_arg(arg, "--max-gap", i, argc, argv, args.max_gap_tokens)) continue;
+        if (try_parse_compare(arg, i, argc, argv, args)) continue;
+        if (try_parse_string_arg(arg, "--socket", i, argc, argv, args.socket_path)) continue;
+        if (try_parse_flag(arg, "--pretty", args.pretty_print)) continue;
+        if (try_parse_positional(arg, args)) {
+            if (args.has_error) return args;
+            continue;
+        }
+
+        // Unknown option
+        set_error_unknown_option(arg, args);
+        return args;
+    }
+
+    validate_required_args(args);
+    if (!args.has_error) {
+        apply_defaults(args);
     }
 
     return args;
