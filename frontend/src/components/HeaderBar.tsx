@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { RescanButton } from "./RescanButton";
 
@@ -20,6 +20,27 @@ export function HeaderBar({
   const location = useLocation();
   const currentPath = location.pathname;
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  // Close mobile nav when route changes
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [currentPath]);
+
+  // Close mobile nav when clicking outside
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.header-nav') && !target.closest('.mobile-menu-toggle')) {
+        setMobileNavOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [mobileNavOpen]);
 
   const rootLabel = rootPath ?? "AEGIS_ROOT";
   const description = lastFullScan
@@ -45,49 +66,62 @@ export function HeaderBar({
 
   return (
     <header className={`header-bar${collapsed ? " header-collapsed" : ""}`}>
-      <div className="header-left">
-        <div className="brand-logo">&lt;/&gt;</div>
-        {!collapsed && (
-          <div className="brand-copy">
-            <h1>{title ?? "AEGIS"}</h1>
-            <p>{description}</p>
-          </div>
-        )}
+      <div className="header-top-row">
+        <div className="header-left">
+          <div className="brand-logo">&lt;/&gt;</div>
+          {!collapsed && (
+            <div className="brand-copy">
+              <h1>{title ?? "AEGIS"}</h1>
+              <p>{description}</p>
+            </div>
+          )}
+        </div>
+
+        <div className="header-actions">
+          <button
+            className="mobile-menu-toggle"
+            onClick={() => setMobileNavOpen(!mobileNavOpen)}
+            aria-label={mobileNavOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileNavOpen}
+          >
+            {mobileNavOpen ? "✕" : "☰"}
+          </button>
+          <nav className={`header-nav${mobileNavOpen ? " mobile-nav-open" : ""}`}>
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                className={`secondary-btn${currentPath === link.to ? " active" : ""}`}
+                to={link.to}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          <button
+            className="header-collapse-btn"
+            onClick={() => setCollapsed(!collapsed)}
+            title={collapsed ? "Expand header" : "Collapse header"}
+            aria-label={collapsed ? "Expand header" : "Collapse header"}
+          >
+            {collapsed ? "▼" : "▲"}
+          </button>
+        </div>
       </div>
 
-      <div className="header-actions">
-        <nav className="header-nav">
-          {navLinks.map((link) => (
-            <Link
-              key={link.to}
-              className={`secondary-btn${currentPath === link.to ? " active" : ""}`}
-              to={link.to}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-        {!collapsed && (
+      {!collapsed && (
+        <div className="header-bottom-row">
           <div className="status-indicator" title={`Root: ${rootLabel}`}>
             <span className="status-dot" style={{ opacity: watcherActive ? 1 : 0.4 }} />
             {watcherActive ? "Watcher active" : "Watcher inactive"}
           </div>
-        )}
-        {!collapsed && (
-          <Link className="secondary-btn" to="/settings">
-            Settings
-          </Link>
-        )}
-        {!collapsed && <RescanButton />}
-        <button
-          className="header-collapse-btn"
-          onClick={() => setCollapsed(!collapsed)}
-          title={collapsed ? "Expand header" : "Collapse header"}
-          aria-label={collapsed ? "Expand header" : "Collapse header"}
-        >
-          {collapsed ? "▼" : "▲"}
-        </button>
-      </div>
+          <div className="header-controls">
+            <Link className="secondary-btn" to="/settings">
+              Settings
+            </Link>
+            <RescanButton />
+          </div>
+        </div>
+      )}
     </header>
   );
 }

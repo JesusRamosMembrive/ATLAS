@@ -20,6 +20,13 @@
   flex: 1;
 }
 
+/* CodeMap page layout wrapper */
+.codemap-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .main-grid {
   display: grid;
   width: 100%;
@@ -28,6 +35,31 @@
     minmax(280px, 0.54fr)
     minmax(180px, 0.24fr);
   gap: 18px;
+}
+
+/* Secondary row for info cards */
+.secondary-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.secondary-card {
+  min-height: auto;
+  max-height: none;
+  padding: 18px 20px;
+}
+
+.secondary-card h2 {
+  font-size: 14px;
+}
+
+.secondary-card .status-grid {
+  font-size: 12px;
+}
+
+.secondary-card .capability-summary h3 {
+  font-size: 13px;
 }
 
 .panel {

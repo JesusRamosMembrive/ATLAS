@@ -15,8 +15,10 @@ function formatRelative(timestamp: string | null | undefined): string {
 
 export function StatusPanel({
   statusQuery,
+  showAnalyzers = false,
 }: {
   statusQuery: UseQueryResult<StatusPayload>;
+  showAnalyzers?: boolean;
 }): JSX.Element {
   const status = statusQuery.data;
 
@@ -74,9 +76,37 @@ export function StatusPanel({
         </div>
       </dl>
 
-      <CapabilitySummary capabilities={status.capabilities} />
+      {showAnalyzers && <CapabilitySummary capabilities={status.capabilities} />}
     </div>
   );
+}
+
+export function AnalyzersPanel({
+  statusQuery,
+}: {
+  statusQuery: UseQueryResult<StatusPayload>;
+}): JSX.Element {
+  const status = statusQuery.data;
+
+  if (statusQuery.isLoading) {
+    return (
+      <div className="capability-summary">
+        <h2>Analyzers</h2>
+        <p style={{ color: "#7f869d", fontSize: "13px" }}>Loading…</p>
+      </div>
+    );
+  }
+
+  if (statusQuery.isError || !status) {
+    return (
+      <div className="capability-summary">
+        <h2>Analyzers</h2>
+        <p style={{ color: "#7f869d", fontSize: "13px" }}>Unable to load</p>
+      </div>
+    );
+  }
+
+  return <CapabilitySummary capabilities={status.capabilities} />;
 }
 
 function CapabilitySummary({ capabilities }: { capabilities: AnalyzerCapability[] }): JSX.Element {

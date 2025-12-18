@@ -10,6 +10,10 @@
   .inspector-panel {
     grid-column: span 2;
   }
+
+  .secondary-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 /* Split-screen optimization (ventanas 800-1100px) */
@@ -25,7 +29,11 @@
 
   .inspector-panel {
     grid-column: span 2;
-    max-height: 400px;
+    max-height: 350px;
+  }
+
+  .secondary-row {
+    grid-template-columns: 1fr 1fr;
   }
 
   .panel {
@@ -46,6 +54,14 @@
   }
 
   .main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inspector-panel {
+    grid-column: 1;
+  }
+
+  .secondary-row {
     grid-template-columns: 1fr;
   }
 

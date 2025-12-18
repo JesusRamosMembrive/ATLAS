@@ -7,7 +7,7 @@ import { Sidebar } from "./Sidebar";
 import { DetailPanel } from "./DetailPanel";
 import { SearchPanel } from "./SearchPanel";
 import { ActivityFeed } from "./ActivityFeed";
-import { StatusPanel } from "./StatusPanel";
+import { StatusPanel, AnalyzersPanel } from "./StatusPanel";
 import { FileDiffModal } from "./FileDiffModal";
 import { useStageStatusQuery } from "../hooks/useStageStatusQuery";
 import { ComplexityCard } from "./dashboard/ComplexityCard";
@@ -42,23 +42,36 @@ export function CodeMapDashboard({
   const closeDiff = () => setDiffTarget(null);
 
   return (
-    <div className="main-grid">
-      <Sidebar onShowDiff={handleShowDiff} />
-      <DetailPanel onShowDiff={handleShowDiff} />
-      <aside className="panel inspector-panel">
-        <SearchPanel />
-        <ChangeListPanel onShowDiff={handleShowDiff} />
-        <StatusPanel statusQuery={statusQuery} />
-        <div>
-          <h2>Actividad reciente</h2>
-          <ActivityFeed />
-        </div>
-        {stageStatusQuery.data?.detection && (
-          <div style={{ marginTop: "16px" }}>
-            <ComplexityCard detection={stageStatusQuery.data.detection} variant="sidebar" />
+    <div className="codemap-layout">
+      {/* Main 3-column grid */}
+      <div className="main-grid">
+        <Sidebar onShowDiff={handleShowDiff} />
+        <DetailPanel onShowDiff={handleShowDiff} />
+        <aside className="panel inspector-panel">
+          <SearchPanel />
+          <ChangeListPanel onShowDiff={handleShowDiff} />
+          <div>
+            <h2>Actividad reciente</h2>
+            <ActivityFeed />
           </div>
+        </aside>
+      </div>
+
+      {/* Secondary row with info cards */}
+      <div className="secondary-row">
+        <article className="panel secondary-card">
+          <StatusPanel statusQuery={statusQuery} />
+        </article>
+        <article className="panel secondary-card">
+          <AnalyzersPanel statusQuery={statusQuery} />
+        </article>
+        {stageStatusQuery.data?.detection && (
+          <article className="panel secondary-card">
+            <ComplexityCard detection={stageStatusQuery.data.detection} variant="sidebar" />
+          </article>
         )}
-      </aside>
+      </div>
+
       {diffTarget && <FileDiffModal path={diffTarget} onClose={closeDiff} />}
     </div>
   );
