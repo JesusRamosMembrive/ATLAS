@@ -21,7 +21,7 @@ from typing import (
 
 from .analyzer import FileAnalyzer
 from .analyzer_registry import AnalyzerProtocol, AnalyzerRegistry
-from .constants import DEFAULT_EXCLUDED_DIRS
+from .constants import DEFAULT_EXCLUDED_DIRS, DEFAULT_EXCLUDED_DIR_PREFIXES
 from .events import ChangeBatch
 from .models import FileSummary
 
@@ -246,6 +246,10 @@ class ProjectScanner:
         # Excluir directorios ocultos comunes excepto el propio root.
         if name.startswith(".") and path != self.root:
             return True
+        # Excluir directorios que empiezan con prefijos conocidos (cmake-build-*, etc.)
+        for prefix in DEFAULT_EXCLUDED_DIR_PREFIXES:
+            if name.startswith(prefix):
+                return True
         return False
 
     def _default_store(self) -> "SnapshotStore":
