@@ -11,7 +11,7 @@ Each detector focuses on a specific aspect:
 import logging
 import re
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
@@ -218,7 +218,7 @@ class StructuralDriftDetector(DriftDetector):
                             category=DriftCategory.SIGNATURE_CHANGED,
                             severity=DriftSeverity.WARNING,
                             file_path=file_path,
-                            title=f"Precondition references unknown parameter",
+                            title="Precondition references unknown parameter",
                             description=f"Precondition '{precondition}' references '{param_name}' which may not exist",
                             suggestion=f"Verify parameter '{param_name}' exists or update precondition",
                             before_context=precondition,
@@ -533,7 +533,7 @@ class SemanticDriftDetector(DriftDetector):
                         category=DriftCategory.PRECONDITION_UNCHECKED,
                         severity=DriftSeverity.INFO,
                         file_path=file_path,
-                        title=f"Precondition may not be validated",
+                        title="Precondition may not be validated",
                         description=f"Precondition '{precondition}' has no obvious validation in code",
                         suggestion="Add runtime check or document that validation happens elsewhere",
                         before_context=f"Precondition: {precondition}",
@@ -564,7 +564,7 @@ class SemanticDriftDetector(DriftDetector):
                         category=DriftCategory.ERROR_UNHANDLED,
                         severity=DriftSeverity.INFO,
                         file_path=file_path,
-                        title=f"Declared error not found in code",
+                        title="Declared error not found in code",
                         description=f"Contract declares '{error_type}' but it's not raised or caught in code",
                         suggestion="Add error handling or remove from contract",
                         before_context=f"Error: {error}",

@@ -34,6 +34,6 @@ warnings.warn(
 )
 
 # Re-export from legacy compatibility layer
-from .graph_analysis.call_flow.legacy import CrossFileCallGraphExtractor
+from .graph_analysis.call_flow.legacy import CrossFileCallGraphExtractor  # noqa: E402
 
 __all__ = ["CrossFileCallGraphExtractor"]

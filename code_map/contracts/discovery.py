@@ -205,10 +205,9 @@ class ContractDiscovery:
             if self._llm_extractor.is_available():
                 # Get context for LLM
                 code_block = self._extract_code_context(source, symbol_line)
-                documentation = ""
                 comment = strategy.find_comment_block(source, symbol_line)
                 if comment:
-                    documentation = comment.content
+                    pass
 
                 # Note: This is async, but we're in sync context
                 # For now, skip LLM in sync discover()

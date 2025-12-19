@@ -160,7 +160,7 @@ class SocketIOPTYServer:
 
             # Check platform availability
             if not self._pty_available:
-                logger.error(f"[SocketIO PTY] PTY not available on this platform")
+                logger.error("[SocketIO PTY] PTY not available on this platform")
                 await self.sio.emit(
                     "pty-error",
                     {

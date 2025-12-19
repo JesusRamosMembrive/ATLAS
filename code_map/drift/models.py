@@ -200,16 +200,16 @@ class DriftReport:
     def format_summary(self) -> str:
         """Format a human-readable summary."""
         lines = [
-            f"Drift Analysis Report",
-            f"=====================",
+            "Drift Analysis Report",
+            "=====================",
             f"Analyzed at: {self.analyzed_at.strftime('%Y-%m-%d %H:%M:%S')}",
             f"Duration: {self.duration_ms:.1f}ms",
             f"Files analyzed: {len(self.analyzed_files)}",
-            f"",
-            f"Summary:",
+            "",
+            "Summary:",
             f"  Total items: {self.total_count}",
             f"  Blocking: {'YES' if self.has_blocking_drift else 'No'}",
-            f"",
+            "",
         ]
 
         by_severity = self.count_by_severity()

@@ -113,7 +113,8 @@
       "Bash(python -m pytest:*)",
       "Bash(git commit -m \"$(cat <<''EOF''\nAdd PNG export to UML view and commit message to Timeline modal\n\n- UML View: Add \"Download PNG\" button to export class diagrams as images\n- Timeline: Display commit message in diff modal for better context\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(black --check:*)",
-      "Bash(black:*)"
+      "Bash(black:*)",
+      "Bash(ruff check:*)"
     ],
     "deny": [],
     "ask": []

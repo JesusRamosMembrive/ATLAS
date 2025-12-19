@@ -582,124 +582,124 @@
   {
     "path": "code_map/api/contracts.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:36.156385+00:00",
+    "modified_at": "2025-12-19T07:08:15.604918+00:00",
     "symbols": [
       {
         "name": "EvidenceItemModel",
         "kind": "class",
-        "lineno": 41,
+        "lineno": 40,
         "parent": null,
         "docstring": "Evidence item for API."
       },
       {
         "name": "ContractModel",
         "kind": "class",
-        "lineno": 49,
+        "lineno": 48,
         "parent": null,
         "docstring": "Contract data for API."
       },
       {
         "name": "to_contract_data",
         "kind": "method",
-        "lineno": 61,
+        "lineno": 60,
         "parent": "ContractModel",
         "docstring": "Convert to internal ContractData."
       },
       {
         "name": "DiscoverRequest",
         "kind": "class",
-        "lineno": 91,
+        "lineno": 90,
         "parent": null,
         "docstring": "Request to discover contracts."
       },
       {
         "name": "DiscoverResponse",
         "kind": "class",
-        "lineno": 99,
+        "lineno": 98,
         "parent": null,
         "docstring": "Response from contract discovery."
       },
       {
         "name": "WriteRequest",
         "kind": "class",
-        "lineno": 110,
+        "lineno": 109,
         "parent": null,
         "docstring": "Request to write a contract."
       },
       {
         "name": "WriteResponse",
         "kind": "class",
-        "lineno": 118,
+        "lineno": 117,
         "parent": null,
         "docstring": "Response from writing a contract."
       },
       {
         "name": "ValidateRequest",
         "kind": "class",
-        "lineno": 126,
+        "lineno": 125,
         "parent": null,
         "docstring": "Request to validate contract evidence."
       },
       {
         "name": "ValidateResponse",
         "kind": "class",
-        "lineno": 133,
+        "lineno": 132,
         "parent": null,
         "docstring": "Response from validating a contract."
       },
       {
         "name": "GatesRunRequest",
         "kind": "class",
-        "lineno": 140,
+        "lineno": 139,
         "parent": null,
         "docstring": "Request to run gates."
       },
       {
         "name": "GatesRunResponse",
         "kind": "class",
-        "lineno": 147,
+        "lineno": 146,
         "parent": null,
         "docstring": "Response from running gates."
       },
       {
         "name": "discover_contracts",
         "kind": "function",
-        "lineno": 162,
+        "lineno": 161,
         "parent": null,
         "docstring": "Discover contracts in a file.\n\nRuns the multi-level discovery pipeline to find contracts\nembedded in code comments and documentation.\n\nThe response includes:\n- documentation_type: What kind of docs were found (aegis, doxygen, comment, none)\n- warning: Set to \"no_documentation_found\" if no structured docs exist\n- llm_available: Whether Ollama is available for L3 extraction\n- contracts: The discovered contracts (may be empty if user needs to choose method)"
       },
       {
         "name": "write_contract",
         "kind": "function",
-        "lineno": 270,
+        "lineno": 269,
         "parent": null,
         "docstring": "Write a contract to a source file.\n\nCreates or updates an @aegis-contract block at the specified location."
       },
       {
         "name": "preview_contract",
         "kind": "function",
-        "lineno": 300,
+        "lineno": 299,
         "parent": null,
         "docstring": "Preview contract changes without applying them.\n\nReturns the diff that would be generated."
       },
       {
         "name": "validate_contract",
         "kind": "function",
-        "lineno": 328,
+        "lineno": 327,
         "parent": null,
         "docstring": "Validate a contract's evidence.\n\nRuns all evidence items and returns their status."
       },
       {
         "name": "run_gates",
         "kind": "function",
-        "lineno": 378,
+        "lineno": 377,
         "parent": null,
         "docstring": "Run gates for multiple symbols.\n\nValidates that all required evidence passes before allowing changes."
       },
       {
         "name": "list_supported_languages",
         "kind": "function",
-        "lineno": 420,
+        "lineno": 419,
         "parent": null,
         "docstring": "List supported languages for contract discovery."
       }
@@ -724,110 +724,110 @@
   {
     "path": "code_map/api/drift.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:36.137384+00:00",
+    "modified_at": "2025-12-19T07:07:49.019619+00:00",
     "symbols": [
       {
         "name": "DriftAnalyzeRequest",
         "kind": "class",
-        "lineno": 31,
+        "lineno": 30,
         "parent": null,
         "docstring": "Request to run drift analysis."
       },
       {
         "name": "DriftItemResponse",
         "kind": "class",
-        "lineno": 44,
+        "lineno": 43,
         "parent": null,
         "docstring": "A single drift item."
       },
       {
         "name": "DriftReportResponse",
         "kind": "class",
-        "lineno": 62,
+        "lineno": 61,
         "parent": null,
         "docstring": "Complete drift analysis report."
       },
       {
         "name": "DriftStatusResponse",
         "kind": "class",
-        "lineno": 72,
+        "lineno": 71,
         "parent": null,
         "docstring": "Current drift analyzer status."
       },
       {
         "name": "WiringUpdateRequest",
         "kind": "class",
-        "lineno": 82,
+        "lineno": 81,
         "parent": null,
         "docstring": "Request to update wiring state."
       },
       {
         "name": "_get_analyzer",
         "kind": "function",
-        "lineno": 96,
+        "lineno": 95,
         "parent": null,
         "docstring": "Get or create drift analyzer for current app state."
       },
       {
         "name": "_report_to_response",
         "kind": "function",
-        "lineno": 104,
+        "lineno": 103,
         "parent": null,
         "docstring": "Convert DriftReport to API response."
       },
       {
         "name": "analyze_drift",
         "kind": "function",
-        "lineno": 138,
+        "lineno": 137,
         "parent": null,
         "docstring": "Run full drift analysis.\n\nAnalyzes the project for:\n- Structural drift (contract vs symbol signatures)\n- Wiring drift (graph vs code composition)\n- Semantic drift (contract claims vs implementation) - optional"
       },
       {
         "name": "analyze_structural",
         "kind": "function",
-        "lineno": 169,
+        "lineno": 168,
         "parent": null,
         "docstring": "Run only structural drift detection.\n\nChecks for:\n- Contract references to deleted symbols\n- Symbol signature changes\n- Missing or stale evidence references"
       },
       {
         "name": "analyze_wiring",
         "kind": "function",
-        "lineno": 196,
+        "lineno": 195,
         "parent": null,
         "docstring": "Run only wiring drift detection.\n\nChecks for changes in composition roots:\n- Added/removed instances\n- Added/removed edges\n- Type changes\n\nNote: Requires wiring state to be updated via POST /drift/wiring/update"
       },
       {
         "name": "analyze_semantic",
         "kind": "function",
-        "lineno": 225,
+        "lineno": 224,
         "parent": null,
         "docstring": "Run only semantic drift detection (heuristic).\n\nUses heuristics to detect obvious mismatches:\n- Thread safety claims vs mutex/lock usage\n- Precondition checks not present in code\n- Error handling claims vs actual throws\n\nNote: This is heuristic-based and may have false positives."
       },
       {
         "name": "get_drift_status",
         "kind": "function",
-        "lineno": 254,
+        "lineno": 253,
         "parent": null,
         "docstring": "Get current drift analyzer status."
       },
       {
         "name": "update_wiring_state",
         "kind": "function",
-        "lineno": 264,
+        "lineno": 263,
         "parent": null,
         "docstring": "Update wiring state for drift detection.\n\nCall this when composition root is re-analyzed to enable\nwiring drift detection between states."
       },
       {
         "name": "clear_wiring_state",
         "kind": "function",
-        "lineno": 291,
+        "lineno": 290,
         "parent": null,
         "docstring": "Clear wiring state cache."
       },
       {
         "name": "check_before_apply",
         "kind": "function",
-        "lineno": 301,
+        "lineno": 300,
         "parent": null,
         "docstring": "Check drift before applying changes.\n\nReturns whether changes can proceed based on drift detection."
       }
@@ -1818,68 +1818,68 @@
   {
     "path": "code_map/api/similarity.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:36.224439+00:00",
+    "modified_at": "2025-12-19T07:07:49.018619+00:00",
     "symbols": [
       {
         "name": "SimilarityAnalyzeRequest",
         "kind": "class",
-        "lineno": 39,
+        "lineno": 37,
         "parent": null,
         "docstring": "Request body for similarity analysis."
       },
       {
         "name": "SimilarityStatusResponse",
         "kind": "class",
-        "lineno": 62,
+        "lineno": 60,
         "parent": null,
         "docstring": "Status of the similarity service."
       },
       {
         "name": "HotspotsResponse",
         "kind": "class",
-        "lineno": 69,
+        "lineno": 67,
         "parent": null,
         "docstring": "Response for hotspots endpoint."
       },
       {
         "name": "DefaultPatternsResponse",
         "kind": "class",
-        "lineno": 76,
+        "lineno": 74,
         "parent": null,
         "docstring": "Response with default exclude patterns."
       },
       {
         "name": "get_default_exclude_patterns",
         "kind": "function",
-        "lineno": 83,
+        "lineno": 81,
         "parent": null,
         "docstring": "Get the default exclude patterns used for similarity analysis."
       },
       {
         "name": "get_similarity_status",
         "kind": "function",
-        "lineno": 89,
+        "lineno": 87,
         "parent": null,
         "docstring": "Check if the C++ similarity motor is available."
       },
       {
         "name": "get_latest_report",
         "kind": "function",
-        "lineno": 101,
+        "lineno": 99,
         "parent": null,
         "docstring": "Get the latest similarity analysis report."
       },
       {
         "name": "run_analysis",
         "kind": "function",
-        "lineno": 109,
+        "lineno": 107,
         "parent": null,
         "docstring": "Run similarity analysis on the project.\n\nThis endpoint triggers a new similarity analysis using the C++ motor.\nResults are cached and returned."
       },
       {
         "name": "get_hotspots",
         "kind": "function",
-        "lineno": 153,
+        "lineno": 151,
         "parent": null,
         "docstring": "Get files with highest duplication scores.\n\nReturns the top N files sorted by duplication score."
       }
@@ -2110,124 +2110,124 @@
   {
     "path": "code_map/api/tracer.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:36.685388+00:00",
+    "modified_at": "2025-12-19T07:08:27.209046+00:00",
     "symbols": [
       {
         "name": "_require_tree_sitter",
         "kind": "function",
-        "lineno": 37,
+        "lineno": 38,
         "parent": null,
         "docstring": "Valida disponibilidad de tree-sitter y responde con 503 si falta."
       },
       {
         "name": "AnalyzeFileRequest",
         "kind": "class",
-        "lineno": 50,
+        "lineno": 51,
         "parent": null,
         "docstring": "Request para analizar un archivo y extraer su call graph."
       },
       {
         "name": "CallChain",
         "kind": "class",
-        "lineno": 60,
+        "lineno": 61,
         "parent": null,
         "docstring": "Representa una cadena de llamadas."
       },
       {
         "name": "TraceChainRequest",
         "kind": "class",
-        "lineno": 68,
+        "lineno": 69,
         "parent": null,
         "docstring": "Request para trazar cadena desde una funci\u00f3n espec\u00edfica."
       },
       {
         "name": "CallGraphResponse",
         "kind": "class",
-        "lineno": 80,
+        "lineno": 81,
         "parent": null,
         "docstring": "Response con el call graph extra\u00eddo."
       },
       {
         "name": "TraceChainResponse",
         "kind": "class",
-        "lineno": 96,
+        "lineno": 97,
         "parent": null,
         "docstring": "Response con la cadena de llamadas trazada."
       },
       {
         "name": "AllChainsResponse",
         "kind": "class",
-        "lineno": 106,
+        "lineno": 107,
         "parent": null,
         "docstring": "Response con todas las cadenas detectadas en un archivo."
       },
       {
         "name": "analyze_file",
         "kind": "function",
-        "lineno": 122,
+        "lineno": 123,
         "parent": null,
         "docstring": "Analiza un archivo Python y extrae su call graph.\n\nEl call graph muestra qu\u00e9 funciones llaman a qu\u00e9 otras funciones\ndentro del mismo archivo.\n\n**Stage 1 Limitations:**\n- Solo analiza llamadas dentro del mismo archivo\n- No resuelve imports cross-file\n- No maneja decorators complejos, lambdas o closures"
       },
       {
         "name": "trace_chain",
         "kind": "function",
-        "lineno": 203,
+        "lineno": 204,
         "parent": null,
         "docstring": "Traza la cadena completa de llamadas desde una funci\u00f3n espec\u00edfica.\n\nSigue todas las llamadas recursivamente desde la funci\u00f3n de inicio\nhasta la profundidad m\u00e1xima especificada.\n\n**Ejemplo:**\nSi tienes `api_move_motors() -> internal_move() -> kinesis_move()`,\nel trace desde `api_move_motors` retornar\u00e1 toda la cadena."
       },
       {
         "name": "get_all_chains",
         "kind": "function",
-        "lineno": 295,
+        "lineno": 296,
         "parent": null,
         "docstring": "Obtiene todas las cadenas de llamadas posibles en un archivo.\n\nDetecta autom\u00e1ticamente funciones ra\u00edz (no llamadas por otras)\ny genera todas las cadenas desde esas ra\u00edces.\n\n**\u00datil para:**\n- Visualizar flujo completo de un m\u00f3dulo\n- Detectar endpoints y sus cadenas de ejecuci\u00f3n\n- Identificar c\u00f3digo no utilizado"
       },
       {
         "name": "AnalyzeCrossFileRequest",
         "kind": "class",
-        "lineno": 387,
+        "lineno": 388,
         "parent": null,
         "docstring": "Request para an\u00e1lisis cross-file (Stage 2)."
       },
       {
         "name": "CrossFileCallGraphResponse",
         "kind": "class",
-        "lineno": 407,
+        "lineno": 408,
         "parent": null,
         "docstring": "Response con call graph cross-file."
       },
       {
         "name": "TraceCrossFileRequest",
         "kind": "class",
-        "lineno": 437,
+        "lineno": 438,
         "parent": null,
         "docstring": "Request para trace cross-file."
       },
       {
         "name": "CrossFileCallChain",
         "kind": "class",
-        "lineno": 453,
+        "lineno": 454,
         "parent": null,
         "docstring": "Cadena de llamadas cross-file."
       },
       {
         "name": "TraceCrossFileResponse",
         "kind": "class",
-        "lineno": 465,
+        "lineno": 466,
         "parent": null,
         "docstring": "Response con trace cross-file."
       },
       {
         "name": "analyze_cross_file",
         "kind": "function",
-        "lineno": 475,
+        "lineno": 476,
         "parent": null,
         "docstring": "Analiza call graph con resoluci\u00f3n de imports (Stage 2).\n\n**Caracter\u00edsticas Stage 2:**\n- Sigue imports entre archivos\n- Resuelve llamadas a funciones importadas\n- Detecta entry points del proyecto\n- Cachea resultados por archivo\n\n**Formato de nombres:**\n- Nombres cualificados: `path/to/file.py::function_name`\n- M\u00e9todos de clase: `path/to/file.py::ClassName.method_name`\n\n**Ejemplo:**\n```\n{\n  \"call_graph\": {\n    \"server.py::create_app\": [\n      \"settings.py::load_settings\",\n      \"state.py::AppState\"\n    ]\n  }\n}\n```"
       },
       {
         "name": "trace_cross_file",
         "kind": "function",
-        "lineno": 556,
+        "lineno": 557,
         "parent": null,
         "docstring": "Traza cadena de llamadas cross-file (Stage 2).\n\n**Caracter\u00edsticas:**\n- Sigue llamadas entre archivos diferentes\n- Muestra path completo de ejecuci\u00f3n\n- Detecta ciclos\n\n**Input:**\n- `start_function`: Nombre cualificado `\"path/file.py::function\"`\n- `max_depth`: Profundidad m\u00e1xima a trazar\n\n**Ejemplo:**\n```\nPOST /tracer/trace-cross-file\n{\n  \"start_function\": \"code_map/server.py::create_app\",\n  \"max_depth\": 10\n}\n```"
       }
@@ -2740,7 +2740,7 @@
   {
     "path": "code_map/call_tracer_v2.py",
     "relative": true,
-    "modified_at": "2025-12-17T18:43:42.206139+00:00",
+    "modified_at": "2025-12-19T07:08:37.782163+00:00",
     "symbols": [],
     "errors": []
   },
@@ -3050,7 +3050,7 @@
   {
     "path": "code_map/contracts/discovery.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:36.856651+00:00",
+    "modified_at": "2025-12-19T07:08:03.626784+00:00",
     "symbols": [
       {
         "name": "DocumentationType",
@@ -3104,21 +3104,21 @@
       {
         "name": "discover_async",
         "kind": "method",
-        "lineno": 244,
+        "lineno": 243,
         "parent": "ContractDiscovery",
         "docstring": "Execute discovery pipeline with async LLM support.\n\nArgs:\n    file_path: File to analyze\n    symbol_line: Line of the symbol (1-indexed)\n    levels: Optional list of levels to try\n\nReturns:\n    ContractData with discovered contract"
       },
       {
         "name": "discover_file",
         "kind": "method",
-        "lineno": 343,
+        "lineno": 342,
         "parent": "ContractDiscovery",
         "docstring": "Discover contracts for multiple symbols in a file.\n\nArgs:\n    file_path: File to analyze\n    symbol_lines: List of symbol line numbers\n    levels: Levels to try\n\nReturns:\n    Tuple of (contracts list, discovery stats)"
       },
       {
         "name": "_extract_code_context",
         "kind": "method",
-        "lineno": 381,
+        "lineno": 380,
         "parent": "ContractDiscovery",
         "docstring": "Extract code context around a symbol."
       }
@@ -3128,117 +3128,117 @@
   {
     "path": "code_map/contracts/evidence.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:36.616134+00:00",
+    "modified_at": "2025-12-19T07:07:49.020619+00:00",
     "symbols": [
       {
         "name": "GateResult",
         "kind": "class",
-        "lineno": 23,
+        "lineno": 22,
         "parent": null,
         "docstring": "Result of running all gates for a set of contracts."
       },
       {
         "name": "EvidenceExecutor",
         "kind": "class",
-        "lineno": 33,
+        "lineno": 32,
         "parent": null,
         "docstring": "Executes evidence items (tests, lints) for contracts.\n\nIntegrates with existing linter pipeline and test frameworks."
       },
       {
         "name": "__init__",
         "kind": "method",
-        "lineno": 40,
+        "lineno": 39,
         "parent": "EvidenceExecutor",
         "docstring": "Initialize the executor.\n\nArgs:\n    project_root: Root directory of the project for running commands"
       },
       {
         "name": "run_evidence",
         "kind": "method",
-        "lineno": 50,
+        "lineno": 49,
         "parent": "EvidenceExecutor",
         "docstring": "Run a single evidence item.\n\nArgs:\n    item: Evidence item to execute\n\nReturns:\n    EvidenceResult with pass/fail status"
       },
       {
         "name": "run_contract_evidence",
         "kind": "method",
-        "lineno": 91,
+        "lineno": 90,
         "parent": "EvidenceExecutor",
         "docstring": "Run all evidence items for a contract.\n\nArgs:\n    contract: Contract with evidence items\n    scope: \"required\" to run only required, \"all\" for everything\n\nReturns:\n    List of evidence results"
       },
       {
         "name": "run_gates",
         "kind": "method",
-        "lineno": 118,
+        "lineno": 117,
         "parent": "EvidenceExecutor",
         "docstring": "Run gates for multiple contracts.\n\nArgs:\n    contracts: List of contracts to validate\n    scope: \"required\" or \"all\"\n\nReturns:\n    GateResult with overall pass/fail and details"
       },
       {
         "name": "_run_test",
         "kind": "method",
-        "lineno": 160,
+        "lineno": 159,
         "parent": "EvidenceExecutor",
         "docstring": "Run a specific test.\n\nReference format: \"path/to/test_file.py::test_name\"\nor \"path/to/test_file.cpp::TestClassName\""
       },
       {
         "name": "_run_pytest",
         "kind": "method",
-        "lineno": 185,
+        "lineno": 184,
         "parent": "EvidenceExecutor",
         "docstring": "Run pytest for Python tests."
       },
       {
         "name": "_run_ctest",
         "kind": "method",
-        "lineno": 195,
+        "lineno": 194,
         "parent": "EvidenceExecutor",
         "docstring": "Run ctest for C++ tests."
       },
       {
         "name": "_run_lint",
         "kind": "method",
-        "lineno": 207,
+        "lineno": 206,
         "parent": "EvidenceExecutor",
         "docstring": "Run a linter.\n\nReference is the linter name: \"ruff\", \"clang-tidy\", \"mypy\", etc."
       },
       {
         "name": "_run_typecheck",
         "kind": "method",
-        "lineno": 232,
+        "lineno": 231,
         "parent": "EvidenceExecutor",
         "docstring": "Run type checker.\n\nReference is the tool name: \"mypy\", \"pyright\", \"tsc\", etc."
       },
       {
         "name": "_run_command",
         "kind": "method",
-        "lineno": 251,
+        "lineno": 250,
         "parent": "EvidenceExecutor",
         "docstring": "Run a shell command and capture output."
       },
       {
         "name": "GateChecker",
         "kind": "class",
-        "lineno": 296,
+        "lineno": 295,
         "parent": null,
         "docstring": "High-level gate checking for applying patches.\n\nEnsures contracts are satisfied before allowing changes."
       },
       {
         "name": "__init__",
         "kind": "method",
-        "lineno": 303,
+        "lineno": 302,
         "parent": "GateChecker",
         "docstring": "Initialize the gate checker."
       },
       {
         "name": "check_gates",
         "kind": "method",
-        "lineno": 307,
+        "lineno": 306,
         "parent": "GateChecker",
         "docstring": "Check if gates pass for a set of contracts.\n\nArgs:\n    contracts: Contracts to validate\n    bypass_gates: If True, always return True (for emergencies)\n\nReturns:\n    Tuple of (can_proceed, gate_result)"
       },
       {
         "name": "format_gate_report",
         "kind": "method",
-        "lineno": 330,
+        "lineno": 329,
         "parent": "GateChecker",
         "docstring": "Format gate result as human-readable report."
       }
@@ -3432,7 +3432,7 @@
   {
     "path": "code_map/contracts/languages/python.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:37.373176+00:00",
+    "modified_at": "2025-12-19T07:08:03.627784+00:00",
     "symbols": [
       {
         "name": "PythonLanguageStrategy",
@@ -3472,56 +3472,56 @@
       {
         "name": "find_comment_block",
         "kind": "method",
-        "lineno": 133,
+        "lineno": 131,
         "parent": "PythonLanguageStrategy",
         "docstring": "Find the docstring of a function/class."
       },
       {
         "name": "parse_known_patterns",
         "kind": "method",
-        "lineno": 180,
+        "lineno": 177,
         "parent": "PythonLanguageStrategy",
         "docstring": "Extract contract from Google style docstring."
       },
       {
         "name": "_parse_google_sections",
         "kind": "method",
-        "lineno": 234,
+        "lineno": 231,
         "parent": "PythonLanguageStrategy",
         "docstring": "Parse Google-style docstring into sections."
       },
       {
         "name": "insert_contract_block",
         "kind": "method",
-        "lineno": 270,
+        "lineno": 267,
         "parent": "PythonLanguageStrategy",
         "docstring": "Insert @aegis-contract at the start of docstring."
       },
       {
         "name": "_find_docstring_location",
         "kind": "method",
-        "lineno": 286,
+        "lineno": 283,
         "parent": "PythonLanguageStrategy",
         "docstring": "Find docstring location if it exists."
       },
       {
         "name": "_insert_into_existing_docstring",
         "kind": "method",
-        "lineno": 315,
+        "lineno": 312,
         "parent": "PythonLanguageStrategy",
         "docstring": "Insert contract block into existing docstring."
       },
       {
         "name": "_create_new_docstring",
         "kind": "method",
-        "lineno": 351,
+        "lineno": 348,
         "parent": "PythonLanguageStrategy",
         "docstring": "Create new docstring with contract."
       },
       {
         "name": "update_contract_block",
         "kind": "method",
-        "lineno": 372,
+        "lineno": 369,
         "parent": "PythonLanguageStrategy",
         "docstring": "Update existing block inside docstring."
       }
@@ -3902,7 +3902,7 @@
   {
     "path": "code_map/contracts/patterns/analyzers/python_ownership.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:36.931724+00:00",
+    "modified_at": "2025-12-19T07:07:49.018619+00:00",
     "symbols": [
       {
         "name": "PythonOwnershipAnalyzer",
@@ -4775,7 +4775,7 @@
   {
     "path": "code_map/contracts/patterns/static.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:37.519510+00:00",
+    "modified_at": "2025-12-19T07:07:49.017619+00:00",
     "symbols": [
       {
         "name": "StaticAnalyzer",
@@ -5335,7 +5335,7 @@
   {
     "path": "code_map/drift/analyzer.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:37.809140+00:00",
+    "modified_at": "2025-12-19T07:07:49.020619+00:00",
     "symbols": [
       {
         "name": "DriftAnalyzer",
@@ -5427,7 +5427,7 @@
   {
     "path": "code_map/drift/detectors.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:37.925377+00:00",
+    "modified_at": "2025-12-19T07:07:49.022619+00:00",
     "symbols": [
       {
         "name": "DriftContext",
@@ -5589,7 +5589,7 @@
   {
     "path": "code_map/drift/models.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:37.931741+00:00",
+    "modified_at": "2025-12-19T07:07:49.027619+00:00",
     "symbols": [
       {
         "name": "DriftType",
@@ -6265,7 +6265,7 @@
   {
     "path": "code_map/graph_analysis/call_flow/__init__.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:37.446652+00:00",
+    "modified_at": "2025-12-19T07:08:46.786262+00:00",
     "symbols": [
       {
         "name": "get_python_extractor",
@@ -6670,7 +6670,7 @@
   {
     "path": "code_map/graph_analysis/call_flow/extractor.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:38.464680+00:00",
+    "modified_at": "2025-12-19T07:07:49.019619+00:00",
     "symbols": [
       {
         "name": "CallInfo",
@@ -7827,7 +7827,7 @@
   {
     "path": "code_map/graph_analysis/call_flow/ts_extractor.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:39.794914+00:00",
+    "modified_at": "2025-12-19T07:08:03.628784+00:00",
     "symbols": [
       {
         "name": "TsCallInfo",
@@ -7909,126 +7909,126 @@
       {
         "name": "_get_function_name",
         "kind": "method",
-        "lineno": 485,
+        "lineno": 484,
         "parent": "TsCallFlowExtractor",
         "docstring": "Extract function name from function_declaration node."
       },
       {
         "name": "_get_class_name",
         "kind": "method",
-        "lineno": 496,
+        "lineno": 495,
         "parent": "TsCallFlowExtractor",
         "docstring": "Extract class name from class_declaration node."
       },
       {
         "name": "_get_method_name",
         "kind": "method",
-        "lineno": 506,
+        "lineno": 505,
         "parent": "TsCallFlowExtractor",
         "docstring": "Extract method name from method_definition node."
       },
       {
         "name": "_find_child_by_type",
         "kind": "method",
-        "lineno": 516,
+        "lineno": 515,
         "parent": "TsCallFlowExtractor",
         "docstring": "Find first direct child of given type."
       },
       {
         "name": "supports_extension",
         "kind": "method",
-        "lineno": 524,
+        "lineno": 523,
         "parent": "TsCallFlowExtractor",
         "docstring": "Check if this extractor supports the given file extension."
       },
       {
         "name": "_calculate_complexity",
         "kind": "method",
-        "lineno": 532,
+        "lineno": 531,
         "parent": "TsCallFlowExtractor",
         "docstring": "Calculate cyclomatic complexity (McCabe) for a function node.\n\nCounts decision points: if, for, while, switch/case, catch,\nternary expressions, && and || operators.\n\nArgs:\n    func_node: tree-sitter node for the function\n\nReturns:\n    Cyclomatic complexity (1 + number of decision points)"
       },
       {
         "name": "_calculate_loc",
         "kind": "method",
-        "lineno": 575,
+        "lineno": 574,
         "parent": "TsCallFlowExtractor",
         "docstring": "Calculate lines of code for a function node.\n\nArgs:\n    func_node: tree-sitter node for the function\n\nReturns:\n    Number of lines (end_line - start_line + 1)"
       },
       {
         "name": "extract",
         "kind": "method",
-        "lineno": 593,
+        "lineno": 592,
         "parent": "TsCallFlowExtractor",
         "docstring": "Extract call flow graph starting from a function.\n\nArgs:\n    file_path: Path to the TypeScript/JavaScript source file\n    function_name: Name of the entry point function/method\n    max_depth: Maximum depth to follow calls\n    project_root: Project root for relative paths (default: file's parent)\n\nReturns:\n    CallGraph containing all reachable calls, or None if extraction fails"
       },
       {
         "name": "_make_symbol_id",
         "kind": "method",
-        "lineno": 699,
+        "lineno": 698,
         "parent": "TsCallFlowExtractor",
         "docstring": "Generate a stable symbol ID."
       },
       {
         "name": "_build_function_index",
         "kind": "method",
-        "lineno": 715,
+        "lineno": 714,
         "parent": "TsCallFlowExtractor",
         "docstring": "Build index of all functions in file for fast lookup.\n\nReturns:\n    Dict mapping function names to their info (node, line, col, class_name)"
       },
       {
         "name": "_get_class_context",
         "kind": "method",
-        "lineno": 799,
+        "lineno": 798,
         "parent": "TsCallFlowExtractor",
         "docstring": "Find the class name that contains a method node."
       },
       {
         "name": "_find_function_by_name",
         "kind": "method",
-        "lineno": 812,
+        "lineno": 811,
         "parent": "TsCallFlowExtractor",
         "docstring": "Find a function definition by name.\n\nArgs:\n    root: AST root node\n    name: Function name to find\n    source: Source bytes\n    class_name: If provided, look for method in this class\n\nReturns:\n    Tuple of (function_node, class_name) or (None, None)"
       },
       {
         "name": "_extract_calls_recursive",
         "kind": "method",
-        "lineno": 864,
+        "lineno": 863,
         "parent": "TsCallFlowExtractor",
         "docstring": "Recursively extract calls from a function body.\n\nUses per-branch cycle detection via call_stack."
       },
       {
         "name": "_find_function_body",
         "kind": "method",
-        "lineno": 1001,
+        "lineno": 1000,
         "parent": "TsCallFlowExtractor",
         "docstring": "Find the body node of a function."
       },
       {
         "name": "_extract_calls_from_body",
         "kind": "method",
-        "lineno": 1015,
+        "lineno": 1014,
         "parent": "TsCallFlowExtractor",
         "docstring": "Extract all function calls from a code block."
       },
       {
         "name": "_parse_call",
         "kind": "method",
-        "lineno": 1027,
+        "lineno": 1026,
         "parent": "TsCallFlowExtractor",
         "docstring": "Parse a call_expression node to extract call information.\n\nHandles:\n- Direct calls: foo()\n- Method calls: obj.method()\n- Chained calls: obj.foo().bar()\n- Constructor calls: new ClassName()"
       },
       {
         "name": "_parse_member_expression",
         "kind": "method",
-        "lineno": 1107,
+        "lineno": 1106,
         "parent": "TsCallFlowExtractor",
         "docstring": "Parse member expression like obj.method into parts."
       },
       {
         "name": "_resolve_call",
         "kind": "method",
-        "lineno": 1134,
+        "lineno": 1133,
         "parent": "TsCallFlowExtractor",
         "docstring": "Resolve a call to its definition in the same file.\n\nArgs:\n    call_info: Information about the call\n    file_path: Current file\n    source: Source bytes\n    project_root: Project root\n    class_context: Current class name if inside a method\n    function_index: Pre-built index of functions\n\nReturns:\n    Tuple of:\n    - (node, info_dict) or None\n    - ResolutionStatus\n    - hint string for ignored calls"
       }
@@ -8038,7 +8038,7 @@
   {
     "path": "code_map/graph_analysis/call_flow/type_resolver.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:38.866403+00:00",
+    "modified_at": "2025-12-19T07:07:49.018619+00:00",
     "symbols": [
       {
         "name": "TypeInfo",
@@ -10323,215 +10323,215 @@
   {
     "path": "code_map/state.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:39.652132+00:00",
+    "modified_at": "2025-12-19T07:07:49.022619+00:00",
     "symbols": [
       {
         "name": "_parse_enabled_tools_env",
         "kind": "function",
-        "lineno": 107,
+        "lineno": 106,
         "parent": null,
         "docstring": null
       },
       {
         "name": "_parse_int_env",
         "kind": "function",
-        "lineno": 114,
+        "lineno": 113,
         "parent": null,
         "docstring": null
       },
       {
         "name": "_linters_disabled_from_env",
         "kind": "function",
-        "lineno": 124,
+        "lineno": 123,
         "parent": null,
         "docstring": null
       },
       {
         "name": "AppState",
         "kind": "class",
-        "lineno": 134,
+        "lineno": 133,
         "parent": null,
         "docstring": "Central shared state container for the FastAPI Code Map application.\n\nThis dataclass manages the complete lifecycle of all application components,\ncoordinating scanning, indexing, file watching, linting, and AI insights.\nIt is designed to be instantiated once and shared across all API endpoints.\n\nAttributes:\n    settings (AppSettings): Application configuration including root path,\n        exclude directories, and feature flags.\n    scheduler (ChangeScheduler): Debounced change scheduler that batches\n        file system events before processing.\n    scanner (ProjectScanner): Multi-language code parser that extracts\n        symbols from source files. Built automatically from settings.\n    index (SymbolIndex): In-memory symbol database containing all parsed\n        symbols (functions, classes, variables) with their metadata.\n    snapshot_store (SnapshotStore): Persistent cache for index snapshots,\n        enabling fast startup by avoiding full re-scans.\n    watcher (WatcherManager): File system observer that detects changes\n        and feeds them to the scheduler.\n    last_full_scan (datetime | None): Timestamp of the most recent\n        complete project scan, or None if never scanned.\n    last_event_batch (datetime | None): Timestamp of the most recent\n        processed change batch, or None if no changes processed.\n    reporter (StateReporter): Helper that serializes state for API responses.\n    linters (LintersService): Background service managing automated linter\n        execution (ruff, mypy, bandit, pytest).\n    insights (InsightsService): Background service managing AI-powered\n        code analysis via Ollama.\n    similarity_report (Optional[Dict[str, Any]]): Cached result of the last\n        similarity analysis run.\n\nLifecycle:\n    1. **Instantiation**: Create with settings and scheduler. Components\n       are built in ``__post_init__``.\n    2. **Startup**: Call ``await startup()`` to initialize scanning,\n       watching, and background tasks.\n    3. **Operation**: The scheduler loop processes file changes, triggers\n       re-indexing, and schedules linters/insights.\n    4. **Shutdown**: Call ``await shutdown()`` to cleanly stop all\n       background tasks and release resources.\n\nThread Safety:\n    - Most operations are async and should be called from the event loop\n    - Blocking operations (scanning, file I/O) are wrapped in ``asyncio.to_thread``\n    - The event_queue is safe for concurrent producers/consumers\n\nExample:\n    >>> settings = AppSettings(root_path=Path(\"/project\"))\n    >>> scheduler = ChangeScheduler(debounce_seconds=1.0)\n    >>> state = AppState(settings=settings, scheduler=scheduler)\n    >>> await state.startup()\n    >>> # Application runs, handling requests...\n    >>> await state.shutdown()"
       },
       {
         "name": "__post_init__",
         "kind": "method",
-        "lineno": 204,
+        "lineno": 203,
         "parent": "AppState",
         "docstring": "Initialize internal state after dataclass field assignment.\n\nCreates the async event queue, stop event, and builds all application\ncomponents. This is called automatically by the dataclass machinery\nafter ``settings`` and ``scheduler`` are assigned.\n\nInternal State Created:\n    - event_queue: Async queue for broadcasting change events to SSE clients\n    - _stop_event: Signal to gracefully terminate the scheduler loop\n    - _scheduler_task: Handle to the background scheduler coroutine\n    - _recent_changes: Rolling buffer of recently changed file paths\n\nNote:\n    After __post_init__ completes, you must still call ``startup()``\n    to begin scanning and watching. This separation allows for\n    pre-startup configuration if needed."
       },
       {
         "name": "startup",
         "kind": "method",
-        "lineno": 231,
+        "lineno": 230,
         "parent": "AppState",
         "docstring": "Initialize the application state and start all background services.\n\nThis async method performs the complete startup sequence:\n\n1. **Snapshot Hydration**: Loads cached symbol index from disk if available,\n   avoiding a full re-scan on subsequent startups.\n2. **Initial Scan**: Performs a full project scan to discover and parse\n   all source files, updating the symbol index.\n3. **Watcher Start**: Begins monitoring the file system for changes.\n4. **Service Scheduling**: Schedules initial runs of linters and insights.\n5. **Scheduler Loop**: Starts the background task that processes\n   file change batches.\n\nThe startup can be skipped by setting ``CODE_MAP_SKIP_INITIAL_SCAN=1``,\nwhich is useful when the project path will be configured later via the UI.\n\nRaises:\n    No exceptions are raised directly; errors are logged and may result\n    in degraded functionality (e.g., watcher not starting).\n\nNote:\n    This method must be awaited before the application can serve requests.\n    In FastAPI, call this in the lifespan context manager's startup phase."
       },
       {
         "name": "shutdown",
         "kind": "method",
-        "lineno": 289,
+        "lineno": 288,
         "parent": "AppState",
         "docstring": "Gracefully stop all background services and release resources.\n\nThis async method performs the complete shutdown sequence:\n\n1. **Signal Stop**: Sets the stop event to terminate the scheduler loop.\n2. **Linters Shutdown**: Cancels any pending/running linter tasks.\n3. **Insights Shutdown**: Cancels any pending/running insights tasks.\n4. **Scheduler Wait**: Awaits completion of the scheduler task.\n5. **Watcher Stop**: Stops file system monitoring.\n\nThis method should be called during application shutdown to ensure\nclean termination of all background tasks and proper resource cleanup.\n\nNote:\n    This method is idempotent - calling it multiple times is safe.\n    In FastAPI, call this in the lifespan context manager's shutdown phase."
       },
       {
         "name": "_scheduler_loop",
         "kind": "method",
-        "lineno": 316,
+        "lineno": 315,
         "parent": "AppState",
         "docstring": "Main background loop that processes batched file changes.\n\nThis coroutine runs continuously until shutdown, performing:\n\n1. **Drain Changes**: Retrieves accumulated file changes from the scheduler.\n2. **Apply Batch**: Updates the symbol index with changed/deleted files.\n3. **Serialize**: Converts changes to relative paths for event notification.\n4. **Broadcast**: Puts change events on the queue for SSE consumers.\n5. **Reschedule**: Triggers linter and insights runs if changes occurred.\n6. **Sleep**: Waits for the debounce interval before next iteration.\n\nThe loop respects the ``_stop_event`` for graceful shutdown.\n\nNote:\n    This is an internal method started by ``startup()`` and should\n    not be called directly."
       },
       {
         "name": "_serialize_changes",
         "kind": "method",
-        "lineno": 366,
+        "lineno": 365,
         "parent": "AppState",
         "docstring": "Convert file change paths to a serializable format for event broadcasting.\n\nArgs:\n    changes: Dictionary with \"updated\" and \"deleted\" keys containing\n        iterables of absolute Path objects.\n\nReturns:\n    Dictionary with \"updated\" and \"deleted\" keys containing lists\n    of relative POSIX-style path strings (e.g., \"src/main.py\").\n\nSide Effects:\n    Updates ``_recent_changes`` with the combined list of changed paths,\n    limited to ``MAX_RECENT_CHANGES_TRACKED`` entries."
       },
       {
         "name": "perform_full_scan",
         "kind": "method",
-        "lineno": 391,
+        "lineno": 390,
         "parent": "AppState",
         "docstring": "Trigger a complete rescan of the entire project.\n\nThis method forces a full scan of all source files in the project,\nregardless of the cached state. Use this when:\n\n- The index may be out of sync with the file system\n- Files were modified outside the watched scope\n- Manual refresh is requested via the API\n\nReturns:\n    int: Number of files that were scanned and updated.\n\nSide Effects:\n    - Updates the symbol index with all discovered symbols\n    - Persists the updated index to the snapshot store\n    - Broadcasts change events to SSE consumers\n    - Updates ``last_full_scan`` timestamp\n    - Schedules linter and insights runs"
       },
       {
         "name": "run_similarity_bg",
         "kind": "method",
-        "lineno": 439,
+        "lineno": 438,
         "parent": "AppState",
         "docstring": "Run similarity analysis in a background thread and update state.\n\nArgs:\n    extensions: List of file extensions to include (default: [\".py\"])\n    type3: Whether to enable Type-3 (modified clone) detection"
       },
       {
         "name": "_compute_insights_next_run",
         "kind": "method",
-        "lineno": 471,
+        "lineno": 470,
         "parent": "AppState",
         "docstring": null
       },
       {
         "name": "_build_insights_context",
         "kind": "method",
-        "lineno": 474,
+        "lineno": 473,
         "parent": "AppState",
         "docstring": null
       },
       {
         "name": "to_relative",
         "kind": "method",
-        "lineno": 533,
+        "lineno": 532,
         "parent": "AppState",
         "docstring": "Convert an absolute path to a project-relative POSIX path string.\n\nArgs:\n    path: Absolute path to convert.\n\nReturns:\n    POSIX-style relative path string (e.g., \"src/module/file.py\").\n    If the path is outside the project root, returns the absolute\n    path as a POSIX string instead.\n\nExample:\n    >>> state.to_relative(Path(\"/project/src/main.py\"))\n    \"src/main.py\""
       },
       {
         "name": "resolve_path",
         "kind": "method",
-        "lineno": 555,
+        "lineno": 554,
         "parent": "AppState",
         "docstring": "Resolve a relative path to an absolute path within the project root.\n\nThis method provides safe path resolution with security validation\nto prevent path traversal attacks.\n\nArgs:\n    relative: Relative path string (e.g., \"src/main.py\").\n\nReturns:\n    Resolved absolute Path object.\n\nRaises:\n    ValueError: If the resolved path escapes the project root\n        (e.g., \"../../../etc/passwd\").\n\nExample:\n    >>> state.resolve_path(\"src/main.py\")\n    Path(\"/project/src/main.py\")\n\nSecurity:\n    This method validates that the resolved path stays within\n    the project root, preventing directory traversal attacks."
       },
       {
         "name": "_within_root",
         "kind": "method",
-        "lineno": 585,
+        "lineno": 584,
         "parent": "AppState",
         "docstring": "Check if a path is within the project root directory.\n\nArgs:\n    path: Absolute path to check.\n\nReturns:\n    True if the path is within the project root, False otherwise."
       },
       {
         "name": "is_watcher_running",
         "kind": "method",
-        "lineno": 601,
+        "lineno": 600,
         "parent": "AppState",
         "docstring": "Comprueba si el observador de archivos est\u00e1 en ejecuci\u00f3n."
       },
       {
         "name": "get_settings_payload",
         "kind": "method",
-        "lineno": 605,
+        "lineno": 604,
         "parent": "AppState",
         "docstring": "Obtiene el payload de configuraci\u00f3n para la API."
       },
       {
         "name": "get_status_payload",
         "kind": "method",
-        "lineno": 609,
+        "lineno": 608,
         "parent": "AppState",
         "docstring": "Obtiene el payload de estado para la API."
       },
       {
         "name": "update_settings",
         "kind": "method",
-        "lineno": 627,
+        "lineno": 626,
         "parent": "AppState",
         "docstring": "Update application settings and reinitialize affected components.\n\nThis method allows runtime modification of settings. When settings change,\nit gracefully stops affected services, rebuilds components with new config,\nand restarts them.\n\nArgs:\n    root_path: New project root directory. Must exist and be a directory.\n    include_docstrings: Whether to extract docstrings during scanning.\n    exclude_dirs: Directory names to exclude from scanning (e.g., [\"node_modules\"]).\n    ollama_insights_enabled: Enable/disable AI insights generation.\n    ollama_insights_model: Ollama model name for insights (e.g., \"llama3.2\").\n    ollama_insights_frequency_minutes: Minutes between automatic insights runs.\n        Must be positive and <= 1440 (24 hours).\n    ollama_insights_focus: Analysis focus area. Valid values are defined in\n        ``VALID_INSIGHTS_FOCUS``. Empty string resets to default.\n    backend_url: Base URL for the Ollama backend.\n\nReturns:\n    List of field names that were actually updated (empty if no changes).\n\nRaises:\n    ValueError: If validation fails for any parameter:\n        - root_path doesn't exist or isn't a directory\n        - frequency_minutes is <= 0 or > 1440\n        - focus is not a valid option\n\nSide Effects:\n    - Stops and restarts the file watcher\n    - Clears pending changes from the scheduler\n    - Performs a full project rescan with new settings\n    - Persists settings to disk\n    - Reschedules linters and insights\n\nExample:\n    >>> updated = await state.update_settings(\n    ...     exclude_dirs=[\"node_modules\", \".venv\"],\n    ...     ollama_insights_enabled=True\n    ... )\n    >>> print(updated)\n    [\"exclude_dirs\", \"ollama_insights_enabled\"]"
       },
       {
         "name": "_build_components",
         "kind": "method",
-        "lineno": 753,
+        "lineno": 752,
         "parent": "AppState",
         "docstring": "Build or rebuild all application components from current settings.\n\nThis method creates fresh instances of all major services based on\nthe current ``self.settings``. It is called during initialization\nand whenever settings are updated.\n\nComponents Built:\n    - scanner: ProjectScanner for parsing source files\n    - index: SymbolIndex for storing parsed symbols\n    - snapshot_store: SnapshotStore for persistent caching\n    - reporter: StateReporter for API response formatting\n    - watcher: WatcherManager for file system monitoring\n    - linters: LintersService for code quality checks\n    - insights: InsightsService for AI-powered analysis\n\nNote:\n    This method does not start any services; it only creates the\n    instances. Call ``startup()`` to begin active monitoring."
       },
       {
         "name": "_build_linters_config",
         "kind": "method",
-        "lineno": 804,
+        "lineno": 803,
         "parent": "AppState",
         "docstring": "Build configuration for the linters service from environment and settings.\n\nReads environment variables to configure the linter pipeline:\n    - CODE_MAP_LINTERS_TOOLS: Comma-separated list of enabled tools\n    - CODE_MAP_LINTERS_MAX_PROJECT_FILES: Skip if too many files\n    - CODE_MAP_LINTERS_MAX_PROJECT_SIZE_MB: Skip if project too large\n    - CODE_MAP_LINTERS_MIN_INTERVAL_SECONDS: Minimum time between runs\n\nReturns:\n    LintersConfig instance ready for LintersService initialization."
       },
       {
         "name": "_build_insights_config",
         "kind": "method",
-        "lineno": 844,
+        "lineno": 843,
         "parent": "AppState",
         "docstring": "Build configuration for the insights service from current settings.\n\nReturns:\n    InsightsConfig instance with settings for Ollama-powered analysis,\n    including enabled state, model name, frequency, and focus area."
       },
       {
         "name": "_apply_settings",
         "kind": "method",
-        "lineno": 860,
+        "lineno": 859,
         "parent": "AppState",
         "docstring": "Aplica la nueva configuraci\u00f3n a la aplicaci\u00f3n."
       },
       {
         "name": "run_linters_now",
         "kind": "method",
-        "lineno": 908,
+        "lineno": 907,
         "parent": "AppState",
         "docstring": "Execute the linter pipeline immediately, bypassing the schedule.\n\nRuns all configured linters (ruff, mypy, bandit, pytest) on the\ncurrent project and generates a quality report.\n\nReturns:\n    int: Report ID that can be used to retrieve the results\n        via the linters API endpoint.\n\nNote:\n    This may take significant time for large projects. The linter\n    pipeline respects size limits configured via environment variables."
       },
       {
         "name": "run_insights_now",
         "kind": "method",
-        "lineno": 925,
+        "lineno": 924,
         "parent": "AppState",
         "docstring": "Generate AI-powered code insights immediately.\n\nSends the current project context to Ollama for analysis and returns\nAI-generated insights about code quality, architecture, or other\nfocus areas.\n\nArgs:\n    model: Ollama model name to use (e.g., \"llama3.2\", \"codellama\").\n    focus: Optional analysis focus area. If not provided, uses the\n        configured default focus.\n    timeout: Optional timeout in seconds for the Ollama request.\n\nReturns:\n    InsightsResult with the generated analysis, or raises on error.\n\nNote:\n    Requires Ollama to be running and accessible at the configured\n    backend URL."
       },
       {
         "name": "build_insights_context",
         "kind": "method",
-        "lineno": 954,
+        "lineno": 953,
         "parent": "AppState",
         "docstring": "Build and return the context string used for AI insights generation.\n\nThis method assembles contextual information about the project that\nis sent to Ollama for analysis, including:\n\n- Latest linter report summary (status, issue counts)\n- Detected project stage and confidence\n- Pending change events in queue\n- Recently modified files\n\nReturns:\n    str: Formatted context string for the AI model, or a default\n        message if no relevant context is available.\n\nNote:\n    This is primarily for debugging/inspection. The same context\n    is automatically provided to ``run_insights_now()``."
       },
       {
         "name": "apply_external_changes",
         "kind": "method",
-        "lineno": 976,
+        "lineno": 975,
         "parent": "AppState",
         "docstring": "Apply externally notified file changes directly (bypasses watcher/debounce).\n\nThis method is designed for external editors (like Claude Code) that modify\nfiles without triggering the file watcher. It processes changes immediately\nand triggers registered handlers (SSE broadcast, linters, insights).\n\nArgs:\n    changes: List of change dictionaries with keys:\n        - \"path\": Relative path to the file\n        - \"change_type\": One of \"created\", \"modified\", \"deleted\"\n\nReturns:\n    Dict with:\n        - \"processed\": Number of files successfully processed\n        - \"skipped\": Number of files skipped (unsupported extension, etc.)\n        - \"errors\": Number of errors encountered\n        - \"details\": List of per-file results\n        - \"handlers_triggered\": List of handler names that ran\n\nRaises:\n    ValueError: If a path attempts to escape the project root.\n\nExample:\n    >>> result = await state.apply_external_changes([\n    ...     {\"path\": \"src/main.py\", \"change_type\": \"modified\"},\n    ...     {\"path\": \"src/new.py\", \"change_type\": \"created\"},\n    ... ])\n    >>> print(result[\"processed\"])\n    2"
       },
       {
         "name": "_cancel_background_tasks",
         "kind": "method",
-        "lineno": 1106,
+        "lineno": 1105,
         "parent": "AppState",
         "docstring": "Cancel all background tasks and timers for settings updates.\n\nCalled when settings change to ensure clean state before rebuilding\ncomponents. Shuts down linters, insights, and clears recent changes."
       },
       {
         "name": "_cancel_insights_tasks",
         "kind": "method",
-        "lineno": 1117,
+        "lineno": 1116,
         "parent": "AppState",
         "docstring": "Cancel pending insights tasks during shutdown or settings update."
       }
@@ -11381,7 +11381,7 @@
   {
     "path": "code_map/terminal/socketio_pty.py",
     "relative": true,
-    "modified_at": "2025-12-19T06:50:39.975411+00:00",
+    "modified_at": "2025-12-19T07:07:49.017619+00:00",
     "symbols": [
       {
         "name": "PTYSession",
@@ -15092,7 +15092,7 @@
   {
     "path": "frontend/src/components/ClassUMLView.tsx",
     "relative": true,
-    "modified_at": "2025-12-12T12:17:53.478524+00:00",
+    "modified_at": "2025-12-19T06:41:20.131017+00:00",
     "symbols": [
       {
         "name": "ClassUMLView",
@@ -15165,7 +15165,7 @@
   {
     "path": "frontend/src/components/CodeTimelineView.tsx",
     "relative": true,
-    "modified_at": "2025-12-07T09:18:38.915187+00:00",
+    "modified_at": "2025-12-19T06:44:32.745551+00:00",
     "symbols": [
       {
         "name": "parseDiffToSideBySide",
@@ -15198,63 +15198,63 @@
       {
         "name": "CodeTimelineView",
         "kind": "function",
-        "lineno": 242,
+        "lineno": 246,
         "parent": null,
         "docstring": null
       },
       {
         "name": "formatDate",
         "kind": "function",
-        "lineno": 275,
+        "lineno": 280,
         "parent": null,
         "docstring": null
       },
       {
         "name": "formatShortHash",
         "kind": "function",
-        "lineno": 286,
+        "lineno": 291,
         "parent": null,
         "docstring": null
       },
       {
         "name": "getFileName",
         "kind": "function",
-        "lineno": 287,
+        "lineno": 292,
         "parent": null,
         "docstring": null
       },
       {
         "name": "formatFilePath",
         "kind": "function",
-        "lineno": 289,
+        "lineno": 294,
         "parent": null,
         "docstring": null
       },
       {
         "name": "syncScroll",
         "kind": "function",
-        "lineno": 313,
+        "lineno": 318,
         "parent": null,
         "docstring": null
       },
       {
         "name": "handleHeaderScroll",
         "kind": "function",
-        "lineno": 317,
+        "lineno": 322,
         "parent": null,
         "docstring": null
       },
       {
         "name": "handleBodyScroll",
         "kind": "function",
-        "lineno": 323,
+        "lineno": 328,
         "parent": null,
         "docstring": null
       },
       {
         "name": "updateStickyPositions",
         "kind": "function",
-        "lineno": 343,
+        "lineno": 348,
         "parent": null,
         "docstring": null
       }
@@ -17755,19 +17755,19 @@
   {
     "path": "frontend/src/components/uml/UmlControls.tsx",
     "relative": true,
-    "modified_at": "2025-12-12T12:17:53.480941+00:00",
+    "modified_at": "2025-12-19T06:40:54.904878+00:00",
     "symbols": [
       {
         "name": "UmlControls",
         "kind": "function",
-        "lineno": 21,
+        "lineno": 23,
         "parent": null,
         "docstring": null
       },
       {
         "name": "clamp",
         "kind": "function",
-        "lineno": 37,
+        "lineno": 41,
         "parent": null,
         "docstring": null
       }

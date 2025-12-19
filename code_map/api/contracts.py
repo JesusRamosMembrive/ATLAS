@@ -14,21 +14,20 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
-logger = logging.getLogger(__name__)
-
 from ..contracts import (
     ContractData,
     ContractDiscovery,
     ContractRewriter,
-    DiscoveryStats,
     DocumentationType,
     EvidenceItem,
     EvidencePolicy,
     ThreadSafety,
 )
-from ..contracts.evidence import EvidenceExecutor, GateChecker, GateResult
+from ..contracts.evidence import EvidenceExecutor, GateChecker
 from ..state import AppState
 from .deps import get_app_state
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/contracts", tags=["contracts"])
 

@@ -7,7 +7,6 @@ Runs tests, linters, and type checkers as evidence to back contracts.
 
 import asyncio
 import logging
-import subprocess
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone

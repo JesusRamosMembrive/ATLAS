@@ -636,7 +636,7 @@ class TestStaticAnalyzerIntegration:
         analyzer = StaticAnalyzer()
 
         start = time.perf_counter()
-        contract = analyzer.analyze(source, Path("large.hpp"))
+        analyzer.analyze(source, Path("large.hpp"))
         elapsed = time.perf_counter() - start
 
         # Should complete quickly

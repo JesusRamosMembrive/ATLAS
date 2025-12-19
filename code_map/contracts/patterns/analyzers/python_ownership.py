@@ -155,7 +155,7 @@ class PythonOwnershipAnalyzer:
         return L4Finding(
             type=L4FindingType.OWNERSHIP,
             confidence=L4Confidence.LOW,
-            value=f"owns instance",
+            value="owns instance",
             evidence=f"self.{field.name} = {assigned_from}",
             line=field.line,
             member=field.name,

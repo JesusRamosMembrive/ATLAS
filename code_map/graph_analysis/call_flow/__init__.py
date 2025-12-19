@@ -78,9 +78,9 @@ def get_cpp_extractor():
 # Backward compatibility - import concrete classes
 # These imports make old code work without changes:
 #   from code_map.graph_analysis.call_flow import PythonCallFlowExtractor
-from .languages.python import PythonCallFlowExtractor
-from .languages.typescript import TsCallFlowExtractor
-from .languages.cpp import CppCallFlowExtractor
+from .languages.python import PythonCallFlowExtractor  # noqa: E402
+from .languages.typescript import TsCallFlowExtractor  # noqa: E402
+from .languages.cpp import CppCallFlowExtractor  # noqa: E402
 
 # Legacy imports from old locations (deprecated)
 # These are kept for backward compatibility during transition:

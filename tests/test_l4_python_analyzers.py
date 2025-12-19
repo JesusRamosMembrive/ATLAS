@@ -18,7 +18,6 @@ import pytest
 
 from code_map.contracts.patterns import (
     L4Confidence,
-    L4Finding,
     L4FindingType,
     StaticAnalyzer,
 )

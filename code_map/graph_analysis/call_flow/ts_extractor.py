@@ -369,7 +369,6 @@ class TsCallFlowExtractor:
 
         tree = self._parser.parse(source)
         entry_points: List[Dict[str, Any]] = []
-        current_class: Optional[str] = None
 
         for node in self._walk_tree(tree.root_node):
             # Function declarations: function foo() {}

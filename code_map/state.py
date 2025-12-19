@@ -66,7 +66,6 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Set, Mapping
-from concurrent.futures import Executor
 
 from .cache import SnapshotStore
 from .index import SymbolIndex

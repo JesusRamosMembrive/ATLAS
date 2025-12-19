@@ -19,9 +19,7 @@ from ..exceptions import (
 from ..similarity_service import (
     DEFAULT_EXCLUDE_PATTERNS,
     SimilarityServiceError,
-    analyze_similarity,
     is_available,
-    report_to_dict,
 )
 from ..state import AppState
 from .deps import get_app_state

@@ -21,9 +21,10 @@ with warnings.catch_warnings():
 
 # Check tree-sitter availability directly
 try:
-    from tree_sitter import Parser
-    from tree_sitter_languages import get_language
+    from tree_sitter import Parser as _Parser  # noqa: F401
+    from tree_sitter_languages import get_language as _get_language  # noqa: F401
 
+    del _Parser, _get_language  # Only used for availability check
     TREE_SITTER_AVAILABLE = True
 except ImportError:
     TREE_SITTER_AVAILABLE = False

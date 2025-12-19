@@ -114,18 +114,6 @@ class TestPythonExtractorBaseline:
 
         # Document expected entry point names
         names = {e.get("name") for e in entries}
-        expected_names = {
-            "helper_function",
-            "process_data",
-            "load_content",
-            "on_button_click",
-            "main",
-            # Methods
-            "__init__",
-            "load",
-            "process",
-            "handle",
-        }
 
         # Assert key functions are found
         assert "main" in names, f"main not found in {names}"
@@ -250,17 +238,6 @@ class TestTsExtractorBaseline:
         entries = extractor.list_entry_points(TS_FIXTURE)
 
         names = {e.get("name") for e in entries}
-        expected_names = {
-            "greet",
-            "add",
-            "processUser",
-            "calculateTotal",
-            "complexOperation",
-            "fetchData",
-            "withCallback",
-            "main",
-            "helper",
-        }
 
         # Document expected functions
         assert (
@@ -366,13 +343,6 @@ class TestCppExtractorBaseline:
         entries = extractor.list_entry_points(CPP_FIXTURE)
 
         names = {e.get("name") for e in entries}
-        expected_names = {
-            "helper_function",
-            "process_value",
-            "complex_function",
-            "calculate_total",
-            "main",
-        }
 
         # Document expected functions
         assert "main" in names, f"main not found in {names}"
@@ -434,7 +404,7 @@ class TestCppExtractorBaseline:
         ]
 
         # Document method discovery
-        method_names = {e.get("name") for e in calculator_methods}
+        {e.get("name") for e in calculator_methods}
         # Should find class methods
         assert len(entries) >= 5  # At least free functions
 

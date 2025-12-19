@@ -17,11 +17,11 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, TYPE_CHECKING, Tuple
+from typing import Any, Dict, List, Optional, TYPE_CHECKING, Tuple
 
 from .constants import PYTHON_BUILTINS, is_stdlib
 from .models import CallEdge, CallGraph, CallNode, IgnoredCall, ResolutionStatus
-from .type_resolver import TypeResolver, TypeInfo, ScopeInfo
+from .type_resolver import TypeResolver, ScopeInfo
 
 if TYPE_CHECKING:
     from code_map.index import SymbolIndex

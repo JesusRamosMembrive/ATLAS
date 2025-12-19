@@ -17,7 +17,7 @@ from .detectors import (
     StructuralDriftDetector,
     WiringDriftDetector,
 )
-from .models import DriftReport, DriftType
+from .models import DriftReport
 
 logger = logging.getLogger(__name__)
 

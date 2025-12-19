@@ -67,7 +67,6 @@ class PythonLanguageStrategy(LanguageStrategy):
         # Find docstring start after the symbol
         docstring_start = None
         docstring_end = None
-        quote_style = None
 
         for i in range(symbol_line - 1, min(symbol_line + 5, len(lines))):
             if i >= len(lines):
@@ -77,7 +76,6 @@ class PythonLanguageStrategy(LanguageStrategy):
             # Check for docstring
             for quote in ['"""', "'''"]:
                 if quote in line:
-                    quote_style = quote
                     docstring_start = i
 
                     # Single-line docstring?
@@ -144,7 +142,6 @@ class PythonLanguageStrategy(LanguageStrategy):
 
             for quote in ['"""', "'''"]:
                 if quote in line:
-                    start_idx = i
 
                     # Single-line docstring
                     if line.count(quote) >= 2:

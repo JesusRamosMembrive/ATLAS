@@ -29,7 +29,7 @@ except ImportError:
     TREE_SITTER_AVAILABLE = False
 
 # Import new analyzers
-from .models import L4Confidence, L4Finding, L4FindingType
+from .models import L4Finding, L4FindingType
 
 logger = logging.getLogger(__name__)
 

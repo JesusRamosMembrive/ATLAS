@@ -55,6 +55,6 @@ def get_cpp_extractor():
 
 # Backward compatibility - direct imports
 # These allow: from code_map.graph_analysis.call_flow.languages import PythonCallFlowExtractor
-from .python import PythonCallFlowExtractor
-from .typescript import TsCallFlowExtractor
-from .cpp import CppCallFlowExtractor
+from .python import PythonCallFlowExtractor  # noqa: E402
+from .typescript import TsCallFlowExtractor  # noqa: E402
+from .cpp import CppCallFlowExtractor  # noqa: E402

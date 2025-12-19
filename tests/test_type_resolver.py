@@ -9,7 +9,6 @@ Tests type inference from:
 """
 
 import pytest
-from pathlib import Path
 from textwrap import dedent
 
 
@@ -18,10 +17,8 @@ pytest.importorskip("tree_sitter")
 pytest.importorskip("tree_sitter_languages")
 
 
-from code_map.graph_analysis.call_flow.type_resolver import (
+from code_map.graph_analysis.call_flow.type_resolver import (  # noqa: E402
     TypeResolver,
-    TypeInfo,
-    ScopeInfo,
 )
 
 

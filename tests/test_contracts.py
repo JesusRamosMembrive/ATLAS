@@ -3,7 +3,6 @@
 Tests for the contract discovery, parsing, and rewriting system.
 """
 
-import pytest
 from pathlib import Path
 from textwrap import dedent
 

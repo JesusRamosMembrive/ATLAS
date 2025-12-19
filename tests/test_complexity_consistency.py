@@ -16,11 +16,10 @@ Criteria (as per user decisions):
 import ast
 import tempfile
 from pathlib import Path
-from typing import Any
 
 import pytest
 
-from code_map.analyzer import calculate_complexity, ComplexityVisitor
+from code_map.analyzer import calculate_complexity
 
 
 # ─────────────────────────────────────────────────────────────────────────────
