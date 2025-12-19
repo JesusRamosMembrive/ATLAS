@@ -143,7 +143,11 @@ export function LintersView(): JSX.Element {
   const refetchAll = async () => {
     setIsRunning(true);
     try {
-      const response = await fetch("/api/linters/run", {
+      // Use the same buildUrl pattern as other API calls for consistency
+      const apiBase = import.meta.env.VITE_API_BASE_URL || "";
+      const url = apiBase ? `${apiBase}/api/linters/run` : "/api/linters/run";
+
+      const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -155,6 +159,11 @@ export function LintersView(): JSX.Element {
         throw new Error(`Failed to run linters: ${errorText}`);
       }
 
+      // Wait for the response body to be fully consumed - this ensures
+      // the backend has completed the linter run before we refetch
+      await response.json();
+
+      // Invalidate React Query cache to force fresh data
       await Promise.all([
         latestReportQuery.refetch(),
         historyQuery.refetch(),
