@@ -18,9 +18,6 @@ from fastapi.responses import PlainTextResponse
 from ..graph_analysis.call_flow.extractor import PythonCallFlowExtractor
 from ..graph_analysis.call_flow.cpp_extractor import CppCallFlowExtractor
 from ..graph_analysis.call_flow.ts_extractor import TsCallFlowExtractor
-
-# Type alias for any extractor
-ExtractorType = Union[PythonCallFlowExtractor, CppCallFlowExtractor, TsCallFlowExtractor]
 from ..graph_analysis.call_flow.models import (
     CallGraph,
     CallNode,
@@ -34,6 +31,11 @@ from .schemas import (
     CallFlowResolutionStatus,
     CallFlowResponse,
 )
+
+# Type alias for any extractor
+ExtractorType = Union[
+    PythonCallFlowExtractor, CppCallFlowExtractor, TsCallFlowExtractor
+]
 
 logger = logging.getLogger(__name__)
 
