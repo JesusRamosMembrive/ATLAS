@@ -3,11 +3,21 @@
 ## Requisitos del Sistema
 
 ### Python
-- **Versión mínima**: Python 3.8+
-- Se recomienda usar un entorno virtual
+- **Versión mínima**: Python 3.10+
+- Se recomienda usar `uv` para gestión de dependencias
 
 ### Dependencias Python
-Todas las dependencias Python se instalan automáticamente con:
+
+**Opción A: Usando uv (recomendado - más rápido)**
+```bash
+# Instalar uv (si no está instalado)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Instalar dependencias
+uv sync --all-extras
+```
+
+**Opción B: Usando pip (legacy)**
 ```bash
 pip install -r requirements.txt
 ```
@@ -46,23 +56,28 @@ sudo apt-get install xclip xsel wl-clipboard
 1. **Clonar el repositorio**:
    ```bash
    git clone <repo-url>
-   cd Claude-Prompt-Library
+   cd AEGIS
    ```
 
-2. **Crear entorno virtual**:
+2. **Instalar dependencias (con uv - recomendado)**:
+   ```bash
+   # Instalar uv si no está instalado
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+
+   # Instalar todas las dependencias (crea venv automáticamente)
+   uv sync --all-extras
+   ```
+
+   **Alternativa con pip:**
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate  # En Linux/Mac
    # o
    .venv\Scripts\activate     # En Windows
-   ```
-
-3. **Instalar dependencias**:
-   ```bash
    pip install -r requirements.txt
    ```
 
-4. **Instalar dependencias del sistema** (ver sección anterior)
+3. **Instalar dependencias del sistema** (ver sección anterior)
 
 ## Uso del Script Helper
 

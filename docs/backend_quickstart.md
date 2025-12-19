@@ -3,18 +3,31 @@
 Guía rápida para poner en marcha el backend, validar que el watcher funciona y consultar el estado del índice antes de conectar la UI.
 
 ## Requisitos previos
-1. Crear y activar el entorno virtual (`.venv`) y asegurarse de tener las dependencias instaladas:
-   ```bash
-   python -m venv .venv
-   .venv/bin/pip install -r requirements.txt  # o pip install -e .
-   .venv/bin/pip install watchdog            # necesario para el watcher en vivo
-   .venv/bin/pip install esprima             # habilita análisis de JS/TS
-   .venv/bin/pip install tree_sitter_languages  # soporte TypeScript/TSX
-   .venv/bin/pip install beautifulsoup4      # extracción básica en HTML
-   ```
-   En Windows usa `.venv\Scripts\pip.exe` para los comandos equivalentes.
-2. Elegir un directorio de trabajo que actuará como proyecto a analizar. En los ejemplos usamos `/tmp/code-map-playground/project`.
-3. Registra esa ruta con el CLI:
+
+### Opción A: Usando uv (recomendado - más rápido)
+```bash
+# Instalar uv si no está instalado
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Instalar todas las dependencias (crea venv automáticamente)
+uv sync --all-extras
+```
+
+### Opción B: Usando pip (legacy)
+```bash
+python -m venv .venv
+.venv/bin/pip install -r requirements.txt  # o pip install -e .
+.venv/bin/pip install watchdog            # necesario para el watcher en vivo
+.venv/bin/pip install esprima             # habilita análisis de JS/TS
+.venv/bin/pip install tree_sitter_languages  # soporte TypeScript/TSX
+.venv/bin/pip install beautifulsoup4      # extracción básica en HTML
+```
+En Windows usa `.venv\Scripts\pip.exe` para los comandos equivalentes.
+
+### Configuración adicional
+
+1. Elegir un directorio de trabajo que actuará como proyecto a analizar. En los ejemplos usamos `/tmp/code-map-playground/project`.
+2. Registra esa ruta con el CLI:
    ```bash
    python -m code_map config set-root /tmp/code-map-playground/project
    ```
@@ -31,6 +44,13 @@ rm -rf bin include lib lib64 pyvenv.cfg venv
 Después, reactiva `.venv`, reinstala dependencias si es necesario y comprueba que los comandos (`ruff`, `black`, etc.) se resuelven dentro de `.venv/bin/`.
 
 ## Arranque del servidor
+
+**Con uv:**
+```bash
+uv run python -m code_map run --host 0.0.0.0 --port 8010 --log-level info
+```
+
+**Con venv activado:**
 ```bash
 python -m code_map run --host 0.0.0.0 --port 8010 --log-level info
 ```

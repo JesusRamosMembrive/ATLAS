@@ -118,6 +118,18 @@ cd AEGIS
 
 ### 2. Backend (Python)
 
+**Option A: Using uv (recommended - faster)**
+
+```bash
+# Install uv (if not installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install dependencies (creates venv automatically)
+uv sync --all-extras
+```
+
+**Option B: Using pip (legacy)**
+
 ```bash
 # Create virtual environment
 python -m venv .venv
@@ -286,7 +298,9 @@ AEGIS/
 ├── start-local.sh      # Local mode launcher
 ├── start-app.sh        # Docker mode launcher
 ├── docker-compose.yml  # Docker configuration
-└── requirements.txt    # Python dependencies
+├── pyproject.toml      # Python project config (uv/pip)
+├── uv.lock             # Locked dependencies (uv)
+└── requirements.txt    # Python dependencies (legacy)
 ```
 
 ---
@@ -364,7 +378,10 @@ which gemini
 ### Tests
 
 ```bash
-# Backend
+# Backend (with uv)
+uv run pytest
+
+# Backend (with activated venv)
 pytest
 
 # Frontend
@@ -374,12 +391,32 @@ cd frontend && npm test
 ### Linting
 
 ```bash
-# Backend
+# Backend (with uv)
+uv run ruff check .
+uv run mypy code_map/
+
+# Backend (with activated venv)
 ruff check .
 mypy code_map/
 
 # Frontend
 cd frontend && npm run lint
+```
+
+### Package Management
+
+```bash
+# Add dependency (with uv)
+uv add package-name
+
+# Add dev dependency
+uv add --dev package-name
+
+# Update lockfile
+uv lock
+
+# Sync environment
+uv sync --all-extras
 ```
 
 ---

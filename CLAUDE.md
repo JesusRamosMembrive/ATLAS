@@ -51,10 +51,11 @@ python init_project.py my-project --agent=claude
 ### Code Map Backend
 
 ```bash
-# Run development server
+# Run development server (with uv - recommended)
+uv run python -m code_map.cli run --root /path/to/project
+
+# Or without uv prefix (if activated venv)
 python -m code_map.cli run --root /path/to/project
-# OR
-python -m code_map --root /path/to/project
 
 # Access API docs at: http://localhost:8010/docs
 ```
@@ -62,19 +63,38 @@ python -m code_map --root /path/to/project
 ### Testing
 
 ```bash
-# Run all tests
-pytest
+# Run all tests (with uv)
+uv run pytest
 
 # Specific test suites
-pytest tests/test_linters_pipeline.py
-pytest tests/test_analysis_engine.py
-pytest tests/test_stage_config.py
+uv run pytest tests/test_linters_pipeline.py
+uv run pytest tests/test_analysis_engine.py
+uv run pytest tests/test_stage_config.py
 
 # With coverage
-pytest --cov=code_map --cov=stage_init
+uv run pytest --cov=code_map --cov=stage_init
 
 # Full flow test (stage framework)
 bash tests/test_full_flow.sh
+```
+
+### Package Management (uv)
+
+```bash
+# Add a new dependency
+uv add package-name
+
+# Add a dev dependency
+uv add --dev package-name
+
+# Update lockfile after pyproject.toml changes
+uv lock
+
+# Sync environment with lockfile
+uv sync --all-extras
+
+# Run any command in the project environment
+uv run <command>
 ```
 
 ---
@@ -272,7 +292,18 @@ Integration: `code_map/stage_toolkit.py`
 
 ### Code Map Backend
 
-Install with: `pip install -r requirements.txt`
+**Package Manager: uv** (recommended) or pip
+
+```bash
+# Install uv (if not installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install dependencies with uv (recommended)
+uv sync --all-extras
+
+# Or with pip (legacy)
+pip install -r requirements.txt
+```
 
 **Core (required):**
 - fastapi>=0.110,<0.120

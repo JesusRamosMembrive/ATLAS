@@ -38,11 +38,16 @@ RUN apt-get update && apt-get install -y \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy Python dependencies file
-COPY requirements.txt .
+# Install uv for faster dependency management
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy dependency files
+COPY pyproject.toml uv.lock ./
+
+# Install Python dependencies using uv (faster than pip)
+# --frozen: Use exact versions from uv.lock
+# --no-dev: Skip dev dependencies in production
+RUN uv sync --frozen --no-dev
 
 # Copy backend source code
 COPY code_map/ ./code_map/
@@ -69,8 +74,8 @@ ENV CODE_MAP_INCLUDE_DOCSTRINGS=1
 HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:8010/api/settings || exit 1
 
-# Start Uvicorn server
+# Start Uvicorn server using uv run
 # --host 0.0.0.0: Listen on all interfaces (required for Docker)
 # --port 8010: Internal container port
 # --log-level info: Production logging level
-CMD ["uvicorn", "code_map.server:app", "--host", "0.0.0.0", "--port", "8010", "--log-level", "info"]
+CMD ["uv", "run", "uvicorn", "code_map.server:app", "--host", "0.0.0.0", "--port", "8010", "--log-level", "info"]
