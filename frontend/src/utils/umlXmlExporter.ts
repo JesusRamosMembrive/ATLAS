@@ -356,8 +356,8 @@ function generateRelationshipXml(rel: UmlRelationshipDef, level: number): string
   const lines: string[] = [];
   const attrs: string[] = [
     `type="${rel.type}"`,
-    `from="${escapeXml(rel.sourceId)}"`,
-    `to="${escapeXml(rel.targetId)}"`,
+    `from="${escapeXml(rel.from)}"`,
+    `to="${escapeXml(rel.to)}"`,
   ];
   if (rel.cardinality) attrs.push(`cardinality="${escapeXml(rel.cardinality)}"`);
 

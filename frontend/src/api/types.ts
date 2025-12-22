@@ -845,7 +845,9 @@ export interface UmlValidationError {
 export interface UmlValidationResult {
   isValid: boolean;
   errors: UmlValidationError[];
-  warnings: UmlValidationError[];
+  errorCount: number;
+  warningCount: number;
+  infoCount: number;
 }
 
 // Agent generation types

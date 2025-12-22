@@ -11,7 +11,7 @@ import { useUmlEditorStore } from "../../state/useUmlEditorStore";
 import { UmlEditorCanvas } from "./UmlEditorCanvas";
 import { InspectorPanel } from "./inspector";
 import { ValidationPanel } from "./validation";
-import { ExportDialog } from "./toolbar";
+import { ImportExportDialog, TemplatesDialog } from "./toolbar";
 import { DESIGN_TOKENS } from "../../theme/designTokens";
 import {
   LANGUAGE_CONFIG,
@@ -43,6 +43,8 @@ export function UmlEditorView(): JSX.Element {
   const currentLanguage = project.targetLanguage;
 
   const [isExportDialogOpen, setExportDialogOpen] = useState(false);
+  const [dialogInitialTab, setDialogInitialTab] = useState<"export" | "import">("export");
+  const [isTemplatesDialogOpen, setTemplatesDialogOpen] = useState(false);
   const [isValidationExpanded, setValidationExpanded] = useState(false);
   const [pendingLanguageChange, setPendingLanguageChange] = useState<UmlTargetLanguage | null>(null);
 
@@ -91,6 +93,12 @@ export function UmlEditorView(): JSX.Element {
   }, [addStruct, getNewNodePosition]);
 
   const handleExport = useCallback(() => {
+    setDialogInitialTab("export");
+    setExportDialogOpen(true);
+  }, []);
+
+  const handleImport = useCallback(() => {
+    setDialogInitialTab("import");
     setExportDialogOpen(true);
   }, []);
 
@@ -312,6 +320,36 @@ export function UmlEditorView(): JSX.Element {
             New Project
           </button>
           <button
+            onClick={() => setTemplatesDialogOpen(true)}
+            style={{
+              padding: "6px 12px",
+              borderRadius: "6px",
+              border: `1px solid ${colors.callFlow.method}`,
+              backgroundColor: "transparent",
+              color: colors.callFlow.method,
+              fontSize: "13px",
+              fontWeight: 500,
+              cursor: "pointer",
+            }}
+            title="Insert design pattern templates (GoF patterns)"
+          >
+            Templates
+          </button>
+          <button
+            onClick={handleImport}
+            style={{
+              padding: "6px 12px",
+              borderRadius: "6px",
+              border: `1px solid ${borders.default}`,
+              backgroundColor: "transparent",
+              color: colors.text.secondary,
+              fontSize: "13px",
+              cursor: "pointer",
+            }}
+          >
+            Import XML
+          </button>
+          <button
             onClick={handleExport}
             style={{
               padding: "6px 12px",
@@ -384,10 +422,17 @@ export function UmlEditorView(): JSX.Element {
         onToggle={() => setValidationExpanded(!isValidationExpanded)}
       />
 
-      {/* Export Dialog */}
-      <ExportDialog
+      {/* Import/Export Dialog */}
+      <ImportExportDialog
         isOpen={isExportDialogOpen}
         onClose={() => setExportDialogOpen(false)}
+        initialTab={dialogInitialTab}
+      />
+
+      {/* Templates Dialog */}
+      <TemplatesDialog
+        isOpen={isTemplatesDialogOpen}
+        onClose={() => setTemplatesDialogOpen(false)}
       />
 
       {/* Language Change Confirmation Dialog */}

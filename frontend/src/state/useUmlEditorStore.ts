@@ -20,7 +20,10 @@ import type {
   UmlMethodDef,
   UmlAttributeDef,
   UmlTargetLanguage,
+  UmlInterfaceMethodDef,
 } from "../api/types";
+import type { DesignPatternTemplate } from "../config/designPatternTemplates";
+import { calculatePositions, findEmptyArea, getTemplateBounds } from "../utils/templateLayoutEngine";
 
 // Storage key for localStorage persistence
 const STORAGE_KEY = "aegis-uml-editor-project";
@@ -210,6 +213,9 @@ interface UmlEditorState {
   getSelectedEntity: () => UmlClassDef | UmlInterfaceDef | UmlEnumDef | UmlStructDef | null;
   getAllTypeNames: () => string[];
   setSelectedNode: (nodeId: string) => void;
+
+  // Template actions
+  applyTemplate: (template: DesignPatternTemplate) => string[];
 }
 
 export const useUmlEditorStore = create<UmlEditorState>()(
@@ -862,6 +868,145 @@ export const useUmlEditorStore = create<UmlEditorState>()(
 
         setSelectedNode: (nodeId) =>
           set({ selectedNodeId: nodeId, selectedEdgeId: null }),
+
+        // Template actions
+        applyTemplate: (template) => {
+          const state = get();
+          const moduleId = state.currentModuleId;
+          if (!moduleId) return [];
+
+          const module = state.project.modules.find((m) => m.id === moduleId);
+          if (!module) return [];
+
+          // Collect existing positions to avoid overlaps
+          const existingPositions = [
+            ...module.classes.map((c) => c.position),
+            ...module.interfaces.map((i) => i.position),
+            ...module.enums.map((e) => e.position),
+            ...module.structs.map((s) => s.position),
+          ];
+
+          // Calculate start position for the template
+          const templateBounds = getTemplateBounds(template.layoutHints);
+          const startPos = findEmptyArea(existingPositions, templateBounds);
+
+          // Calculate positions for each entity
+          const positions = calculatePositions(template.layoutHints, {
+            startX: startPos.x,
+            startY: startPos.y,
+          });
+
+          // Map template keys to generated IDs
+          const keyToId = new Map<string, string>();
+
+          // Create new classes and interfaces
+          const newClasses: UmlClassDef[] = [];
+          const newInterfaces: UmlInterfaceDef[] = [];
+
+          for (const entity of template.entities) {
+            const id = generateId();
+            keyToId.set(entity.key, id);
+            const position = positions.get(entity.key) ?? { x: 100, y: 100 };
+
+            if (entity.type === "class") {
+              newClasses.push({
+                id,
+                name: entity.name,
+                description: entity.description ?? "",
+                isAbstract: entity.isAbstract,
+                extends: null,
+                implements: [],
+                attributes: entity.attributes.map((a) => ({
+                  id: generateId(),
+                  name: a.name,
+                  type: a.type,
+                  visibility: a.visibility,
+                  description: "",
+                  defaultValue: null,
+                  isStatic: a.isStatic ?? false,
+                  isReadonly: false,
+                })),
+                methods: entity.methods.map((m) => ({
+                  id: generateId(),
+                  name: m.name,
+                  visibility: m.visibility ?? "public",
+                  description: m.description ?? "",
+                  isStatic: m.isStatic ?? false,
+                  isAsync: false,
+                  isAbstract: m.isAbstract ?? false,
+                  parameters: (m.parameters ?? []).map((p) => ({
+                    name: p.name,
+                    type: p.type,
+                    description: "",
+                    isOptional: false,
+                    defaultValue: null,
+                  })),
+                  returnType: m.returnType,
+                  returnDescription: "",
+                  preconditions: [],
+                  postconditions: [],
+                  throws: [],
+                  hints: defaultHints(),
+                  testCases: [],
+                })),
+                position,
+              });
+            } else if (entity.type === "interface") {
+              const interfaceMethods: UmlInterfaceMethodDef[] = entity.methods.map((m) => ({
+                id: generateId(),
+                name: m.name,
+                description: m.description ?? "",
+                parameters: (m.parameters ?? []).map((p) => ({
+                  name: p.name,
+                  type: p.type,
+                  description: "",
+                  isOptional: false,
+                  defaultValue: null,
+                })),
+                returnType: m.returnType,
+              }));
+
+              newInterfaces.push({
+                id,
+                name: entity.name,
+                description: entity.description ?? "",
+                extends: [],
+                methods: interfaceMethods,
+                position,
+              });
+            }
+          }
+
+          // Create relationships with mapped IDs
+          const newRelationships: UmlRelationshipDef[] = template.relationships.map((r) => ({
+            id: generateId(),
+            type: r.type,
+            from: keyToId.get(r.from) ?? "",
+            to: keyToId.get(r.to) ?? "",
+            description: r.description ?? "",
+            cardinality: r.cardinality ?? null,
+          }));
+
+          // Apply changes in a single state update
+          set((currentState) => ({
+            project: {
+              ...currentState.project,
+              modules: currentState.project.modules.map((m) =>
+                m.id === moduleId
+                  ? {
+                      ...m,
+                      classes: [...m.classes, ...newClasses],
+                      interfaces: [...m.interfaces, ...newInterfaces],
+                      relationships: [...m.relationships, ...newRelationships],
+                    }
+                  : m
+              ),
+            },
+            isDirty: true,
+          }));
+
+          return Array.from(keyToId.values());
+        },
       };
       },
       {
