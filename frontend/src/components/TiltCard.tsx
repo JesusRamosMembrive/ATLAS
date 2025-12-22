@@ -157,4 +157,19 @@ export const CardIcons = {
       <path d="M8 8l8 8" strokeDasharray="2 2" opacity="0.6" />
     </svg>
   ),
+  UmlEditor: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* Main class box */}
+      <rect x="2" y="2" width="9" height="10" rx="1" />
+      <line x1="2" y1="6" x2="11" y2="6" opacity="0.6" />
+      {/* Secondary class box */}
+      <rect x="13" y="12" width="9" height="10" rx="1" />
+      <line x1="13" y1="16" x2="22" y2="16" opacity="0.6" />
+      {/* Connection line with arrow */}
+      <path d="M11 7h2l4 4v1" />
+      <polygon points="13,17 15,15 17,17" fill="currentColor" opacity="0.8" />
+      {/* Edit pencil indicator */}
+      <path d="M18 4l2 2-5 5-2.5.5.5-2.5z" opacity="0.5" />
+    </svg>
+  ),
 };

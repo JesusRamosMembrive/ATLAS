@@ -53,6 +53,7 @@ export function HeaderBar({
     { to: "/code-map", label: "Analysis" },
     { to: "/docs", label: "Docs" },
     { to: "/class-uml", label: "UML" },
+    { to: "/uml-editor", label: "UML Editor" },
     { to: "/call-flow", label: "Call Flow" },
     { to: "/linters", label: "Linters" },
     { to: "/similarity", label: "Similarity" },

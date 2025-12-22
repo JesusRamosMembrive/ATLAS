@@ -224,6 +224,17 @@ export function HomeView({
           <span className="home-card-cta">View UML →</span>
         </TiltCard>
 
+        <TiltCard to="/uml-editor" icon={<CardIcons.UmlEditor />}>
+          <div className="home-card-body">
+            <h3>UML Editor</h3>
+            <p>
+              Visual editor for designing classes, interfaces, enums, and structs. Export to XML
+              and generate code with Claude for Python, TypeScript, or C++.
+            </p>
+          </div>
+          <span className="home-card-cta">Open Editor →</span>
+        </TiltCard>
+
         <TiltCard to="/timeline" icon={<CardIcons.Timeline />}>
           <div className="home-card-body">
             <h3>Code Timeline</h3>

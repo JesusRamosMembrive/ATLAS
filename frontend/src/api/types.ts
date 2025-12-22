@@ -676,3 +676,190 @@ export interface CallFlowResponse {
   edges: CallFlowEdge[];
   metadata: CallFlowMetadata;
 }
+
+// =============================================================================
+// UML Editor API (AEGIS v2 - Model-Driven Development)
+// =============================================================================
+
+export type UmlVisibility = "public" | "private" | "protected";
+
+export type UmlRelationType =
+  | "inheritance"
+  | "implementation"
+  | "composition"
+  | "aggregation"
+  | "association"
+  | "dependency";
+
+export type UmlTargetLanguage = "python" | "typescript" | "cpp";
+
+export interface UmlParameter {
+  name: string;
+  type: string;
+  description: string;
+  isOptional: boolean;
+  defaultValue: string | null;
+}
+
+export interface UmlThrows {
+  exception: string;
+  when: string;
+}
+
+export interface UmlHints {
+  edgeCases: string[];
+  performance: string[];
+  style: string[];
+  custom: string[];
+}
+
+export interface UmlTestCase {
+  name: string;
+  type: "success" | "error" | "edge";
+  description: string;
+}
+
+export interface UmlMethodDef {
+  id: string;
+  name: string;
+  visibility: UmlVisibility;
+  description: string;
+  isStatic: boolean;
+  isAsync: boolean;
+  parameters: UmlParameter[];
+  returnType: string;
+  returnDescription: string;
+  preconditions: string[];
+  postconditions: string[];
+  throws: UmlThrows[];
+  hints: UmlHints;
+  testCases: UmlTestCase[];
+}
+
+export interface UmlAttributeDef {
+  id: string;
+  name: string;
+  type: string;
+  visibility: UmlVisibility;
+  description: string;
+  defaultValue: string | null;
+  isStatic: boolean;
+  isReadonly: boolean;
+}
+
+export interface UmlClassDef {
+  id: string;
+  name: string;
+  description: string;
+  isAbstract: boolean;
+  extends: string | null;
+  implements: string[];
+  attributes: UmlAttributeDef[];
+  methods: UmlMethodDef[];
+  position: { x: number; y: number };
+}
+
+export interface UmlInterfaceMethodDef {
+  id: string;
+  name: string;
+  description: string;
+  parameters: UmlParameter[];
+  returnType: string;
+}
+
+export interface UmlInterfaceDef {
+  id: string;
+  name: string;
+  description: string;
+  extends: string[];
+  methods: UmlInterfaceMethodDef[];
+  position: { x: number; y: number };
+}
+
+export interface UmlEnumValue {
+  name: string;
+  description: string;
+  value: string | number | null;
+}
+
+export interface UmlEnumDef {
+  id: string;
+  name: string;
+  description: string;
+  values: UmlEnumValue[];
+  position: { x: number; y: number };
+}
+
+// Struct definition (primarily for C++, but can be used in other languages as dataclass/interface)
+export interface UmlStructDef {
+  id: string;
+  name: string;
+  description: string;
+  attributes: UmlAttributeDef[];
+  position: { x: number; y: number };
+}
+
+export interface UmlRelationshipDef {
+  id: string;
+  type: UmlRelationType;
+  from: string;
+  to: string;
+  description: string;
+  cardinality: string | null;
+}
+
+export interface UmlModuleDef {
+  id: string;
+  name: string;
+  description: string;
+  classes: UmlClassDef[];
+  interfaces: UmlInterfaceDef[];
+  enums: UmlEnumDef[];
+  structs: UmlStructDef[];
+  relationships: UmlRelationshipDef[];
+}
+
+export interface UmlProjectDef {
+  name: string;
+  version: string;
+  description: string;
+  targetLanguage: UmlTargetLanguage;
+  modules: UmlModuleDef[];
+}
+
+// Validation types
+export type UmlValidationErrorType =
+  | "missing_type"
+  | "circular_dependency"
+  | "incomplete_method"
+  | "missing_interface_method"
+  | "invalid_reference";
+
+export interface UmlValidationError {
+  type: UmlValidationErrorType;
+  location: string;
+  message: string;
+  severity: "error" | "warning";
+}
+
+export interface UmlValidationResult {
+  isValid: boolean;
+  errors: UmlValidationError[];
+  warnings: UmlValidationError[];
+}
+
+// Agent generation types
+export interface UmlGenerateRequest {
+  xml: string;
+  targetModule?: string | null;
+  targetClass?: string | null;
+  targetMethod?: string | null;
+  generateTests: boolean;
+}
+
+export interface UmlGenerateResponse {
+  success: boolean;
+  code: string;
+  testCode: string | null;
+  errors: string[];
+}

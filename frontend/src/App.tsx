@@ -16,6 +16,7 @@ import { ClaudeAgentView } from "./components/ClaudeAgentView";
 import CodeTimelineView from "./components/CodeTimelineView";
 import { DocsLibraryView } from "./components/DocsLibraryView";
 import { SimilarityDashboard } from "./components/similarity";
+import { UmlEditorView } from "./components/uml-editor/UmlEditorView";
 import { useEventStream } from "./hooks/useEventStream";
 import { useSettingsQuery } from "./hooks/useSettingsQuery";
 import { useStatusQuery } from "./hooks/useStatusQuery";
@@ -108,6 +109,10 @@ export function App(): JSX.Element {
           <Route
             path="/agent"
             element={withLayout("Claude Agent", <ClaudeAgentView />)}
+          />
+          <Route
+            path="/uml-editor"
+            element={withLayout("UML Editor", <UmlEditorView />)}
           />
           <Route
             path="/settings"
