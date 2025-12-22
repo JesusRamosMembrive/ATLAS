@@ -1,6 +1,6 @@
 # Estado Actual del Proyecto
 
-**Última actualización**: 2025-12-15
+**Última actualización**: 2025-12-22
 **Etapa detectada**: Stage 3 (High Confidence)
 **Versión**: AEGIS v2
 
@@ -9,15 +9,18 @@
 ## 📍 ESTADO ACTUAL
 
 **En progreso:**
-- Ninguno
+- **UML Editor (AEGIS v2)** - Phase 5 pendiente (Agent Loop integration)
 
 **Completado recientemente:**
-- Phase 7: Drift Detection (Structural, Wiring, Semantic)
-- **Frontend Integration para Contracts API** (Phase 5 UI)
-  - Tipos TypeScript en `frontend/src/api/types.ts`
-  - Función `discoverContracts()` en `frontend/src/api/client.ts`
-  - Hook `useDiscoverContracts` en `frontend/src/hooks/`
-  - `DetailPanel.tsx` actualizado con visualización completa de contratos
+- **UML Editor Phases 1-4** - Editor visual completo con export XML
+  - Canvas interactivo con React Flow
+  - Soporte multi-lenguaje (Python, TypeScript, C++)
+  - Entidades: Class, Interface, Enum, Struct
+  - Relaciones: inheritance, implementation, composition, aggregation, association, dependency
+  - Validación en tiempo real
+  - Export XML con clipboard y archivo
+  - Persistencia en localStorage
+  - Eliminación de entidades y relaciones
 
 **Bloqueado/Pendiente:**
 - Ninguno
@@ -27,80 +30,113 @@
 ## 🎯 PRÓXIMOS PASOS
 
 1. **Inmediato** (Próxima sesión):
-   - Phase 8: Agent integration (plan→patch→gates workflow)
-   - Integrar drift detection con frontend UI
+   - **Phase 5: Agent Loop** - Integración con Claude para generación de código
+     - Backend endpoint: `POST /uml-editor/generate`
+     - UI de generación en ExportDialog
+     - Mostrar código generado
 
 2. **Corto plazo** (Próximas 1-3 sesiones):
-   - Phase 9: Scalability (caching, multiple composition roots)
+   - Mejorar UX del canvas (zoom, pan, grid snap)
+   - Atajos de teclado (Delete para eliminar, Ctrl+S para guardar)
+   - Import de XML existente
 
 3. **Mediano plazo**:
-   - Phase 10: Documentation y criterios de aceptación
-   - Release de AEGIS v2
+   - Phase 8: Agent integration (plan→patch→gates workflow)
+   - Integrar drift detection con frontend UI
 
 ---
 
 ## 📝 DECISIONES RECIENTES
 
-### Frontend Integration para Contracts (2025-12-15)
-**Qué**: Integración del API de contracts con el frontend
-**Componentes**: DetailPanel.tsx muestra contratos en pestaña "Type"
-**Hook**: useDiscoverContracts con React Query
-**UI**: Thread Safety badge, Evidence list, Confidence badge, etc.
+### UML Editor Multi-Language (2025-12-22)
+**Qué**: Soporte para Python, TypeScript y C++ con nombres específicos
+**Config**: `frontend/src/config/languageConfig.ts`
+**Mapeo**:
+- Python: Class, Protocol (interface), Enum, Dataclass (struct)
+- TypeScript: Class, Interface, Enum, Type (struct)
+- C++: Class, Abstract Class (interface), Enum, Struct
 
-### Drift Detection System (2025-12-15)
-**Qué**: Sistema de detección de inconsistencias sin modelo externo
-**Tipos**: Structural, Wiring, Semantic (heurístico)
-**Principio**: "No second model file" - todo derivado del código
-**Impacto**: code_map/drift/
+### Persistencia con Zustand (2025-12-22)
+**Qué**: Auto-guardado en localStorage con middleware `persist`
+**Key**: `aegis-uml-editor-project`
+**Partialize**: Solo project y currentModuleId (no UI state)
 
-### Drift Categories
-- **Structural**: SIGNATURE_CHANGED, SYMBOL_DELETED, EVIDENCE_MISSING, EVIDENCE_STALE
-- **Wiring**: EDGE_ADDED, EDGE_REMOVED, INSTANCE_ADDED, INSTANCE_REMOVED, TYPE_CHANGED
-- **Semantic**: THREAD_SAFETY_MISMATCH, PRECONDITION_UNCHECKED, ERROR_UNHANDLED
+### Eliminación de Entidades (2025-12-22)
+**Qué**: Botón Delete en InspectorPanel con confirmación
+**Cascade**: Al eliminar entidad, se eliminan sus relaciones asociadas
+**Hook fix**: useCallback movido antes de returns tempranos
 
 ---
 
 ## 🚨 CONTEXTO CRÍTICO
 
-**Restricciones importantes:**
-- Drift detection usa session-cached wiring state (no archivo externo)
-- Semantic drift es heurístico (puede tener falsos positivos)
-- Blocking drift (CRITICAL) impide aplicar cambios
+**Restricciones UML Editor:**
+- React Flow requiere ReactFlowProvider como wrapper
+- Hooks deben ejecutarse antes de cualquier return condicional
+- El store usa Zustand con persist middleware para localStorage
+- Las relaciones usan `from/to` (IDs de entidades)
 
 **Patrones establecidos:**
-- DriftAnalyzer orquesta 3 detectores
-- DriftContext comparte estado entre detectores
-- DriftReport con filtering por type/severity
+- Nodos custom: ClassNode, InterfaceNode, EnumNode, StructNode
+- Inspectors por tipo: ClassInspector, InterfaceInspector, etc.
+- Validación centralizada en umlValidator.ts
+- Export XML en umlXmlExporter.ts
 
 ---
 
 ## 📚 RECURSOS
 
-- **Drift Module**: code_map/drift/
-- **API Endpoints**: code_map/api/drift.py
-- **Tests**: tests/test_drift.py (31 tests)
-- **Plan v2**: docs/version2-plan.md
+**UML Editor:**
+- **Componentes**: frontend/src/components/uml-editor/
+- **Store**: frontend/src/state/useUmlEditorStore.ts
+- **Config**: frontend/src/config/languageConfig.ts
+- **Tipos**: frontend/src/api/types.ts (UmlProjectDef, etc.)
+- **Validador**: frontend/src/utils/umlValidator.ts
+- **Exporter**: frontend/src/utils/umlXmlExporter.ts
+- **Spec**: docs/AEGIS_V2_SPECIFICATION_UML_2_XML.md
+
+**Plan original**: .claude/plans/velvet-leaping-pine.md
 
 ---
 
-## 🔄 Sesión: 2025-12-15 (Drift Detection)
+## 🔄 Sesión: 2025-12-22 (UML Editor Phases 1-4)
 
-**Implementado:**
-- code_map/drift/models.py: DriftType, DriftCategory, DriftSeverity, DriftItem, DriftReport
-- code_map/drift/detectors.py: StructuralDriftDetector, WiringDriftDetector, SemanticDriftDetector
-- code_map/drift/analyzer.py: DriftAnalyzer service, check_drift_before_apply()
-- code_map/api/drift.py: REST API endpoints
-- tests/test_drift.py: 31 tests
+**Implementado (33 archivos, ~7700 líneas):**
 
-**API Endpoints:**
-- POST /drift/analyze - Full drift analysis
-- POST /drift/structural - Structural drift only
-- POST /drift/wiring - Wiring drift only
-- POST /drift/semantic - Semantic drift only (heuristic)
-- GET /drift/status - Analyzer status
-- POST /drift/wiring/update - Update wiring state
-- POST /drift/wiring/clear - Clear wiring cache
-- POST /drift/check-before-apply - Pre-apply check
+### Infraestructura (Phase 1)
+- Tipos TypeScript en api/types.ts
+- Store Zustand con persist middleware
+- Ruta /uml-editor en App.tsx
+- Tarjeta en HomeView + enlace en HeaderBar
+
+### Canvas Interactivo (Phase 2)
+- UmlEditorCanvas.tsx con React Flow
+- Nodos: ClassNode, InterfaceNode, EnumNode, StructNode
+- Edges: RelationshipEdge con estilos por tipo
+- Minimap y controles
+
+### Panel Inspector (Phase 3)
+- InspectorPanel.tsx con tabs dinámicos
+- ClassInspector, InterfaceInspector, EnumInspector, StructInspector
+- RelationshipInspector para editar relaciones
+- AttributeEditor, MethodEditor completos
+- XmlPreview para previsualización
+
+### Validación y Export (Phase 4)
+- umlValidator.ts con 10+ reglas
+- ValidationPanel con errores/warnings/info
+- ExportDialog con preview, clipboard y download
+- umlXmlExporter.ts genera XML según spec
+
+### Refinamientos adicionales
+- Multi-language support (Python, TypeScript, C++)
+- Nombres de entidades según lenguaje
+- Diálogo de confirmación al cambiar lenguaje
+- Eliminación de entidades con confirmación
+- Eliminación de relaciones
+- Persistencia automática en localStorage
+
+**Commit**: `27114e6` - "Add UML Editor for Model-Driven Development (AEGIS v2)"
 
 ---
 
@@ -109,6 +145,6 @@
 **Auto-detected on:** 2025-12-09 18:18
 
 **Metrics:**
-- Files: 736+
-- LOC: ~198547+
+- Files: 770+
+- LOC: ~206000+
 - Patterns: Adapter, Factory Pattern, Repository, Service Layer
