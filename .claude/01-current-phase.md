@@ -12,6 +12,11 @@
 - **UML Editor (AEGIS v2)** - Phase 5 pendiente (Agent Loop integration)
 
 **Completado recientemente:**
+- **Ollama XML Guide** (2025-12-23)
+  - `docs/ollama/UML_XML_FORMAT_GUIDE.md` - Guía completa del formato XML
+  - Pensado para que Ollama genere UML válido desde descripciones en lenguaje natural
+  - Incluye: estructura XML, ejemplos, tipos por lenguaje, patrones de diseño
+
 - **C++ Analysis Support** (2025-12-23)
   - Nuevo analizador `code_map/uml/cpp_analyzer.py` usando tree-sitter
   - Soporte para clases, structs, métodos, atributos C++
@@ -108,6 +113,7 @@
 - **Validador**: frontend/src/utils/umlValidator.ts
 - **Exporter**: frontend/src/utils/umlXmlExporter.ts
 - **Spec**: docs/AEGIS_V2_SPECIFICATION_UML_2_XML.md
+- **Ollama Guide**: docs/ollama/UML_XML_FORMAT_GUIDE.md
 
 **Plan original**: .claude/plans/velvet-leaping-pine.md
 
