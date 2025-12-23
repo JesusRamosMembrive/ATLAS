@@ -265,34 +265,52 @@ async def get_uml_project(
         "python",
         description="Target language for type mapping (python, typescript, cpp).",
     ),
+    language: Optional[List[str]] = Query(
+        None,
+        description="Languages to analyze: python, typescript, cpp. Analyzes all if not specified.",
+    ),
+    custom_path: Optional[str] = Query(
+        None,
+        description="Custom path to scan (overrides root_path from settings).",
+    ),
     state: AppState = Depends(get_app_state),
 ) -> UmlProjectDefResponse:
     """
     Convert analyzed code to UmlProjectDef format for the UML Editor.
 
-    This endpoint analyzes both Python and TypeScript/TSX files in the workspace
+    This endpoint analyzes Python, TypeScript/TSX, and C++ files in the workspace
     and returns a complete UML project definition that can be imported directly
     into the AEGIS UML Editor using the mergeProject() action.
 
     The response includes:
     - Classes with attributes, methods, visibility, and inheritance
     - Interfaces (from TypeScript)
+    - Structs (from C++)
     - Relationships (inheritance, implementation, association)
     - Automatic grid-based layout positioning
 
     Example usage:
     ```
     GET /api/graph/uml/project?module_prefix=code_map&target_language=python
+    GET /api/graph/uml/project?language=python&language=typescript
+    GET /api/graph/uml/project?custom_path=/path/to/folder
     ```
     """
+    from pathlib import Path
+
     prefixes = {prefix for prefix in module_prefix or [] if prefix} or None
+    languages = {lang.lower() for lang in language or []} or None
+
+    # Use custom_path if provided, otherwise use settings root_path
+    scan_path = Path(custom_path) if custom_path else state.settings.root_path
 
     project_def = convert_to_uml_project(
-        state.settings.root_path,
+        scan_path,
         module_prefixes=prefixes,
         include_external=include_external,
         project_name=project_name,
         target_language=target_language,
+        languages=languages,
     )
 
     return UmlProjectDefResponse.model_validate(project_def)

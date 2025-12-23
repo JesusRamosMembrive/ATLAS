@@ -648,6 +648,8 @@ export async function getCodeAsUmlProject(options?: {
   modulePrefixes?: string[];
   projectName?: string;
   targetLanguage?: string;
+  languages?: string[];
+  customPath?: string;
 }): Promise<{
   name: string;
   version: string;
@@ -681,6 +683,14 @@ export async function getCodeAsUmlProject(options?: {
   }
   if (options?.targetLanguage) {
     params.set("target_language", options.targetLanguage);
+  }
+  if (options?.languages) {
+    options.languages.forEach((lang) => {
+      params.append("language", lang);
+    });
+  }
+  if (options?.customPath) {
+    params.set("custom_path", options.customPath);
   }
   const query = params.toString();
   return fetchJson(`/graph/uml/project${query ? `?${query}` : ""}`);

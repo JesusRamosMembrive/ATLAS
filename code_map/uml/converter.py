@@ -28,6 +28,7 @@ def convert_to_uml_project(
     include_external: bool = False,
     project_name: Optional[str] = None,
     target_language: str = "python",
+    languages: Optional[Set[str]] = None,
 ) -> Dict[str, Any]:
     """
     Convert analyzed code to UmlProjectDef format.
@@ -38,11 +39,17 @@ def convert_to_uml_project(
         include_external: Whether to include external dependencies
         project_name: Name for the project (defaults to directory name)
         target_language: Target language for type mapping
+        languages: Set of languages to analyze ('python', 'typescript', 'cpp').
+                   If None, analyzes all supported languages.
 
     Returns:
         UmlProjectDef compatible dictionary
     """
     root = root.expanduser().resolve()
+
+    # Default to all languages if not specified
+    if languages is None:
+        languages = {"python", "typescript", "cpp"}
 
     # Collect all classes and interfaces
     all_classes: List[Dict[str, Any]] = []
@@ -54,52 +61,60 @@ def convert_to_uml_project(
     name_to_id: Dict[str, str] = {}
 
     # Analyze Python files
-    python_data = build_uml_model(
-        root,
-        module_prefixes=module_prefixes,
-        include_external=include_external,
-    )
+    python_data: Dict[str, Any] = {"classes": []}
+    if "python" in languages:
+        python_data = build_uml_model(
+            root,
+            module_prefixes=module_prefixes,
+            include_external=include_external,
+        )
 
-    for cls in python_data.get("classes", []):
-        class_id = generate_id()
-        class_name = cls["name"]
-        name_to_id[class_name] = class_id
-        name_to_id[cls["id"]] = class_id  # Also map qualified name
+        for cls in python_data.get("classes", []):
+            class_id = generate_id()
+            class_name = cls["name"]
+            name_to_id[class_name] = class_id
+            name_to_id[cls["id"]] = class_id  # Also map qualified name
 
-        uml_class = _convert_python_class(cls, class_id)
-        all_classes.append(uml_class)
+            uml_class = _convert_python_class(cls, class_id)
+            all_classes.append(uml_class)
 
     # Analyze TypeScript/TSX files
-    ts_classes, ts_interfaces = _analyze_typescript(root, module_prefixes)
+    ts_classes: List[Dict[str, Any]] = []
+    ts_interfaces: List[Dict[str, Any]] = []
+    if "typescript" in languages:
+        ts_classes, ts_interfaces = _analyze_typescript(root, module_prefixes)
 
-    for cls in ts_classes:
-        class_id = generate_id()
-        name_to_id[cls["name"]] = class_id
-        uml_class = _convert_ts_class(cls, class_id)
-        all_classes.append(uml_class)
+        for cls in ts_classes:
+            class_id = generate_id()
+            name_to_id[cls["name"]] = class_id
+            uml_class = _convert_ts_class(cls, class_id)
+            all_classes.append(uml_class)
 
-    for iface in ts_interfaces:
-        iface_id = generate_id()
-        name_to_id[iface["name"]] = iface_id
-        uml_interface = _convert_ts_interface(iface, iface_id)
-        all_interfaces.append(uml_interface)
+        for iface in ts_interfaces:
+            iface_id = generate_id()
+            name_to_id[iface["name"]] = iface_id
+            uml_interface = _convert_ts_interface(iface, iface_id)
+            all_interfaces.append(uml_interface)
 
     # Analyze C++ files
-    cpp_classes, cpp_structs = _analyze_cpp(root, module_prefixes)
-
-    for cls in cpp_classes:
-        class_id = generate_id()
-        name_to_id[cls["name"]] = class_id
-        uml_class = _convert_cpp_class(cls, class_id)
-        all_classes.append(uml_class)
-
-    # C++ structs go to structs list (will be handled by frontend)
+    cpp_classes: List[Dict[str, Any]] = []
+    cpp_structs: List[Dict[str, Any]] = []
     all_structs: List[Dict[str, Any]] = []
-    for struct in cpp_structs:
-        struct_id = generate_id()
-        name_to_id[struct["name"]] = struct_id
-        uml_struct = _convert_cpp_struct(struct, struct_id)
-        all_structs.append(uml_struct)
+    if "cpp" in languages:
+        cpp_classes, cpp_structs = _analyze_cpp(root, module_prefixes)
+
+        for cls in cpp_classes:
+            class_id = generate_id()
+            name_to_id[cls["name"]] = class_id
+            uml_class = _convert_cpp_class(cls, class_id)
+            all_classes.append(uml_class)
+
+        # C++ structs go to structs list (will be handled by frontend)
+        for struct in cpp_structs:
+            struct_id = generate_id()
+            name_to_id[struct["name"]] = struct_id
+            uml_struct = _convert_cpp_struct(struct, struct_id)
+            all_structs.append(uml_struct)
 
     # Generate relationships from inheritance/implementation
     relationships = _generate_relationships(
