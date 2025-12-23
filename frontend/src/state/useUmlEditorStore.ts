@@ -219,6 +219,14 @@ interface UmlEditorState {
 
   // Merge actions (for AI generation)
   mergeProject: (project: UmlProjectDef) => void;
+
+  // Component view state (for connected component filtering)
+  activeComponentId: string | null;
+  setActiveComponentId: (componentId: string | null) => void;
+
+  // Layout actions
+  updateEntityPosition: (entityId: string, position: { x: number; y: number }) => void;
+  batchUpdatePositions: (positions: Map<string, { x: number; y: number }>) => void;
 }
 
 export const useUmlEditorStore = create<UmlEditorState>()(
@@ -234,6 +242,7 @@ export const useUmlEditorStore = create<UmlEditorState>()(
         selectedNodeId: null,
         selectedEdgeId: null,
         isDirty: false,
+        activeComponentId: null,
 
         // Project actions
         setProject: (project) =>
@@ -1126,6 +1135,64 @@ export const useUmlEditorStore = create<UmlEditorState>()(
             isDirty: true,
           }));
         },
+
+        // Component filtering actions
+        setActiveComponentId: (componentId) =>
+          set({ activeComponentId: componentId }),
+
+        // Layout actions - update single entity position
+        updateEntityPosition: (entityId, position) =>
+          set((state) => ({
+            project: {
+              ...state.project,
+              modules: state.project.modules.map((m) => ({
+                ...m,
+                classes: m.classes.map((c) =>
+                  c.id === entityId ? { ...c, position } : c
+                ),
+                interfaces: m.interfaces.map((i) =>
+                  i.id === entityId ? { ...i, position } : i
+                ),
+                enums: m.enums.map((e) =>
+                  e.id === entityId ? { ...e, position } : e
+                ),
+                structs: m.structs.map((s) =>
+                  s.id === entityId ? { ...s, position } : s
+                ),
+              })),
+            },
+          })),
+
+        // Layout actions - batch update multiple positions (for auto-layout)
+        batchUpdatePositions: (positions) =>
+          set((state) => {
+            // positions is always a Map from the interface
+            const positionMap = positions;
+            return {
+              project: {
+                ...state.project,
+                modules: state.project.modules.map((m) => ({
+                  ...m,
+                  classes: m.classes.map((c) => {
+                    const newPos = positionMap.get(c.id);
+                    return newPos ? { ...c, position: { x: newPos.x, y: newPos.y } } : c;
+                  }),
+                  interfaces: m.interfaces.map((i) => {
+                    const newPos = positionMap.get(i.id);
+                    return newPos ? { ...i, position: { x: newPos.x, y: newPos.y } } : i;
+                  }),
+                  enums: m.enums.map((e) => {
+                    const newPos = positionMap.get(e.id);
+                    return newPos ? { ...e, position: { x: newPos.x, y: newPos.y } } : e;
+                  }),
+                  structs: m.structs.map((s) => {
+                    const newPos = positionMap.get(s.id);
+                    return newPos ? { ...s, position: { x: newPos.x, y: newPos.y } } : s;
+                  }),
+                })),
+              },
+            };
+          }),
       };
       },
       {

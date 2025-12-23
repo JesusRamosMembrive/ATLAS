@@ -5,12 +5,13 @@
  * Layout: Toolbar | Canvas | Inspector Panel
  */
 
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo, useRef, useEffect } from "react";
 import { ReactFlowProvider } from "reactflow";
 import { useUmlEditorStore } from "../../state/useUmlEditorStore";
 import { UmlEditorCanvas } from "./UmlEditorCanvas";
 import { InspectorPanel } from "./inspector";
 import { ValidationPanel } from "./validation";
+import { ComponentTabs } from "./ComponentTabs";
 import { ImportExportDialog, TemplatesDialog, AiGenerateDialog, ImportFromCodeDialog } from "./toolbar";
 import { DESIGN_TOKENS } from "../../theme/designTokens";
 import {
@@ -19,6 +20,12 @@ import {
   getIncompatibleEntities,
   type EntityType,
 } from "../../config/languageConfig";
+import {
+  applyHierarchicalLayout,
+  resetToGridLayout,
+  type LayoutDirection,
+} from "../../utils/hierarchicalLayout";
+import { findConnectedComponents, getEntitiesForComponent } from "../../utils/graphAnalysis";
 import type { UmlTargetLanguage } from "../../api/types";
 
 const { colors, borders } = DESIGN_TOKENS;
@@ -37,6 +44,8 @@ export function UmlEditorView(): JSX.Element {
     getCurrentModule,
     resetProject,
     updateProjectMeta,
+    activeComponentId,
+    batchUpdatePositions,
   } = useUmlEditorStore();
 
   const currentModule = getCurrentModule();
@@ -49,6 +58,22 @@ export function UmlEditorView(): JSX.Element {
   const [isImportFromCodeDialogOpen, setImportFromCodeDialogOpen] = useState(false);
   const [isValidationExpanded, setValidationExpanded] = useState(false);
   const [pendingLanguageChange, setPendingLanguageChange] = useState<UmlTargetLanguage | null>(null);
+  const [isLayoutMenuOpen, setLayoutMenuOpen] = useState(false);
+  const layoutButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Close layout menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (layoutButtonRef.current && !layoutButtonRef.current.contains(event.target as Node)) {
+        setLayoutMenuOpen(false);
+      }
+    };
+
+    if (isLayoutMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [isLayoutMenuOpen]);
 
   // Count entities by type for language change warnings
   const entityCounts = useMemo((): Record<EntityType, number> => {
@@ -129,6 +154,41 @@ export function UmlEditorView(): JSX.Element {
   const cancelLanguageChange = useCallback(() => {
     setPendingLanguageChange(null);
   }, []);
+
+  // Apply hierarchical layout to current view
+  const handleApplyLayout = useCallback(
+    (direction: LayoutDirection) => {
+      if (!currentModule) return;
+
+      // Get entity filter based on active component
+      let entityFilter: Set<string> | undefined;
+      if (activeComponentId !== null) {
+        const analysis = findConnectedComponents(currentModule);
+        entityFilter = getEntitiesForComponent(currentModule, activeComponentId, analysis);
+      }
+
+      const positions = applyHierarchicalLayout(currentModule, { direction }, entityFilter);
+      batchUpdatePositions(positions);
+      setLayoutMenuOpen(false);
+    },
+    [currentModule, activeComponentId, batchUpdatePositions]
+  );
+
+  // Reset to grid layout
+  const handleResetLayout = useCallback(() => {
+    if (!currentModule) return;
+
+    // Get entity filter based on active component
+    let entityFilter: Set<string> | undefined;
+    if (activeComponentId !== null) {
+      const analysis = findConnectedComponents(currentModule);
+      entityFilter = getEntitiesForComponent(currentModule, activeComponentId, analysis);
+    }
+
+    const positions = resetToGridLayout(currentModule, entityFilter);
+    batchUpdatePositions(positions);
+    setLayoutMenuOpen(false);
+  }, [currentModule, activeComponentId, batchUpdatePositions]);
 
   return (
     <div
@@ -321,6 +381,119 @@ export function UmlEditorView(): JSX.Element {
           >
             New Project
           </button>
+
+          {/* Auto-Layout Button with Dropdown */}
+          <div style={{ position: "relative" }}>
+            <button
+              ref={layoutButtonRef}
+              onClick={() => setLayoutMenuOpen(!isLayoutMenuOpen)}
+              style={{
+                padding: "6px 12px",
+                borderRadius: "6px",
+                border: `1px solid ${colors.severity.info}`,
+                backgroundColor: "transparent",
+                color: colors.severity.info,
+                fontSize: "13px",
+                fontWeight: 500,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+              title="Organize nodes automatically"
+            >
+              Auto-Layout
+              <span style={{ fontSize: "10px" }}>▾</span>
+            </button>
+
+            {/* Dropdown Menu */}
+            {isLayoutMenuOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  right: 0,
+                  marginTop: "4px",
+                  minWidth: "200px",
+                  backgroundColor: colors.base.card,
+                  border: `1px solid ${borders.default}`,
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+                  zIndex: 100,
+                  overflow: "hidden",
+                }}
+              >
+                <button
+                  onClick={() => handleApplyLayout("TB")}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    padding: "10px 16px",
+                    border: "none",
+                    backgroundColor: "transparent",
+                    color: colors.text.secondary,
+                    fontSize: "13px",
+                    textAlign: "left",
+                    cursor: "pointer",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = colors.base.panel;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                >
+                  Hierarchical (Top → Bottom)
+                </button>
+                <button
+                  onClick={() => handleApplyLayout("LR")}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    padding: "10px 16px",
+                    border: "none",
+                    backgroundColor: "transparent",
+                    color: colors.text.secondary,
+                    fontSize: "13px",
+                    textAlign: "left",
+                    cursor: "pointer",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = colors.base.panel;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                >
+                  Hierarchical (Left → Right)
+                </button>
+                <div style={{ height: "1px", backgroundColor: borders.default, margin: "4px 0" }} />
+                <button
+                  onClick={handleResetLayout}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    padding: "10px 16px",
+                    border: "none",
+                    backgroundColor: "transparent",
+                    color: colors.text.muted,
+                    fontSize: "13px",
+                    textAlign: "left",
+                    cursor: "pointer",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = colors.base.panel;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                >
+                  Reset to Grid
+                </button>
+              </div>
+            )}
+          </div>
+
           <button
             onClick={() => setTemplatesDialogOpen(true)}
             style={{
@@ -400,6 +573,9 @@ export function UmlEditorView(): JSX.Element {
           </button>
         </div>
       </div>
+
+      {/* Component Tabs (for filtering by connected component) */}
+      <ComponentTabs />
 
       {/* Main Content Area */}
       <div style={{ flex: 1, display: "flex", position: "relative", minHeight: 0 }}>

@@ -31,6 +31,11 @@ import { StructNode } from "./nodes/StructNode";
 import { RelationshipEdge } from "./edges/RelationshipEdge";
 import { useUmlEditorStore } from "../../state/useUmlEditorStore";
 import { DESIGN_TOKENS } from "../../theme/designTokens";
+import {
+  findConnectedComponents,
+  getEntitiesForComponent,
+  getRelationshipsForComponent,
+} from "../../utils/graphAnalysis";
 import type { UmlRelationType } from "../../api/types";
 
 const { colors } = DESIGN_TOKENS;
@@ -55,6 +60,7 @@ export function UmlEditorCanvas(): JSX.Element {
   const {
     selectedNodeId,
     selectedEdgeId,
+    activeComponentId,
     getCurrentModule,
     selectNode,
     selectEdge,
@@ -72,6 +78,28 @@ export function UmlEditorCanvas(): JSX.Element {
   } = useUmlEditorStore();
 
   const currentModule = getCurrentModule();
+
+  // Analyze connected components for filtering
+  const componentAnalysis = useMemo(() => {
+    if (!currentModule) return null;
+    return findConnectedComponents(currentModule);
+  }, [currentModule]);
+
+  // Get filtered entity IDs based on active component
+  const visibleEntityIds = useMemo(() => {
+    if (!currentModule || !componentAnalysis) return null;
+    return getEntitiesForComponent(currentModule, activeComponentId, componentAnalysis);
+  }, [currentModule, activeComponentId, componentAnalysis]);
+
+  // Get filtered relationship IDs based on active component
+  const visibleRelationshipIds = useMemo(() => {
+    if (!currentModule || !componentAnalysis) return null;
+    return getRelationshipsForComponent(
+      activeComponentId,
+      componentAnalysis,
+      currentModule.relationships
+    );
+  }, [currentModule, activeComponentId, componentAnalysis]);
 
   // Handle Delete key to remove selected element
   useEffect(() => {
@@ -122,14 +150,17 @@ export function UmlEditorCanvas(): JSX.Element {
     deleteRelationship,
   ]);
 
-  // Convert module data to React Flow nodes
+  // Convert module data to React Flow nodes (filtered by active component)
   const nodes: Node[] = useMemo(() => {
     if (!currentModule) return [];
 
     const result: Node[] = [];
 
-    // Add class nodes
+    // Add class nodes (filtered)
     for (const cls of currentModule.classes) {
+      // Skip if not in visible set
+      if (visibleEntityIds && !visibleEntityIds.has(cls.id)) continue;
+
       result.push({
         id: cls.id,
         type: "classNode",
@@ -142,8 +173,10 @@ export function UmlEditorCanvas(): JSX.Element {
       });
     }
 
-    // Add interface nodes
+    // Add interface nodes (filtered)
     for (const iface of currentModule.interfaces) {
+      if (visibleEntityIds && !visibleEntityIds.has(iface.id)) continue;
+
       result.push({
         id: iface.id,
         type: "interfaceNode",
@@ -156,8 +189,10 @@ export function UmlEditorCanvas(): JSX.Element {
       });
     }
 
-    // Add enum nodes
+    // Add enum nodes (filtered)
     for (const enm of currentModule.enums) {
+      if (visibleEntityIds && !visibleEntityIds.has(enm.id)) continue;
+
       result.push({
         id: enm.id,
         type: "enumNode",
@@ -170,8 +205,10 @@ export function UmlEditorCanvas(): JSX.Element {
       });
     }
 
-    // Add struct nodes
+    // Add struct nodes (filtered)
     for (const struct of currentModule.structs) {
+      if (visibleEntityIds && !visibleEntityIds.has(struct.id)) continue;
+
       result.push({
         id: struct.id,
         type: "structNode",
@@ -185,25 +222,27 @@ export function UmlEditorCanvas(): JSX.Element {
     }
 
     return result;
-  }, [currentModule, selectedNodeId]);
+  }, [currentModule, selectedNodeId, visibleEntityIds]);
 
-  // Convert relationships to React Flow edges
+  // Convert relationships to React Flow edges (filtered by active component)
   const edges: Edge[] = useMemo(() => {
     if (!currentModule) return [];
 
-    return currentModule.relationships.map((rel) => ({
-      id: rel.id,
-      source: rel.from,
-      target: rel.to,
-      type: "relationship",
-      data: {
-        type: rel.type,
-        description: rel.description,
-        cardinality: rel.cardinality,
-      },
-      selected: selectedEdgeId === rel.id,
-    }));
-  }, [currentModule, selectedEdgeId]);
+    return currentModule.relationships
+      .filter((rel) => !visibleRelationshipIds || visibleRelationshipIds.has(rel.id))
+      .map((rel) => ({
+        id: rel.id,
+        source: rel.from,
+        target: rel.to,
+        type: "relationship",
+        data: {
+          type: rel.type,
+          description: rel.description,
+          cardinality: rel.cardinality,
+        },
+        selected: selectedEdgeId === rel.id,
+      }));
+  }, [currentModule, selectedEdgeId, visibleRelationshipIds]);
 
   // Handle node position changes
   const onNodesChange: OnNodesChange = useCallback(
