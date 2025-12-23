@@ -635,6 +635,58 @@ export async function getClassUmlSvg(options?: {
 }
 
 /**
+ * Get code as UML project definition for the UML Editor.
+ *
+ * Analyzes Python and TypeScript/TSX files and returns a complete
+ * UML project definition that can be imported into the UML Editor.
+ *
+ * @param options Configuration options
+ * @returns Promise with UmlProjectDef compatible structure
+ */
+export async function getCodeAsUmlProject(options?: {
+  includeExternal?: boolean;
+  modulePrefixes?: string[];
+  projectName?: string;
+  targetLanguage?: string;
+}): Promise<{
+  name: string;
+  version: string;
+  description: string;
+  targetLanguage: string;
+  modules: Array<{
+    id: string;
+    name: string;
+    description: string;
+    classes: any[];
+    interfaces: any[];
+    enums: any[];
+    structs: any[];
+    relationships: any[];
+  }>;
+}> {
+  const params = new URLSearchParams();
+  if (options?.includeExternal) {
+    params.set("include_external", "true");
+  }
+  if (options?.modulePrefixes) {
+    options.modulePrefixes.forEach((prefix) => {
+      const trimmed = prefix.trim();
+      if (trimmed) {
+        params.append("module_prefix", trimmed);
+      }
+    });
+  }
+  if (options?.projectName) {
+    params.set("project_name", options.projectName);
+  }
+  if (options?.targetLanguage) {
+    params.set("target_language", options.targetLanguage);
+  }
+  const query = params.toString();
+  return fetchJson(`/graph/uml/project${query ? `?${query}` : ""}`);
+}
+
+/**
  * Obtiene el estado actual del analizador.
  *
  * Returns:

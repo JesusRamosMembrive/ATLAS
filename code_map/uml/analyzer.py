@@ -41,16 +41,29 @@ class UMLModuleAnalyzer(ast.NodeVisitor):
         return ImportResolver.resolve_relative_import(self.module, module, level)
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        bases = [
+            name
+            for base in node.bases
+            for name in [self._expr_to_name(base)]
+            if name
+        ]
+        # Detect if class is abstract (inherits from ABC or has @abstractmethod)
+        is_abstract = any(
+            base in ("ABC", "abc.ABC", "ABCMeta") for base in bases
+        ) or any(
+            isinstance(d, ast.Name) and d.id == "abstractmethod"
+            for d in node.decorator_list
+        )
+        # Extract docstring
+        docstring = ast.get_docstring(node)
+
         model = ClassModel(
             name=node.name,
             module=self.module,
             file=self.file_path,
-            bases=[
-                name
-                for base in node.bases
-                for name in [self._expr_to_name(base)]
-                if name
-            ],
+            bases=bases,
+            is_abstract=is_abstract,
+            docstring=docstring,
         )
         self.model.classes[node.name] = model
         previous = self._current_class
@@ -59,14 +72,51 @@ class UMLModuleAnalyzer(ast.NodeVisitor):
         self._current_class = previous
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        self._process_function(node, is_async=False)
+
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
+        self._process_function(node, is_async=True)
+
+    def _process_function(
+        self, node: ast.FunctionDef | ast.AsyncFunctionDef, is_async: bool
+    ) -> None:
         if self._current_class is None:
             return
         params = [arg.arg for arg in node.args.args]
-        if params and params[0] == "self":
+        if params and params[0] in ("self", "cls"):
             params = params[1:]
         returns = self._expr_to_name(node.returns) if node.returns else None
+
+        # Detect visibility from name convention
+        visibility = _infer_visibility(node.name)
+
+        # Detect decorators
+        is_static = False
+        is_abstract = False
+        for decorator in node.decorator_list:
+            dec_name = self._expr_to_name(decorator)
+            if dec_name in ("staticmethod", "classmethod"):
+                is_static = True
+            if dec_name in ("abstractmethod", "abc.abstractmethod"):
+                is_abstract = True
+                # If method is abstract, class is abstract too
+                if self._current_class:
+                    self._current_class.is_abstract = True
+
+        # Extract docstring
+        docstring = ast.get_docstring(node)
+
         self._current_class.methods.append(
-            MethodInfo(name=node.name, parameters=params, returns=returns)
+            MethodInfo(
+                name=node.name,
+                parameters=params,
+                returns=returns,
+                visibility=visibility,
+                is_static=is_static,
+                is_async=is_async,
+                is_abstract=is_abstract,
+                docstring=docstring,
+            )
         )
         self.generic_visit(node)
 
@@ -84,11 +134,22 @@ class UMLModuleAnalyzer(ast.NodeVisitor):
         if self._current_class is None:
             return
         if isinstance(node.target, ast.Name):
+            attr_name = node.target.id
             annotation = self._expr_to_name(node.annotation)
             optional = _is_optional(node.annotation)
+            visibility = _infer_visibility(attr_name)
+            # Extract default value if present
+            default_value = None
+            if node.value is not None:
+                default_value = _extract_default_value(node.value)
+
             self._current_class.attributes.append(
                 AttributeInfo(
-                    name=node.target.id, annotation=annotation, optional=optional
+                    name=attr_name,
+                    annotation=annotation,
+                    optional=optional,
+                    visibility=visibility,
+                    default_value=default_value,
                 )
             )
             if annotation:
@@ -214,3 +275,32 @@ def _is_optional(expr: Optional[ast.AST]) -> bool:
     if isinstance(expr, ast.BinOp) and isinstance(expr.op, ast.BitOr):
         return True
     return False
+
+
+def _infer_visibility(name: str) -> str:
+    """Infer visibility from Python naming convention."""
+    if name.startswith("__") and not name.endswith("__"):
+        return "private"  # Name mangled
+    if name.startswith("_"):
+        return "protected"  # Convention for internal use
+    return "public"
+
+
+def _extract_default_value(node: ast.AST) -> Optional[str]:
+    """Extract a string representation of default value."""
+    if isinstance(node, ast.Constant):
+        if node.value is None:
+            return "None"
+        if isinstance(node.value, str):
+            return f'"{node.value}"'
+        return str(node.value)
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.List):
+        return "[]"
+    if isinstance(node, ast.Dict):
+        return "{}"
+    if isinstance(node, ast.Call):
+        # For things like field(default_factory=list)
+        return None  # Too complex to represent simply
+    return None

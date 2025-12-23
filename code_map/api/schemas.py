@@ -769,6 +769,163 @@ class UMLDiagramResponse(BaseModel):
 
 
 # -----------------------------------------------------------------------------
+# UML Project Definition Schemas (for UML Editor import)
+# -----------------------------------------------------------------------------
+
+
+class UmlPositionSchema(BaseModel):
+    """Position of an entity on the UML canvas."""
+
+    x: float = 0
+    y: float = 0
+
+
+class UmlParameterSchema(BaseModel):
+    """Method parameter definition."""
+
+    name: str
+    type: str = "any"
+    description: str = ""
+    isOptional: bool = False
+    defaultValue: Optional[str] = None
+
+
+class UmlHintsSchema(BaseModel):
+    """Implementation hints for a method."""
+
+    edgeCases: List[str] = Field(default_factory=list)
+    performance: List[str] = Field(default_factory=list)
+    style: List[str] = Field(default_factory=list)
+    custom: List[str] = Field(default_factory=list)
+
+
+class UmlAttributeSchema(BaseModel):
+    """Class/interface attribute definition."""
+
+    id: str
+    name: str
+    type: str = "any"
+    visibility: str = "public"
+    description: str = ""
+    defaultValue: Optional[str] = None
+    isStatic: bool = False
+    isReadonly: bool = False
+
+
+class UmlMethodSchema(BaseModel):
+    """Class/interface method definition."""
+
+    id: str
+    name: str
+    visibility: str = "public"
+    description: str = ""
+    isStatic: bool = False
+    isAsync: bool = False
+    parameters: List[UmlParameterSchema] = Field(default_factory=list)
+    returnType: str = "void"
+    returnDescription: str = ""
+    preconditions: List[str] = Field(default_factory=list)
+    postconditions: List[str] = Field(default_factory=list)
+    throws: List[Dict[str, str]] = Field(default_factory=list)
+    hints: UmlHintsSchema = Field(default_factory=UmlHintsSchema)
+    testCases: List[Dict[str, Any]] = Field(default_factory=list)
+
+
+class UmlClassSchema(BaseModel):
+    """UML class definition for the editor."""
+
+    id: str
+    name: str
+    description: str = ""
+    isAbstract: bool = False
+    extends: Optional[str] = None
+    implements: List[str] = Field(default_factory=list)
+    attributes: List[UmlAttributeSchema] = Field(default_factory=list)
+    methods: List[UmlMethodSchema] = Field(default_factory=list)
+    position: UmlPositionSchema = Field(default_factory=UmlPositionSchema)
+
+
+class UmlInterfaceMethodSchema(BaseModel):
+    """Interface method definition (simplified)."""
+
+    id: str
+    name: str
+    description: str = ""
+    parameters: List[UmlParameterSchema] = Field(default_factory=list)
+    returnType: str = "void"
+
+
+class UmlInterfaceSchema(BaseModel):
+    """UML interface definition for the editor."""
+
+    id: str
+    name: str
+    description: str = ""
+    extends: List[str] = Field(default_factory=list)
+    methods: List[UmlInterfaceMethodSchema] = Field(default_factory=list)
+    position: UmlPositionSchema = Field(default_factory=UmlPositionSchema)
+
+
+class UmlEnumValueSchema(BaseModel):
+    """Enum value definition."""
+
+    name: str
+    value: Optional[str] = None
+    description: str = ""
+
+
+class UmlEnumSchema(BaseModel):
+    """UML enum definition for the editor."""
+
+    id: str
+    name: str
+    description: str = ""
+    values: List[UmlEnumValueSchema] = Field(default_factory=list)
+    position: UmlPositionSchema = Field(default_factory=UmlPositionSchema)
+
+
+class UmlRelationshipSchema(BaseModel):
+    """Relationship between UML entities."""
+
+    id: str
+    type: str  # inheritance, implementation, association, aggregation, composition
+    fromEntity: str = Field(..., alias="from")
+    toEntity: str = Field(..., alias="to")
+    description: str = ""
+    cardinality: Optional[str] = None
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
+class UmlModuleSchema(BaseModel):
+    """UML module containing entities."""
+
+    id: str
+    name: str
+    description: str = ""
+    classes: List[UmlClassSchema] = Field(default_factory=list)
+    interfaces: List[UmlInterfaceSchema] = Field(default_factory=list)
+    enums: List[UmlEnumSchema] = Field(default_factory=list)
+    structs: List[Dict[str, Any]] = Field(default_factory=list)
+    relationships: List[UmlRelationshipSchema] = Field(default_factory=list)
+
+
+class UmlProjectDefResponse(BaseModel):
+    """
+    Complete UML project definition compatible with the AEGIS UML Editor.
+
+    This response can be directly imported into the UML Editor frontend
+    using the mergeProject() action.
+    """
+
+    name: str
+    version: str = "1.0"
+    description: str = ""
+    targetLanguage: str = "python"
+    modules: List[UmlModuleSchema] = Field(default_factory=list)
+
+
+# -----------------------------------------------------------------------------
 # Call Flow Schemas (v2)
 # -----------------------------------------------------------------------------
 

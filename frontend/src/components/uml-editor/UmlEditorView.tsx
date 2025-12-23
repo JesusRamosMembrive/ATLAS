@@ -11,7 +11,7 @@ import { useUmlEditorStore } from "../../state/useUmlEditorStore";
 import { UmlEditorCanvas } from "./UmlEditorCanvas";
 import { InspectorPanel } from "./inspector";
 import { ValidationPanel } from "./validation";
-import { ImportExportDialog, TemplatesDialog, AiGenerateDialog } from "./toolbar";
+import { ImportExportDialog, TemplatesDialog, AiGenerateDialog, ImportFromCodeDialog } from "./toolbar";
 import { DESIGN_TOKENS } from "../../theme/designTokens";
 import {
   LANGUAGE_CONFIG,
@@ -46,6 +46,7 @@ export function UmlEditorView(): JSX.Element {
   const [dialogInitialTab, setDialogInitialTab] = useState<"export" | "import">("export");
   const [isTemplatesDialogOpen, setTemplatesDialogOpen] = useState(false);
   const [isAiDialogOpen, setAiDialogOpen] = useState(false);
+  const [isImportFromCodeDialogOpen, setImportFromCodeDialogOpen] = useState(false);
   const [isValidationExpanded, setValidationExpanded] = useState(false);
   const [pendingLanguageChange, setPendingLanguageChange] = useState<UmlTargetLanguage | null>(null);
 
@@ -353,6 +354,22 @@ export function UmlEditorView(): JSX.Element {
             AI
           </button>
           <button
+            onClick={() => setImportFromCodeDialogOpen(true)}
+            style={{
+              padding: "6px 12px",
+              borderRadius: "6px",
+              border: `1px solid ${colors.complexity.low}`,
+              backgroundColor: "transparent",
+              color: colors.complexity.low,
+              fontSize: "13px",
+              fontWeight: 500,
+              cursor: "pointer",
+            }}
+            title="Import existing code as UML (Python + TypeScript)"
+          >
+            From Code
+          </button>
+          <button
             onClick={handleImport}
             style={{
               padding: "6px 12px",
@@ -456,6 +473,12 @@ export function UmlEditorView(): JSX.Element {
       <AiGenerateDialog
         isOpen={isAiDialogOpen}
         onClose={() => setAiDialogOpen(false)}
+      />
+
+      {/* Import From Code Dialog */}
+      <ImportFromCodeDialog
+        isOpen={isImportFromCodeDialogOpen}
+        onClose={() => setImportFromCodeDialogOpen(false)}
       />
 
       {/* Language Change Confirmation Dialog */}

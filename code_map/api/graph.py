@@ -11,10 +11,10 @@ from fastapi import APIRouter, Depends, Query, Response
 
 from ..exceptions import InternalError
 from ..class_graph import build_class_graph
-from ..uml import GraphvizStyleOptions, build_uml_model, render_uml_svg
+from ..uml import GraphvizStyleOptions, build_uml_model, render_uml_svg, convert_to_uml_project
 from ..state import AppState
 from .deps import get_app_state
-from .schemas import ClassGraphResponse, UMLDiagramResponse
+from .schemas import ClassGraphResponse, UMLDiagramResponse, UmlProjectDefResponse
 
 router = APIRouter(prefix="/graph", tags=["graph"])
 
@@ -245,3 +245,54 @@ async def get_uml_svg(
     except RuntimeError as exc:  # pragma: no cover
         raise InternalError(str(exc)) from exc
     return Response(content=svg, media_type="image/svg+xml")
+
+
+@router.get("/uml/project", response_model=UmlProjectDefResponse)
+async def get_uml_project(
+    include_external: bool = Query(
+        False,
+        description="Include external classes (outside workspace).",
+    ),
+    module_prefix: Optional[List[str]] = Query(
+        None,
+        description="Filter to modules starting with these prefixes.",
+    ),
+    project_name: Optional[str] = Query(
+        None,
+        description="Custom project name (defaults to directory name).",
+    ),
+    target_language: str = Query(
+        "python",
+        description="Target language for type mapping (python, typescript, cpp).",
+    ),
+    state: AppState = Depends(get_app_state),
+) -> UmlProjectDefResponse:
+    """
+    Convert analyzed code to UmlProjectDef format for the UML Editor.
+
+    This endpoint analyzes both Python and TypeScript/TSX files in the workspace
+    and returns a complete UML project definition that can be imported directly
+    into the AEGIS UML Editor using the mergeProject() action.
+
+    The response includes:
+    - Classes with attributes, methods, visibility, and inheritance
+    - Interfaces (from TypeScript)
+    - Relationships (inheritance, implementation, association)
+    - Automatic grid-based layout positioning
+
+    Example usage:
+    ```
+    GET /api/graph/uml/project?module_prefix=code_map&target_language=python
+    ```
+    """
+    prefixes = {prefix for prefix in module_prefix or [] if prefix} or None
+
+    project_def = convert_to_uml_project(
+        state.settings.root_path,
+        module_prefixes=prefixes,
+        include_external=include_external,
+        project_name=project_name,
+        target_language=target_language,
+    )
+
+    return UmlProjectDefResponse.model_validate(project_def)

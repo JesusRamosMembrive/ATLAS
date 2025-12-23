@@ -1,6 +1,6 @@
 # Estado Actual del Proyecto
 
-**Última actualización**: 2025-12-22
+**Última actualización**: 2025-12-23
 **Etapa detectada**: Stage 3 (High Confidence)
 **Versión**: AEGIS v2
 
@@ -12,6 +12,20 @@
 - **UML Editor (AEGIS v2)** - Phase 5 pendiente (Agent Loop integration)
 
 **Completado recientemente:**
+- **C++ Analysis Support** (2025-12-23)
+  - Nuevo analizador `code_map/uml/cpp_analyzer.py` usando tree-sitter
+  - Soporte para clases, structs, métodos, atributos C++
+  - Detección de visibilidad, virtual, pure virtual, static
+  - Integración en converter.py con layout automático
+  - Frontend actualizado con contador de structs
+
+- **Reverse Engineering: Code → UML** (2025-12-23)
+  - Backend: Análisis Python + TypeScript + C++ con visibility, decoradores, async
+  - Nuevo endpoint: `GET /api/graph/uml/project`
+  - Conversor a UmlProjectDef con layout grid automático
+  - Frontend: ImportFromCodeDialog para escanear e importar código
+  - Botón "From Code" en toolbar del UML Editor
+
 - **UML Editor Phases 1-4** - Editor visual completo con export XML
   - Canvas interactivo con React Flow
   - Soporte multi-lenguaje (Python, TypeScript, C++)
@@ -38,7 +52,7 @@
 2. **Corto plazo** (Próximas 1-3 sesiones):
    - Mejorar UX del canvas (zoom, pan, grid snap)
    - Atajos de teclado (Delete para eliminar, Ctrl+S para guardar)
-   - Import de XML existente
+   - Mejorar análisis TypeScript (tree-sitter más completo)
 
 3. **Mediano plazo**:
    - Phase 8: Agent integration (plan→patch→gates workflow)
@@ -137,6 +151,36 @@
 - Persistencia automática en localStorage
 
 **Commit**: `27114e6` - "Add UML Editor for Model-Driven Development (AEGIS v2)"
+
+---
+
+## 🔄 Sesión: 2025-12-23 (Reverse Engineering: Code → UML)
+
+**Implementado:**
+
+### Backend - Análisis de Código
+- `code_map/uml/models.py` - Extendido con visibility, is_static, is_async, docstring
+- `code_map/uml/analyzer.py` - Detección de decoradores, visibilidad Python
+- `code_map/uml/ts_analyzer.py` - **NUEVO**: Analizador TypeScript/TSX con tree-sitter
+- `code_map/uml/converter.py` - **NUEVO**: Conversor a UmlProjectDef + layout grid
+
+### Backend - API
+- `code_map/api/graph.py` - Nuevo endpoint `GET /api/graph/uml/project`
+- `code_map/api/schemas.py` - Schemas Pydantic para UmlProjectDef
+
+### Frontend
+- `frontend/src/api/client.ts` - Función `getCodeAsUmlProject()`
+- `frontend/src/components/uml-editor/toolbar/ImportFromCodeDialog.tsx` - **NUEVO**
+- `frontend/src/components/uml-editor/UmlEditorView.tsx` - Integración del botón "From Code"
+
+**Características:**
+- Escanea Python (.py) y TypeScript (.ts, .tsx)
+- Detecta: clases, interfaces, métodos, atributos, herencia
+- Infiere visibilidad desde convenciones Python (_, __)
+- Detecta decoradores (@staticmethod, @abstractmethod, @classmethod)
+- Layout automático en grid por módulo
+- Preview de resultados antes de importar
+- Merge con proyecto existente via mergeProject()
 
 ---
 

@@ -14,6 +14,12 @@ class AttributeInfo:
     name: str
     annotation: Optional[str] = None
     optional: bool = False
+    visibility: str = "public"  # public | private | protected
+    is_static: bool = False
+    is_readonly: bool = False
+    default_value: Optional[str] = None
+    # C++ specific field
+    is_const: bool = False
 
 
 @dataclass
@@ -21,6 +27,15 @@ class MethodInfo:
     name: str
     parameters: List[str] = field(default_factory=list)
     returns: Optional[str] = None
+    visibility: str = "public"  # public | private | protected
+    is_static: bool = False
+    is_async: bool = False
+    is_abstract: bool = False
+    docstring: Optional[str] = None
+    # C++ specific fields
+    is_virtual: bool = False
+    is_pure_virtual: bool = False
+    is_const: bool = False  # const method
 
 
 @dataclass
@@ -36,6 +51,9 @@ class ClassModel:
         default_factory=set
     )  # Classes created via SomeClass()
     references: Set[str] = field(default_factory=set)  # Classes in type hints
+    # New fields for UML export
+    is_abstract: bool = False
+    docstring: Optional[str] = None
 
 
 @dataclass

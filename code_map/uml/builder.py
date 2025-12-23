@@ -54,11 +54,17 @@ def build_uml_model(
                     "module": class_model.module,
                     "file": str(class_model.file),
                     "bases": bases,
+                    "is_abstract": class_model.is_abstract,
+                    "docstring": class_model.docstring,
                     "attributes": [
                         {
                             "name": attr.name,
                             "type": attr.annotation,
                             "optional": attr.optional,
+                            "visibility": attr.visibility,
+                            "is_static": attr.is_static,
+                            "is_readonly": attr.is_readonly,
+                            "default_value": attr.default_value,
                         }
                         for attr in class_model.attributes
                     ],
@@ -67,6 +73,11 @@ def build_uml_model(
                             "name": method.name,
                             "parameters": method.parameters,
                             "returns": method.returns,
+                            "visibility": method.visibility,
+                            "is_static": method.is_static,
+                            "is_async": method.is_async,
+                            "is_abstract": method.is_abstract,
+                            "docstring": method.docstring,
                         }
                         for method in class_model.methods
                     ],
