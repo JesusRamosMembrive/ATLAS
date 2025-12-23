@@ -5,7 +5,7 @@
  * Handles drag, drop, selection, and connection creation.
  */
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useEffect } from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -65,9 +65,62 @@ export function UmlEditorCanvas(): JSX.Element {
     updateStructPosition,
     addRelationship,
     deleteRelationship,
+    deleteClass,
+    deleteInterface,
+    deleteEnum,
+    deleteStruct,
   } = useUmlEditorStore();
 
   const currentModule = getCurrentModule();
+
+  // Handle Delete key to remove selected element
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Check if Delete or Backspace is pressed
+      if (event.key === "Delete" || event.key === "Backspace") {
+        // Don't delete if user is typing in an input field
+        const target = event.target as HTMLElement;
+        if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) {
+          return;
+        }
+
+        // Delete selected relationship
+        if (selectedEdgeId) {
+          event.preventDefault();
+          deleteRelationship(selectedEdgeId);
+          return;
+        }
+
+        // Delete selected node
+        if (selectedNodeId && currentModule) {
+          event.preventDefault();
+
+          // Determine node type and delete
+          if (currentModule.classes.some((c) => c.id === selectedNodeId)) {
+            deleteClass(selectedNodeId);
+          } else if (currentModule.interfaces.some((i) => i.id === selectedNodeId)) {
+            deleteInterface(selectedNodeId);
+          } else if (currentModule.enums.some((e) => e.id === selectedNodeId)) {
+            deleteEnum(selectedNodeId);
+          } else if (currentModule.structs.some((s) => s.id === selectedNodeId)) {
+            deleteStruct(selectedNodeId);
+          }
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [
+    selectedNodeId,
+    selectedEdgeId,
+    currentModule,
+    deleteClass,
+    deleteInterface,
+    deleteEnum,
+    deleteStruct,
+    deleteRelationship,
+  ]);
 
   // Convert module data to React Flow nodes
   const nodes: Node[] = useMemo(() => {
