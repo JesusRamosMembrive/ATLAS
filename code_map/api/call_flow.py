@@ -15,18 +15,22 @@ from typing import Optional, Union
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import PlainTextResponse
 
-from ..graph_analysis.call_flow.extractor import PythonCallFlowExtractor
-from ..graph_analysis.call_flow.cpp_extractor import CppCallFlowExtractor
-from ..graph_analysis.call_flow.ts_extractor import TsCallFlowExtractor
+from ..graph_analysis.call_flow.languages.python import PythonCallFlowExtractor
+from ..graph_analysis.call_flow.languages.cpp import CppCallFlowExtractor
+from ..graph_analysis.call_flow.languages.typescript import TsCallFlowExtractor
 from ..graph_analysis.call_flow.models import (
     CallGraph,
     CallNode,
     CallEdge,
+    ExtractionMode,
     ResolutionStatus,
 )
 from .schemas import (
+    CallFlowBranchExpansionRequest,
+    CallFlowBranchExpansionResponse,
     CallFlowEntryPointSchema,
     CallFlowEntryPointsResponse,
+    CallFlowExtractionMode,
     CallFlowIgnoredCallSchema,
     CallFlowResolutionStatus,
     CallFlowResponse,
@@ -379,6 +383,10 @@ async def get_call_flow(
         default=False,
         description="Include external calls (builtins, stdlib, third-party) as leaf nodes",
     ),
+    extraction_mode: str = Query(
+        default="full",
+        description="Extraction mode: 'full' (all paths) or 'lazy' (stop at decision points)",
+    ),
 ) -> CallFlowResponse:
     """
     Extract call flow graph from a function or method.
@@ -396,9 +404,11 @@ async def get_call_flow(
         include_external: If True, include external calls (builtins, stdlib, third-party)
                          as leaf nodes in the graph. These won't be expanded further
                          but will show all dependencies visually.
+        extraction_mode: 'full' extracts all paths (default), 'lazy' stops at decision
+                        points and allows interactive branch expansion.
 
     Returns:
-        React Flow compatible graph with nodes, edges, and metadata
+        React Flow compatible graph with nodes, edges, decision_nodes, and metadata
     """
     path = Path(file_path)
 
@@ -453,13 +463,29 @@ async def get_call_flow(
         func_to_find = function
         logger.info("Extracting call flow for %s in %s", function, path)
 
-    # Extract call graph
-    graph = extractor.extract(
-        file_path=path,
-        function_name=func_to_find,
-        max_depth=max_depth,
-        project_root=path.parent,
-    )
+    # Convert extraction_mode string to enum
+    try:
+        mode = ExtractionMode(extraction_mode.lower())
+    except ValueError:
+        mode = ExtractionMode.FULL
+
+    # Extract call graph - Python and C++ support lazy mode
+    if suffix in PYTHON_EXTENSIONS or suffix in CPP_EXTENSIONS:
+        graph = extractor.extract(
+            file_path=path,
+            function_name=func_to_find,
+            max_depth=max_depth,
+            project_root=path.parent,
+            extraction_mode=mode,
+        )
+    else:
+        # TypeScript extractor doesn't support lazy mode yet
+        graph = extractor.extract(
+            file_path=path,
+            function_name=func_to_find,
+            max_depth=max_depth,
+            project_root=path.parent,
+        )
 
     if graph is None:
         raise HTTPException(
@@ -490,6 +516,9 @@ async def get_call_flow(
     return CallFlowResponse(
         nodes=react_flow_data["nodes"],
         edges=react_flow_data["edges"],
+        decision_nodes=react_flow_data.get("decision_nodes", []),
+        unexpanded_branches=graph.unexpanded_branches,
+        extraction_mode=graph.extraction_mode,
         metadata={
             "entry_point": graph.entry_point,
             "source_file": str(graph.source_file),
@@ -498,8 +527,91 @@ async def get_call_flow(
             "max_depth_reached": graph.max_depth_reached,
             "node_count": graph.node_count(),
             "edge_count": graph.edge_count(),
+            "decision_node_count": len(graph.decision_nodes),
         },
         ignored_calls=ignored_calls_schema,
         unresolved_calls=graph.unresolved_calls[:20],  # Limit to first 20
         diagnostics=graph.diagnostics,
+    )
+
+
+@router.post("/{file_path:path}/expand-branch", response_model=CallFlowBranchExpansionResponse)
+async def expand_branch(
+    file_path: str,
+    branch_id: str = Query(..., description="Branch ID to expand"),
+    function: str = Query(..., description="Entry point function name"),
+    max_depth: int = Query(default=5, ge=1, le=20, description="Maximum call depth"),
+) -> CallFlowBranchExpansionResponse:
+    """
+    Expand a specific branch in lazy extraction mode.
+
+    This endpoint is used incrementally after an initial lazy extraction.
+    It extracts the call flow for a specific branch that was left unexpanded.
+
+    Currently only supported for Python files.
+
+    Args:
+        file_path: Path to source file
+        branch_id: ID of the branch to expand (from unexpanded_branches)
+        function: Entry point function name (same as initial extraction)
+        max_depth: Maximum depth to follow calls
+
+    Returns:
+        New nodes, edges, and decision nodes discovered in the expanded branch
+    """
+    path = Path(file_path)
+
+    if not path.is_absolute():
+        path = Path("/") / path
+
+    if not path.exists():
+        raise HTTPException(
+            status_code=404,
+            detail=f"File not found: {path}",
+        )
+
+    suffix = path.suffix.lower()
+
+    # Only Python supports lazy mode / branch expansion currently
+    if suffix not in PYTHON_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Branch expansion only supported for Python files. Got: {path.suffix}",
+        )
+
+    extractor = _get_python_extractor()
+
+    if not extractor.is_available():
+        raise HTTPException(
+            status_code=503,
+            detail="tree-sitter for Python not available. "
+            "Install tree_sitter and tree_sitter_languages packages.",
+        )
+
+    # Re-extract with the branch expanded
+    # We pass expand_branches containing the branch to expand
+    graph = extractor.extract(
+        file_path=path,
+        function_name=function,
+        max_depth=max_depth,
+        project_root=path.parent,
+        extraction_mode=ExtractionMode.LAZY,
+        expand_branches=[branch_id],
+    )
+
+    if graph is None:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Failed to expand branch {branch_id} in {path}::{function}.",
+        )
+
+    # Convert to React Flow format
+    react_flow_data = graph.to_react_flow()
+
+    return CallFlowBranchExpansionResponse(
+        new_nodes=react_flow_data["nodes"],
+        new_edges=react_flow_data["edges"],
+        new_decision_nodes=react_flow_data.get("decision_nodes", []),
+        new_unexpanded_branches=graph.unexpanded_branches,
+        expanded_branch_id=branch_id,
     )

@@ -1059,6 +1059,9 @@ class CallFlowResponse(BaseModel):
     Attributes:
         nodes: List of nodes formatted for React Flow
         edges: List of edges formatted for React Flow
+        decision_nodes: List of decision point nodes (if/else, match/case, etc.)
+        unexpanded_branches: List of branch IDs that can be expanded (in lazy mode)
+        extraction_mode: The extraction mode used (full or lazy)
         metadata: Graph metadata (entry_point, max_depth, etc.)
         ignored_calls: Calls that were classified as external (builtins, stdlib, third-party)
         unresolved_calls: Calls that could not be resolved
@@ -1067,6 +1070,18 @@ class CallFlowResponse(BaseModel):
 
     nodes: List[CallFlowReactFlowNodeSchema] = Field(default_factory=list)
     edges: List[CallFlowReactFlowEdgeSchema] = Field(default_factory=list)
+    decision_nodes: List[Dict[str, Any]] = Field(
+        default_factory=list,
+        description="Decision point nodes (if/else, match/case, try/except)",
+    )
+    unexpanded_branches: List[str] = Field(
+        default_factory=list,
+        description="Branch IDs available for expansion (lazy mode)",
+    )
+    extraction_mode: str = Field(
+        default="full",
+        description="Extraction mode: 'full' or 'lazy'",
+    )
     metadata: Dict[str, Any] = Field(
         default_factory=dict,
         description="Graph metadata: entry_point, max_depth, source_file",
@@ -1101,6 +1116,131 @@ class CallFlowEntryPointsResponse(BaseModel):
 
     file_path: str
     entry_points: List[CallFlowEntryPointSchema] = Field(default_factory=list)
+
+
+class CallFlowExtractionMode(str, Enum):
+    """Extraction mode for call flow analysis.
+
+    Values:
+        full: Extract all paths (current behavior)
+        lazy: Stop at decision points, allow interactive expansion
+    """
+
+    FULL = "full"
+    LAZY = "lazy"
+
+
+class CallFlowDecisionType(str, Enum):
+    """Type of decision point in the call flow.
+
+    Values:
+        if_else: if/elif/else statement
+        match_case: Python 3.10+ match/case
+        try_except: try/except/finally
+        ternary: Conditional expression (x if cond else y)
+    """
+
+    IF_ELSE = "if_else"
+    MATCH_CASE = "match_case"
+    TRY_EXCEPT = "try_except"
+    TERNARY = "ternary"
+
+
+class CallFlowBranchInfoSchema(BaseModel):
+    """Information about a branch in a decision point.
+
+    Attributes:
+        branch_id: Unique identifier for this branch
+        label: Display label (e.g., "TRUE", "FALSE", "case X")
+        condition_text: The condition or pattern text
+        is_expanded: Whether this branch has been expanded
+        call_count: Number of calls in this branch (preview count)
+        start_line: Start line of the branch block
+        end_line: End line of the branch block
+    """
+
+    branch_id: str
+    label: str
+    condition_text: str
+    is_expanded: bool = False
+    call_count: int = 0
+    start_line: int = 0
+    end_line: int = 0
+
+
+class CallFlowDecisionNodeSchema(BaseModel):
+    """A decision point node in the call flow graph.
+
+    Represents if/else, match/case, try/except, or ternary expressions
+    that create branching paths in the code flow.
+
+    Attributes:
+        id: Unique decision node identifier
+        decision_type: Type of decision (if_else, match_case, etc.)
+        condition_text: The condition being evaluated
+        file_path: Path to source file
+        line: Line number of decision
+        column: Column number
+        parent_call_id: ID of the CallNode containing this decision
+        branches: List of branches available
+        depth: Depth in the call flow
+    """
+
+    id: str
+    decision_type: CallFlowDecisionType
+    condition_text: str
+    file_path: Optional[str] = None
+    line: int = 0
+    column: int = 0
+    parent_call_id: str = ""
+    branches: List[CallFlowBranchInfoSchema] = Field(default_factory=list)
+    depth: int = 0
+
+
+class CallFlowReactFlowDecisionNodeSchema(BaseModel):
+    """React Flow formatted node for decision point visualization."""
+
+    id: str
+    type: str = "decisionNode"  # Different type for frontend to render differently
+    position: Dict[str, float]
+    data: Dict[str, Any]
+
+
+class CallFlowBranchExpansionRequest(BaseModel):
+    """Request to expand a specific branch in lazy extraction mode.
+
+    Attributes:
+        branch_id: ID of the branch to expand
+        function: The entry point function name
+        max_depth: Maximum depth to follow calls
+    """
+
+    branch_id: str
+    function: str
+    max_depth: int = 5
+
+
+class CallFlowBranchExpansionResponse(BaseModel):
+    """Response from expanding a branch.
+
+    Contains the new nodes, edges, and decision nodes discovered
+    when expanding the branch.
+
+    Attributes:
+        new_nodes: Newly discovered call nodes
+        new_edges: Newly discovered call edges
+        new_decision_nodes: Newly discovered decision points
+        new_unexpanded_branches: Branch IDs still available for expansion
+        expanded_branch_id: The branch that was expanded
+    """
+
+    new_nodes: List[CallFlowReactFlowNodeSchema] = Field(default_factory=list)
+    new_edges: List[CallFlowReactFlowEdgeSchema] = Field(default_factory=list)
+    new_decision_nodes: List[CallFlowReactFlowDecisionNodeSchema] = Field(
+        default_factory=list
+    )
+    new_unexpanded_branches: List[str] = Field(default_factory=list)
+    expanded_branch_id: str
 
 
 # -----------------------------------------------------------------------------

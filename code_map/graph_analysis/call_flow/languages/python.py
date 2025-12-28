@@ -22,7 +22,17 @@ from typing import Any, ClassVar, Dict, List, Optional, Set, Tuple, TYPE_CHECKIN
 
 from .base_extractor import BaseCallFlowExtractor
 from ..constants import PYTHON_BUILTINS, is_stdlib
-from ..models import CallEdge, CallGraph, CallNode, IgnoredCall, ResolutionStatus
+from ..models import (
+    BranchInfo,
+    CallEdge,
+    CallGraph,
+    CallNode,
+    DecisionNode,
+    DecisionType,
+    ExtractionMode,
+    IgnoredCall,
+    ResolutionStatus,
+)
 from ..type_resolver import TypeResolver, ScopeInfo
 
 if TYPE_CHECKING:
@@ -352,6 +362,8 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
         function_name: str,
         max_depth: int = 5,
         project_root: Optional[Path] = None,
+        extraction_mode: ExtractionMode = ExtractionMode.FULL,
+        expand_branches: Optional[List[str]] = None,
     ) -> Optional[CallGraph]:
         """
         Extract call flow graph starting from a function.
@@ -361,6 +373,8 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
             function_name: Name of the entry point function/method
             max_depth: Maximum depth to follow calls
             project_root: Project root for resolving imports
+            extraction_mode: FULL (all paths) or LAZY (stop at decisions)
+            expand_branches: Specific branch IDs to expand (for incremental lazy expansion)
 
         Returns:
             CallGraph containing all reachable calls, or None if extraction fails
@@ -424,6 +438,7 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
             entry_point=entry_id,
             max_depth=max_depth,
             source_file=file_path,
+            extraction_mode=extraction_mode.value,
         )
         graph.add_node(entry_node)
 
@@ -444,6 +459,8 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
             call_stack=call_stack,
             class_context=class_name,
             imports=imports,
+            extraction_mode=extraction_mode,
+            expand_branches=expand_branches or [],
         )
 
         return graph
@@ -465,8 +482,15 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
         call_stack: List[str],
         class_context: Optional[str] = None,
         imports: Optional[Dict[str, Dict[str, Any]]] = None,
+        extraction_mode: ExtractionMode = ExtractionMode.FULL,
+        expand_branches: Optional[List[str]] = None,
     ) -> None:
-        """Recursively extract calls from a function body."""
+        """Recursively extract calls from a function body.
+
+        Args:
+            extraction_mode: FULL extracts all paths; LAZY stops at decision points
+            expand_branches: Specific branch IDs to expand in LAZY mode
+        """
         if depth > max_depth:
             graph.max_depth_reached = True
             graph.diagnostics["max_depth_reached"] = True
@@ -482,7 +506,65 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
             tree = self._parser.parse(bytes(source, "utf-8"))
             imports = self._extract_imports(tree.root_node, source)
 
-        # Extract all calls in this function
+        expand_branches = expand_branches or []
+
+        # In LAZY mode, check for decision points first
+        if extraction_mode == ExtractionMode.LAZY:
+            decision_ast = self._find_first_decision_point(body)
+            if decision_ast is not None:
+                # Extract calls before the decision point
+                calls = self._extract_calls_before_decision(body, decision_ast, source)
+
+                # Process these calls (same logic as FULL mode)
+                self._process_calls(
+                    graph=graph,
+                    calls=calls,
+                    parent_id=parent_id,
+                    file_path=file_path,
+                    source=source,
+                    project_root=project_root,
+                    depth=depth,
+                    max_depth=max_depth,
+                    call_stack=call_stack,
+                    class_context=class_context,
+                    imports=imports,
+                    extraction_mode=extraction_mode,
+                    expand_branches=expand_branches,
+                )
+
+                # Parse the decision node
+                decision_node = self._parse_decision_node(
+                    decision_ast, source, file_path, parent_id, depth
+                )
+                if decision_node:
+                    graph.add_decision_node(decision_node)
+
+                    # Track unexpanded branches (those not in expand_branches)
+                    for branch in decision_node.branches:
+                        if branch.branch_id not in expand_branches:
+                            graph.unexpanded_branches.append(branch.branch_id)
+                        else:
+                            # This branch should be expanded - extract its contents
+                            self._expand_branch(
+                                graph=graph,
+                                decision_ast=decision_ast,
+                                branch=branch,
+                                file_path=file_path,
+                                source=source,
+                                project_root=project_root,
+                                depth=depth,
+                                max_depth=max_depth,
+                                call_stack=call_stack,
+                                class_context=class_context,
+                                imports=imports,
+                                extraction_mode=extraction_mode,
+                                expand_branches=expand_branches,
+                            )
+
+                # Stop here (branches not in expand_branches remain unexpanded)
+                return
+
+        # FULL mode: Extract all calls in this function
         calls = self._extract_calls_from_body(body, source)
 
         # Get type resolver for type inference
@@ -611,6 +693,8 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
                         call_stack=call_stack,
                         class_context=target_class,
                         imports=imports,
+                        extraction_mode=extraction_mode,
+                        expand_branches=expand_branches,
                     )
             else:
                 # Different file - need to load and parse
@@ -644,6 +728,8 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
                             call_stack=call_stack,
                             class_context=target_class,
                             imports=target_imports,
+                            extraction_mode=extraction_mode,
+                            expand_branches=expand_branches,
                         )
                 except OSError:
                     logger.debug(
@@ -663,6 +749,709 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
                     calls.append(call_info)
 
         return calls
+
+    def _process_calls(
+        self,
+        graph: CallGraph,
+        calls: List[CallInfo],
+        parent_id: str,
+        file_path: Path,
+        source: str,
+        project_root: Path,
+        depth: int,
+        max_depth: int,
+        call_stack: List[str],
+        class_context: Optional[str] = None,
+        imports: Optional[Dict[str, Dict[str, Any]]] = None,
+        extraction_mode: ExtractionMode = ExtractionMode.FULL,
+        expand_branches: Optional[List[str]] = None,
+    ) -> None:
+        """Process a list of calls, adding nodes/edges and recursing.
+
+        This method extracts the call processing logic from _extract_calls_recursive
+        to allow reuse in both FULL and LAZY extraction modes.
+        """
+        if depth > max_depth:
+            return
+
+        # Get type resolver for type inference
+        type_resolver = self._get_type_resolver(project_root)
+
+        # Parse the source to get scope info
+        tree = self._parser.parse(bytes(source, "utf-8"))
+
+        # We need a function node for scope analysis - use root if we don't have one
+        # For now, we'll skip scope-based type resolution in this context
+        scope_info = None
+
+        expand_branches = expand_branches or []
+
+        for call_info in calls:
+            # Try to resolve the call
+            resolved, status, module_hint = self._resolve_call_v2(
+                call_info=call_info,
+                file_path=file_path,
+                source=source,
+                project_root=project_root,
+                class_context=class_context,
+                imports=imports,
+                scope_info=scope_info,
+            )
+
+            # Handle external/ignored calls
+            if status != ResolutionStatus.RESOLVED_PROJECT:
+                ignored_call = IgnoredCall(
+                    expression=call_info.qualified_name,
+                    status=status,
+                    call_site_line=call_info.line,
+                    module_hint=module_hint,
+                    caller_id=parent_id,
+                )
+                graph.ignored_calls.append(ignored_call)
+
+                if status == ResolutionStatus.UNRESOLVED:
+                    graph.unresolved_calls.append(call_info.qualified_name)
+                continue
+
+            # We have a resolved project call
+            target_file, target_func, target_line, target_col, target_class = resolved
+
+            # Build target node ID using stable symbol ID
+            target_kind = "method" if target_class else "function"
+            target_id = self._make_symbol_id(
+                target_file,
+                target_line,
+                target_col,
+                target_kind,
+                target_func,
+                project_root,
+            )
+
+            if target_class:
+                target_qualified = f"{target_class}.{target_func}"
+            else:
+                target_qualified = target_func
+
+            # Per-branch cycle detection
+            is_cycle = target_id in call_stack
+            if is_cycle:
+                graph.diagnostics.setdefault("cycles_detected", []).append(
+                    {
+                        "from": parent_id,
+                        "to": target_id,
+                        "path": list(call_stack),
+                    }
+                )
+
+            # Add edge
+            edge = CallEdge(
+                source_id=parent_id,
+                target_id=target_id,
+                call_site_line=call_info.line,
+                call_type=call_info.call_type,
+                arguments=call_info.arguments if call_info.arguments else None,
+                expression=call_info.qualified_name,
+                resolution_status=ResolutionStatus.RESOLVED_PROJECT,
+            )
+            graph.add_edge(edge)
+
+            if is_cycle:
+                continue
+
+            # Check if node already exists (from another branch)
+            existing_node = graph.get_node(target_id)
+            if existing_node is None:
+                target_node = CallNode(
+                    id=target_id,
+                    name=target_func,
+                    qualified_name=target_qualified,
+                    file_path=target_file,
+                    line=target_line,
+                    column=target_col,
+                    kind=target_kind,
+                    is_entry_point=False,
+                    depth=depth,
+                    symbol_id=target_id,
+                    resolution_status=ResolutionStatus.RESOLVED_PROJECT,
+                )
+                graph.add_node(target_node)
+
+            # Add to call stack for this branch and recurse
+            call_stack.append(target_id)
+
+            if target_file == file_path:
+                # Same file - parse from existing tree
+                target_node_ast, _ = self._find_function_or_method(
+                    tree.root_node, target_func, source, target_class
+                )
+                if target_node_ast:
+                    # Update node with complexity metrics
+                    node_to_update = graph.get_node(target_id)
+                    if node_to_update:
+                        node_to_update.complexity = self._calculate_complexity(
+                            target_node_ast
+                        )
+                        node_to_update.loc = self._calculate_loc(target_node_ast)
+
+                    self._extract_calls_recursive(
+                        graph=graph,
+                        node=target_node_ast,
+                        parent_id=target_id,
+                        file_path=target_file,
+                        source=source,
+                        project_root=project_root,
+                        depth=depth + 1,
+                        max_depth=max_depth,
+                        call_stack=call_stack,
+                        class_context=target_class,
+                        imports=imports,
+                        extraction_mode=extraction_mode,
+                        expand_branches=expand_branches,
+                    )
+            else:
+                # Different file - need to load and parse
+                try:
+                    target_source = target_file.read_text(encoding="utf-8")
+                    target_tree = self._parser.parse(bytes(target_source, "utf-8"))
+                    target_imports = self._extract_imports(
+                        target_tree.root_node, target_source
+                    )
+                    target_node_ast, _ = self._find_function_or_method(
+                        target_tree.root_node, target_func, target_source, target_class
+                    )
+                    if target_node_ast:
+                        # Update node with complexity metrics
+                        node_to_update = graph.get_node(target_id)
+                        if node_to_update:
+                            node_to_update.complexity = self._calculate_complexity(
+                                target_node_ast
+                            )
+                            node_to_update.loc = self._calculate_loc(target_node_ast)
+
+                        self._extract_calls_recursive(
+                            graph=graph,
+                            node=target_node_ast,
+                            parent_id=target_id,
+                            file_path=target_file,
+                            source=target_source,
+                            project_root=project_root,
+                            depth=depth + 1,
+                            max_depth=max_depth,
+                            call_stack=call_stack,
+                            class_context=target_class,
+                            imports=target_imports,
+                            extraction_mode=extraction_mode,
+                            expand_branches=expand_branches,
+                        )
+                except OSError:
+                    logger.debug(
+                        "Could not read file for recursive extraction: %s", target_file
+                    )
+
+            call_stack.pop()
+
+    # ─────────────────────────────────────────────────────────────
+    # Decision point detection for lazy extraction
+    # ─────────────────────────────────────────────────────────────
+
+    @property
+    def _decision_point_types(self) -> Set[str]:
+        """Node types that represent decision points for lazy extraction.
+
+        Note: Loops (for_statement, while_statement) are excluded per user preference
+        to keep visualization simpler - they're treated as linear flow.
+        """
+        return {
+            "if_statement",  # if/elif/else
+            "match_statement",  # Python 3.10+ match/case
+            "try_statement",  # try/except/finally
+            "conditional_expression",  # ternary: x if cond else y
+        }
+
+    def _find_first_decision_point(self, body: Any) -> Optional[Any]:
+        """Find the first decision point in a function body (direct children only).
+
+        Returns the AST node of the first decision point, or None.
+        """
+        for child in body.children:
+            if child.type in self._decision_point_types:
+                return child
+        return None
+
+    def _extract_calls_before_decision(
+        self, body: Any, decision_node: Any, source: str
+    ) -> List[CallInfo]:
+        """Extract calls that occur before a decision point in the body."""
+        calls: List[CallInfo] = []
+        decision_line = decision_node.start_point[0]
+
+        for child in body.children:
+            # Stop when we reach the decision point
+            if child.start_point[0] >= decision_line:
+                break
+
+            # Extract calls from this statement
+            for node in self._walk_tree(child):
+                if node.type == "call":
+                    call_info = self._parse_call(node, source)
+                    if call_info:
+                        calls.append(call_info)
+
+        return calls
+
+    def _expand_branch(
+        self,
+        graph: CallGraph,
+        decision_ast: Any,
+        branch: BranchInfo,
+        file_path: Path,
+        source: str,
+        project_root: Path,
+        depth: int,
+        max_depth: int,
+        call_stack: List[str],
+        class_context: Optional[str] = None,
+        imports: Optional[Dict[str, Dict[str, Any]]] = None,
+        extraction_mode: ExtractionMode = ExtractionMode.FULL,
+        expand_branches: Optional[List[str]] = None,
+    ) -> None:
+        """Expand a specific branch from a decision node.
+
+        Finds the branch's AST block and extracts calls from it.
+        """
+        branch_block = self._find_branch_block(decision_ast, branch)
+        if branch_block is None:
+            return
+
+        # Mark branch as expanded
+        branch.is_expanded = True
+
+        # Remove from unexpanded list if present
+        if branch.branch_id in graph.unexpanded_branches:
+            graph.unexpanded_branches.remove(branch.branch_id)
+
+        # Extract calls from this branch's block
+        calls = self._extract_calls_from_body(branch_block, source)
+
+        # Process the calls (this will recurse into called functions)
+        self._process_calls(
+            graph=graph,
+            calls=calls,
+            parent_id=graph.entry_point,  # Connect to parent decision's caller
+            file_path=file_path,
+            source=source,
+            project_root=project_root,
+            depth=depth + 1,
+            max_depth=max_depth,
+            call_stack=call_stack,
+            class_context=class_context,
+            imports=imports,
+            extraction_mode=extraction_mode,
+            expand_branches=expand_branches or [],
+        )
+
+    def _find_branch_block(self, decision_ast: Any, branch: BranchInfo) -> Optional[Any]:
+        """Find the AST block node for a specific branch.
+
+        Uses start_line from BranchInfo to locate the correct block.
+        """
+        target_line = branch.start_line - 1  # Convert to 0-indexed
+
+        if decision_ast.type == "if_statement":
+            # Main if block
+            main_block = self._find_child_by_type(decision_ast, "block")
+            if main_block and main_block.start_point[0] + 1 == branch.start_line:
+                return main_block
+
+            # elif and else clauses
+            for child in decision_ast.children:
+                if child.type in ("elif_clause", "else_clause"):
+                    block = self._find_child_by_type(child, "block")
+                    if block and block.start_point[0] + 1 == branch.start_line:
+                        return block
+
+        elif decision_ast.type == "match_statement":
+            for child in decision_ast.children:
+                if child.type == "case_clause":
+                    block = self._find_child_by_type(child, "block")
+                    if block and block.start_point[0] + 1 == branch.start_line:
+                        return block
+
+        elif decision_ast.type == "try_statement":
+            # Main try block
+            main_block = self._find_child_by_type(decision_ast, "block")
+            if main_block and main_block.start_point[0] + 1 == branch.start_line:
+                return main_block
+
+            # except and finally clauses
+            for child in decision_ast.children:
+                if child.type in ("except_clause", "finally_clause"):
+                    block = self._find_child_by_type(child, "block")
+                    if block and block.start_point[0] + 1 == branch.start_line:
+                        return block
+
+        return None
+
+    def _parse_decision_node(
+        self,
+        decision_ast: Any,
+        source: str,
+        file_path: Path,
+        parent_call_id: str,
+        depth: int,
+    ) -> Optional[DecisionNode]:
+        """Parse a tree-sitter decision node into a DecisionNode model."""
+        source_bytes = source.encode("utf-8") if isinstance(source, str) else source
+        line = decision_ast.start_point[0] + 1
+        column = decision_ast.start_point[1]
+
+        if decision_ast.type == "if_statement":
+            return self._parse_if_statement(
+                decision_ast, source, source_bytes, file_path,
+                parent_call_id, depth, line, column
+            )
+        elif decision_ast.type == "match_statement":
+            return self._parse_match_statement(
+                decision_ast, source, source_bytes, file_path,
+                parent_call_id, depth, line, column
+            )
+        elif decision_ast.type == "try_statement":
+            return self._parse_try_statement(
+                decision_ast, source, source_bytes, file_path,
+                parent_call_id, depth, line, column
+            )
+        elif decision_ast.type == "conditional_expression":
+            return self._parse_ternary_expression(
+                decision_ast, source, source_bytes, file_path,
+                parent_call_id, depth, line, column
+            )
+        return None
+
+    def _parse_if_statement(
+        self,
+        node: Any,
+        source: str,
+        source_bytes: bytes,
+        file_path: Path,
+        parent_call_id: str,
+        depth: int,
+        line: int,
+        column: int,
+    ) -> DecisionNode:
+        """Parse an if/elif/else statement into a DecisionNode."""
+        # Extract condition text
+        condition_node = self._find_child_by_type(node, "comparison_operator")
+        if condition_node is None:
+            # Try other condition types
+            for child in node.children:
+                if child.type not in ("if", ":", "block", "elif_clause", "else_clause"):
+                    condition_node = child
+                    break
+
+        condition_text = (
+            self._get_node_text(condition_node, source_bytes)
+            if condition_node
+            else "???"
+        )
+
+        decision_id = f"decision:{file_path}:{line}:if_else"
+        branches: List[BranchInfo] = []
+
+        # Find the main if block (TRUE branch)
+        if_block = self._find_child_by_type(node, "block")
+        if if_block:
+            branches.append(
+                BranchInfo(
+                    branch_id=f"{decision_id}:branch:0",
+                    label="TRUE",
+                    condition_text=condition_text,
+                    is_expanded=False,
+                    call_count=self._count_calls_in_node(if_block),
+                    start_line=if_block.start_point[0] + 1,
+                    end_line=if_block.end_point[0] + 1,
+                )
+            )
+
+        # Find elif and else clauses
+        branch_index = 1
+        for child in node.children:
+            if child.type == "elif_clause":
+                elif_condition = None
+                elif_block = None
+                for subchild in child.children:
+                    if subchild.type == "block":
+                        elif_block = subchild
+                    elif subchild.type not in ("elif", ":"):
+                        elif_condition = subchild
+
+                elif_condition_text = (
+                    self._get_node_text(elif_condition, source_bytes)
+                    if elif_condition
+                    else "???"
+                )
+
+                if elif_block:
+                    branches.append(
+                        BranchInfo(
+                            branch_id=f"{decision_id}:branch:{branch_index}",
+                            label=f"ELIF: {elif_condition_text[:30]}",
+                            condition_text=elif_condition_text,
+                            is_expanded=False,
+                            call_count=self._count_calls_in_node(elif_block),
+                            start_line=elif_block.start_point[0] + 1,
+                            end_line=elif_block.end_point[0] + 1,
+                        )
+                    )
+                    branch_index += 1
+
+            elif child.type == "else_clause":
+                else_block = self._find_child_by_type(child, "block")
+                if else_block:
+                    branches.append(
+                        BranchInfo(
+                            branch_id=f"{decision_id}:branch:{branch_index}",
+                            label="FALSE",
+                            condition_text="else",
+                            is_expanded=False,
+                            call_count=self._count_calls_in_node(else_block),
+                            start_line=else_block.start_point[0] + 1,
+                            end_line=else_block.end_point[0] + 1,
+                        )
+                    )
+
+        return DecisionNode(
+            id=decision_id,
+            decision_type=DecisionType.IF_ELSE,
+            condition_text=condition_text,
+            file_path=file_path,
+            line=line,
+            column=column,
+            parent_call_id=parent_call_id,
+            branches=branches,
+            depth=depth,
+        )
+
+    def _parse_match_statement(
+        self,
+        node: Any,
+        source: str,
+        source_bytes: bytes,
+        file_path: Path,
+        parent_call_id: str,
+        depth: int,
+        line: int,
+        column: int,
+    ) -> DecisionNode:
+        """Parse a match/case statement into a DecisionNode."""
+        # Extract the subject being matched
+        subject_node = None
+        for child in node.children:
+            if child.type not in ("match", ":", "block", "case_clause"):
+                subject_node = child
+                break
+
+        subject_text = (
+            self._get_node_text(subject_node, source_bytes)
+            if subject_node
+            else "???"
+        )
+
+        decision_id = f"decision:{file_path}:{line}:match_case"
+        branches: List[BranchInfo] = []
+
+        # Find case clauses - they are inside a block child of the match statement
+        branch_index = 0
+        case_clauses = []
+        for child in node.children:
+            if child.type == "block":
+                # Case clauses are nested inside the block
+                for subchild in child.children:
+                    if subchild.type == "case_clause":
+                        case_clauses.append(subchild)
+            elif child.type == "case_clause":
+                # Direct case_clause (fallback for different tree-sitter versions)
+                case_clauses.append(child)
+
+        for case_node in case_clauses:
+            # Extract pattern
+            pattern_node = None
+            case_block = None
+            for subchild in case_node.children:
+                if subchild.type == "block":
+                    case_block = subchild
+                elif subchild.type not in ("case", ":"):
+                    pattern_node = subchild
+
+            pattern_text = (
+                self._get_node_text(pattern_node, source_bytes)
+                if pattern_node
+                else "???"
+            )
+
+            if case_block:
+                branches.append(
+                    BranchInfo(
+                        branch_id=f"{decision_id}:branch:{branch_index}",
+                        label=f"case {pattern_text[:20]}",
+                        condition_text=pattern_text,
+                        is_expanded=False,
+                        call_count=self._count_calls_in_node(case_block),
+                        start_line=case_block.start_point[0] + 1,
+                        end_line=case_block.end_point[0] + 1,
+                    )
+                )
+                branch_index += 1
+
+        return DecisionNode(
+            id=decision_id,
+            decision_type=DecisionType.MATCH_CASE,
+            condition_text=f"match {subject_text}",
+            file_path=file_path,
+            line=line,
+            column=column,
+            parent_call_id=parent_call_id,
+            branches=branches,
+            depth=depth,
+        )
+
+    def _parse_try_statement(
+        self,
+        node: Any,
+        source: str,
+        source_bytes: bytes,
+        file_path: Path,
+        parent_call_id: str,
+        depth: int,
+        line: int,
+        column: int,
+    ) -> DecisionNode:
+        """Parse a try/except/finally statement into a DecisionNode."""
+        decision_id = f"decision:{file_path}:{line}:try_except"
+        branches: List[BranchInfo] = []
+
+        # Main try block
+        try_block = self._find_child_by_type(node, "block")
+        if try_block:
+            branches.append(
+                BranchInfo(
+                    branch_id=f"{decision_id}:branch:0",
+                    label="try",
+                    condition_text="try block",
+                    is_expanded=False,
+                    call_count=self._count_calls_in_node(try_block),
+                    start_line=try_block.start_point[0] + 1,
+                    end_line=try_block.end_point[0] + 1,
+                )
+            )
+
+        # Find except and finally clauses
+        branch_index = 1
+        for child in node.children:
+            if child.type == "except_clause":
+                # Extract exception type
+                exception_type = None
+                except_block = None
+                for subchild in child.children:
+                    if subchild.type == "block":
+                        except_block = subchild
+                    elif subchild.type not in ("except", ":", "as"):
+                        exception_type = subchild
+
+                exception_text = (
+                    self._get_node_text(exception_type, source_bytes)
+                    if exception_type
+                    else "Exception"
+                )
+
+                if except_block:
+                    branches.append(
+                        BranchInfo(
+                            branch_id=f"{decision_id}:branch:{branch_index}",
+                            label=f"except {exception_text[:15]}",
+                            condition_text=exception_text,
+                            is_expanded=False,
+                            call_count=self._count_calls_in_node(except_block),
+                            start_line=except_block.start_point[0] + 1,
+                            end_line=except_block.end_point[0] + 1,
+                        )
+                    )
+                    branch_index += 1
+
+            elif child.type == "finally_clause":
+                finally_block = self._find_child_by_type(child, "block")
+                if finally_block:
+                    branches.append(
+                        BranchInfo(
+                            branch_id=f"{decision_id}:branch:{branch_index}",
+                            label="finally",
+                            condition_text="finally block",
+                            is_expanded=False,
+                            call_count=self._count_calls_in_node(finally_block),
+                            start_line=finally_block.start_point[0] + 1,
+                            end_line=finally_block.end_point[0] + 1,
+                        )
+                    )
+
+        return DecisionNode(
+            id=decision_id,
+            decision_type=DecisionType.TRY_EXCEPT,
+            condition_text="try/except",
+            file_path=file_path,
+            line=line,
+            column=column,
+            parent_call_id=parent_call_id,
+            branches=branches,
+            depth=depth,
+        )
+
+    def _parse_ternary_expression(
+        self,
+        node: Any,
+        source: str,
+        source_bytes: bytes,
+        file_path: Path,
+        parent_call_id: str,
+        depth: int,
+        line: int,
+        column: int,
+    ) -> DecisionNode:
+        """Parse a ternary expression (x if cond else y) into a DecisionNode."""
+        # Structure: value_if_true if condition else value_if_false
+        condition_text = self._get_node_text(node, source_bytes)
+
+        decision_id = f"decision:{file_path}:{line}:ternary"
+        branches: List[BranchInfo] = [
+            BranchInfo(
+                branch_id=f"{decision_id}:branch:0",
+                label="TRUE",
+                condition_text="if true",
+                is_expanded=False,
+                call_count=0,  # Ternary expressions typically inline
+                start_line=line,
+                end_line=line,
+            ),
+            BranchInfo(
+                branch_id=f"{decision_id}:branch:1",
+                label="FALSE",
+                condition_text="else",
+                is_expanded=False,
+                call_count=0,
+                start_line=line,
+                end_line=line,
+            ),
+        ]
+
+        return DecisionNode(
+            id=decision_id,
+            decision_type=DecisionType.TERNARY,
+            condition_text=condition_text[:50],  # Truncate long expressions
+            file_path=file_path,
+            line=line,
+            column=column,
+            parent_call_id=parent_call_id,
+            branches=branches,
+            depth=depth,
+        )
 
     def _parse_call(self, node: Any, source: str) -> Optional[CallInfo]:
         """Parse a call node to extract call information."""

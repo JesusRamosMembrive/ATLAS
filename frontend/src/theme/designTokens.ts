@@ -48,6 +48,16 @@ export const DESIGN_TOKENS = {
             // UI elements
             entryPoint: "#f59e0b", // amber-500
             edgeLabel: "#94a3b8", // gray-400
+            // Decision nodes
+            decision: "#ec4899", // pink-500
+            decisionBorder: "#f472b6", // pink-400
+            // Branch types
+            branchTrue: "#10b981", // emerald-500
+            branchFalse: "#ef4444", // red-500
+            branchCase: "#8b5cf6", // violet-500
+            branchExcept: "#f97316", // orange-500
+            branchExpanded: "#22c55e", // green-500
+            branchUnexpanded: "#6b7280", // gray-500
         },
         // Complexity thresholds (same as ComplexityCard)
         complexity: {

@@ -13,33 +13,61 @@ import "reactflow/dist/style.css";
 
 import { CallFlowNode } from "./CallFlowNode";
 import { CallFlowEdge } from "./CallFlowEdge";
+import { DecisionFlowNode } from "./DecisionFlowNode";
+import { BranchFlowEdge } from "./BranchFlowEdge";
 import { DESIGN_TOKENS } from "../../theme/designTokens";
 
 const { colors, borders } = DESIGN_TOKENS;
 
+interface DecisionNodeData {
+  id: string;
+  decision_type: string;
+  condition_text: string;
+  file_path?: string | null;
+  line: number;
+  column: number;
+  parent_call_id: string;
+  branches: Array<{
+    branch_id: string;
+    label: string;
+    condition_text: string;
+    is_expanded: boolean;
+    call_count: number;
+    start_line: number;
+    end_line: number;
+  }>;
+  depth: number;
+}
+
 interface CallFlowGraphProps {
   nodes: Node[];
   edges: Edge[];
+  decisionNodes?: DecisionNodeData[];
   onNodeSelect?: (nodeId: string | null) => void;
   onEdgeSelect?: (edgeId: string | null) => void;
+  onBranchExpand?: (branchId: string) => void;
 }
 
 const nodeTypes: NodeTypes = {
   callFlowNode: CallFlowNode,
+  decisionNode: DecisionFlowNode,
 };
 
 const edgeTypes: EdgeTypes = {
   callFlow: CallFlowEdge,
+  branchFlow: BranchFlowEdge,
 };
 
 export function CallFlowGraph({
   nodes,
   edges,
+  decisionNodes = [],
   onNodeSelect,
   onEdgeSelect,
+  onBranchExpand,
 }: CallFlowGraphProps) {
-  // Map nodes to use our custom type
-  const mappedNodes = useMemo(
+  // Map regular call nodes
+  const mappedCallNodes = useMemo(
     () =>
       nodes.map((node) => ({
         ...node,
@@ -48,18 +76,52 @@ export function CallFlowGraph({
     [nodes]
   );
 
-  // Map edges to use our custom type with animation
-  const mappedEdges = useMemo(
+  // Map decision nodes to React Flow format
+  const mappedDecisionNodes = useMemo(
     () =>
-      edges.map((edge) => ({
-        ...edge,
-        type: "callFlow",
-        animated: true,
-        markerEnd: {
-          type: MarkerType.ArrowClosed,
-          color: colors.primary.main,
+      decisionNodes.map((dn, index) => ({
+        id: dn.id,
+        type: "decisionNode",
+        position: { x: 0, y: 0 }, // Will be laid out by React Flow
+        data: {
+          id: dn.id,
+          decisionType: dn.decision_type,
+          conditionText: dn.condition_text,
+          filePath: dn.file_path,
+          line: dn.line,
+          column: dn.column,
+          parentCallId: dn.parent_call_id,
+          branches: dn.branches,
+          depth: dn.depth,
+          onBranchExpand: onBranchExpand,
         },
       })),
+    [decisionNodes, onBranchExpand]
+  );
+
+  // Combine all nodes
+  const allNodes = useMemo(
+    () => [...mappedCallNodes, ...mappedDecisionNodes],
+    [mappedCallNodes, mappedDecisionNodes]
+  );
+
+  // Map edges - detect branch edges by checking if target is a decision node
+  const mappedEdges = useMemo(
+    () =>
+      edges.map((edge) => {
+        const isBranchEdge = edge.data?.branchId != null;
+        return {
+          ...edge,
+          type: isBranchEdge ? "branchFlow" : "callFlow",
+          animated: !isBranchEdge, // Only animate regular call edges
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            color: isBranchEdge
+              ? colors.callFlow.decision
+              : colors.primary.main,
+          },
+        };
+      }),
     [edges]
   );
 
@@ -83,6 +145,10 @@ export function CallFlowGraph({
   }, [onNodeSelect, onEdgeSelect]);
 
   const minimapNodeColor = useCallback((node: Node) => {
+    // Decision nodes have a distinct color
+    if (node.type === "decisionNode") {
+      return colors.callFlow.decision;
+    }
     if (node.data?.isEntryPoint) {
       return colors.callFlow.entryPoint;
     }
@@ -100,7 +166,7 @@ export function CallFlowGraph({
   return (
     <div style={{ width: "100%", height: "100%", backgroundColor: colors.base.panel }}>
       <ReactFlow
-        nodes={mappedNodes}
+        nodes={allNodes}
         edges={mappedEdges}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}

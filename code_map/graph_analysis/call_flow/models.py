@@ -33,6 +33,135 @@ class ResolutionStatus(str, Enum):
     AMBIGUOUS = "ambiguous"  # Multiple possible targets
 
 
+class DecisionType(str, Enum):
+    """
+    Type of control flow decision point.
+
+    Note: Loops (FOR_LOOP, WHILE_LOOP) are intentionally excluded
+    to keep visualization simpler - they're treated as linear flow.
+    """
+
+    IF_ELSE = "if_else"  # if/elif/else statements
+    MATCH_CASE = "match_case"  # Python 3.10+ match/case
+    TRY_EXCEPT = "try_except"  # try/except/finally blocks
+    TERNARY = "ternary"  # Conditional expressions (x if cond else y)
+
+
+class ExtractionMode(str, Enum):
+    """
+    Mode for call flow extraction.
+
+    Controls how decision points are handled during extraction.
+    """
+
+    FULL = "full"  # Extract all paths (current behavior)
+    LAZY = "lazy"  # Stop at decision points, allow incremental expansion
+
+
+@dataclass
+class BranchInfo:
+    """
+    Information about a specific branch within a decision point.
+
+    Used to represent individual branches (TRUE/FALSE for if,
+    case clauses for match, except handlers for try).
+    """
+
+    branch_id: str  # Unique ID: "{decision_id}:branch:{index}"
+    label: str  # Human-readable: "TRUE", "FALSE", "case X", "except ValueError"
+    condition_text: str  # The condition expression or case pattern
+    is_expanded: bool = False  # Whether this branch has been explored
+    call_count: int = 0  # Preview: number of direct calls in this branch
+    start_line: int = 0  # Branch body start line
+    end_line: int = 0  # Branch body end line
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for serialization."""
+        return {
+            "branch_id": self.branch_id,
+            "label": self.label,
+            "condition_text": self.condition_text,
+            "is_expanded": self.is_expanded,
+            "call_count": self.call_count,
+            "start_line": self.start_line,
+            "end_line": self.end_line,
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "BranchInfo":
+        """Create from dictionary."""
+        return cls(
+            branch_id=data["branch_id"],
+            label=data["label"],
+            condition_text=data["condition_text"],
+            is_expanded=data.get("is_expanded", False),
+            call_count=data.get("call_count", 0),
+            start_line=data.get("start_line", 0),
+            end_line=data.get("end_line", 0),
+        )
+
+
+@dataclass
+class DecisionNode:
+    """
+    Represents a control flow decision point in the call graph.
+
+    Decision nodes are special nodes that don't represent function calls
+    but represent points where execution can diverge into multiple branches.
+    """
+
+    id: str  # Unique ID: "decision:{file}:{line}:{type}"
+    decision_type: DecisionType  # Type of decision (if_else, match_case, etc.)
+    condition_text: str  # The condition expression
+    file_path: Optional[Path] = None  # Source file
+    line: int = 0  # Line number of the decision
+    column: int = 0  # Column number
+    parent_call_id: str = ""  # ID of the CallNode containing this decision
+    branches: List[BranchInfo] = field(default_factory=list)  # Available branches
+    depth: int = 0  # Depth in call graph (same as parent call)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for serialization."""
+        return {
+            "id": self.id,
+            "decision_type": self.decision_type.value,
+            "condition_text": self.condition_text,
+            "file_path": str(self.file_path) if self.file_path else None,
+            "line": self.line,
+            "column": self.column,
+            "parent_call_id": self.parent_call_id,
+            "branches": [b.to_dict() for b in self.branches],
+            "depth": self.depth,
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "DecisionNode":
+        """Create from dictionary."""
+        return cls(
+            id=data["id"],
+            decision_type=DecisionType(data["decision_type"]),
+            condition_text=data["condition_text"],
+            file_path=Path(data["file_path"]) if data.get("file_path") else None,
+            line=data.get("line", 0),
+            column=data.get("column", 0),
+            parent_call_id=data.get("parent_call_id", ""),
+            branches=[BranchInfo.from_dict(b) for b in data.get("branches", [])],
+            depth=data.get("depth", 0),
+        )
+
+    def get_unexpanded_branches(self) -> List[str]:
+        """Return IDs of branches that haven't been expanded yet."""
+        return [b.branch_id for b in self.branches if not b.is_expanded]
+
+    def mark_branch_expanded(self, branch_id: str) -> bool:
+        """Mark a branch as expanded. Returns True if found."""
+        for branch in self.branches:
+            if branch.branch_id == branch_id:
+                branch.is_expanded = True
+                return True
+        return False
+
+
 @dataclass
 class IgnoredCall:
     """
@@ -165,6 +294,8 @@ class CallEdge:
         arguments: Optional list of argument names/values
         expression: The call expression as it appears in code (e.g., "self.loader.load()")
         resolution_status: How this call was resolved
+        branch_id: ID of the branch this call is within (for decision-aware extraction)
+        decision_id: ID of the parent decision node (for decision-aware extraction)
     """
 
     source_id: str
@@ -176,10 +307,13 @@ class CallEdge:
     arguments: Optional[List[str]] = None
     expression: Optional[str] = None  # The call expression
     resolution_status: ResolutionStatus = ResolutionStatus.RESOLVED_PROJECT
+    # Branch context for decision-aware extraction
+    branch_id: Optional[str] = None  # Which branch this call is within
+    decision_id: Optional[str] = None  # Parent decision node
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
-        return {
+        result = {
             "source_id": self.source_id,
             "target_id": self.target_id,
             "call_site_line": self.call_site_line,
@@ -188,6 +322,12 @@ class CallEdge:
             "expression": self.expression,
             "resolution_status": self.resolution_status.value,
         }
+        # Only include branch context if present
+        if self.branch_id is not None:
+            result["branch_id"] = self.branch_id
+        if self.decision_id is not None:
+            result["decision_id"] = self.decision_id
+        return result
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "CallEdge":
@@ -201,6 +341,8 @@ class CallEdge:
             arguments=data.get("arguments"),
             expression=data.get("expression"),
             resolution_status=ResolutionStatus(status_val),
+            branch_id=data.get("branch_id"),
+            decision_id=data.get("decision_id"),
         )
 
 
@@ -222,6 +364,9 @@ class CallGraph:
         unresolved_calls: List of calls that could not be resolved
         source_file: The entry point source file
         diagnostics: Metadata about graph construction (truncation, budget, etc.)
+        decision_nodes: Dictionary of decision_id -> DecisionNode (for lazy extraction)
+        unexpanded_branches: List of branch IDs not yet explored
+        extraction_mode: Mode used for extraction ("full" or "lazy")
     """
 
     entry_point: str
@@ -235,6 +380,10 @@ class CallGraph:
     )  # Simple list of call expressions
     source_file: Optional[Path] = None
     diagnostics: Dict[str, Any] = field(default_factory=dict)
+    # Decision point tracking for lazy/interactive extraction
+    decision_nodes: Dict[str, DecisionNode] = field(default_factory=dict)
+    unexpanded_branches: List[str] = field(default_factory=list)
+    extraction_mode: str = "full"  # "full" | "lazy"
 
     def add_node(self, node: CallNode) -> None:
         """Add a node to the graph."""
@@ -264,9 +413,52 @@ class CallGraph:
         """Get number of edges."""
         return len(self.edges)
 
+    def add_decision_node(self, node: DecisionNode) -> None:
+        """Add a decision node to the graph."""
+        self.decision_nodes[node.id] = node
+        # Track unexpanded branches
+        for branch in node.branches:
+            if not branch.is_expanded:
+                self.unexpanded_branches.append(branch.branch_id)
+
+    def get_decision_node(self, node_id: str) -> Optional[DecisionNode]:
+        """Get a decision node by ID."""
+        return self.decision_nodes.get(node_id)
+
+    def iter_decision_nodes(self) -> Iterator[DecisionNode]:
+        """Iterate over all decision nodes."""
+        yield from self.decision_nodes.values()
+
+    def decision_node_count(self) -> int:
+        """Get number of decision nodes."""
+        return len(self.decision_nodes)
+
+    def mark_branch_expanded(self, branch_id: str) -> bool:
+        """
+        Mark a branch as expanded.
+
+        Returns True if the branch was found and marked.
+        """
+        # Find the decision node containing this branch
+        for decision_node in self.decision_nodes.values():
+            if decision_node.mark_branch_expanded(branch_id):
+                # Remove from unexpanded list
+                if branch_id in self.unexpanded_branches:
+                    self.unexpanded_branches.remove(branch_id)
+                return True
+        return False
+
+    def get_branch_info(self, branch_id: str) -> Optional[BranchInfo]:
+        """Get branch info by branch ID."""
+        for decision_node in self.decision_nodes.values():
+            for branch in decision_node.branches:
+                if branch.branch_id == branch_id:
+                    return branch
+        return None
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
-        return {
+        result = {
             "entry_point": self.entry_point,
             "nodes": {nid: n.to_dict() for nid, n in self.nodes.items()},
             "edges": [e.to_dict() for e in self.edges],
@@ -276,7 +468,15 @@ class CallGraph:
             "unresolved_calls": self.unresolved_calls,  # Already List[str]
             "source_file": str(self.source_file) if self.source_file else None,
             "diagnostics": self.diagnostics,
+            "extraction_mode": self.extraction_mode,
         }
+        # Only include decision node fields if there are any
+        if self.decision_nodes:
+            result["decision_nodes"] = {
+                did: d.to_dict() for did, d in self.decision_nodes.items()
+            }
+            result["unexpanded_branches"] = self.unexpanded_branches
+        return result
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "CallGraph":
@@ -287,6 +487,7 @@ class CallGraph:
             max_depth_reached=data.get("max_depth_reached", False),
             source_file=Path(data["source_file"]) if data.get("source_file") else None,
             diagnostics=data.get("diagnostics", {}),
+            extraction_mode=data.get("extraction_mode", "full"),
         )
         for nid, ndata in data.get("nodes", {}).items():
             graph.nodes[nid] = CallNode.from_dict(ndata)
@@ -295,6 +496,10 @@ class CallGraph:
         for icdata in data.get("ignored_calls", []):
             graph.ignored_calls.append(IgnoredCall.from_dict(icdata))
         graph.unresolved_calls = list(data.get("unresolved_calls", []))
+        # Load decision nodes if present
+        for did, ddata in data.get("decision_nodes", {}).items():
+            graph.decision_nodes[did] = DecisionNode.from_dict(ddata)
+        graph.unexpanded_branches = list(data.get("unexpanded_branches", []))
         return graph
 
     def to_react_flow(self) -> Dict[str, Any]:
@@ -302,10 +507,12 @@ class CallGraph:
         Convert to React Flow format for frontend visualization.
 
         Returns:
-            Dictionary with 'nodes', 'edges', and 'metadata' for React Flow.
+            Dictionary with 'nodes', 'edges', 'decision_nodes', and 'metadata'
+            for React Flow.
         """
         react_nodes = []
         react_edges = []
+        react_decision_nodes = []
 
         # Calculate positions (simple left-to-right by depth)
         depth_counts: Dict[int, int] = {}
@@ -342,7 +549,51 @@ class CallGraph:
                 }
             )
 
+        # Add decision nodes to React Flow format
+        for decision_node in self.iter_decision_nodes():
+            depth = decision_node.depth
+            y_index = depth_counts.get(depth, 0)
+            depth_counts[depth] = y_index + 1
+
+            react_decision_nodes.append(
+                {
+                    "id": decision_node.id,
+                    "type": "decisionNode",
+                    "position": {
+                        "x": depth * 280 + 140,  # Offset slightly from call nodes
+                        "y": y_index * 120,
+                    },
+                    "data": {
+                        "label": decision_node.decision_type.value,
+                        "decisionType": decision_node.decision_type.value,
+                        "conditionText": decision_node.condition_text,
+                        "filePath": (
+                            str(decision_node.file_path)
+                            if decision_node.file_path
+                            else None
+                        ),
+                        "line": decision_node.line,
+                        "column": decision_node.column,
+                        "parentCallId": decision_node.parent_call_id,
+                        "depth": decision_node.depth,
+                        "branches": [b.to_dict() for b in decision_node.branches],
+                    },
+                }
+            )
+
         for i, edge in enumerate(self.iter_edges()):
+            edge_data: Dict[str, Any] = {
+                "callSiteLine": edge.call_site_line,
+                "callType": edge.call_type,
+                "expression": edge.expression,
+                "resolutionStatus": edge.resolution_status.value,
+            }
+            # Include branch context if present
+            if edge.branch_id:
+                edge_data["branchId"] = edge.branch_id
+            if edge.decision_id:
+                edge_data["decisionId"] = edge.decision_id
+
             react_edges.append(
                 {
                     "id": f"e{i}",
@@ -350,16 +601,11 @@ class CallGraph:
                     "target": edge.target_id,
                     "type": "smoothstep",
                     "animated": edge.source_id == self.entry_point,
-                    "data": {
-                        "callSiteLine": edge.call_site_line,
-                        "callType": edge.call_type,
-                        "expression": edge.expression,
-                        "resolutionStatus": edge.resolution_status.value,
-                    },
+                    "data": edge_data,
                 }
             )
 
-        return {
+        result = {
             "nodes": react_nodes,
             "edges": react_edges,
             "metadata": {
@@ -372,5 +618,13 @@ class CallGraph:
                 "ignored_calls_count": len(self.ignored_calls),
                 "unresolved_calls_count": len(self.unresolved_calls),
                 "diagnostics": self.diagnostics,
+                "extraction_mode": self.extraction_mode,
             },
         }
+
+        # Include decision nodes and unexpanded branches if present
+        if self.decision_nodes:
+            result["decision_nodes"] = react_decision_nodes
+            result["unexpanded_branches"] = self.unexpanded_branches
+
+        return result

@@ -20,7 +20,17 @@ from pathlib import Path
 from typing import Any, ClassVar, Dict, List, Optional, Set, Tuple
 
 from .base_extractor import BaseCallFlowExtractor
-from ..models import CallEdge, CallGraph, CallNode, IgnoredCall, ResolutionStatus
+from ..models import (
+    BranchInfo,
+    CallEdge,
+    CallGraph,
+    CallNode,
+    DecisionNode,
+    DecisionType,
+    ExtractionMode,
+    IgnoredCall,
+    ResolutionStatus,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -181,6 +191,21 @@ class CppCallFlowExtractor(BaseCallFlowExtractor):
     def builtin_functions(self) -> Set[str]:
         """C++ stdlib functions to ignore."""
         return CPP_STDLIB_FUNCTIONS
+
+    @property
+    def _decision_point_types(self) -> Set[str]:
+        """
+        Node types that represent decision points for lazy extraction.
+
+        Note: Loops (for_statement, while_statement, do_statement) are
+        intentionally excluded - they're treated as linear flow per user preference.
+        """
+        return {
+            "if_statement",  # if/else
+            "switch_statement",  # switch/case
+            "try_statement",  # try/catch
+            "conditional_expression",  # ternary: x ? y : z
+        }
 
     # ─────────────────────────────────────────────────────────────
     # C++-specific helper methods
@@ -351,6 +376,8 @@ class CppCallFlowExtractor(BaseCallFlowExtractor):
         function_name: str,
         max_depth: int = 5,
         project_root: Optional[Path] = None,
+        extraction_mode: ExtractionMode = ExtractionMode.FULL,
+        expand_branches: Optional[List[str]] = None,
     ) -> Optional[CallGraph]:
         """
         Extract call flow graph starting from a function.
@@ -360,6 +387,8 @@ class CppCallFlowExtractor(BaseCallFlowExtractor):
             function_name: Name of the entry point function/method
             max_depth: Maximum depth to follow calls
             project_root: Project root for relative paths (default: file's parent)
+            extraction_mode: FULL (all paths) or LAZY (stop at decision points)
+            expand_branches: Branch IDs to expand in LAZY mode
 
         Returns:
             CallGraph containing all reachable calls, or None if extraction fails
@@ -422,6 +451,7 @@ class CppCallFlowExtractor(BaseCallFlowExtractor):
             entry_point=entry_id,
             max_depth=max_depth,
             source_file=file_path,
+            extraction_mode=extraction_mode.value,
         )
         graph.add_node(entry_node)
 
@@ -444,6 +474,8 @@ class CppCallFlowExtractor(BaseCallFlowExtractor):
             call_stack=call_stack,
             class_context=class_name,
             function_index=function_index,
+            extraction_mode=extraction_mode,
+            expand_branches=expand_branches or [],
         )
 
         return graph
@@ -525,6 +557,8 @@ class CppCallFlowExtractor(BaseCallFlowExtractor):
         call_stack: List[str],
         class_context: Optional[str] = None,
         function_index: Optional[Dict[str, Dict[str, Any]]] = None,
+        extraction_mode: ExtractionMode = ExtractionMode.FULL,
+        expand_branches: Optional[List[str]] = None,
     ) -> None:
         """Recursively extract calls from a function body."""
         if depth > max_depth:
@@ -537,8 +571,132 @@ class CppCallFlowExtractor(BaseCallFlowExtractor):
         if body is None:
             return
 
-        calls = self._extract_calls_from_body(body, source)
+        expand_branches = expand_branches or []
 
+        # LAZY MODE: Check for decision points first
+        if extraction_mode == ExtractionMode.LAZY:
+            decision_ast = self._find_first_decision_point(body)
+            if decision_ast is not None:
+                # Extract calls BEFORE the decision point
+                calls = self._extract_calls_before_decision(body, decision_ast, source)
+
+                # Process these calls (same logic as FULL mode)
+                self._process_calls(
+                    graph=graph,
+                    calls=calls,
+                    parent_id=parent_id,
+                    file_path=file_path,
+                    source=source,
+                    project_root=project_root,
+                    depth=depth,
+                    max_depth=max_depth,
+                    call_stack=call_stack,
+                    class_context=class_context,
+                    function_index=function_index,
+                    extraction_mode=extraction_mode,
+                    expand_branches=expand_branches,
+                )
+
+                # Parse the decision node
+                decision_node = self._parse_decision_node(
+                    decision_ast, source, file_path, parent_id, depth
+                )
+                if decision_node:
+                    graph.add_decision_node(decision_node)
+
+                    # Track unexpanded branches and expand requested ones
+                    for branch in decision_node.branches:
+                        if branch.branch_id in expand_branches:
+                            # This branch should be expanded
+                            branch.is_expanded = True
+                            branch_block = self._find_branch_block(decision_ast, branch)
+                            if branch_block:
+                                branch_calls = self._extract_calls_from_body(
+                                    branch_block, source
+                                )
+                                self._process_calls(
+                                    graph=graph,
+                                    calls=branch_calls,
+                                    parent_id=parent_id,
+                                    file_path=file_path,
+                                    source=source,
+                                    project_root=project_root,
+                                    depth=depth,
+                                    max_depth=max_depth,
+                                    call_stack=call_stack,
+                                    class_context=class_context,
+                                    function_index=function_index,
+                                    extraction_mode=extraction_mode,
+                                    expand_branches=expand_branches,
+                                    branch_id=branch.branch_id,
+                                    decision_id=decision_node.id,
+                                )
+                        else:
+                            # Track as unexpanded
+                            graph.unexpanded_branches.append(branch.branch_id)
+
+                # STOP HERE in LAZY mode (don't continue extracting after decision)
+                return
+
+        # FULL MODE: Extract all calls normally
+        calls = self._extract_calls_from_body(body, source)
+        self._process_calls(
+            graph=graph,
+            calls=calls,
+            parent_id=parent_id,
+            file_path=file_path,
+            source=source,
+            project_root=project_root,
+            depth=depth,
+            max_depth=max_depth,
+            call_stack=call_stack,
+            class_context=class_context,
+            function_index=function_index,
+            extraction_mode=extraction_mode,
+            expand_branches=expand_branches,
+        )
+
+    def _process_calls(
+        self,
+        graph: CallGraph,
+        calls: List[CppCallInfo],
+        parent_id: str,
+        file_path: Path,
+        source: bytes,
+        project_root: Path,
+        depth: int,
+        max_depth: int,
+        call_stack: List[str],
+        class_context: Optional[str] = None,
+        function_index: Optional[Dict[str, Dict[str, Any]]] = None,
+        extraction_mode: ExtractionMode = ExtractionMode.FULL,
+        expand_branches: Optional[List[str]] = None,
+        branch_id: Optional[str] = None,
+        decision_id: Optional[str] = None,
+    ) -> None:
+        """
+        Process a list of calls and add them to the graph.
+
+        This is extracted from the FULL mode logic to allow reuse in LAZY mode
+        for processing calls before decision points and within expanded branches.
+
+        Args:
+            graph: The CallGraph to add nodes/edges to
+            calls: List of CppCallInfo to process
+            parent_id: ID of the parent node
+            file_path: Current file being analyzed
+            source: Source bytes
+            project_root: Project root path
+            depth: Current recursion depth
+            max_depth: Maximum allowed depth
+            call_stack: Stack for cycle detection
+            class_context: Current class context (optional)
+            function_index: Function index for resolution (optional)
+            extraction_mode: Current extraction mode
+            expand_branches: List of branch IDs to expand
+            branch_id: If processing within a branch, the branch ID
+            decision_id: If processing within a branch, the parent decision ID
+        """
         for call_info in calls:
             resolved, status, hint = self._resolve_call(
                 call_info=call_info,
@@ -589,6 +747,7 @@ class CppCallFlowExtractor(BaseCallFlowExtractor):
                     }
                 )
 
+            # Create edge with branch context if provided
             edge = CallEdge(
                 source_id=parent_id,
                 target_id=target_id,
@@ -597,6 +756,8 @@ class CppCallFlowExtractor(BaseCallFlowExtractor):
                 arguments=call_info.arguments if call_info.arguments else None,
                 expression=call_info.qualified_name,
                 resolution_status=ResolutionStatus.RESOLVED_PROJECT,
+                branch_id=branch_id,
+                decision_id=decision_id,
             )
             graph.add_edge(edge)
 
@@ -634,6 +795,8 @@ class CppCallFlowExtractor(BaseCallFlowExtractor):
                 call_stack=call_stack,
                 class_context=target_class,
                 function_index=function_index,
+                extraction_mode=extraction_mode,
+                expand_branches=expand_branches,
             )
             call_stack.pop()
 
@@ -798,3 +961,422 @@ class CppCallFlowExtractor(BaseCallFlowExtractor):
             return (None, ResolutionStatus.UNRESOLVED, None)
 
         return (None, ResolutionStatus.UNRESOLVED, None)
+
+    # ─────────────────────────────────────────────────────────────
+    # Decision point detection and parsing
+    # ─────────────────────────────────────────────────────────────
+
+    def _find_first_decision_point(self, body: Any) -> Optional[Any]:
+        """
+        Find the first decision point in a function body.
+
+        Checks direct children for if/switch/try statements, and also
+        searches within declarations for ternary expressions.
+
+        Args:
+            body: compound_statement node (function body)
+
+        Returns:
+            First decision point AST node, or None if not found
+        """
+        for child in body.children:
+            # Check if child is directly a decision point
+            if child.type in self._decision_point_types:
+                return child
+
+            # For declarations/expression_statements, check for ternary inside
+            if child.type in ("declaration", "expression_statement"):
+                for node in self._walk_tree(child):
+                    if node.type == "conditional_expression":
+                        return node
+
+        return None
+
+    def _extract_calls_before_decision(
+        self, body: Any, decision_node: Any, source: bytes
+    ) -> List[CppCallInfo]:
+        """
+        Extract calls that occur before a decision point in the body.
+
+        Args:
+            body: compound_statement node (function body)
+            decision_node: The decision point AST node
+            source: Source code bytes
+
+        Returns:
+            List of CppCallInfo for calls before the decision
+        """
+        calls: List[CppCallInfo] = []
+        decision_line = decision_node.start_point[0]
+
+        for child in body.children:
+            # Stop when we reach the decision point
+            if child.start_point[0] >= decision_line:
+                break
+
+            # Extract calls from this statement
+            for node in self._walk_tree(child):
+                if node.type == "call_expression":
+                    call_info = self._parse_call(node, source)
+                    if call_info:
+                        calls.append(call_info)
+
+        return calls
+
+    def _parse_decision_node(
+        self,
+        decision_ast: Any,
+        source: bytes,
+        file_path: Path,
+        parent_call_id: str,
+        depth: int,
+    ) -> Optional[DecisionNode]:
+        """
+        Parse a tree-sitter decision node into a DecisionNode model.
+
+        Args:
+            decision_ast: Tree-sitter AST node for the decision
+            source: Source code bytes
+            file_path: Path to the source file
+            parent_call_id: ID of the parent CallNode
+            depth: Current extraction depth
+
+        Returns:
+            DecisionNode model, or None if parsing fails
+        """
+        line = decision_ast.start_point[0] + 1
+        column = decision_ast.start_point[1]
+
+        if decision_ast.type == "if_statement":
+            return self._parse_if_statement(
+                decision_ast, source, file_path, parent_call_id, depth, line, column
+            )
+        elif decision_ast.type == "switch_statement":
+            return self._parse_switch_statement(
+                decision_ast, source, file_path, parent_call_id, depth, line, column
+            )
+        elif decision_ast.type == "try_statement":
+            return self._parse_try_statement(
+                decision_ast, source, file_path, parent_call_id, depth, line, column
+            )
+        elif decision_ast.type == "conditional_expression":
+            return self._parse_ternary_expression(
+                decision_ast, source, file_path, parent_call_id, depth, line, column
+            )
+        return None
+
+    def _parse_if_statement(
+        self,
+        node: Any,
+        source: bytes,
+        file_path: Path,
+        parent_call_id: str,
+        depth: int,
+        line: int,
+        column: int,
+    ) -> DecisionNode:
+        """Parse an if/else statement into a DecisionNode."""
+        # Extract condition text from condition_clause
+        condition_node = self._find_child_by_type(node, "condition_clause")
+        if condition_node:
+            condition_text = self._get_node_text(condition_node, source)
+        else:
+            condition_text = "???"
+
+        decision_id = f"decision:{file_path}:{line}:if_else"
+        branches: List[BranchInfo] = []
+
+        # Find the main if block (TRUE branch)
+        if_block = self._find_child_by_type(node, "compound_statement")
+        if if_block:
+            branches.append(
+                BranchInfo(
+                    branch_id=f"{decision_id}:branch:0",
+                    label="TRUE",
+                    condition_text=condition_text,
+                    is_expanded=False,
+                    call_count=self._count_calls_in_node(if_block),
+                    start_line=if_block.start_point[0] + 1,
+                    end_line=if_block.end_point[0] + 1,
+                )
+            )
+
+        # Find else clause (FALSE branch)
+        for child in node.children:
+            if child.type == "else_clause":
+                else_block = self._find_child_by_type(child, "compound_statement")
+                if else_block:
+                    branches.append(
+                        BranchInfo(
+                            branch_id=f"{decision_id}:branch:1",
+                            label="FALSE",
+                            condition_text="else",
+                            is_expanded=False,
+                            call_count=self._count_calls_in_node(else_block),
+                            start_line=else_block.start_point[0] + 1,
+                            end_line=else_block.end_point[0] + 1,
+                        )
+                    )
+                break
+
+        return DecisionNode(
+            id=decision_id,
+            decision_type=DecisionType.IF_ELSE,
+            condition_text=f"if {condition_text}",
+            file_path=file_path,
+            line=line,
+            column=column,
+            parent_call_id=parent_call_id,
+            branches=branches,
+            depth=depth,
+        )
+
+    def _parse_switch_statement(
+        self,
+        node: Any,
+        source: bytes,
+        file_path: Path,
+        parent_call_id: str,
+        depth: int,
+        line: int,
+        column: int,
+    ) -> DecisionNode:
+        """Parse a switch/case statement into a DecisionNode."""
+        # Extract condition text from condition_clause
+        condition_node = self._find_child_by_type(node, "condition_clause")
+        if condition_node:
+            condition_text = self._get_node_text(condition_node, source)
+        else:
+            condition_text = "???"
+
+        decision_id = f"decision:{file_path}:{line}:switch_case"
+        branches: List[BranchInfo] = []
+
+        # Find case statements inside the compound_statement
+        body = self._find_child_by_type(node, "compound_statement")
+        if body:
+            branch_index = 0
+            for child in body.children:
+                if child.type == "case_statement":
+                    # Check if it's a default case
+                    is_default = any(
+                        c.type == "default" for c in child.children
+                    )
+
+                    # Extract case value
+                    case_value = "default" if is_default else "???"
+                    if not is_default:
+                        for c in child.children:
+                            if c.type not in ("case", ":", "break_statement"):
+                                case_value = self._get_node_text(c, source)
+                                break
+
+                    label = "default" if is_default else f"case {case_value[:15]}"
+
+                    branches.append(
+                        BranchInfo(
+                            branch_id=f"{decision_id}:branch:{branch_index}",
+                            label=label,
+                            condition_text=case_value,
+                            is_expanded=False,
+                            call_count=self._count_calls_in_node(child),
+                            start_line=child.start_point[0] + 1,
+                            end_line=child.end_point[0] + 1,
+                        )
+                    )
+                    branch_index += 1
+
+        return DecisionNode(
+            id=decision_id,
+            decision_type=DecisionType.MATCH_CASE,
+            condition_text=f"switch {condition_text}",
+            file_path=file_path,
+            line=line,
+            column=column,
+            parent_call_id=parent_call_id,
+            branches=branches,
+            depth=depth,
+        )
+
+    def _parse_try_statement(
+        self,
+        node: Any,
+        source: bytes,
+        file_path: Path,
+        parent_call_id: str,
+        depth: int,
+        line: int,
+        column: int,
+    ) -> DecisionNode:
+        """Parse a try/catch statement into a DecisionNode."""
+        decision_id = f"decision:{file_path}:{line}:try_catch"
+        branches: List[BranchInfo] = []
+        branch_index = 0
+
+        # Find try block (main execution path)
+        try_block = self._find_child_by_type(node, "compound_statement")
+        if try_block:
+            branches.append(
+                BranchInfo(
+                    branch_id=f"{decision_id}:branch:{branch_index}",
+                    label="try",
+                    condition_text="try block",
+                    is_expanded=False,
+                    call_count=self._count_calls_in_node(try_block),
+                    start_line=try_block.start_point[0] + 1,
+                    end_line=try_block.end_point[0] + 1,
+                )
+            )
+            branch_index += 1
+
+        # Find catch clauses
+        for child in node.children:
+            if child.type == "catch_clause":
+                # Extract exception type from parameter_list
+                param_list = self._find_child_by_type(child, "parameter_list")
+                if param_list:
+                    param_text = self._get_node_text(param_list, source)
+                else:
+                    param_text = "..."
+
+                catch_block = self._find_child_by_type(child, "compound_statement")
+                if catch_block:
+                    branches.append(
+                        BranchInfo(
+                            branch_id=f"{decision_id}:branch:{branch_index}",
+                            label=f"catch {param_text[:20]}",
+                            condition_text=param_text,
+                            is_expanded=False,
+                            call_count=self._count_calls_in_node(catch_block),
+                            start_line=catch_block.start_point[0] + 1,
+                            end_line=catch_block.end_point[0] + 1,
+                        )
+                    )
+                    branch_index += 1
+
+        return DecisionNode(
+            id=decision_id,
+            decision_type=DecisionType.TRY_EXCEPT,
+            condition_text="try/catch",
+            file_path=file_path,
+            line=line,
+            column=column,
+            parent_call_id=parent_call_id,
+            branches=branches,
+            depth=depth,
+        )
+
+    def _parse_ternary_expression(
+        self,
+        node: Any,
+        source: bytes,
+        file_path: Path,
+        parent_call_id: str,
+        depth: int,
+        line: int,
+        column: int,
+    ) -> DecisionNode:
+        """Parse a ternary expression (x ? y : z) into a DecisionNode."""
+        # Get the full expression text
+        condition_text = self._get_node_text(node, source)
+
+        decision_id = f"decision:{file_path}:{line}:ternary"
+        branches: List[BranchInfo] = []
+
+        # Ternary has TRUE and FALSE branches within the expression
+        # Structure: condition ? true_expr : false_expr
+        children = [c for c in node.children if c.type not in ("?", ":")]
+
+        if len(children) >= 2:
+            # TRUE branch (consequence)
+            true_expr = children[1] if len(children) > 1 else None
+            if true_expr:
+                branches.append(
+                    BranchInfo(
+                        branch_id=f"{decision_id}:branch:0",
+                        label="TRUE",
+                        condition_text=self._get_node_text(true_expr, source),
+                        is_expanded=False,
+                        call_count=self._count_calls_in_node(true_expr),
+                        start_line=true_expr.start_point[0] + 1,
+                        end_line=true_expr.end_point[0] + 1,
+                    )
+                )
+
+            # FALSE branch (alternative)
+            false_expr = children[2] if len(children) > 2 else None
+            if false_expr:
+                branches.append(
+                    BranchInfo(
+                        branch_id=f"{decision_id}:branch:1",
+                        label="FALSE",
+                        condition_text=self._get_node_text(false_expr, source),
+                        is_expanded=False,
+                        call_count=self._count_calls_in_node(false_expr),
+                        start_line=false_expr.start_point[0] + 1,
+                        end_line=false_expr.end_point[0] + 1,
+                    )
+                )
+
+        return DecisionNode(
+            id=decision_id,
+            decision_type=DecisionType.TERNARY,
+            condition_text=condition_text[:50],  # Truncate long expressions
+            file_path=file_path,
+            line=line,
+            column=column,
+            parent_call_id=parent_call_id,
+            branches=branches,
+            depth=depth,
+        )
+
+    def _find_branch_block(
+        self, decision_ast: Any, branch: BranchInfo
+    ) -> Optional[Any]:
+        """
+        Find the AST block node for a specific branch using start_line.
+
+        Args:
+            decision_ast: The decision point AST node
+            branch: BranchInfo to find block for
+
+        Returns:
+            AST node for the branch's block, or None
+        """
+        target_line = branch.start_line
+
+        if decision_ast.type == "if_statement":
+            # Check main if block
+            main_block = self._find_child_by_type(decision_ast, "compound_statement")
+            if main_block and main_block.start_point[0] + 1 == target_line:
+                return main_block
+
+            # Check else clause
+            for child in decision_ast.children:
+                if child.type == "else_clause":
+                    else_block = self._find_child_by_type(child, "compound_statement")
+                    if else_block and else_block.start_point[0] + 1 == target_line:
+                        return else_block
+
+        elif decision_ast.type == "switch_statement":
+            body = self._find_child_by_type(decision_ast, "compound_statement")
+            if body:
+                for child in body.children:
+                    if child.type == "case_statement":
+                        if child.start_point[0] + 1 == target_line:
+                            return child
+
+        elif decision_ast.type == "try_statement":
+            # Check try block
+            try_block = self._find_child_by_type(decision_ast, "compound_statement")
+            if try_block and try_block.start_point[0] + 1 == target_line:
+                return try_block
+
+            # Check catch clauses
+            for child in decision_ast.children:
+                if child.type == "catch_clause":
+                    catch_block = self._find_child_by_type(child, "compound_statement")
+                    if catch_block and catch_block.start_point[0] + 1 == target_line:
+                        return catch_block
+
+        return None
