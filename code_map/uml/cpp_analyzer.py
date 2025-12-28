@@ -4,15 +4,16 @@ C++ analyzer for UML extraction using tree-sitter.
 
 Extracts classes, structs, methods, attributes for UML diagram generation.
 Supports .cpp, .hpp, .h, .cc, .cxx files.
+Uses shared TreeSitterMixin for parser initialization and tree traversal.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
-from ..dependencies import optional_dependencies
-from .models import AttributeInfo, ClassModel, MethodInfo, ModuleModel
+from ..analysis import TreeSitterMixin
+from .models import AttributeInfo, ClassModel, MethodInfo
 
 
 @dataclass
@@ -39,13 +40,23 @@ class CppModuleModel:
     namespaces: List[str] = field(default_factory=list)
 
 
-class UMLCppAnalyzer:
-    """Analyzes C++ files for UML extraction."""
+class UMLCppAnalyzer(TreeSitterMixin):
+    """
+    Analyzes C++ files for UML extraction.
+
+    Inherits from TreeSitterMixin for shared parser initialization and tree traversal.
+    """
+
+    # Tree-sitter language name
+    LANGUAGE: str = "cpp"
 
     # C++ extensions we support
     EXTENSIONS = {".cpp", ".hpp", ".h", ".cc", ".cxx", ".hxx", ".c++", ".h++"}
 
     def __init__(self, module: str, file_path: Path) -> None:
+        # Initialize TreeSitterMixin
+        super().__init__()
+
         self.module = module
         self.file_path = file_path
         self.model = CppModuleModel(name=module, file=file_path)
@@ -54,29 +65,14 @@ class UMLCppAnalyzer:
         self._current_visibility: str = "public"  # Default for structs
         self._current_namespace: List[str] = []
 
-        # Initialize tree-sitter parser
-        self._modules = optional_dependencies.load("tree_sitter_languages")
-        self.parser = None
-        if self._modules:
-            try:
-                parser_cls = getattr(self._modules.get("tree_sitter"), "Parser", None)
-                get_language = getattr(
-                    self._modules.get("tree_sitter_languages"), "get_language", None
-                )
-                if parser_cls and get_language:
-                    language = get_language("cpp")
-                    self.parser = parser_cls()
-                    self.parser.set_language(language)
-            except Exception:
-                self.parser = None
-
     @property
     def available(self) -> bool:
-        return self.parser is not None
+        """Check if tree-sitter is available for parsing."""
+        return self.is_available()
 
     def parse(self) -> CppModuleModel:
         """Parse the C++ file and extract UML-relevant information."""
-        if not self.parser:
+        if not self._ensure_parser():
             return self.model
 
         try:
@@ -84,7 +80,7 @@ class UMLCppAnalyzer:
         except OSError:
             return self.model
 
-        tree = self.parser.parse(bytes(source, "utf-8"))
+        tree = self._parser.parse(bytes(source, "utf-8"))
         lines = source.splitlines()
         self._visit_node(tree.root_node, lines)
         return self.model
@@ -119,7 +115,7 @@ class UMLCppAnalyzer:
             self.model.namespaces.append("::".join(self._current_namespace))
 
         # Visit namespace body
-        body = self._find_child(node, "declaration_list")
+        body = self._find_child_by_type(node, "declaration_list")
         if body:
             for child in body.children:
                 self._visit_node(child, lines)
@@ -135,7 +131,7 @@ class UMLCppAnalyzer:
 
         # Get base classes
         bases: List[str] = []
-        base_clause = self._find_child(node, "base_class_clause")
+        base_clause = self._find_child_by_type(node, "base_class_clause")
         if base_clause:
             for child in base_clause.children:
                 if child.type == "base_class_specifier":
@@ -165,7 +161,7 @@ class UMLCppAnalyzer:
         self.model.classes[full_name] = model
 
         # Parse class body
-        body = self._find_child(node, "field_declaration_list")
+        body = self._find_child_by_type(node, "field_declaration_list")
         if body:
             self._current_class = model
             self._current_visibility = "private"  # Default for C++ classes
@@ -207,7 +203,7 @@ class UMLCppAnalyzer:
         self.model.structs[full_name] = model
 
         # Parse struct body
-        body = self._find_child(node, "field_declaration_list")
+        body = self._find_child_by_type(node, "field_declaration_list")
         if body:
             self._current_struct = model
             self._current_visibility = "public"  # Default for C++ structs
@@ -243,7 +239,7 @@ class UMLCppAnalyzer:
             return
 
         # Check if it's a function declaration
-        declarator = self._find_child(node, "function_declarator")
+        declarator = self._find_child_by_type(node, "function_declarator")
         if declarator:
             method_info = self._extract_method_from_declaration(node, lines)
             if method_info:
@@ -275,7 +271,7 @@ class UMLCppAnalyzer:
         if not self._current_struct:
             return
 
-        declarator = self._find_child(node, "function_declarator")
+        declarator = self._find_child_by_type(node, "function_declarator")
         if declarator:
             method_info = self._extract_method_from_declaration(node, lines)
             if method_info:
@@ -295,7 +291,7 @@ class UMLCppAnalyzer:
     def _extract_method_info(self, node: Any, lines: List[str]) -> Optional[MethodInfo]:
         """Extract method information from function_definition."""
         # Get declarator
-        declarator = self._find_child(node, "function_declarator")
+        declarator = self._find_child_by_type(node, "function_declarator")
         if not declarator:
             return None
 
@@ -351,12 +347,12 @@ class UMLCppAnalyzer:
         self, node: Any, lines: List[str]
     ) -> Optional[MethodInfo]:
         """Extract method info from a declaration (prototype)."""
-        declarator = self._find_child(node, "function_declarator")
+        declarator = self._find_child_by_type(node, "function_declarator")
         if not declarator:
             # Try to find it recursively
             for child in node.children:
                 if child.type == "init_declarator":
-                    declarator = self._find_child(child, "function_declarator")
+                    declarator = self._find_child_by_type(child, "function_declarator")
                     if declarator:
                         break
 
@@ -470,12 +466,7 @@ class UMLCppAnalyzer:
                         return sub.text.decode("utf-8")
         return None
 
-    def _find_child(self, node: Any, type_name: str) -> Optional[Any]:
-        """Find first child of given type."""
-        for child in node.children:
-            if child.type == type_name:
-                return child
-        return None
+    # Note: _find_child_by_type is inherited from TreeSitterMixin
 
     def _extract_base_class_name(self, node: Any) -> Optional[str]:
         """Extract base class name from base_class_specifier."""
@@ -521,7 +512,7 @@ class UMLCppAnalyzer:
     def _extract_parameters(self, declarator: Any) -> List[str]:
         """Extract parameter names from function declarator."""
         params: List[str] = []
-        param_list = self._find_child(declarator, "parameter_list")
+        param_list = self._find_child_by_type(declarator, "parameter_list")
         if param_list:
             for child in param_list.children:
                 if child.type == "parameter_declaration":

@@ -1,10 +1,12 @@
-import {
-  BaseEdge,
-  EdgeLabelRenderer,
-  getBezierPath,
-  type EdgeProps,
-} from "reactflow";
+/**
+ * CallFlowEdge - React Flow edge for call graph visualization.
+ *
+ * Uses shared graph-primitives for consistent styling.
+ */
+
+import { type EdgeProps } from "reactflow";
 import { DESIGN_TOKENS } from "../../theme/designTokens";
+import { BaseGraphEdge, CallSiteLabel } from "../graph-primitives";
 
 interface CallFlowEdgeData {
   callSiteLine: number;
@@ -34,48 +36,22 @@ export function CallFlowEdge({
   const callType = (data?.callType || "direct") as keyof typeof CALL_TYPE_COLORS;
   const edgeColor = CALL_TYPE_COLORS[callType] || CALL_TYPE_COLORS.direct;
 
-  const [edgePath, labelX, labelY] = getBezierPath({
-    sourceX,
-    sourceY,
-    sourcePosition,
-    targetX,
-    targetY,
-    targetPosition,
-  });
-
   return (
-    <>
-      <BaseEdge
-        id={id}
-        path={edgePath}
-        markerEnd={markerEnd}
-        style={{
-          stroke: edgeColor,
-          strokeWidth: 2,
-          strokeOpacity: 0.8,
-        }}
-      />
-      {data?.callSiteLine && (
-        <EdgeLabelRenderer>
-          <div
-            style={{
-              position: "absolute",
-              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-              fontSize: "10px",
-              fontWeight: 500,
-              padding: "2px 6px",
-              borderRadius: "4px",
-              backgroundColor: colors.base.card,
-              color: colors.callFlow.edgeLabel,
-              border: `1px solid ${edgeColor}`,
-              pointerEvents: "all",
-            }}
-            className="nodrag nopan"
-          >
-            L{data.callSiteLine}
-          </div>
-        </EdgeLabelRenderer>
-      )}
-    </>
+    <BaseGraphEdge
+      id={id}
+      sourceX={sourceX}
+      sourceY={sourceY}
+      targetX={targetX}
+      targetY={targetY}
+      sourcePosition={sourcePosition}
+      targetPosition={targetPosition}
+      color={edgeColor}
+      markerEnd={markerEnd}
+      labelContent={
+        data?.callSiteLine ? (
+          <CallSiteLabel line={data.callSiteLine} color={edgeColor} />
+        ) : undefined
+      }
+    />
   );
 }

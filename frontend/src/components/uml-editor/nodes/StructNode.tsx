@@ -1,16 +1,18 @@
 /**
- * StructNode - React Flow node for UML Struct (C++ style)
+ * StructNode - React Flow node for UML Struct (C++ style).
  *
+ * Uses shared graph-primitives for consistent styling.
  * Structs are data containers with public attributes by default.
- * In other languages, they map to:
- * - Python: dataclass
- * - TypeScript: interface or type
- * - C++: struct
  */
 
 import { memo } from "react";
-import { Handle, Position, type NodeProps } from "reactflow";
+import { Position, type NodeProps } from "reactflow";
 import { DESIGN_TOKENS } from "../../../theme/designTokens";
+import {
+  BaseGraphNode,
+  type HandleConfig,
+  type NodeHeaderConfig,
+} from "../../graph-primitives";
 import type { UmlStructDef } from "../../../api/types";
 
 const { colors, borders } = DESIGN_TOKENS;
@@ -23,51 +25,69 @@ interface StructNodeData {
   selected?: boolean;
 }
 
+// Visibility symbols for UML notation
+const visibilitySymbol = (v: string) => {
+  switch (v) {
+    case "private": return "-";
+    case "protected": return "#";
+    default: return "+";
+  }
+};
+
+// Standard UML handles for structs
+const createStructHandles = (): HandleConfig[] => [
+  {
+    id: "inheritance-target",
+    type: "target",
+    position: Position.Top,
+    color: STRUCT_COLOR,
+    style: { border: `2px solid ${colors.base.card}` },
+  },
+  {
+    id: "inheritance-source",
+    type: "source",
+    position: Position.Bottom,
+    color: STRUCT_COLOR,
+    style: { border: `2px solid ${colors.base.card}` },
+  },
+  {
+    id: "left",
+    type: "target",
+    position: Position.Left,
+    color: colors.text.muted,
+    size: 8,
+    style: { border: `2px solid ${colors.base.card}` },
+  },
+  {
+    id: "right",
+    type: "source",
+    position: Position.Right,
+    color: colors.text.muted,
+    size: 8,
+    style: { border: `2px solid ${colors.base.card}` },
+  },
+];
+
 export const StructNode = memo(({ data }: NodeProps<StructNodeData>) => {
   const struct = data.struct;
   const isSelected = data.selected;
 
-  // Visibility symbols
-  const visibilitySymbol = (v: string) => {
-    switch (v) {
-      case "private": return "-";
-      case "protected": return "#";
-      default: return "+";
-    }
+  const header: NodeHeaderConfig = {
+    icon: "S",
+    label: struct.name,
+    backgroundColor: STRUCT_COLOR,
+    subtitle: "struct",
   };
 
   return (
-    <div
-      style={{
-        minWidth: "180px",
-        maxWidth: "280px",
-        backgroundColor: colors.base.card,
-        border: isSelected ? `2px solid ${STRUCT_COLOR}` : `1px solid ${borders.default}`,
-        borderRadius: "8px",
-        overflow: "hidden",
-        boxShadow: isSelected
-          ? `0 0 12px ${STRUCT_COLOR}4D`
-          : "0 2px 8px rgba(0,0,0,0.15)",
-      }}
+    <BaseGraphNode
+      header={header}
+      selected={isSelected}
+      accentColor={STRUCT_COLOR}
+      handles={createStructHandles()}
+      minWidth={180}
+      maxWidth={280}
     >
-      {/* Header */}
-      <div
-        style={{
-          padding: "8px 12px",
-          backgroundColor: STRUCT_COLOR,
-          color: colors.contrast.light,
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-        }}
-      >
-        <span style={{ fontSize: "12px", fontWeight: 700 }}>S</span>
-        <span style={{ fontSize: "13px", fontWeight: 600, flex: 1 }}>
-          {struct.name}
-        </span>
-        <span style={{ fontSize: "10px", opacity: 0.8 }}>struct</span>
-      </div>
-
       {/* Attributes Section */}
       <div
         style={{
@@ -94,51 +114,7 @@ export const StructNode = memo(({ data }: NodeProps<StructNodeData>) => {
           </div>
         )}
       </div>
-
-      {/* Handles for connections */}
-      <Handle
-        type="target"
-        position={Position.Top}
-        style={{
-          width: "10px",
-          height: "10px",
-          backgroundColor: STRUCT_COLOR,
-          border: `2px solid ${colors.base.card}`,
-        }}
-      />
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        style={{
-          width: "10px",
-          height: "10px",
-          backgroundColor: STRUCT_COLOR,
-          border: `2px solid ${colors.base.card}`,
-        }}
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        id="right"
-        style={{
-          width: "8px",
-          height: "8px",
-          backgroundColor: colors.text.muted,
-          border: `2px solid ${colors.base.card}`,
-        }}
-      />
-      <Handle
-        type="target"
-        position={Position.Left}
-        id="left"
-        style={{
-          width: "8px",
-          height: "8px",
-          backgroundColor: colors.text.muted,
-          border: `2px solid ${colors.base.card}`,
-        }}
-      />
-    </div>
+    </BaseGraphNode>
   );
 });
 

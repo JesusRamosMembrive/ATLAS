@@ -1,6 +1,19 @@
+/**
+ * CallFlowNode - React Flow node for call graph visualization.
+ *
+ * Uses shared graph-primitives for consistent styling.
+ */
+
 import { memo } from "react";
-import { Handle, Position, type NodeProps } from "reactflow";
+import { Position, type NodeProps } from "reactflow";
 import { DESIGN_TOKENS } from "../../theme/designTokens";
+import {
+  SimpleGraphNode,
+  EntryPointBadge,
+  KindBadge,
+  ComplexityBadge,
+  type HandleConfig,
+} from "../graph-primitives";
 
 interface CallFlowNodeData {
   label: string;
@@ -15,7 +28,7 @@ interface CallFlowNodeData {
   loc?: number | null;         // Lines of code
 }
 
-const { colors, borders } = DESIGN_TOKENS;
+const { colors } = DESIGN_TOKENS;
 
 const KIND_COLORS: Record<string, string> = {
   function: colors.callFlow.function,
@@ -33,67 +46,44 @@ const KIND_LABELS: Record<string, string> = {
   class: "Class",
 };
 
-/**
- * Get color for cyclomatic complexity value.
- * Uses same thresholds as ComplexityCard for consistency.
- */
-function getComplexityColor(value: number): string {
-  if (value <= 5) return colors.complexity.low;
-  if (value <= 10) return colors.complexity.medium;
-  if (value <= 25) return colors.complexity.high;
-  return colors.complexity.extreme;
-}
-
 export const CallFlowNode = memo(({ data }: NodeProps<CallFlowNodeData>) => {
   const kind = data.kind as keyof typeof KIND_COLORS;
   const kindColor = KIND_COLORS[kind] || KIND_COLORS.function;
   const kindLabel = KIND_LABELS[kind] || data.kind;
   const entryPointColor = colors.callFlow.entryPoint;
 
+  // Configure handles with accent color
+  const handles: HandleConfig[] = [
+    {
+      id: "target",
+      type: "target",
+      position: Position.Left,
+      color: kindColor,
+    },
+    {
+      id: "source",
+      type: "source",
+      position: Position.Right,
+      color: kindColor,
+    },
+  ];
+
   return (
-    <div
-      className="call-flow-node"
+    <SimpleGraphNode
+      selected={data.isEntryPoint}
+      accentColor={data.isEntryPoint ? entryPointColor : kindColor}
+      handles={handles}
       style={{
-        padding: "12px 16px",
-        borderRadius: "8px",
-        border: data.isEntryPoint ? `3px solid ${entryPointColor}` : `2px solid ${kindColor}`,
-        backgroundColor: colors.base.card,
-        color: colors.text.secondary,
-        minWidth: "200px",
-        maxWidth: "280px",
         boxShadow: data.isEntryPoint
-          ? `0 0 12px ${entryPointColor}4D` // 4D = 30% opacity in hex
+          ? `0 0 12px ${entryPointColor}4D`
           : "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
       }}
     >
-      <Handle
-        type="target"
-        position={Position.Left}
-        style={{
-          background: kindColor,
-          width: "10px",
-          height: "10px",
-        }}
-      />
-
       <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
         {/* Entry Point Badge */}
         {data.isEntryPoint && (
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              fontSize: "10px",
-              fontWeight: 600,
-              padding: "2px 8px",
-              borderRadius: "4px",
-              backgroundColor: entryPointColor,
-              color: colors.contrast.dark,
-              width: "fit-content",
-              marginBottom: "4px",
-            }}
-          >
-            ENTRY POINT
+          <div style={{ marginBottom: "4px" }}>
+            <EntryPointBadge />
           </div>
         )}
 
@@ -118,41 +108,10 @@ export const CallFlowNode = memo(({ data }: NodeProps<CallFlowNodeData>) => {
 
         {/* Kind and Complexity Badges */}
         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-          {/* Kind Badge */}
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              fontSize: "11px",
-              fontWeight: 500,
-              padding: "2px 8px",
-              borderRadius: "4px",
-              backgroundColor: kindColor,
-              color: colors.contrast.light,
-            }}
-          >
-            {kindLabel}
-          </div>
+          <KindBadge kind={kindLabel} color={kindColor} />
 
-          {/* Complexity Badge */}
           {data.complexity != null && (
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "4px",
-                fontSize: "11px",
-                fontWeight: 600,
-                padding: "2px 8px",
-                borderRadius: "4px",
-                backgroundColor: getComplexityColor(data.complexity) + "20",
-                color: getComplexityColor(data.complexity),
-              }}
-              title={`Cyclomatic Complexity: ${data.complexity}${data.loc ? ` | ${data.loc} lines` : ""}`}
-            >
-              <span style={{ fontWeight: 400 }}>CC</span>
-              {data.complexity}
-            </div>
+            <ComplexityBadge complexity={data.complexity} loc={data.loc} />
           )}
         </div>
 
@@ -186,17 +145,7 @@ export const CallFlowNode = memo(({ data }: NodeProps<CallFlowNodeData>) => {
           </div>
         )}
       </div>
-
-      <Handle
-        type="source"
-        position={Position.Right}
-        style={{
-          background: kindColor,
-          width: "10px",
-          height: "10px",
-        }}
-      />
-    </div>
+    </SimpleGraphNode>
   );
 });
 

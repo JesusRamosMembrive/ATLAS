@@ -1,10 +1,17 @@
 /**
- * EnumNode - React Flow node for UML Enum
+ * EnumNode - React Flow node for UML Enum.
+ *
+ * Uses shared graph-primitives for consistent styling.
  */
 
 import { memo } from "react";
-import { Handle, Position, type NodeProps } from "reactflow";
+import { Position, type NodeProps } from "reactflow";
 import { DESIGN_TOKENS } from "../../../theme/designTokens";
+import {
+  BaseGraphNode,
+  type HandleConfig,
+  type NodeHeaderConfig,
+} from "../../graph-primitives";
 import type { UmlEnumDef } from "../../../api/types";
 
 const { colors, borders } = DESIGN_TOKENS;
@@ -14,43 +21,43 @@ interface EnumNodeData {
   selected?: boolean;
 }
 
+// Enum handles (simpler, typically used as types)
+const createEnumHandles = (): HandleConfig[] => [
+  {
+    id: "usage-target",
+    type: "target",
+    position: Position.Left,
+    color: colors.callFlow.method,
+    size: 8,
+  },
+  {
+    id: "usage-source",
+    type: "source",
+    position: Position.Right,
+    color: colors.callFlow.method,
+    size: 8,
+  },
+];
+
 export const EnumNode = memo(({ data }: NodeProps<EnumNodeData>) => {
   const enm = data.enum;
   const isSelected = data.selected;
 
-  return (
-    <div
-      style={{
-        minWidth: "160px",
-        maxWidth: "240px",
-        backgroundColor: colors.base.card,
-        border: isSelected ? `2px solid ${colors.callFlow.method}` : `1px solid ${borders.default}`,
-        borderRadius: "8px",
-        overflow: "hidden",
-        boxShadow: isSelected
-          ? `0 0 12px ${colors.callFlow.method}4D`
-          : "0 2px 8px rgba(0,0,0,0.15)",
-      }}
-    >
-      {/* Header */}
-      <div
-        style={{
-          padding: "8px 12px",
-          backgroundColor: colors.callFlow.method,
-          color: colors.contrast.light,
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-        }}
-      >
-        <span style={{ fontSize: "12px", fontWeight: 700 }}>E</span>
-        <span style={{ fontSize: "13px", fontWeight: 600, flex: 1 }}>
-          <em style={{ fontWeight: 400 }}>{"<<"}</em>
-          enum
-          <em style={{ fontWeight: 400 }}>{">>"}</em>
-        </span>
-      </div>
+  const header: NodeHeaderConfig = {
+    icon: "E",
+    label: "<<enum>>",
+    backgroundColor: colors.callFlow.method,
+  };
 
+  return (
+    <BaseGraphNode
+      header={header}
+      selected={isSelected}
+      accentColor={colors.callFlow.method}
+      handles={createEnumHandles()}
+      minWidth={160}
+      maxWidth={240}
+    >
       {/* Enum Name */}
       <div
         style={{
@@ -93,29 +100,7 @@ export const EnumNode = memo(({ data }: NodeProps<EnumNodeData>) => {
           </div>
         )}
       </div>
-
-      {/* Handles for connections (enums are typically used as types) */}
-      <Handle
-        type="target"
-        position={Position.Left}
-        id="usage-target"
-        style={{
-          background: colors.callFlow.method,
-          width: "8px",
-          height: "8px",
-        }}
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        id="usage-source"
-        style={{
-          background: colors.callFlow.method,
-          width: "8px",
-          height: "8px",
-        }}
-      />
-    </div>
+    </BaseGraphNode>
   );
 });
 

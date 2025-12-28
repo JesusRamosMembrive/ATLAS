@@ -1,10 +1,17 @@
 /**
- * ClassNode - React Flow node for UML Class
+ * ClassNode - React Flow node for UML Class.
+ *
+ * Uses shared graph-primitives for consistent styling.
  */
 
 import { memo } from "react";
-import { Handle, Position, type NodeProps } from "reactflow";
+import { Position, type NodeProps } from "reactflow";
 import { DESIGN_TOKENS } from "../../../theme/designTokens";
+import {
+  BaseGraphNode,
+  type HandleConfig,
+  type NodeHeaderConfig,
+} from "../../graph-primitives";
 import type { UmlClassDef } from "../../../api/types";
 
 const { colors, borders } = DESIGN_TOKENS;
@@ -14,55 +21,68 @@ interface ClassNodeData {
   selected?: boolean;
 }
 
+// Visibility symbols for UML notation
+const visibilitySymbol = (v: string) => {
+  switch (v) {
+    case "private": return "-";
+    case "protected": return "#";
+    default: return "+";
+  }
+};
+
+// Standard UML handles for classes (4-directional)
+const createClassHandles = (): HandleConfig[] => [
+  {
+    id: "inheritance-target",
+    type: "target",
+    position: Position.Top,
+    color: colors.primary.main,
+    style: { top: "-5px" },
+  },
+  {
+    id: "inheritance-source",
+    type: "source",
+    position: Position.Bottom,
+    color: colors.primary.main,
+    style: { bottom: "-5px" },
+  },
+  {
+    id: "association-target",
+    type: "target",
+    position: Position.Left,
+    color: colors.callFlow.class,
+    size: 8,
+  },
+  {
+    id: "association-source",
+    type: "source",
+    position: Position.Right,
+    color: colors.callFlow.class,
+    size: 8,
+  },
+];
+
 export const ClassNode = memo(({ data }: NodeProps<ClassNodeData>) => {
   const cls = data.class;
   const isSelected = data.selected;
 
-  // Visibility symbols
-  const visibilitySymbol = (v: string) => {
-    switch (v) {
-      case "private": return "-";
-      case "protected": return "#";
-      default: return "+";
-    }
+  // Build header with abstract indicator
+  const header: NodeHeaderConfig = {
+    icon: "C",
+    label: cls.isAbstract
+      ? `<<${cls.name}>>`
+      : cls.name,
+    backgroundColor: colors.primary.main,
+    subtitle: cls.isAbstract ? "abstract" : undefined,
   };
 
   return (
-    <div
-      style={{
-        minWidth: "200px",
-        maxWidth: "300px",
-        backgroundColor: colors.base.card,
-        border: isSelected ? `2px solid ${colors.primary.main}` : `1px solid ${borders.default}`,
-        borderRadius: "8px",
-        overflow: "hidden",
-        boxShadow: isSelected
-          ? `0 0 12px ${colors.primary.main}4D`
-          : "0 2px 8px rgba(0,0,0,0.15)",
-      }}
+    <BaseGraphNode
+      header={header}
+      selected={isSelected}
+      accentColor={colors.primary.main}
+      handles={createClassHandles()}
     >
-      {/* Header */}
-      <div
-        style={{
-          padding: "8px 12px",
-          backgroundColor: colors.primary.main,
-          color: colors.contrast.light,
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-        }}
-      >
-        <span style={{ fontSize: "12px", fontWeight: 700 }}>C</span>
-        <span style={{ fontSize: "13px", fontWeight: 600, flex: 1 }}>
-          {cls.isAbstract && <em style={{ fontWeight: 400 }}>{"<<"}</em>}
-          {cls.name}
-          {cls.isAbstract && <em style={{ fontWeight: 400 }}>{">>"}</em>}
-        </span>
-        {cls.isAbstract && (
-          <span style={{ fontSize: "10px", opacity: 0.8 }}>abstract</span>
-        )}
-      </div>
-
       {/* Attributes Section */}
       <div
         style={{
@@ -119,51 +139,7 @@ export const ClassNode = memo(({ data }: NodeProps<ClassNodeData>) => {
           </div>
         )}
       </div>
-
-      {/* Handles for connections */}
-      <Handle
-        type="target"
-        position={Position.Top}
-        id="inheritance-target"
-        style={{
-          background: colors.primary.main,
-          width: "10px",
-          height: "10px",
-          top: "-5px",
-        }}
-      />
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        id="inheritance-source"
-        style={{
-          background: colors.primary.main,
-          width: "10px",
-          height: "10px",
-          bottom: "-5px",
-        }}
-      />
-      <Handle
-        type="target"
-        position={Position.Left}
-        id="association-target"
-        style={{
-          background: colors.callFlow.class,
-          width: "8px",
-          height: "8px",
-        }}
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        id="association-source"
-        style={{
-          background: colors.callFlow.class,
-          width: "8px",
-          height: "8px",
-        }}
-      />
-    </div>
+    </BaseGraphNode>
   );
 });
 
