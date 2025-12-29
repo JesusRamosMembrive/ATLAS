@@ -549,6 +549,7 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
                                 graph=graph,
                                 decision_ast=decision_ast,
                                 branch=branch,
+                                decision_node=decision_node,
                                 file_path=file_path,
                                 source=source,
                                 project_root=project_root,
@@ -765,11 +766,17 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
         imports: Optional[Dict[str, Dict[str, Any]]] = None,
         extraction_mode: ExtractionMode = ExtractionMode.FULL,
         expand_branches: Optional[List[str]] = None,
+        branch_id: Optional[str] = None,
+        decision_id: Optional[str] = None,
     ) -> None:
         """Process a list of calls, adding nodes/edges and recursing.
 
         This method extracts the call processing logic from _extract_calls_recursive
         to allow reuse in both FULL and LAZY extraction modes.
+
+        Args:
+            branch_id: If processing calls within a branch, the branch ID
+            decision_id: If processing calls within a branch, the parent decision ID
         """
         if depth > max_depth:
             return
@@ -843,7 +850,7 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
                     }
                 )
 
-            # Add edge
+            # Add edge - include branch context if processing within a branch
             edge = CallEdge(
                 source_id=parent_id,
                 target_id=target_id,
@@ -852,6 +859,8 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
                 arguments=call_info.arguments if call_info.arguments else None,
                 expression=call_info.qualified_name,
                 resolution_status=ResolutionStatus.RESOLVED_PROJECT,
+                branch_id=branch_id,
+                decision_id=decision_id,
             )
             graph.add_edge(edge)
 
@@ -876,7 +885,7 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
                 )
                 graph.add_node(target_node)
 
-            # Add to call stack for this branch and recurse
+            # Add to call stack for this branch and recurse (_process_calls)
             call_stack.append(target_id)
 
             if target_file == file_path:
@@ -1048,6 +1057,7 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
         graph: CallGraph,
         decision_ast: Any,
         branch: BranchInfo,
+        decision_node: "DecisionNode",
         file_path: Path,
         source: str,
         project_root: Path,
@@ -1078,6 +1088,7 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
         calls = self._extract_calls_from_body(branch_block, source)
 
         # Process the calls (this will recurse into called functions)
+        # Pass branch context so edges connect from decision node, not parent
         self._process_calls(
             graph=graph,
             calls=calls,
@@ -1092,6 +1103,8 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
             imports=imports,
             extraction_mode=extraction_mode,
             expand_branches=expand_branches or [],
+            branch_id=branch.branch_id,
+            decision_id=decision_node.id,
         )
 
     def _find_branch_block(self, decision_ast: Any, branch: BranchInfo) -> Optional[Any]:
