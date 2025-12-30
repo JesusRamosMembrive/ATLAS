@@ -1078,6 +1078,14 @@ class CallFlowResponse(BaseModel):
         default_factory=list,
         description="Return statement nodes for branches that just return values",
     )
+    statement_nodes: List[Dict[str, Any]] = Field(
+        default_factory=list,
+        description="Control flow statement nodes (break, continue, pass, raise, assignment)",
+    )
+    external_call_nodes: List[Dict[str, Any]] = Field(
+        default_factory=list,
+        description="External call nodes (builtin, stdlib, third-party library calls)",
+    )
     unexpanded_branches: List[str] = Field(
         default_factory=list,
         description="Branch IDs available for expansion (lazy mode)",
@@ -1219,6 +1227,32 @@ class CallFlowReactFlowReturnNodeSchema(BaseModel):
     data: Dict[str, Any]
 
 
+class CallFlowReactFlowStatementNodeSchema(BaseModel):
+    """React Flow formatted node for control flow statement visualization.
+
+    Used for break, continue, pass, and raise statements that don't call functions
+    but still need to be shown to indicate what a branch does.
+    """
+
+    id: str
+    type: str = "statementNode"  # Statement node type for frontend rendering
+    position: Dict[str, float]
+    data: Dict[str, Any]
+
+
+class CallFlowReactFlowExternalCallNodeSchema(BaseModel):
+    """React Flow formatted node for external call visualization.
+
+    Used for builtin, stdlib, and third-party library calls that are shown
+    to indicate what a branch does even when there are no project function calls.
+    """
+
+    id: str
+    type: str = "externalCallNode"  # External call node type for frontend rendering
+    position: Dict[str, float]
+    data: Dict[str, Any]
+
+
 class CallFlowBranchExpansionRequest(BaseModel):
     """Request to expand a specific branch in lazy extraction mode.
 
@@ -1256,6 +1290,14 @@ class CallFlowBranchExpansionResponse(BaseModel):
     new_return_nodes: List[CallFlowReactFlowReturnNodeSchema] = Field(
         default_factory=list,
         description="Return statement nodes for branches that just return values",
+    )
+    new_statement_nodes: List[CallFlowReactFlowStatementNodeSchema] = Field(
+        default_factory=list,
+        description="Control flow statement nodes (break, continue, pass, raise, assignment)",
+    )
+    new_external_call_nodes: List[CallFlowReactFlowExternalCallNodeSchema] = Field(
+        default_factory=list,
+        description="External call nodes (builtin, stdlib, third-party library calls)",
     )
     new_unexpanded_branches: List[str] = Field(default_factory=list)
     expanded_branch_id: str

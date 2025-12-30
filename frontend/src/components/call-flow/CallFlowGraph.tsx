@@ -21,6 +21,8 @@ import { CallFlowEdge } from "./CallFlowEdge";
 import { DecisionFlowNode } from "./DecisionFlowNode";
 import { BranchFlowEdge } from "./BranchFlowEdge";
 import { ReturnFlowNode } from "./ReturnFlowNode";
+import { StatementFlowNode } from "./StatementFlowNode";
+import { ExternalCallFlowNode } from "./ExternalCallFlowNode";
 import { DESIGN_TOKENS } from "../../theme/designTokens";
 import { useElkLayout, type LayoutDirection } from "../../hooks/useElkLayout";
 
@@ -70,11 +72,52 @@ interface ReturnNodeFromAPI {
   };
 }
 
+// Statement node from API (already in React Flow format)
+interface StatementNodeFromAPI {
+  id: string;
+  type: "statementNode";
+  position: { x: number; y: number };
+  data: {
+    label: string;
+    statementType: "break" | "continue" | "pass" | "raise" | "assignment";
+    content: string;
+    filePath: string | null;
+    line: number;
+    column: number;
+    parentCallId: string;
+    branchId?: string;
+    decisionId?: string;
+    depth: number;
+  };
+}
+
+// External call node from API (already in React Flow format)
+interface ExternalCallNodeFromAPI {
+  id: string;
+  type: "externalCallNode";
+  position: { x: number; y: number };
+  data: {
+    label: string;
+    expression: string;
+    callType: "builtin" | "stdlib" | "third_party";
+    moduleHint: string | null;
+    filePath: string | null;
+    line: number;
+    column: number;
+    parentCallId: string;
+    branchId?: string;
+    decisionId?: string;
+    depth: number;
+  };
+}
+
 interface CallFlowGraphProps {
   nodes: Node[];
   edges: Edge[];
   decisionNodes?: DecisionNodeFromAPI[];
   returnNodes?: ReturnNodeFromAPI[];
+  statementNodes?: StatementNodeFromAPI[];
+  externalCallNodes?: ExternalCallNodeFromAPI[];
   onNodeSelect?: (nodeId: string | null) => void;
   onEdgeSelect?: (edgeId: string | null) => void;
   onBranchExpand?: (branchId: string) => void;
@@ -84,6 +127,8 @@ const nodeTypes: NodeTypes = {
   callFlowNode: CallFlowNode,
   decisionNode: DecisionFlowNode,
   returnNode: ReturnFlowNode,
+  statementNode: StatementFlowNode,
+  externalCallNode: ExternalCallFlowNode,
 };
 
 const edgeTypes: EdgeTypes = {
@@ -97,6 +142,8 @@ function CallFlowGraphInner({
   edges,
   decisionNodes = [],
   returnNodes = [],
+  statementNodes = [],
+  externalCallNodes = [],
   onNodeSelect,
   onEdgeSelect,
   onBranchExpand,
@@ -153,10 +200,30 @@ function CallFlowGraphInner({
     [returnNodes]
   );
 
+  // Map statement nodes - they come from API already in React Flow format
+  const mappedStatementNodes = useMemo(
+    () =>
+      statementNodes.map((sn) => ({
+        ...sn,
+        draggable: true,
+      })),
+    [statementNodes]
+  );
+
+  // Map external call nodes - they come from API already in React Flow format
+  const mappedExternalCallNodes = useMemo(
+    () =>
+      externalCallNodes.map((en) => ({
+        ...en,
+        draggable: true,
+      })),
+    [externalCallNodes]
+  );
+
   // Combine all nodes from props
   const propsNodes = useMemo(
-    () => [...mappedCallNodes, ...mappedDecisionNodes, ...mappedReturnNodes],
-    [mappedCallNodes, mappedDecisionNodes, mappedReturnNodes]
+    () => [...mappedCallNodes, ...mappedDecisionNodes, ...mappedReturnNodes, ...mappedStatementNodes, ...mappedExternalCallNodes],
+    [mappedCallNodes, mappedDecisionNodes, mappedReturnNodes, mappedStatementNodes, mappedExternalCallNodes]
   );
 
   // Map edges - detect branch edges by checking if target is a decision node
@@ -252,6 +319,14 @@ function CallFlowGraphInner({
     // Decision nodes have a distinct color
     if (node.type === "decisionNode") {
       return colors.callFlow.decision;
+    }
+    // External call nodes get a purple/violet color
+    if (node.type === "externalCallNode") {
+      return "#8b5cf6"; // violet - matches ExternalCallFlowNode third_party color
+    }
+    // Statement nodes get their respective colors
+    if (node.type === "statementNode") {
+      return "#6b7280"; // gray - neutral color for statements
     }
     if (node.data?.isEntryPoint) {
       return colors.callFlow.entryPoint;

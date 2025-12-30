@@ -1,6 +1,6 @@
 # Estado Actual del Proyecto
 
-**Última actualización**: 2025-12-23
+**Última actualización**: 2025-12-30
 **Etapa detectada**: Stage 3 (High Confidence)
 **Versión**: AEGIS v2
 
@@ -12,6 +12,13 @@
 - **UML Editor (AEGIS v2)** - Phase 5 pendiente (Agent Loop integration)
 
 **Completado recientemente:**
+- **Call Flow Statement Nodes** (2025-12-30)
+  - `StatementNode` model for break, continue, pass, raise statements
+  - `StatementFlowNode.tsx` - Frontend component with color-coded icons
+  - Recursive extraction of statements from nested code structures
+  - Full frontend integration (types, CallFlowGraph, CallFlowView)
+  - Decision nodes now always show what branches do (never dead ends)
+
 - **Ollama XML Guide** (2025-12-23)
   - `docs/ollama/UML_XML_FORMAT_GUIDE.md` - Guía completa del formato XML
   - Pensado para que Ollama genere UML válido desde descripciones en lenguaje natural

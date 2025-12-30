@@ -717,12 +717,55 @@ export interface CallFlowReturnNode {
   };
 }
 
+export type CallFlowStatementType = "break" | "continue" | "pass" | "raise" | "assignment";
+
+export interface CallFlowStatementNode {
+  id: string;
+  type: "statementNode";
+  position: { x: number; y: number };
+  data: {
+    label: string;
+    statementType: CallFlowStatementType;
+    content: string;
+    filePath: string | null;
+    line: number;
+    column: number;
+    parentCallId: string;
+    branchId?: string;
+    decisionId?: string;
+    depth: number;
+  };
+}
+
+export type CallFlowExternalCallType = "builtin" | "stdlib" | "third_party";
+
+export interface CallFlowExternalCallNode {
+  id: string;
+  type: "externalCallNode";
+  position: { x: number; y: number };
+  data: {
+    label: string;
+    expression: string;
+    callType: CallFlowExternalCallType;
+    moduleHint: string | null;
+    filePath: string | null;
+    line: number;
+    column: number;
+    parentCallId: string;
+    branchId?: string;
+    decisionId?: string;
+    depth: number;
+  };
+}
+
 export interface CallFlowResponse {
   nodes: CallFlowNode[];
   edges: CallFlowEdge[];
   metadata: CallFlowMetadata;
   decision_nodes?: CallFlowDecisionNode[];
   return_nodes?: CallFlowReturnNode[];
+  statement_nodes?: CallFlowStatementNode[];
+  external_call_nodes?: CallFlowExternalCallNode[];
   unexpanded_branches?: string[];
   extraction_mode?: "full" | "lazy";
 }
@@ -733,6 +776,8 @@ export interface CallFlowBranchExpansionResponse {
   new_edges: CallFlowEdge[];
   new_decision_nodes: CallFlowDecisionNode[];
   new_return_nodes: CallFlowReturnNode[];
+  new_statement_nodes: CallFlowStatementNode[];
+  new_external_call_nodes: CallFlowExternalCallNode[];
   new_unexpanded_branches: string[];
   expanded_branch_id: string;
 }

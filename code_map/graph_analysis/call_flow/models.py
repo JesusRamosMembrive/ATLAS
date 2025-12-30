@@ -215,6 +215,144 @@ class ReturnNode:
         )
 
 
+class StatementType(str, Enum):
+    """Types of control flow statements that terminate or alter branch execution."""
+
+    BREAK = "break"
+    CONTINUE = "continue"
+    PASS = "pass"
+    RAISE = "raise"
+    ASSIGNMENT = "assignment"  # When branch only has assignments
+
+
+@dataclass
+class StatementNode:
+    """
+    A node representing a control flow statement in a branch.
+
+    Used to visualize branch content when there are no function calls.
+    This ensures decision nodes are never "dead ends" visually - the user
+    always sees what happens in a branch.
+
+    Examples:
+    - break/continue in loops
+    - pass (empty branch)
+    - raise Exception (exception throwing)
+    - Simple assignments (when that's all the branch does)
+    """
+
+    id: str  # Unique ID: "stmt:{file}:{line}:{type}"
+    statement_type: StatementType  # break, continue, pass, raise, assignment
+    content: str  # The statement text (e.g., "break", "raise ValueError(...)")
+    file_path: Optional[Path] = None  # Source file
+    line: int = 0  # Line number
+    column: int = 0  # Column number
+    parent_call_id: str = ""  # ID of the CallNode containing this statement
+    branch_id: Optional[str] = None  # Which branch this statement is in
+    decision_id: Optional[str] = None  # Parent decision node
+    depth: int = 0  # Depth in call graph
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for serialization."""
+        result = {
+            "id": self.id,
+            "statement_type": self.statement_type.value,
+            "content": self.content,
+            "file_path": str(self.file_path) if self.file_path else None,
+            "line": self.line,
+            "column": self.column,
+            "parent_call_id": self.parent_call_id,
+            "depth": self.depth,
+        }
+        if self.branch_id is not None:
+            result["branch_id"] = self.branch_id
+        if self.decision_id is not None:
+            result["decision_id"] = self.decision_id
+        return result
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "StatementNode":
+        """Create from dictionary."""
+        return cls(
+            id=data["id"],
+            statement_type=StatementType(data["statement_type"]),
+            content=data["content"],
+            file_path=Path(data["file_path"]) if data.get("file_path") else None,
+            line=data.get("line", 0),
+            column=data.get("column", 0),
+            parent_call_id=data.get("parent_call_id", ""),
+            branch_id=data.get("branch_id"),
+            decision_id=data.get("decision_id"),
+            depth=data.get("depth", 0),
+        )
+
+
+class ExternalCallType(str, Enum):
+    """Types of external calls for visual distinction."""
+
+    BUILTIN = "builtin"  # Python builtins: len, print, str, etc.
+    STDLIB = "stdlib"  # Standard library: json.loads, os.path, etc.
+    THIRD_PARTY = "third_party"  # External packages: requests.get, etc.
+
+
+@dataclass
+class ExternalCallNode:
+    """
+    A node representing an external library/builtin call in a branch.
+
+    Used to visualize external calls that were previously "ignored" but
+    still need to be shown so branches are never "dead ends".
+    """
+
+    id: str  # Unique ID: "ext:{file}:{line}:{expression}"
+    expression: str  # The call expression (e.g., "session.get(url)")
+    call_type: ExternalCallType  # builtin, stdlib, third_party
+    module_hint: Optional[str] = None  # Module name if known (e.g., "requests")
+    file_path: Optional[Path] = None  # Source file
+    line: int = 0  # Line number
+    column: int = 0  # Column number
+    parent_call_id: str = ""  # ID of the CallNode containing this call
+    branch_id: Optional[str] = None  # Which branch this call is in
+    decision_id: Optional[str] = None  # Parent decision node
+    depth: int = 0  # Depth in call graph
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for serialization."""
+        result = {
+            "id": self.id,
+            "expression": self.expression,
+            "call_type": self.call_type.value,
+            "module_hint": self.module_hint,
+            "file_path": str(self.file_path) if self.file_path else None,
+            "line": self.line,
+            "column": self.column,
+            "parent_call_id": self.parent_call_id,
+            "depth": self.depth,
+        }
+        if self.branch_id is not None:
+            result["branch_id"] = self.branch_id
+        if self.decision_id is not None:
+            result["decision_id"] = self.decision_id
+        return result
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "ExternalCallNode":
+        """Create from dictionary."""
+        return cls(
+            id=data["id"],
+            expression=data["expression"],
+            call_type=ExternalCallType(data["call_type"]),
+            module_hint=data.get("module_hint"),
+            file_path=Path(data["file_path"]) if data.get("file_path") else None,
+            line=data.get("line", 0),
+            column=data.get("column", 0),
+            parent_call_id=data.get("parent_call_id", ""),
+            branch_id=data.get("branch_id"),
+            decision_id=data.get("decision_id"),
+            depth=data.get("depth", 0),
+        )
+
+
 @dataclass
 class IgnoredCall:
     """
@@ -452,6 +590,10 @@ class CallGraph:
     extraction_mode: str = "full"  # "full" | "lazy"
     # Return statement tracking
     return_nodes: Dict[str, ReturnNode] = field(default_factory=dict)
+    # Statement node tracking (break, continue, pass, raise, assignments)
+    statement_nodes: Dict[str, StatementNode] = field(default_factory=dict)
+    # External call node tracking (builtin, stdlib, third-party calls)
+    external_call_nodes: Dict[str, ExternalCallNode] = field(default_factory=dict)
 
     def add_node(self, node: CallNode) -> None:
         """Add a node to the graph."""
@@ -540,6 +682,38 @@ class CallGraph:
         """Get number of return nodes."""
         return len(self.return_nodes)
 
+    def add_statement_node(self, node: StatementNode) -> None:
+        """Add a statement node to the graph."""
+        self.statement_nodes[node.id] = node
+
+    def get_statement_node(self, node_id: str) -> Optional[StatementNode]:
+        """Get a statement node by ID."""
+        return self.statement_nodes.get(node_id)
+
+    def iter_statement_nodes(self) -> Iterator[StatementNode]:
+        """Iterate over all statement nodes."""
+        yield from self.statement_nodes.values()
+
+    def statement_node_count(self) -> int:
+        """Get number of statement nodes."""
+        return len(self.statement_nodes)
+
+    def add_external_call_node(self, node: ExternalCallNode) -> None:
+        """Add an external call node to the graph."""
+        self.external_call_nodes[node.id] = node
+
+    def get_external_call_node(self, node_id: str) -> Optional[ExternalCallNode]:
+        """Get an external call node by ID."""
+        return self.external_call_nodes.get(node_id)
+
+    def iter_external_call_nodes(self) -> Iterator[ExternalCallNode]:
+        """Iterate over all external call nodes."""
+        yield from self.external_call_nodes.values()
+
+    def external_call_node_count(self) -> int:
+        """Get number of external call nodes."""
+        return len(self.external_call_nodes)
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         result = {
@@ -564,6 +738,16 @@ class CallGraph:
         if self.return_nodes:
             result["return_nodes"] = {
                 rid: r.to_dict() for rid, r in self.return_nodes.items()
+            }
+        # Only include statement nodes if there are any
+        if self.statement_nodes:
+            result["statement_nodes"] = {
+                sid: s.to_dict() for sid, s in self.statement_nodes.items()
+            }
+        # Only include external call nodes if there are any
+        if self.external_call_nodes:
+            result["external_call_nodes"] = {
+                eid: e.to_dict() for eid, e in self.external_call_nodes.items()
             }
         return result
 
@@ -592,6 +776,12 @@ class CallGraph:
         # Load return nodes if present
         for rid, rdata in data.get("return_nodes", {}).items():
             graph.return_nodes[rid] = ReturnNode.from_dict(rdata)
+        # Load statement nodes if present
+        for sid, sdata in data.get("statement_nodes", {}).items():
+            graph.statement_nodes[sid] = StatementNode.from_dict(sdata)
+        # Load external call nodes if present
+        for eid, edata in data.get("external_call_nodes", {}).items():
+            graph.external_call_nodes[eid] = ExternalCallNode.from_dict(edata)
         return graph
 
     def to_react_flow(self) -> Dict[str, Any]:
@@ -816,6 +1006,8 @@ class CallGraph:
                 "diagnostics": self.diagnostics,
                 "extraction_mode": self.extraction_mode,
                 "return_node_count": self.return_node_count(),
+                "statement_node_count": self.statement_node_count(),
+                "external_call_node_count": self.external_call_node_count(),
             },
         }
 
@@ -827,5 +1019,120 @@ class CallGraph:
         # Include return nodes if present
         if self.return_nodes:
             result["return_nodes"] = react_return_nodes
+
+        # Include statement nodes if present
+        if self.statement_nodes:
+            react_statement_nodes = []
+            for stmt_node in self.iter_statement_nodes():
+                depth = stmt_node.depth
+                y_index = depth_counts.get(depth, 0)
+                depth_counts[depth] = y_index + 1
+
+                react_statement_nodes.append(
+                    {
+                        "id": stmt_node.id,
+                        "type": "statementNode",
+                        "position": {
+                            "x": depth * 350 + 175,
+                            "y": y_index * 140,
+                        },
+                        "data": {
+                            "label": stmt_node.statement_type.value,
+                            "statementType": stmt_node.statement_type.value,
+                            "content": stmt_node.content,
+                            "filePath": (
+                                str(stmt_node.file_path)
+                                if stmt_node.file_path
+                                else None
+                            ),
+                            "line": stmt_node.line,
+                            "column": stmt_node.column,
+                            "parentCallId": stmt_node.parent_call_id,
+                            "branchId": stmt_node.branch_id,
+                            "decisionId": stmt_node.decision_id,
+                            "depth": stmt_node.depth,
+                        },
+                    }
+                )
+
+            result["statement_nodes"] = react_statement_nodes
+
+            # Create edges from decision nodes to statement nodes
+            for stmt_node in self.iter_statement_nodes():
+                if stmt_node.decision_id:
+                    stmt_edge_id = f"es:{stmt_node.decision_id}->{stmt_node.id}"
+                    react_edges.append(
+                        {
+                            "id": stmt_edge_id,
+                            "source": stmt_node.decision_id,
+                            "target": stmt_node.id,
+                            "type": "smoothstep",
+                            "animated": False,
+                            "data": {
+                                "callSiteLine": stmt_node.line,
+                                "callType": "statement",
+                                "branchId": stmt_node.branch_id,
+                                "decisionId": stmt_node.decision_id,
+                            },
+                        }
+                    )
+
+        # Include external call nodes if present
+        if self.external_call_nodes:
+            react_external_call_nodes = []
+            for ext_node in self.iter_external_call_nodes():
+                depth = ext_node.depth
+                y_index = depth_counts.get(depth, 0)
+                depth_counts[depth] = y_index + 1
+
+                react_external_call_nodes.append(
+                    {
+                        "id": ext_node.id,
+                        "type": "externalCallNode",
+                        "position": {
+                            "x": depth * 350 + 175,
+                            "y": y_index * 140,
+                        },
+                        "data": {
+                            "label": ext_node.expression,
+                            "expression": ext_node.expression,
+                            "callType": ext_node.call_type.value,
+                            "moduleHint": ext_node.module_hint,
+                            "filePath": (
+                                str(ext_node.file_path)
+                                if ext_node.file_path
+                                else None
+                            ),
+                            "line": ext_node.line,
+                            "column": ext_node.column,
+                            "parentCallId": ext_node.parent_call_id,
+                            "branchId": ext_node.branch_id,
+                            "decisionId": ext_node.decision_id,
+                            "depth": ext_node.depth,
+                        },
+                    }
+                )
+
+            result["external_call_nodes"] = react_external_call_nodes
+
+            # Create edges from decision nodes to external call nodes
+            for ext_node in self.iter_external_call_nodes():
+                if ext_node.decision_id:
+                    ext_edge_id = f"ex:{ext_node.decision_id}->{ext_node.id}"
+                    react_edges.append(
+                        {
+                            "id": ext_edge_id,
+                            "source": ext_node.decision_id,
+                            "target": ext_node.id,
+                            "type": "smoothstep",
+                            "animated": False,
+                            "data": {
+                                "callSiteLine": ext_node.line,
+                                "callType": "external",
+                                "branchId": ext_node.branch_id,
+                                "decisionId": ext_node.decision_id,
+                            },
+                        }
+                    )
 
         return result

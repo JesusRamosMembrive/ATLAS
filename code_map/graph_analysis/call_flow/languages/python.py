@@ -29,10 +29,14 @@ from ..models import (
     CallNode,
     DecisionNode,
     DecisionType,
+    ExternalCallNode,
+    ExternalCallType,
     ExtractionMode,
     IgnoredCall,
     ResolutionStatus,
     ReturnNode,
+    StatementNode,
+    StatementType,
 )
 from ..type_resolver import TypeResolver, ScopeInfo
 
@@ -1166,6 +1170,168 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
                 depth=depth + 1,
             )
             graph.add_return_node(return_node)
+
+        # Extract statement nodes (break, continue, pass, raise)
+        # This ensures branches always show something to the user
+        statements = self._extract_statements_from_body(branch_block, source)
+        for stmt_info in statements:
+            stmt_node = StatementNode(
+                id=f"stmt:{file_path}:{stmt_info['line']}:{stmt_info['type'].value}",
+                statement_type=stmt_info["type"],
+                content=stmt_info["content"],
+                file_path=file_path,
+                line=stmt_info["line"],
+                column=stmt_info["column"],
+                parent_call_id=graph.entry_point,
+                branch_id=branch.branch_id,
+                decision_id=decision_node.id,
+                depth=depth + 1,
+            )
+            graph.add_statement_node(stmt_node)
+
+        # Extract assignment nodes (x = ..., x += ...)
+        # This shows data flow operations in branches
+        assignments = self._extract_assignments_from_body(branch_block, source)
+        for assign_info in assignments:
+            assign_node = StatementNode(
+                id=f"stmt:{file_path}:{assign_info['line']}:assignment",
+                statement_type=StatementType.ASSIGNMENT,
+                content=assign_info["content"],
+                file_path=file_path,
+                line=assign_info["line"],
+                column=assign_info["column"],
+                parent_call_id=graph.entry_point,
+                branch_id=branch.branch_id,
+                decision_id=decision_node.id,
+                depth=depth + 1,
+            )
+            graph.add_statement_node(assign_node)
+
+        # Convert IgnoredCalls from this branch to ExternalCallNodes
+        # This shows external library calls (requests.get, len, etc.) in the visualization
+        for ignored_call in graph.ignored_calls:
+            if (ignored_call.branch_id == branch.branch_id and
+                ignored_call.decision_id == decision_node.id):
+                # Map ResolutionStatus to ExternalCallType
+                if ignored_call.status == ResolutionStatus.IGNORED_BUILTIN:
+                    call_type = ExternalCallType.BUILTIN
+                elif ignored_call.status == ResolutionStatus.IGNORED_STDLIB:
+                    call_type = ExternalCallType.STDLIB
+                else:
+                    call_type = ExternalCallType.THIRD_PARTY
+
+                # Create a unique ID for this external call
+                ext_id = f"ext:{file_path}:{ignored_call.call_site_line}:{ignored_call.expression[:30]}"
+
+                ext_node = ExternalCallNode(
+                    id=ext_id,
+                    expression=ignored_call.expression,
+                    call_type=call_type,
+                    module_hint=ignored_call.module_hint,
+                    file_path=file_path,
+                    line=ignored_call.call_site_line,
+                    column=0,  # We don't have column info in IgnoredCall
+                    parent_call_id=graph.entry_point,
+                    branch_id=branch.branch_id,
+                    decision_id=decision_node.id,
+                    depth=depth + 1,
+                )
+                graph.add_external_call_node(ext_node)
+
+    def _extract_statements_from_body(
+        self, body: Any, source: str
+    ) -> List[Dict[str, Any]]:
+        """Extract control flow statements from a code block (recursively).
+
+        Finds break, continue, pass, and raise statements at any nesting level.
+        Returns a list of dicts with 'type', 'line', 'column', and 'content' keys.
+        """
+        statements: List[Dict[str, Any]] = []
+        if body is None:
+            return statements
+
+        source_bytes = source.encode("utf-8")
+
+        def visit_node(node: Any) -> None:
+            """Recursively visit nodes to find statements."""
+            stmt_type: Optional[StatementType] = None
+            content = ""
+
+            if node.type == "break_statement":
+                stmt_type = StatementType.BREAK
+                content = "break"
+            elif node.type == "continue_statement":
+                stmt_type = StatementType.CONTINUE
+                content = "continue"
+            elif node.type == "pass_statement":
+                stmt_type = StatementType.PASS
+                content = "pass"
+            elif node.type == "raise_statement":
+                stmt_type = StatementType.RAISE
+                # Extract the full raise expression
+                content = source_bytes[node.start_byte : node.end_byte].decode("utf-8")
+
+            if stmt_type:
+                statements.append({
+                    "type": stmt_type,
+                    "line": node.start_point[0] + 1,
+                    "column": node.start_point[1],
+                    "content": content,
+                })
+            else:
+                # Recurse into children for nested structures
+                # (loops, if statements, with blocks, etc.)
+                for child in node.children:
+                    visit_node(child)
+
+        # Start recursive traversal
+        for child in body.children:
+            visit_node(child)
+
+        return statements
+
+    def _extract_assignments_from_body(
+        self, body: Any, source: str
+    ) -> List[Dict[str, Any]]:
+        """Extract assignment statements from a code block.
+
+        Finds simple assignments (x = ...) and augmented assignments (x += ...).
+        Returns a list of dicts with 'type', 'line', 'column', and 'content' keys.
+        """
+        assignments: List[Dict[str, Any]] = []
+        if body is None:
+            return assignments
+
+        source_bytes = source.encode("utf-8")
+        assignment_types = {"assignment", "augmented_assignment"}
+
+        for child in body.children:
+            if child.type in assignment_types:
+                content = source_bytes[child.start_byte : child.end_byte].decode("utf-8")
+                # Truncate long assignments for display
+                if len(content) > 60:
+                    content = content[:57] + "..."
+                assignments.append({
+                    "type": StatementType.ASSIGNMENT,
+                    "line": child.start_point[0] + 1,
+                    "column": child.start_point[1],
+                    "content": content,
+                })
+            elif child.type == "expression_statement":
+                # Handle expression statements that contain assignments
+                for subchild in child.children:
+                    if subchild.type in assignment_types:
+                        content = source_bytes[subchild.start_byte : subchild.end_byte].decode("utf-8")
+                        if len(content) > 60:
+                            content = content[:57] + "..."
+                        assignments.append({
+                            "type": StatementType.ASSIGNMENT,
+                            "line": subchild.start_point[0] + 1,
+                            "column": subchild.start_point[1],
+                            "content": content,
+                        })
+
+        return assignments
 
     def _extract_returns_from_body(
         self, body: Any, source: str

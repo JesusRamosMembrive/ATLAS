@@ -536,6 +536,8 @@ async def get_call_flow(
         edges=react_flow_data["edges"],
         decision_nodes=react_flow_data.get("decision_nodes", []),
         return_nodes=react_flow_data.get("return_nodes", []),
+        statement_nodes=react_flow_data.get("statement_nodes", []),
+        external_call_nodes=react_flow_data.get("external_call_nodes", []),
         unexpanded_branches=graph.unexpanded_branches,
         extraction_mode=graph.extraction_mode,
         metadata={
@@ -647,6 +649,8 @@ async def expand_branch(
         new_edges=react_flow_data["edges"],
         new_decision_nodes=react_flow_data.get("decision_nodes", []),
         new_return_nodes=react_flow_data.get("return_nodes", []),
+        new_statement_nodes=react_flow_data.get("statement_nodes", []),
+        new_external_call_nodes=react_flow_data.get("external_call_nodes", []),
         new_unexpanded_branches=graph.unexpanded_branches,
         expanded_branch_id=branch_id,
     )
