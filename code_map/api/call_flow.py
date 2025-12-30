@@ -543,6 +543,10 @@ async def expand_branch(
     branch_id: str = Query(..., description="Branch ID to expand"),
     function: str = Query(..., description="Entry point function name"),
     max_depth: int = Query(default=5, ge=1, le=20, description="Maximum call depth"),
+    include_external: bool = Query(
+        default=True,
+        description="Include external calls (builtins, stdlib, third-party) as leaf nodes",
+    ),
 ) -> CallFlowBranchExpansionResponse:
     """
     Expand a specific branch in lazy extraction mode.
@@ -612,6 +616,10 @@ async def expand_branch(
             status_code=422,
             detail=f"Failed to expand branch {branch_id} in {path}::{function}.",
         )
+
+    # If include_external is True, add external calls as leaf nodes
+    if include_external:
+        _add_external_nodes_to_graph(graph)
 
     # Convert to React Flow format
     react_flow_data = graph.to_react_flow()

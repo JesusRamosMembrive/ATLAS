@@ -73,6 +73,7 @@ export function CallFlowView(): JSX.Element {
     filePath,
     functionName: selectedFunction?.name || "",
     maxDepth,
+    includeExternal,
     onSuccess: (data) => {
       const branchId = data.expanded_branch_id;
 

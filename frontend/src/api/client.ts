@@ -1108,12 +1108,14 @@ export function expandCallFlowBranch(
   filePath: string,
   branchId: string,
   functionName: string,
-  maxDepth = 5
+  maxDepth = 5,
+  includeExternal = true
 ): Promise<CallFlowBranchExpansionResponse> {
   const params = new URLSearchParams({
     branch_id: branchId,
     function: functionName,
     max_depth: String(maxDepth),
+    include_external: String(includeExternal),
   });
   return fetchJson<CallFlowBranchExpansionResponse>(
     `/call-flow/${encodeURIComponent(filePath)}/expand-branch?${params.toString()}`,

@@ -45,6 +45,7 @@ interface ExpandBranchOptions {
   filePath: string;
   functionName: string;
   maxDepth?: number;
+  includeExternal?: boolean;
   onSuccess?: (data: CallFlowBranchExpansionResponse) => void;
   onError?: (error: Error) => void;
 }
@@ -63,11 +64,11 @@ interface ExpandBranchOptions {
  *   expandMutation.mutate(branchId);
  */
 export function useExpandBranchMutation(options: ExpandBranchOptions) {
-  const { filePath, functionName, maxDepth = 5, onSuccess, onError } = options;
+  const { filePath, functionName, maxDepth = 5, includeExternal = true, onSuccess, onError } = options;
 
   return useMutation({
     mutationFn: (branchId: string) =>
-      expandCallFlowBranch(filePath, branchId, functionName, maxDepth),
+      expandCallFlowBranch(filePath, branchId, functionName, maxDepth, includeExternal),
     onSuccess,
     onError,
   });
