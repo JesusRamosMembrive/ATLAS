@@ -4,7 +4,7 @@
  * Uses shared graph-primitives for consistent styling.
  */
 
-import { memo } from "react";
+import { memo, useState, useCallback } from "react";
 import { Position, type NodeProps } from "reactflow";
 import { DESIGN_TOKENS } from "../../../theme/designTokens";
 import {
@@ -15,6 +15,8 @@ import {
 import type { UmlClassDef } from "../../../api/types";
 
 const { colors, borders } = DESIGN_TOKENS;
+
+const COLLAPSED_LIMIT = 5;
 
 interface ClassNodeData {
   class: UmlClassDef;
@@ -66,6 +68,20 @@ export const ClassNode = memo(({ data }: NodeProps<ClassNodeData>) => {
   const cls = data.class;
   const isSelected = data.selected;
 
+  // Expand/collapse state for attributes and methods
+  const [attributesExpanded, setAttributesExpanded] = useState(false);
+  const [methodsExpanded, setMethodsExpanded] = useState(false);
+
+  const toggleAttributes = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setAttributesExpanded((prev) => !prev);
+  }, []);
+
+  const toggleMethods = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMethodsExpanded((prev) => !prev);
+  }, []);
+
   // Build header with abstract indicator
   const header: NodeHeaderConfig = {
     icon: "C",
@@ -75,6 +91,11 @@ export const ClassNode = memo(({ data }: NodeProps<ClassNodeData>) => {
     backgroundColor: colors.primary.main,
     subtitle: cls.isAbstract ? "abstract" : undefined,
   };
+
+  const hasMoreAttributes = cls.attributes.length > COLLAPSED_LIMIT;
+  const hasMoreMethods = cls.methods.length > COLLAPSED_LIMIT;
+  const displayedAttributes = attributesExpanded ? cls.attributes : cls.attributes.slice(0, COLLAPSED_LIMIT);
+  const displayedMethods = methodsExpanded ? cls.methods : cls.methods.slice(0, COLLAPSED_LIMIT);
 
   return (
     <BaseGraphNode
@@ -97,7 +118,7 @@ export const ClassNode = memo(({ data }: NodeProps<ClassNodeData>) => {
         {cls.attributes.length === 0 ? (
           <span style={{ color: colors.text.muted, fontStyle: "italic" }}>No attributes</span>
         ) : (
-          cls.attributes.slice(0, 5).map((attr) => (
+          displayedAttributes.map((attr) => (
             <div key={attr.id} style={{ lineHeight: "1.5" }}>
               <span style={{ color: colors.text.muted }}>{visibilitySymbol(attr.visibility)}</span>
               {" "}{attr.name}: <span style={{ color: colors.primary.main }}>{attr.type}</span>
@@ -105,10 +126,24 @@ export const ClassNode = memo(({ data }: NodeProps<ClassNodeData>) => {
             </div>
           ))
         )}
-        {cls.attributes.length > 5 && (
-          <div style={{ color: colors.text.muted, fontStyle: "italic" }}>
-            +{cls.attributes.length - 5} more...
-          </div>
+        {hasMoreAttributes && (
+          <button
+            onClick={toggleAttributes}
+            style={{
+              background: "none",
+              border: "none",
+              color: colors.primary.main,
+              cursor: "pointer",
+              fontSize: "11px",
+              padding: "2px 0",
+              marginTop: "2px",
+              textDecoration: "underline",
+            }}
+          >
+            {attributesExpanded
+              ? "Show less"
+              : `+${cls.attributes.length - COLLAPSED_LIMIT} more...`}
+          </button>
         )}
       </div>
 
@@ -125,7 +160,7 @@ export const ClassNode = memo(({ data }: NodeProps<ClassNodeData>) => {
         {cls.methods.length === 0 ? (
           <span style={{ color: colors.text.muted, fontStyle: "italic" }}>No methods</span>
         ) : (
-          cls.methods.slice(0, 5).map((method) => (
+          displayedMethods.map((method) => (
             <div key={method.id} style={{ lineHeight: "1.5" }}>
               <span style={{ color: colors.text.muted }}>{visibilitySymbol(method.visibility)}</span>
               {" "}{method.name}(): <span style={{ color: colors.callFlow.class }}>{method.returnType}</span>
@@ -133,10 +168,24 @@ export const ClassNode = memo(({ data }: NodeProps<ClassNodeData>) => {
             </div>
           ))
         )}
-        {cls.methods.length > 5 && (
-          <div style={{ color: colors.text.muted, fontStyle: "italic" }}>
-            +{cls.methods.length - 5} more...
-          </div>
+        {hasMoreMethods && (
+          <button
+            onClick={toggleMethods}
+            style={{
+              background: "none",
+              border: "none",
+              color: colors.primary.main,
+              cursor: "pointer",
+              fontSize: "11px",
+              padding: "2px 0",
+              marginTop: "2px",
+              textDecoration: "underline",
+            }}
+          >
+            {methodsExpanded
+              ? "Show less"
+              : `+${cls.methods.length - COLLAPSED_LIMIT} more...`}
+          </button>
         )}
       </div>
     </BaseGraphNode>

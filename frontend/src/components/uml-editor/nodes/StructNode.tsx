@@ -5,7 +5,7 @@
  * Structs are data containers with public attributes by default.
  */
 
-import { memo } from "react";
+import { memo, useState, useCallback } from "react";
 import { Position, type NodeProps } from "reactflow";
 import { DESIGN_TOKENS } from "../../../theme/designTokens";
 import {
@@ -16,6 +16,8 @@ import {
 import type { UmlStructDef } from "../../../api/types";
 
 const { colors, borders } = DESIGN_TOKENS;
+
+const COLLAPSED_LIMIT = 6;
 
 // Distinct color for structs (teal/cyan)
 const STRUCT_COLOR = "#0891b2";
@@ -72,12 +74,23 @@ export const StructNode = memo(({ data }: NodeProps<StructNodeData>) => {
   const struct = data.struct;
   const isSelected = data.selected;
 
+  // Expand/collapse state for attributes
+  const [attributesExpanded, setAttributesExpanded] = useState(false);
+
+  const toggleAttributes = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setAttributesExpanded((prev) => !prev);
+  }, []);
+
   const header: NodeHeaderConfig = {
     icon: "S",
     label: struct.name,
     backgroundColor: STRUCT_COLOR,
     subtitle: "struct",
   };
+
+  const hasMoreAttributes = struct.attributes.length > COLLAPSED_LIMIT;
+  const displayedAttributes = attributesExpanded ? struct.attributes : struct.attributes.slice(0, COLLAPSED_LIMIT);
 
   return (
     <BaseGraphNode
@@ -101,17 +114,31 @@ export const StructNode = memo(({ data }: NodeProps<StructNodeData>) => {
         {struct.attributes.length === 0 ? (
           <span style={{ color: colors.text.muted, fontStyle: "italic" }}>No fields</span>
         ) : (
-          struct.attributes.slice(0, 6).map((attr) => (
+          displayedAttributes.map((attr) => (
             <div key={attr.id} style={{ marginBottom: "2px" }}>
               <span style={{ color: colors.text.muted }}>{visibilitySymbol(attr.visibility)}</span>
               {" "}{attr.name}: <span style={{ color: STRUCT_COLOR }}>{attr.type}</span>
             </div>
           ))
         )}
-        {struct.attributes.length > 6 && (
-          <div style={{ color: colors.text.muted, marginTop: "4px" }}>
-            ... +{struct.attributes.length - 6} more
-          </div>
+        {hasMoreAttributes && (
+          <button
+            onClick={toggleAttributes}
+            style={{
+              background: "none",
+              border: "none",
+              color: STRUCT_COLOR,
+              cursor: "pointer",
+              fontSize: "11px",
+              padding: "2px 0",
+              marginTop: "4px",
+              textDecoration: "underline",
+            }}
+          >
+            {attributesExpanded
+              ? "Show less"
+              : `+${struct.attributes.length - COLLAPSED_LIMIT} more...`}
+          </button>
         )}
       </div>
     </BaseGraphNode>

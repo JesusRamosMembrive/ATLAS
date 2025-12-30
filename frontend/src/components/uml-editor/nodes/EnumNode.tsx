@@ -4,7 +4,7 @@
  * Uses shared graph-primitives for consistent styling.
  */
 
-import { memo } from "react";
+import { memo, useState, useCallback } from "react";
 import { Position, type NodeProps } from "reactflow";
 import { DESIGN_TOKENS } from "../../../theme/designTokens";
 import {
@@ -15,6 +15,8 @@ import {
 import type { UmlEnumDef } from "../../../api/types";
 
 const { colors, borders } = DESIGN_TOKENS;
+
+const COLLAPSED_LIMIT = 6;
 
 interface EnumNodeData {
   enum: UmlEnumDef;
@@ -43,11 +45,22 @@ export const EnumNode = memo(({ data }: NodeProps<EnumNodeData>) => {
   const enm = data.enum;
   const isSelected = data.selected;
 
+  // Expand/collapse state for values
+  const [valuesExpanded, setValuesExpanded] = useState(false);
+
+  const toggleValues = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setValuesExpanded((prev) => !prev);
+  }, []);
+
   const header: NodeHeaderConfig = {
     icon: "E",
     label: "<<enum>>",
     backgroundColor: colors.callFlow.method,
   };
+
+  const hasMoreValues = enm.values.length > COLLAPSED_LIMIT;
+  const displayedValues = valuesExpanded ? enm.values : enm.values.slice(0, COLLAPSED_LIMIT);
 
   return (
     <BaseGraphNode
@@ -85,7 +98,7 @@ export const EnumNode = memo(({ data }: NodeProps<EnumNodeData>) => {
         {enm.values.length === 0 ? (
           <span style={{ color: colors.text.muted, fontStyle: "italic" }}>No values</span>
         ) : (
-          enm.values.slice(0, 6).map((val, idx) => (
+          displayedValues.map((val, idx) => (
             <div key={idx} style={{ lineHeight: "1.5" }}>
               {val.name}
               {val.value !== null && (
@@ -94,10 +107,24 @@ export const EnumNode = memo(({ data }: NodeProps<EnumNodeData>) => {
             </div>
           ))
         )}
-        {enm.values.length > 6 && (
-          <div style={{ color: colors.text.muted, fontStyle: "italic" }}>
-            +{enm.values.length - 6} more...
-          </div>
+        {hasMoreValues && (
+          <button
+            onClick={toggleValues}
+            style={{
+              background: "none",
+              border: "none",
+              color: colors.callFlow.method,
+              cursor: "pointer",
+              fontSize: "11px",
+              padding: "2px 0",
+              marginTop: "2px",
+              textDecoration: "underline",
+            }}
+          >
+            {valuesExpanded
+              ? "Show less"
+              : `+${enm.values.length - COLLAPSED_LIMIT} more...`}
+          </button>
         )}
       </div>
     </BaseGraphNode>

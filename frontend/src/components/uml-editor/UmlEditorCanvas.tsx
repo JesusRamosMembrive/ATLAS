@@ -5,11 +5,13 @@
  * Handles drag, drop, selection, and connection creation.
  */
 
-import { useCallback, useMemo, useEffect } from "react";
+import { useCallback, useMemo, useEffect, useState } from "react";
 import ReactFlow, {
   Background,
   Controls,
   MiniMap,
+  Panel,
+  useReactFlow,
   type Node,
   type Edge,
   type NodeTypes,
@@ -36,9 +38,10 @@ import {
   getEntitiesForComponent,
   getRelationshipsForComponent,
 } from "../../utils/graphAnalysis";
+import { useUmlElkLayout, type LayoutDirection } from "../../hooks/useUmlElkLayout";
 import type { UmlRelationType } from "../../api/types";
 
-const { colors } = DESIGN_TOKENS;
+const { colors, borders } = DESIGN_TOKENS;
 
 // Struct color
 const STRUCT_COLOR = "#0891b2";
@@ -78,6 +81,11 @@ export function UmlEditorCanvas(): JSX.Element {
   } = useUmlEditorStore();
 
   const currentModule = getCurrentModule();
+  const { fitView } = useReactFlow();
+
+  // Layout state and hook
+  const [layoutDirection, setLayoutDirection] = useState<LayoutDirection>("DOWN");
+  const { getLayoutedElements, isLayouting } = useUmlElkLayout();
 
   // Analyze connected components for filtering
   const componentAnalysis = useMemo(() => {
@@ -342,6 +350,72 @@ export function UmlEditorCanvas(): JSX.Element {
     }
   }, []);
 
+  // Handle layout direction change
+  const handleLayout = useCallback(
+    async (direction: LayoutDirection) => {
+      setLayoutDirection(direction);
+
+      if (nodes.length === 0) return;
+
+      const { nodes: layoutedNodes } = await getLayoutedElements(nodes, edges, direction);
+
+      // Update positions in store
+      for (const node of layoutedNodes) {
+        switch (node.type) {
+          case "classNode":
+            updateClassPosition(node.id, node.position);
+            break;
+          case "interfaceNode":
+            updateInterfacePosition(node.id, node.position);
+            break;
+          case "enumNode":
+            updateEnumPosition(node.id, node.position);
+            break;
+          case "structNode":
+            updateStructPosition(node.id, node.position);
+            break;
+        }
+      }
+
+      // Fit view after layout
+      setTimeout(() => fitView({ padding: 0.2 }), 50);
+    },
+    [
+      nodes,
+      edges,
+      getLayoutedElements,
+      updateClassPosition,
+      updateInterfacePosition,
+      updateEnumPosition,
+      updateStructPosition,
+      fitView,
+    ]
+  );
+
+  // Button styles for layout toggle
+  const baseButtonStyle: React.CSSProperties = {
+    padding: "6px 12px",
+    borderRadius: "6px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "13px",
+    fontWeight: 500,
+    transition: "all 0.15s ease",
+  };
+
+  const activeButtonStyle: React.CSSProperties = {
+    ...baseButtonStyle,
+    backgroundColor: colors.primary.main,
+    color: colors.text.primary,
+  };
+
+  const inactiveButtonStyle: React.CSSProperties = {
+    ...baseButtonStyle,
+    backgroundColor: colors.base.card,
+    color: colors.text.secondary,
+    border: `1px solid ${colors.gray[600]}`,
+  };
+
   return (
     <ReactFlow
       nodes={nodes}
@@ -385,6 +459,45 @@ export function UmlEditorCanvas(): JSX.Element {
           border: `1px solid ${colors.gray[700]}`,
         }}
       />
+      <Panel
+        position="top-right"
+        style={{
+          display: "flex",
+          gap: "8px",
+          padding: "8px",
+          backgroundColor: colors.base.card,
+          border: `1px solid ${borders.default}`,
+          borderRadius: "8px",
+        }}
+      >
+        <button
+          onClick={() => handleLayout("DOWN")}
+          disabled={isLayouting}
+          style={layoutDirection === "DOWN" ? activeButtonStyle : inactiveButtonStyle}
+          title="Vertical layout (top to bottom)"
+        >
+          Vertical
+        </button>
+        <button
+          onClick={() => handleLayout("RIGHT")}
+          disabled={isLayouting}
+          style={layoutDirection === "RIGHT" ? activeButtonStyle : inactiveButtonStyle}
+          title="Horizontal layout (left to right)"
+        >
+          Horizontal
+        </button>
+        {isLayouting && (
+          <span
+            style={{
+              fontSize: "12px",
+              color: colors.text.muted,
+              alignSelf: "center",
+            }}
+          >
+            Layouting...
+          </span>
+        )}
+      </Panel>
     </ReactFlow>
   );
 }

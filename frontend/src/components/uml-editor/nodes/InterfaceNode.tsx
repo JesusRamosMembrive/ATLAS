@@ -4,7 +4,7 @@
  * Uses shared graph-primitives for consistent styling.
  */
 
-import { memo } from "react";
+import { memo, useState, useCallback } from "react";
 import { Position, type NodeProps } from "reactflow";
 import { DESIGN_TOKENS } from "../../../theme/designTokens";
 import {
@@ -15,6 +15,8 @@ import {
 import type { UmlInterfaceDef } from "../../../api/types";
 
 const { colors, borders } = DESIGN_TOKENS;
+
+const COLLAPSED_LIMIT = 5;
 
 interface InterfaceNodeData {
   interface: UmlInterfaceDef;
@@ -57,11 +59,22 @@ export const InterfaceNode = memo(({ data }: NodeProps<InterfaceNodeData>) => {
   const iface = data.interface;
   const isSelected = data.selected;
 
+  // Expand/collapse state for methods
+  const [methodsExpanded, setMethodsExpanded] = useState(false);
+
+  const toggleMethods = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMethodsExpanded((prev) => !prev);
+  }, []);
+
   const header: NodeHeaderConfig = {
     icon: "I",
     label: "<<interface>>",
     backgroundColor: colors.callFlow.class,
   };
+
+  const hasMoreMethods = iface.methods.length > COLLAPSED_LIMIT;
+  const displayedMethods = methodsExpanded ? iface.methods : iface.methods.slice(0, COLLAPSED_LIMIT);
 
   return (
     <BaseGraphNode
@@ -97,17 +110,31 @@ export const InterfaceNode = memo(({ data }: NodeProps<InterfaceNodeData>) => {
         {iface.methods.length === 0 ? (
           <span style={{ color: colors.text.muted, fontStyle: "italic" }}>No methods</span>
         ) : (
-          iface.methods.slice(0, 5).map((method) => (
+          displayedMethods.map((method) => (
             <div key={method.id} style={{ lineHeight: "1.5" }}>
               <span style={{ color: colors.text.muted }}>+</span>
               {" "}{method.name}(): <span style={{ color: colors.callFlow.class }}>{method.returnType}</span>
             </div>
           ))
         )}
-        {iface.methods.length > 5 && (
-          <div style={{ color: colors.text.muted, fontStyle: "italic" }}>
-            +{iface.methods.length - 5} more...
-          </div>
+        {hasMoreMethods && (
+          <button
+            onClick={toggleMethods}
+            style={{
+              background: "none",
+              border: "none",
+              color: colors.callFlow.class,
+              cursor: "pointer",
+              fontSize: "11px",
+              padding: "2px 0",
+              marginTop: "2px",
+              textDecoration: "underline",
+            }}
+          >
+            {methodsExpanded
+              ? "Show less"
+              : `+${iface.methods.length - COLLAPSED_LIMIT} more...`}
+          </button>
         )}
       </div>
     </BaseGraphNode>
