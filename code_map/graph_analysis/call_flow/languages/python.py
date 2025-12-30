@@ -1293,9 +1293,10 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
     def _extract_assignments_from_body(
         self, body: Any, source: str
     ) -> List[Dict[str, Any]]:
-        """Extract assignment statements from a code block.
+        """Extract assignment statements from a code block (recursively).
 
-        Finds simple assignments (x = ...) and augmented assignments (x += ...).
+        Finds simple assignments (x = ...) and augmented assignments (x += ...)
+        at any nesting level within the block.
         Returns a list of dicts with 'type', 'line', 'column', and 'content' keys.
         """
         assignments: List[Dict[str, Any]] = []
@@ -1305,21 +1306,38 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
         source_bytes = source.encode("utf-8")
         assignment_types = {"assignment", "augmented_assignment"}
 
-        for child in body.children:
-            if child.type in assignment_types:
-                content = source_bytes[child.start_byte : child.end_byte].decode("utf-8")
+        # Node types that contain nested code blocks we should recurse into
+        compound_types = {
+            "if_statement",
+            "else_clause",
+            "elif_clause",
+            "for_statement",
+            "while_statement",
+            "with_statement",
+            "try_statement",
+            "except_clause",
+            "finally_clause",
+            "match_statement",
+            "case_clause",
+            "block",
+        }
+
+        def visit_node(node: Any) -> None:
+            """Recursively visit nodes to find assignments."""
+            if node.type in assignment_types:
+                content = source_bytes[node.start_byte : node.end_byte].decode("utf-8")
                 # Truncate long assignments for display
                 if len(content) > 60:
                     content = content[:57] + "..."
                 assignments.append({
                     "type": StatementType.ASSIGNMENT,
-                    "line": child.start_point[0] + 1,
-                    "column": child.start_point[1],
+                    "line": node.start_point[0] + 1,
+                    "column": node.start_point[1],
                     "content": content,
                 })
-            elif child.type == "expression_statement":
+            elif node.type == "expression_statement":
                 # Handle expression statements that contain assignments
-                for subchild in child.children:
+                for subchild in node.children:
                     if subchild.type in assignment_types:
                         content = source_bytes[subchild.start_byte : subchild.end_byte].decode("utf-8")
                         if len(content) > 60:
@@ -1330,6 +1348,14 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
                             "column": subchild.start_point[1],
                             "content": content,
                         })
+            elif node.type in compound_types:
+                # Recurse into compound statements
+                for child in node.children:
+                    visit_node(child)
+
+        # Start recursive traversal
+        for child in body.children:
+            visit_node(child)
 
         return assignments
 
