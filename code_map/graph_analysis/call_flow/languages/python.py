@@ -509,12 +509,13 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
 
         expand_branches = expand_branches or []
 
-        # In LAZY mode, check for decision points first
+        # In LAZY mode, find ALL decision points and process them
         if extraction_mode == ExtractionMode.LAZY:
-            decision_ast = self._find_first_decision_point(body)
-            if decision_ast is not None:
-                # Extract calls before the decision point
-                calls = self._extract_calls_before_decision(body, decision_ast, source)
+            all_decisions = self._find_all_decision_points(body)
+            if all_decisions:
+                # Extract calls before the first decision point
+                first_decision = all_decisions[0]
+                calls = self._extract_calls_before_decision(body, first_decision, source)
 
                 # Process these calls (same logic as FULL mode)
                 self._process_calls(
@@ -533,35 +534,39 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
                     expand_branches=expand_branches,
                 )
 
-                # Parse the decision node
-                decision_node = self._parse_decision_node(
-                    decision_ast, source, file_path, parent_id, depth
-                )
-                if decision_node:
-                    graph.add_decision_node(decision_node)
+                # Process each decision point
+                for decision_ast in all_decisions:
+                    # Parse the decision node
+                    decision_node = self._parse_decision_node(
+                        decision_ast, source, file_path, parent_id, depth
+                    )
+                    if decision_node:
+                        # Note: add_decision_node already tracks unexpanded branches
+                        graph.add_decision_node(decision_node)
 
-                    # Track unexpanded branches (those not in expand_branches)
-                    for branch in decision_node.branches:
-                        if branch.branch_id not in expand_branches:
-                            graph.unexpanded_branches.append(branch.branch_id)
-                        else:
-                            # This branch should be expanded - extract its contents
-                            self._expand_branch(
-                                graph=graph,
-                                decision_ast=decision_ast,
-                                branch=branch,
-                                decision_node=decision_node,
-                                file_path=file_path,
-                                source=source,
-                                project_root=project_root,
-                                depth=depth,
-                                max_depth=max_depth,
-                                call_stack=call_stack,
-                                class_context=class_context,
-                                imports=imports,
-                                extraction_mode=extraction_mode,
-                                expand_branches=expand_branches,
-                            )
+                        # Check if any branches should be expanded
+                        for branch in decision_node.branches:
+                            if branch.branch_id in expand_branches:
+                                # This branch should be expanded - extract its contents
+                                # Remove from unexpanded list since we're expanding it now
+                                if branch.branch_id in graph.unexpanded_branches:
+                                    graph.unexpanded_branches.remove(branch.branch_id)
+                                self._expand_branch(
+                                    graph=graph,
+                                    decision_ast=decision_ast,
+                                    branch=branch,
+                                    decision_node=decision_node,
+                                    file_path=file_path,
+                                    source=source,
+                                    project_root=project_root,
+                                    depth=depth,
+                                    max_depth=max_depth,
+                                    call_stack=call_stack,
+                                    class_context=class_context,
+                                    imports=imports,
+                                    extraction_mode=extraction_mode,
+                                    expand_branches=expand_branches,
+                                )
 
                 # Stop here (branches not in expand_branches remain unexpanded)
                 return
@@ -1007,6 +1012,39 @@ class PythonCallFlowExtractor(BaseCallFlowExtractor):
                         return nested
 
         return None
+
+    def _find_all_decision_points(self, body: Any) -> List[Any]:
+        """Find ALL decision points in a function body (top-level only).
+
+        Unlike _find_first_decision_point, this finds all if/try/match statements
+        at the body level (including those nested inside loops).
+
+        Returns a list of AST nodes for all decision points found.
+        """
+        decisions: List[Any] = []
+        # Loop types to search inside (not decision points themselves)
+        loop_types = {"for_statement", "while_statement"}
+
+        for child in body.children:
+            # Direct decision point found
+            if child.type in self._decision_point_types:
+                decisions.append(child)
+
+            # Search inside loops for nested decision points
+            elif child.type in loop_types:
+                # Find the body of the loop
+                loop_body = None
+                for sub in child.children:
+                    if sub.type == "block":
+                        loop_body = sub
+                        break
+
+                if loop_body:
+                    # Recursively find decisions in the loop body
+                    nested = self._find_all_decision_points(loop_body)
+                    decisions.extend(nested)
+
+        return decisions
 
     def _extract_calls_before_decision(
         self, body: Any, decision_node: Any, source: str
