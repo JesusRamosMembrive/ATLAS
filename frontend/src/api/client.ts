@@ -43,6 +43,7 @@ import type {
   CallFlowEntryPointsResponse,
   CallFlowResponse,
   CallFlowBranchExpansionResponse,
+  SequenceDiagramResponse,
 } from "./types";
 import type {
   SimilarityReport,
@@ -1120,5 +1121,48 @@ export function expandCallFlowBranch(
   return fetchJson<CallFlowBranchExpansionResponse>(
     `/call-flow/${encodeURIComponent(filePath)}/expand-branch?${params.toString()}`,
     { method: "POST" }
+  );
+}
+
+// =============================================================================
+// Sequence Diagram API
+// =============================================================================
+
+/**
+ * Get a sequence diagram from a function/method.
+ *
+ * Extracts the call flow and transforms it into a UML sequence diagram
+ * format with lifelines, messages, activation boxes, and combined fragments.
+ *
+ * Args:
+ *     filePath: Absolute path to source file (Python, C++, TypeScript, JavaScript)
+ *     functionName: Name of function or method to analyze
+ *     maxDepth: Maximum call depth to follow (default 5, max 10)
+ *     className: Class name if analyzing a method (optional)
+ *
+ * Returns:
+ *     Promise with sequence diagram data in React Flow compatible format
+ *
+ * Notes:
+ *     - Endpoint: GET /api/sequence/{filePath}?function=X&max_depth=N
+ *     - Lifelines represent classes/modules that participate in the interaction
+ *     - Messages are ordered by sequence number (execution order)
+ *     - Combined fragments represent control flow (if/else, loops, try/except)
+ */
+export function getSequenceDiagram(
+  filePath: string,
+  functionName: string,
+  maxDepth = 5,
+  className?: string | null
+): Promise<SequenceDiagramResponse> {
+  const params = new URLSearchParams({
+    function: functionName,
+    max_depth: String(maxDepth),
+  });
+  if (className) {
+    params.set("class_name", className);
+  }
+  return fetchJson<SequenceDiagramResponse>(
+    `/sequence/${encodeURIComponent(filePath)}?${params.toString()}`
   );
 }

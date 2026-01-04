@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import { useCallFlowEntryPointsQuery, useCallFlowQuery, useExpandBranchMutation } from "../hooks/useCallFlowQuery";
 import { useSettingsQuery } from "../hooks/useSettingsQuery";
 import { CallFlowGraph } from "./call-flow/CallFlowGraph";
+import { SequenceDiagramView } from "./sequence-diagram";
 import { FileBrowserModal } from "./settings/FileBrowserModal";
 import { getCallFlowSource } from "../api/client";
 import type { CallFlowEntryPoint, CallFlowNode, CallFlowEdge, CallFlowDecisionNode, CallFlowReturnNode, CallFlowStatementNode, CallFlowExternalCallNode } from "../api/types";
@@ -34,6 +35,7 @@ export function CallFlowView(): JSX.Element {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [nodeSourceCode, setNodeSourceCode] = useState<string | null>(null);
   const [sourceCodeLoading, setSourceCodeLoading] = useState(false);
+  const [viewMode, setViewMode] = useState<"callflow" | "sequence">("callflow");
 
   // State for incrementally expanded branches (merged with initial query data)
   const [expandedNodes, setExpandedNodes] = useState<CallFlowNode[]>([]);
@@ -599,6 +601,51 @@ export function CallFlowView(): JSX.Element {
                 </span>
               </div>
             )}
+
+            {/* View Mode Toggle */}
+            {selectedFunction && (
+              <div style={{ display: "flex", gap: "4px", alignItems: "center", marginLeft: "auto" }}>
+                <button
+                  onClick={() => setViewMode("callflow")}
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "6px 0 0 6px",
+                    border: `1px solid ${viewMode === "callflow" ? colors.primary.main : borders.default}`,
+                    backgroundColor: viewMode === "callflow" ? `${colors.primary.main}20` : colors.base.card,
+                    color: viewMode === "callflow" ? colors.primary.main : colors.text.muted,
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                  }}
+                  title="Call Flow Graph - hierarchical tree view"
+                >
+                  🔀 Call Flow
+                </button>
+                <button
+                  onClick={() => setViewMode("sequence")}
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "0 6px 6px 0",
+                    border: `1px solid ${viewMode === "sequence" ? colors.primary.main : borders.default}`,
+                    borderLeft: "none",
+                    backgroundColor: viewMode === "sequence" ? `${colors.primary.main}20` : colors.base.card,
+                    color: viewMode === "sequence" ? colors.primary.main : colors.text.muted,
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                  }}
+                  title="Sequence Diagram - UML temporal view"
+                >
+                  📊 Sequence
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -937,7 +984,7 @@ export function CallFlowView(): JSX.Element {
             </div>
           )}
 
-          {!callFlowQuery.isLoading && !callFlowQuery.isError && nodes.length > 0 && (
+          {!callFlowQuery.isLoading && !callFlowQuery.isError && nodes.length > 0 && viewMode === "callflow" && (
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
               <CallFlowGraph
                 nodes={nodes}
@@ -949,6 +996,18 @@ export function CallFlowView(): JSX.Element {
                 onNodeSelect={setSelectedNodeId}
                 onEdgeSelect={setSelectedEdgeId}
                 onBranchExpand={handleBranchToggle}
+              />
+            </div>
+          )}
+
+          {/* Sequence Diagram View */}
+          {selectedFunction && viewMode === "sequence" && (
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
+              <SequenceDiagramView
+                filePath={filePath}
+                functionName={selectedFunction.name}
+                maxDepth={maxDepth}
+                onClose={() => setViewMode("callflow")}
               />
             </div>
           )}

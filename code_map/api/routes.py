@@ -24,6 +24,7 @@ from .similarity import router as similarity_router
 from .symbols import router as symbols_router
 from .call_flow import router as call_flow_router
 from .notify import router as notify_router
+from .sequence import router as sequence_router
 
 router = APIRouter()
 router.include_router(analysis_router)
@@ -43,3 +44,4 @@ router.include_router(similarity_router)
 router.include_router(symbols_router)
 router.include_router(call_flow_router)
 router.include_router(notify_router)
+router.include_router(sequence_router)

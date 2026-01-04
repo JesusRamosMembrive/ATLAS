@@ -970,3 +970,110 @@ export interface UmlGenerateResponse {
   testCode: string | null;
   errors: string[];
 }
+
+// =============================================================================
+// Sequence Diagram Types
+// =============================================================================
+
+export type SequenceMessageType = "sync" | "async" | "return" | "create" | "destroy" | "self";
+export type SequenceFragmentType = "alt" | "opt" | "loop" | "par" | "try" | "break";
+export type SequenceParticipantType = "class" | "object" | "actor" | "boundary" | "control" | "entity" | "module";
+
+export interface SequenceLifeline {
+  id: string;
+  name: string;
+  qualifiedName: string;
+  participantType: SequenceParticipantType;
+  order: number;
+  filePath: string | null;
+  line: number;
+  isEntryPoint: boolean;
+}
+
+export interface SequenceMessage {
+  id: string;
+  fromLifeline: string;
+  toLifeline: string;
+  label: string;
+  messageType: SequenceMessageType;
+  sequenceNumber: number;
+  arguments: string[] | null;
+  returnValue: string | null;
+  callSiteLine: number;
+  fragmentId: string | null;
+  fragmentOperandIndex: number | null;
+}
+
+export interface SequenceActivationBox {
+  id: string;
+  lifelineId: string;
+  startSequence: number;
+  endSequence: number;
+  nestingLevel: number;
+}
+
+export interface SequenceFragmentOperand {
+  guard: string;
+  messageIds: string[];
+}
+
+export interface SequenceCombinedFragment {
+  id: string;
+  fragmentType: SequenceFragmentType;
+  conditionText: string;
+  operands: SequenceFragmentOperand[];
+  startSequence: number;
+  endSequence: number;
+  coveringLifelines: string[];
+  parentFragmentId: string | null;
+}
+
+export interface SequenceDiagramMetadata {
+  entryPoint: string;
+  sourceFile: string | null;
+  functionName: string;
+  lifelineCount: number;
+  messageCount: number;
+  fragmentCount: number;
+  maxDepth: number;
+}
+
+// React Flow compatible format from API
+export interface SequenceLifelineNode {
+  id: string;
+  type: "lifelineNode";
+  data: {
+    name: string;
+    qualifiedName: string;
+    participantType: SequenceParticipantType;
+    filePath: string | null;
+    line: number;
+    isEntryPoint: boolean;
+    order: number;
+  };
+}
+
+export interface SequenceMessageEdge {
+  id: string;
+  source: string;
+  target: string;
+  type: "syncMessage" | "returnMessage" | "selfMessage";
+  data: {
+    label: string;
+    messageType: SequenceMessageType;
+    sequenceNumber: number;
+    arguments: string[] | null;
+    returnValue: string | null;
+    callSiteLine: number;
+    fragmentId: string | null;
+    fragmentOperandIndex: number | null;
+  };
+}
+
+export interface SequenceDiagramResponse {
+  lifelines: SequenceLifelineNode[];
+  messages: SequenceMessageEdge[];
+  activationBoxes: SequenceActivationBox[];
+  fragments: SequenceCombinedFragment[];
+  metadata: SequenceDiagramMetadata;
+}
